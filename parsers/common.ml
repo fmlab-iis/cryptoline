@@ -211,9 +211,9 @@ type func =
     fout_kinds : var_kind list; (* formal in-out variables (vector variables are not expanded) *)
     fargs : var list;           (* formal input variables (vector variables are expanded) *)
     fouts : var list;           (* formal in-out variables (vector variables are expanded) *)
-    fvm : var SM.t;             (* a map from a name to a variable (including carry variables) *)
-    fym : var SM.t;             (* a map from a name to a carry variable *)
-    fgm : var SM.t;             (* a map from a name to a ghost variable *)
+    fvm : var SM.t;             (* a map from a name to a last-defined variable (including carry variables) *)
+    fym : var SM.t;             (* a map from a name to a last-defined carry variable *)
+    fgm : var SM.t;             (* a map from a name to a last-defined ghost variable *)
     fbody : lined_tagged_program;
     fpre : tagged_bexp;
     fpost : tagged_bexp_prove_with
@@ -1706,105 +1706,167 @@ let parse_call_at ctx lno fname_token actuals_token =
   [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
     [(lno, assume_instr)]
 
+(**
+   true:
+   inline a procedure and rename every occurrence of a formal parameter
+   (even if it is assigned again) with its actual parameter
+
+   false:
+   inline a procedure and view the formal parameters as function parameters
+   like the call statement
+*)
+let rename_style_inline = ref true
+
 let parse_inline_at ctx lno fname_token actuals_token =
-  (* The function name *)
+  (* Parse the function name and find the function definition *)
   let fname = fname_token in
-  (* Inlining the main function is not allowed *)
-  let _ = if fname = Options.Std.main_proc_name then raise_at_line lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
-  (* The function definition *)
-  let f =
-    try
-      SM.find fname ctx.cfuns
-    with Not_found ->
-      raise_at_line lno ("Inline an undefined function '" ^ fname ^ "'.") in
-  (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
+  let f = try SM.find fname ctx.cfuns
+          with Not_found ->
+            raise_at_line lno ("Inline an undefined function '" ^ fname ^ "'.") in
+  (* Check: inlining the main function is not allowed *)
+  let check_inlined_func_name fname =
+    if fname = Options.Std.main_proc_name
+    then raise_at_line lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
+  (* Check:
+     - the number of actual parameters should match the number of formal parameters
+     - actual parameters should have types compatible with types of formal parameters *)
+  let check_formal_actuals formals actuals =
+    let check_length () =
+      if List.length actuals <> List.length formals then
+        raise_at_line lno ("Failed to inline the function " ^ fname ^ ": numbers of arguments mismatch.") in
+    let check_types () =
+      List.iter2 (fun formal actual ->
+          if not (is_type_compatible formal actual) then
+            raise_at_line lno ("The type of the actual parameter " ^ string_of_atom actual
+                             ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+        formals actuals in
+    check_length (); check_types() in
+  (* Check: actual inputs should be defined *)
+  let check_undefined formals actuals inputs =
+    let undefined =
+      List.fold_left2 (fun undefined formal actual ->
+          match actual with
+          | Avar v -> if mem_var formal inputs && not (ctx_var_is_defined ctx v) then v::undefined else undefined
+          | _ -> undefined
+        ) [] formals actuals in
+    if List.length undefined > 0 then
+      raise_at_line lno ("Undefined variable: " ^ string_of_var (List.hd undefined)) in
+  (* A visitor that adds fname^"_local_" to variable names with types unchanged *)
+  let make_rename_local_visitor fname =
+    let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
+    object (* (self) *)
+      inherit tnop_visitor
+      method! tvvar v = ChangeTo (rename_var v)
+      method! tvlval v = ChangeTo (rename_var v)
+      method! tvgvar v = ChangeTo (rename_var v)
+    end in
+  (* Visitors that rename formal parameters to corresponding actual parameters.
+     Every returned visitor can be used only once. *)
+  let make_rename_formals_visitor formals actuals inputs outputs =
+    (* replto: "rename" a formal parameter v to its corresponding actual parameter *)
+    let replto ?(lval=false) v pats =
+      let act = VM.find v pats in
+      match act with
+      | Avar v' -> Avar {v with vname = v'.vname}
+      | Aconst _ -> if lval then raise_at_line lno ("Cannot use " ^ string_of_atom act ^ " as an lval")
+                    else act in
+    let pats = List.fold_left2 (
+                   fun m formal actual ->
+                   VM.add formal actual m
+                 ) VM.empty formals actuals in
+    let fvars = VS.of_list formals in
+    let ivars = ref (VS.of_list inputs) in
+    let ovars = ref (VS.of_list outputs) in
+    let rename_formals_visitor =
+      object(*(self)*)
+        inherit tnop_visitor
+        method! tvatom a =
+          match a with
+          | Avar v -> if VS.mem v fvars
+                      then ChangeTo (replto v pats)
+                      else SkipChildren
+          | Aconst _ -> SkipChildren
+        method! tvlval v =
+          if VS.mem v fvars
+          then ChangeTo (var_of_atom (replto v pats))
+          else SkipChildren
+        method! tvgvar v =
+          if VS.mem v fvars
+          then ChangeTo (var_of_atom (replto v pats))
+          else SkipChildren
+      end in
+    let rename_inputs_visitor =
+      object(*(self)*)
+        inherit tnop_visitor
+        (* Replace read of an input parameter with its corresponding actual parameter
+           until the input parameter is assigned in the procedure *)
+        method! tvatom a =
+          match a with
+          | Avar v -> if VS.mem v !ivars
+                      then ChangeTo (replto v pats)
+                      else SkipChildren
+          | Aconst _ -> SkipChildren
+        method! tvlval v =
+          let _ = ivars := VS.remove v !ivars in
+          SkipChildren
+      end in
+    let rename_outputs_visitor =
+      object(*(self)*)
+        inherit tnop_visitor
+        (* Replace read of an output parameter with its corresponding actual parameter
+           until the output parameter is assigned in the procedure. The first assignment
+           of the output parameter is replaced as well. This visitor must be used
+           on a reversed program. *)
+        method! tvatom a =
+          match a with
+          | Avar v -> if VS.mem v !ovars
+                      then ChangeTo (replto v pats)
+                      else SkipChildren
+          | Aconst _ -> SkipChildren
+        method! tvlval v =
+          let res = if VS.mem v !ovars
+                    then ChangeTo (var_of_atom (replto ~lval:true v pats))
+                    else SkipChildren in
+          let _ = ovars := VS.remove v !ovars in
+          res
+      end in
+    (rename_formals_visitor, rename_inputs_visitor, rename_outputs_visitor) in
+  (* *)
+  let _ = check_inlined_func_name fname in
   (* Rename local variables *)
-  let (fbody, fargs, fouts, fvs, fys, fgs) =
+  let (fbody, fargs, fouts) =
     if !Options.Std.rename_local then
-      let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
-      let fargs = List.map rename_var f.fargs in
-      let fouts = List.map rename_var f.fouts in
-      let fvs = VS.map rename_var (vs_of_vm f.fvm) in
-      let fys = VS.map rename_var (vs_of_vm f.fym) in
-      let fgs = VS.map rename_var (vs_of_vm f.fgm) in
-      let local_renamer = object (* (self) *)
-          inherit tnop_visitor
-          method! tvvar v = ChangeTo (rename_var v)
-        end in
-      let fbody = tvisit_lined_program local_renamer f.fbody in
-      (fbody, fargs, fouts, fvs, fys, fgs)
+      let rename_local_visitor = make_rename_local_visitor fname in
+      let fargs = List.map (tvisit_var rename_local_visitor) f.fargs in
+      let fouts = List.map (tvisit_var rename_local_visitor) f.fouts in
+      let fbody = tvisit_lined_program rename_local_visitor f.fbody in
+      (fbody, fargs, fouts)
     else
-      (f.fbody, f.fargs, f.fouts, vs_of_vm f.fvm, vs_of_vm f.fym, vs_of_vm f.fgm) in
+      (f.fbody, f.fargs, f.fouts) in
   (* Formal parameters after renaming *)
   let inputs = fargs in
   let outputs = fouts in
   let formals = inputs@outputs in
-  (* Check the number of actual parameters *)
-  let _ =
-    if List.length actuals <> List.length formals then
-      raise_at_line lno ("Failed to call the function " ^ fname ^ ": numbers of arguments mismatch.") in
-  (* Check types of actual parameters, this should be done in parsing actual parameters *)
-  let _ =
-    List.iter2 (fun formal actual ->
-        if not (is_type_compatible formal actual) then
-          raise_at_line lno ("The type of the actual parameter " ^ string_of_atom actual
-                             ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
-      formals actuals in
-  (* Check naming conflicts *)
-  let _ =
-    let (vsclash, ysclash, gsclash) =
-      let actvars = List.fold_left (fun res a -> VS.union res (vars_atom a)) VS.empty actuals in
-      (* variables not replaced by formal parameters cannot have the same name as the name of any actual parameter *)
-      let unrenamed_vs = VS.diff fvs (VS.of_list formals) in
-      let unrenamed_ys = VS.diff fys (VS.of_list formals) in
-      let unrenamed_gs = VS.diff fgs (VS.of_list formals) in
-      let vsclash = VS.inter actvars unrenamed_vs in
-      let ysclash = VS.inter actvars unrenamed_ys in
-      let gsclash = VS.inter actvars unrenamed_gs in
-      (vsclash, ysclash, gsclash) in
-    if not (VS.is_empty gsclash) then
-      let v = VS.choose gsclash in
-      raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a ghost variable in function " ^ fname ^ ".")
-    else if not (VS.is_empty ysclash) then
-      let v = VS.choose ysclash in
-      raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined as a carry in function " ^ fname ^ ".")
-    else if not (VS.is_empty vsclash) then
-      let v = VS.choose vsclash in
-      raise_at_line lno ("Naming conflict: the actual argument " ^ string_of_var v ^ " is already defined in function " ^ fname ^ ".")
+  (* Parse the actual paramaters, the types of formal arguments are requried to parse actual parameters *)
+  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
+  let _ = check_formal_actuals formals actuals in
+  let _ = check_undefined formals actuals inputs in
+  (* Check: undefined variables *)
+  let (rename_formals_visitor, rename_inputs_visitor, rename_outputs_visitor) = make_rename_formals_visitor formals actuals inputs outputs in
+  let p = if !rename_style_inline
+          then tvisit_lined_program rename_formals_visitor fbody
+          else tvisit_lined_program rename_inputs_visitor fbody
+               |> tvisit_lined_program ~reverse:true rename_outputs_visitor
   in
-  let pats = List.combine formals actuals in
-  (* Check undefined variables *)
+  (* Make inlined variables defined *)
+  (* Since local variables are renamed but output variables are unchanged,
+     collect variables again from the function body *)
   let _ =
-    let undefined =
-      List.flatten (List.map (fun (formal, actual) ->
-                        match actual with
-                        | Avar v -> if mem_var formal inputs && not (ctx_var_is_defined ctx v) then [v] else []
-                        | _ -> []
-                      ) pats) in
-    if List.length undefined > 0 then
-      raise_at_line lno ("Undefined variable: " ^ string_of_var (List.hd undefined))
-  in
-  let (am, em, rm) = subst_maps_of_list pats in
-  let p = subst_lined_tagged_program am em rm fbody in
-  (* Update variable types *)
-  let subst_varmap vs =
-    (*
-     * subst_lval fails if the corresponding actual parameter of a formal parameter is a constant.
-     * In this case, no variable type will be updated.
-     *)
-    VS.of_list (List.flatten (List.map (fun v -> try [subst_lval am v] with _ -> []) (VS.elements vs))) in
-  let _update_varset vs vsp =
-    (* To update variable types, we need to remove variables with new types first. *)
-    VS.union (VS.diff vs vsp) vsp in
-  let vsp = subst_varmap fvs in
-  let ysp = subst_varmap fys in
-  let gsp = subst_varmap fgs in
-  (* FIXME: update vxm *)
-  let _ = VS.iter (ctx_define_var ctx) vsp in
-  let _ = VS.iter (ctx_define_carry ctx) ysp in
-  let _ = VS.iter (ctx_define_ghost ctx) gsp in
-  (* (vm_of_vs (update_varset vs vsp), vxm, vm_of_vs (update_varset ys ysp), vm_of_vs (update_varset gs gsp), p) *)
+    let p = tagged_program_untag (List.split p |> snd) in
+    let _ = VS.iter (ctx_define_var ctx) (lvs_program p) in
+    let _ = VS.iter (ctx_define_carry ctx) (lcarries_program p) in
+    let _ = VS.iter (ctx_define_ghost ctx) (gvs_program p) in
+    () in
   p
 
 (* Given a list of (writes, read), make a series of aliasing movs on colliding names.

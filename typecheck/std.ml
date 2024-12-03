@@ -400,16 +400,19 @@ let illformed_rbexps_reason vs (es : rbexp list) = tmap (illformed_rbexp_reason 
 let illformed_ebexp_prove_withs_reason vs es = tmap (illformed_ebexp_prove_with_reason vs) es |> chain_reasons
 let illformed_rbexp_prove_withs_reason vs es = tmap (illformed_rbexp_prove_with_reason vs) es |> chain_reasons
 let illformed_tagged_instr_reason vs cs gs lno ti = illformed_instr_reason vs cs gs lno (tagged_instr_untag ti)
-let rec illformed_tagged_program_reason vs cs gs p =
-  match p with
-  | [] -> None
-  | (lno, hd)::tl ->
-     (match illformed_tagged_instr_reason vs cs gs lno hd with
-      | Some r -> Some (hd, r)
-      | None ->
-         let hd = tagged_instr_untag hd in
-         illformed_tagged_program_reason (VS.union vs (lvs_instr hd)) (VS.union (VS.diff cs (lvs_instr hd)) (lbits_instr hd)) (VS.union gs (gvs_instr hd)) tl
-     )
+let illformed_tagged_program_reason vs cs gs p =
+  let helper (res, vs, cs, gs) (lno, i) =
+    match res with
+    | Some _ -> (res, vs, cs, gs)
+    | _ ->
+       (match illformed_tagged_instr_reason vs cs gs lno i with
+        | Some r -> (Some (i, r), vs, cs, gs)
+        | None ->
+           let i = tagged_instr_untag i in
+           (None, VS.union vs (lvs_instr i), VS.union (VS.diff cs (lvs_instr i)) (lbits_instr i), VS.union gs (gvs_instr i))
+       ) in
+  let (res, _, _, _) = List.fold_left helper (None, vs, cs, gs) p in
+  res
 let illformed_tagged_ebexp_reason vs (te : tagged_ebexp) =
   SM.fold (
       fun _ es res ->

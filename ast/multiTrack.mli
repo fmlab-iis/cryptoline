@@ -418,7 +418,13 @@ object
   (** visit a constant in a range expression *)
 
   method tvvar : var -> var vaction
-  (** visit a variable *)
+  (** visit a read of a variable (including program variables and ghost variables) *)
+
+  method tvlval : var -> var vaction
+  (** visit a program lval *)
+
+  method tvgvar : var -> var vaction
+  (** visit a declaration of a ghost variable *)
 end
 (** tagged visitors *)
 
@@ -426,7 +432,13 @@ class tnop_visitor : tvisitor
 (** a visitor that does nothing *)
 
 val tvisit_var : tvisitor -> var -> var
-(** Visit a variable by a visitor. *)
+(** Visit a read of a variable by a visitor. *)
+
+val tvisit_lval : tvisitor -> var -> var
+(** Visit a program lval by a visitor. *)
+
+val tvisit_gvar : tvisitor -> var -> var
+(** Visit a declaration of a ghost variable by a visitor. *)
 
 val tvisit_aconst : tvisitor -> (typ * Z.t) -> (typ * Z.t)
 (** Visit a constant in an atom by a visitor. *)
@@ -482,13 +494,17 @@ val tvisit_tagged_rbexp_prove_with : tvisitor -> tagged_rbexp_prove_with -> tagg
 val tvisit_tagged_bexp_prove_with : tvisitor -> tagged_bexp_prove_with -> tagged_bexp_prove_with
 (** Visit a predicate associated with prove-with clauses by a visitor. *)
 
-val tvisit_instr : tvisitor -> tagged_instr -> tagged_instr
-(** Visit an instruction by a visitor. *)
+val tvisit_instr : ?reverse:bool -> tvisitor -> tagged_instr -> tagged_instr
+(**
+ * Visit an instruction by a visitor. The visiting order conforms to the
+ * execution of an instruction, i.e., r-values first and then l-values.
+ * The visiting order is reversed if the flag reverse is true.
+ *)
 
-val tvisit_program : tvisitor -> tagged_program -> tagged_program
+val tvisit_program : ?reverse:bool -> tvisitor -> tagged_program -> tagged_program
 (** Visit a program by a visitor. *)
 
-val tvisit_lined_program : tvisitor -> lined_tagged_program -> lined_tagged_program
+val tvisit_lined_program : ?reverse:bool -> tvisitor -> lined_tagged_program -> lined_tagged_program
 (** Visit a program annotated with line numbers by a visitor. *)
 
 val tvisit_spec : tvisitor -> tagged_spec -> tagged_spec

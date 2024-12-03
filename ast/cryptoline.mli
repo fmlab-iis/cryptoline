@@ -132,7 +132,10 @@ val typ_delim : string
 (** a delimiter separating variable name and variable type in the string representation of a variable *)
 
 module VS : Set.S with type elt = var
-(** variable sets with comparator {!cmp_var} *)
+(**
+ * Variable sets with comparator {!cmp_var}.
+ * Note that [VS.mem v varset] is different from [List.mem v varlist].
+ *)
 
 module VM : Map.S with type key = var
 (** variable maps with comparator {!cmp_var} *)
@@ -1716,7 +1719,13 @@ object
   (** visit a constant in a range expression *)
 
   method vvar : var -> var vaction
-  (** visit a variable *)
+  (** visit a read of a variable (including program variables and ghost variables) *)
+
+  method vlval : var -> var vaction
+  (** visit a program lval *)
+
+  method vgvar : var -> var vaction
+  (** visit a declaration of a ghost variable *)
 end
 (** visitors *)
 
@@ -1724,7 +1733,13 @@ class nop_visitor : visitor
 (** a visitor that does nothing *)
 
 val visit_var : visitor -> var -> var
-(** Visit a variable by a visitor. *)
+(** Visit a read of a variable by a visitor. *)
+
+val visit_lval : visitor -> var -> var
+(** Visit a program lval by a visitor. *)
+
+val visit_gvar : visitor -> var -> var
+(** Visit a declaration of a ghost variable by a visitor. *)
 
 val visit_aconst : visitor -> (typ * Z.t) -> (typ * Z.t)
 (** Visit a constant in an atom by a visitor. *)
@@ -1762,8 +1777,12 @@ val visit_rbexp_prove_with : visitor -> rbexp_prove_with -> rbexp_prove_with
 val visit_bexp_prove_with : visitor -> bexp_prove_with -> bexp_prove_with
 (** Visit a predicate associated with prove-with clauses by a visitor. *)
 
-val visit_instr : visitor -> instr -> instr
-(** Visit an instruction by a visitor. *)
+val visit_instr : ?reverse:bool -> visitor -> instr -> instr
+(**
+ * Visit an instruction by a visitor. The visiting order conforms to the
+ * execution of an instruction, i.e., r-values first and then l-values.
+ * The visiting order is reversed if the flag reverse is true.
+ *)
 
 val visit_program : visitor -> program -> program
 (** Visit a program by a visitor. *)

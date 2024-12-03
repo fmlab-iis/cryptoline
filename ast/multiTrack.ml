@@ -559,6 +559,8 @@ object
   method tveconst : Z.t -> Z.t vaction
   method tvrconst : (size * Z.t) -> (size * Z.t) vaction
   method tvvar : var -> var vaction
+  method tvlval : var -> var vaction
+  method tvgvar : var -> var vaction
 end
 
 class tnop_visitor : tvisitor =
@@ -577,10 +579,24 @@ object (* (self) *)
   method tveconst _n = DoChildren
   method tvrconst (_size, _n) = DoChildren
   method tvvar _v = DoChildren
+  method tvlval _v = DoChildren
+  method tvgvar _v = DoChildren
 end
 
 let tvisit_var visitor v =
   match visitor#tvvar v with
+  | SkipChildren | DoChildren -> v
+  | ChangeTo v' -> v'
+  | ChangeDoChildrenPost (v', f) -> f v'
+
+let tvisit_lval visitor v =
+  match visitor#tvlval v with
+  | SkipChildren | DoChildren -> v
+  | ChangeTo v' -> v'
+  | ChangeDoChildrenPost (v', f) -> f v'
+
+let tvisit_gvar visitor v =
+  match visitor#tvgvar v with
   | SkipChildren | DoChildren -> v
   | ChangeTo v' -> v'
   | ChangeDoChildrenPost (v', f) -> f v'
@@ -731,7 +747,9 @@ let tvisit_tagged_rbexp_prove_with visitor trpwss =
 let tvisit_tagged_bexp_prove_with visitor tb =
   (tvisit_tagged_ebexp_prove_with visitor (fst tb), tvisit_tagged_rbexp_prove_with visitor (snd tb))
 
-let tvisit_instr visitor i =
+let tvisit_instr ?(reverse=false) visitor i =
+  let tvlval v = tvisit_lval visitor v in
+  let tvatom a = tvisit_atom visitor a in
   let act = visitor#tvinstr i in
   match act with
   | SkipChildren -> i
@@ -742,59 +760,419 @@ let tvisit_instr visitor i =
        | DoChildren -> (i, Fun.id)
        | ChangeDoChildrenPost (i', f) -> (i', f)
        | _ -> failwith ("Never happen") in
+     (* Make the visiting order conform to the execution of instructions *)
      f (match i with
-        | TImov (v, a) -> TImov (tvisit_var visitor v, tvisit_atom visitor a)
-        | TIshl (v, a1, a2) -> TIshl (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIshls (l, v, a, n) -> TIshls (tvisit_var visitor l, tvisit_var visitor v, tvisit_atom visitor a, n)
-        | TIshr (v, a1, a2) -> TIshr (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIshrs (v, l, a, n) -> TIshrs (tvisit_var visitor v, tvisit_var visitor l, tvisit_atom visitor a, n)
-        | TIsar (v, a1, a2) -> TIsar (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsars (v, l, a, n) -> TIsars (tvisit_var visitor v, tvisit_var visitor l, tvisit_atom visitor a, n)
-        | TIcshl (vh, vl, a1, a2, n) -> TIcshl (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a1, tvisit_atom visitor a2, n)
-        | TIcshls (l, vh, vl, a1, a2, n) -> TIcshls (tvisit_var visitor l, tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a1, tvisit_atom visitor a2, n)
-        | TIcshr (vh, vl, a1, a2, n) -> TIcshr (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a1, tvisit_atom visitor a2, n)
-        | TIcshrs (vh, vl, l, a1, a2, n) -> TIcshrs (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_var visitor l, tvisit_atom visitor a1, tvisit_atom visitor a2, n)
-        | TIrol (v, a, n) -> TIrol (tvisit_var visitor v, tvisit_atom visitor a, tvisit_atom visitor n)
-        | TIror (v, a, n) -> TIror (tvisit_var visitor v, tvisit_atom visitor a, tvisit_atom visitor n)
-        | TInondet v -> TInondet (tvisit_var visitor v)
-        | TIcmov (v, c, a1, a2) -> TIcmov (tvisit_var visitor v, tvisit_atom visitor c, tvisit_atom visitor a1, tvisit_atom visitor a2)
+        | TImov (v, a) -> if reverse
+                          then let v' = tvlval v in
+                               let a' = tvatom a in
+                               TImov (v', a')
+                          else let a' = tvatom a in
+                               let v' = tvlval v in
+                               TImov (v', a')
+        | TIshl (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIshl (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIshl (v', a1', a2')
+        | TIshls (l, v, a, n) -> if reverse
+                                 then let v' = tvlval v in
+                                      let l' = tvlval l in
+                                      let a' = tvatom a in
+                                      TIshls (l', v', a', n)
+                                 else let a' = tvatom a in
+                                      let v' = tvlval v in
+                                      let l' = tvlval l in
+                                      TIshls (l', v', a', n)
+        | TIshr (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIshr (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIshr (v', a1', a2')
+        | TIshrs (v, l, a, n) -> if reverse
+                                 then let l' = tvlval l in
+                                      let v' = tvlval v in
+                                      let a' = tvatom a in
+                                      TIshrs (v', l', a', n)
+                                 else let a' = tvatom a in
+                                      let l' = tvlval l in
+                                      let v' = tvlval v in
+                                      TIshrs (v', l', a', n)
+        | TIsar (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIsar (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIsar (v', a1', a2')
+        | TIsars (v, l, a, n) -> if reverse
+                                 then let l' = tvlval l in
+                                      let v' = tvlval v in
+                                      let a' = tvatom a in
+                                      TIsars (v', l', a', n)
+                                 else let a' = tvatom a in
+                                      let l' = tvlval l in
+                                      let v' = tvlval v in
+                                      TIsars (v', l', a', n)
+        | TIcshl (vh, vl, a1, a2, n) -> if reverse
+                                        then let vl' = tvlval vl in
+                                             let vh' = tvlval vh in
+                                             let a1' = tvatom a1 in
+                                             let a2' = tvatom a2 in
+                                             TIcshl (vh', vl', a1', a2', n)
+                                        else let a1' = tvatom a1 in
+                                             let a2' = tvatom a2 in
+                                             let vl' = tvlval vl in
+                                             let vh' = tvlval vh in
+                                             TIcshl (vh', vl', a1', a2', n)
+        | TIcshls (l, vh, vl, a1, a2, n) -> if reverse
+                                            then let vl' = tvlval vl in
+                                                 let vh' = tvlval vh in
+                                                 let l' = tvlval l in
+                                                 let a1' = tvatom a1 in
+                                                 let a2' = tvatom a2 in
+                                                 TIcshls (l', vh', vl', a1', a2', n)
+                                            else let a1' = tvatom a1 in
+                                                 let a2' = tvatom a2 in
+                                                 let vl' = tvlval vl in
+                                                 let vh' = tvlval vh in
+                                                 let l' = tvlval l in
+                                                 TIcshls (l', vh', vl', a1', a2', n)
+        | TIcshr (vh, vl, a1, a2, n) -> if reverse
+                                        then let vl' = tvlval vl in
+                                             let vh' = tvlval vh in
+                                             let a1' = tvatom a1 in
+                                             let a2' = tvatom a2 in
+                                             TIcshr (vh', vl', a1', a2', n)
+                                        else let a1' = tvatom a1 in
+                                             let a2' = tvatom a2 in
+                                             let vl' = tvlval vl in
+                                             let vh' = tvlval vh in
+                                             TIcshr (vh', vl', a1', a2', n)
+        | TIcshrs (vh, vl, l, a1, a2, n) -> if reverse
+                                            then let l' = tvlval l in
+                                                 let vl' = tvlval vl in
+                                                 let vh' = tvlval vh in
+                                                 let a1' = tvatom a1 in
+                                                 let a2' = tvatom a2 in
+                                                 TIcshrs (vh', vl', l', a1', a2', n)
+                                            else let a1' = tvatom a1 in
+                                                 let a2' = tvatom a2 in
+                                                 let l' = tvlval l in
+                                                 let vl' = tvlval vl in
+                                                 let vh' = tvlval vh in
+                                                 TIcshrs (vh', vl', l', a1', a2', n)
+        | TIrol (v, a, n) -> if reverse
+                             then let v' = tvlval v in
+                                  let a' = tvatom a in
+                                  let n' = tvatom n in
+                                  TIrol (v', a', n')
+                             else let a' = tvatom a in
+                                  let n' = tvatom n in
+                                  let v' = tvlval v in
+                                  TIrol (v', a', n')
+        | TIror (v, a, n) -> if reverse
+                             then let v' = tvlval v in
+                                  let a' = tvatom a in
+                                  let n' = tvatom n in
+                                  TIror (v', a', n')
+                             else let a' = tvatom a in
+                                  let n' = tvatom n in
+                                  let v' = tvlval v in
+                                  TIror (v', a', n')
+        | TInondet v -> let v' = tvlval v in
+                        TInondet (v')
+        | TIcmov (v, c, a1, a2) -> if reverse
+                                   then let v' = tvlval v in
+                                        let c' = tvatom c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        TIcmov (v', c', a1', a2')
+                                   else let c' = tvatom c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        let v' = tvlval v in
+                                        TIcmov (v', c', a1', a2')
         | TInop -> TInop
-        | TIadd (v, a1, a2) -> TIadd (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIadds (c, v, a1, a2) -> TIadds (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIadc (v, a1, a2, y) -> TIadc (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TIadcs (c, v, a1, a2, y) -> TIadcs (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TIsub (v, a1, a2) -> TIsub (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsubc (c, v, a1, a2) -> TIsubc (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsubb (c, v, a1, a2) -> TIsubb (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsbc (v, a1, a2, y) -> TIsbc (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TIsbcs (c, v, a1, a2, y) -> TIsbcs (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TIsbb (v, a1, a2, y) -> TIsbb (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TIsbbs (c, v, a1, a2, y) -> TIsbbs (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2, tvisit_atom visitor y)
-        | TImul (v, a1, a2) -> TImul (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TImuls (c, v, a1, a2) -> TImuls (tvisit_var visitor c, tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TImull (vh, vl, a1, a2) -> TImull (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TImulj (v, a1, a2) -> TImulj (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsplit (vh, vl, a, n) -> TIsplit (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a, n)
-        | TIspl (vh, vl, a, n) -> TIspl (tvisit_var visitor vh, tvisit_var visitor vl, tvisit_atom visitor a, n)
+        | TIadd (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIadd (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIadd (v', a1', a2')
+        | TIadds (c, v, a1, a2) -> if reverse
+                                   then let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        TIadds (c', v', a1', a2')
+                                   else let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        TIadds (c', v', a1', a2')
+        | TIadc (v, a1, a2, y) -> if reverse
+                                  then let v' = tvlval v in
+                                       let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       TIadc (v', a1', a2', y')
+                                  else let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       let v' = tvlval v in
+                                       TIadc (v', a1', a2', y')
+        | TIadcs (c, v, a1, a2, y) -> if reverse
+                                      then let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           TIadcs (c', v', a1', a2', y')
+                                      else let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           TIadcs (c', v', a1', a2', y')
+        | TIsub (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIsub (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIsub (v', a1', a2')
+        | TIsubc (c, v, a1, a2) -> if reverse
+                                   then let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        TIsubc (c', v', a1', a2')
+                                   else let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        TIsubc (c', v', a1', a2')
+        | TIsubb (c, v, a1, a2) -> if reverse
+                                   then let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        TIsubb (c', v', a1', a2')
+                                   else let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        TIsubb (c', v', a1', a2')
+        | TIsbc (v, a1, a2, y) -> if reverse
+                                  then let v' = tvlval v in
+                                       let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       TIsbc (v', a1', a2', y')
+                                  else let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       let v' = tvlval v in
+                                       TIsbc (v', a1', a2', y')
+        | TIsbcs (c, v, a1, a2, y) -> if reverse
+                                      then let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           TIsbcs (c', v', a1', a2', y')
+                                      else let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           TIsbcs (c', v', a1', a2', y')
+        | TIsbb (v, a1, a2, y) -> if reverse
+                                  then let v' = tvlval v in
+                                       let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       TIsbb (v', a1', a2', y')
+                                  else let a1' = tvatom a1 in
+                                       let a2' = tvatom a2 in
+                                       let y' = tvatom y in
+                                       let v' = tvlval v in
+                                       TIsbb (v', a1', a2', y')
+        | TIsbbs (c, v, a1, a2, y) -> if reverse
+                                      then let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           TIsbbs (c', v', a1', a2', y')
+                                      else let a1' = tvatom a1 in
+                                           let a2' = tvatom a2 in
+                                           let y' = tvatom y in
+                                           let v' = tvlval v in
+                                           let c' = tvlval c in
+                                           TIsbbs (c', v', a1', a2', y')
+        | TImul (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TImul (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TImul (v', a1', a2')
+        | TImuls (c, v, a1, a2) -> if reverse
+                                   then let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        TImuls (c', v', a1', a2')
+                                   else let a1' = tvatom a1 in
+                                        let a2' = tvatom a2 in
+                                        let v' = tvlval v in
+                                        let c' = tvlval c in
+                                        TImuls (c', v', a1', a2')
+        | TImull (vh, vl, a1, a2) -> if reverse
+                                     then let vl' = tvlval vl in
+                                          let vh' = tvlval vh in
+                                          let a1' = tvatom a1 in
+                                          let a2' = tvatom a2 in
+                                          TImull (vh', vl', a1', a2')
+                                     else let a1' = tvatom a1 in
+                                          let a2' = tvatom a2 in
+                                          let vl' = tvlval vl in
+                                          let vh' = tvlval vh in
+                                          TImull (vh', vl', a1', a2')
+        | TImulj (v, a1, a2) -> if reverse
+                                then let v' = tvlval v in
+                                     let a1' = tvatom a1 in
+                                     let a2' = tvatom a2 in
+                                     TImulj (v', a1', a2')
+                                else let a1' = tvatom a1 in
+                                     let a2' = tvatom a2 in
+                                     let v' = tvlval v in
+                                     TImulj (v', a1', a2')
+        | TIsplit (vh, vl, a, n) -> if reverse
+                                    then let vl' = tvlval vl in
+                                         let vh' = tvlval vh in
+                                         let a' = tvatom a in
+                                         TIsplit (vh', vl', a', n)
+                                    else let a' = tvatom a in
+                                         let vl' = tvlval vl in
+                                         let vh' = tvlval vh in
+                                         TIsplit (vh', vl', a', n)
+        | TIspl (vh, vl, a, n) -> if reverse
+                                  then let vl' = tvlval vl in
+                                       let vh' = tvlval vh in
+                                       let a' = tvatom a in
+                                       TIspl (vh', vl', a', n)
+                                  else let a' = tvatom a in
+                                       let vl' = tvlval vl in
+                                       let vh' = tvlval vh in
+                                       TIspl (vh', vl', a', n)
         (* Comparison *)
-        | TIseteq (v, a1, a2) -> TIseteq (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIsetne (v, a1, a2) -> TIsetne (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
+        | TIseteq (v, a1, a2) -> if reverse
+                                 then let v' = tvlval v in
+                                      let a1' = tvatom a1 in
+                                      let a2' = tvatom a2 in
+                                      TIseteq (v', a1', a2')
+                                 else let a1' = tvatom a1 in
+                                      let a2' = tvatom a2 in
+                                      let v' = tvlval v in
+                                      TIseteq (v', a1', a2')
+        | TIsetne (v, a1, a2) -> let a1' = tvatom a1 in
+                                 let a2' = tvatom a2 in
+                                 let v' = tvlval v in
+                                 TIsetne (v', a1', a2')
         (* Instructions that cannot be translated to polynomials *)
-        | TIand (v, a1, a2) -> TIand (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIor (v, a1, a2) -> TIor (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TIxor (v, a1, a2) -> TIxor (tvisit_var visitor v, tvisit_atom visitor a1, tvisit_atom visitor a2)
-        | TInot (v, a) -> TInot (tvisit_var visitor v, tvisit_atom visitor a)
+        | TIand (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIand (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIand (v', a1', a2')
+        | TIor (v, a1, a2) -> if reverse
+                              then let v' = tvlval v in
+                                   let a1' = tvatom a1 in
+                                   let a2' = tvatom a2 in
+                                   TIor (v', a1', a2')
+                              else let a1' = tvatom a1 in
+                                   let a2' = tvatom a2 in
+                                   let v' = tvlval v in
+                                   TIor (v', a1', a2')
+        | TIxor (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIxor (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIxor (v', a1', a2')
+        | TInot (v, a) -> if reverse
+                          then let v' = tvlval v in
+                               let a' = tvatom a in
+                               TInot (v', a')
+                          else let a' = tvatom a in
+                               let v' = tvlval v in
+                               TInot (v', a')
         (* Type conversions *)
-        | TIcast (od, v, a) -> TIcast (apply_to_some (tvisit_var visitor) od, tvisit_var visitor v, tvisit_atom visitor a)
-        | TIvpc (v, a) -> TIvpc (tvisit_var visitor v, tvisit_atom visitor a)
-        | TIjoin (v, ah, al) -> TIjoin (tvisit_var visitor v, tvisit_atom visitor ah, tvisit_atom visitor al)
+        | TIcast (od, v, a) -> if reverse
+                               then let v' = tvlval v in
+                                    let od' = apply_to_some (tvlval) od in
+                                    let a' = tvatom a in
+                                    TIcast (od', v', a')
+                               else let a' = tvatom a in
+                                    let v' = tvlval v in
+                                    let od' = apply_to_some (tvlval) od in
+                                    TIcast (od', v', a')
+        | TIvpc (v, a) -> if reverse
+                          then let v' = tvlval v in
+                               let a' = tvatom a in
+                               TIvpc (v', a')
+                          else let a' = tvatom a in
+                               let v' = tvlval v in
+                               TIvpc (v', a')
+        | TIjoin (v, ah, al) -> if reverse
+                                then let v' = tvlval v in
+                                     let ah' = tvatom ah in
+                                     let al' = tvatom al in
+                                     TIjoin (v', ah', al')
+                                else let ah' = tvatom ah in
+                                     let al' = tvatom al in
+                                     let v' = tvlval v in
+                                     TIjoin (v', ah', al')
         (* Specifications *)
         | TIassert te -> TIassert (tvisit_tagged_bexp_prove_with visitor te)
         | TIassume te -> TIassume (tvisit_tagged_bexp visitor te)
         | TIcut te -> TIcut (tvisit_tagged_bexp_prove_with visitor te)
-        | TIghost (vs, te) -> TIghost (VS.map (tvisit_var visitor) vs, tvisit_tagged_bexp visitor te))
+        | TIghost (vs, te) -> if reverse
+                              then let te' = tvisit_tagged_bexp visitor te in
+                                   let vs' = VS.map (tvisit_gvar visitor) vs in
+                                   TIghost (vs', te')
+                              else let vs' = VS.map (tvisit_gvar visitor) vs in
+                                   let te' = tvisit_tagged_bexp visitor te in
+                                   TIghost (vs', te')
+       )
 
-let tvisit_program visitor p =
+let tvisit_program ?(reverse=false) visitor p =
   let act = visitor#tvprogram p in
   match act with
   | SkipChildren -> p
@@ -805,9 +1183,11 @@ let tvisit_program visitor p =
        | DoChildren -> (p, Fun.id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
-     f (List.map (tvisit_instr visitor) p)
+     let p = if reverse then List.rev p else p in
+     let g = if reverse then List.rev else Fun.id in
+     f (tmap (tvisit_instr ~reverse:reverse visitor) p) |> g
 
-let tvisit_lined_program visitor p =
+let tvisit_lined_program ?(reverse=false) visitor p =
   let act = visitor#tvlined_program p in
   match act with
   | SkipChildren -> p
@@ -818,7 +1198,9 @@ let tvisit_lined_program visitor p =
        | DoChildren -> (p, Fun.id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
-     f (tmap (fun (lno, i) -> lno, tvisit_instr visitor i) p)
+     let p = if reverse then List.rev p else p in
+     let g = if reverse then List.rev else Fun.id in
+     f (tmap (fun (lno, i) -> lno, tvisit_instr ~reverse:reverse visitor i) p) |> g
 
 let tvisit_spec visitor s =
   let act = visitor#tvspec s in

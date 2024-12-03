@@ -204,6 +204,7 @@ module VarElem : OrderedType with type t = var =
     type t = var
     let compare = cmp_var
   end
+(* Note: `VS.mem v varset` is different from `List.mem v varlist` *)
 module VS = Set.Make(VarElem)
 module VM = Map.Make(VarElem)
 
@@ -3494,7 +3495,9 @@ object
   method vaconst : (typ * Z.t) -> (typ * Z.t) vaction
   method veconst : Z.t -> Z.t vaction
   method vrconst : (size * Z.t) -> (size * Z.t) vaction
-  method vvar : var -> var vaction
+  method vvar : var -> var vaction  (* variable read, including read of program variables and ghost variables *)
+  method vlval : var -> var vaction (* variable defined, including program variables only *)
+  method vgvar : var -> var vaction (* variable defined, including ghost variables only *)
 end
 
 class nop_visitor : visitor =
@@ -3513,10 +3516,24 @@ object (* (self) *)
   method veconst _n = DoChildren
   method vrconst (_size, _n) = DoChildren
   method vvar _v = DoChildren
+  method vlval _v = DoChildren
+  method vgvar _v = DoChildren
 end
 
 let visit_var visitor v =
   match visitor#vvar v with
+  | SkipChildren | DoChildren -> v
+  | ChangeTo v' -> v'
+  | ChangeDoChildrenPost (v', f) -> f v'
+
+let visit_lval visitor v =
+  match visitor#vlval v with
+  | SkipChildren | DoChildren -> v
+  | ChangeTo v' -> v'
+  | ChangeDoChildrenPost (v', f) -> f v'
+
+let visit_gvar visitor v =
+  match visitor#vgvar v with
   | SkipChildren | DoChildren -> v
   | ChangeTo v' -> v'
   | ChangeDoChildrenPost (v', f) -> f v'
@@ -3649,7 +3666,9 @@ let visit_rbexp_prove_with visitor rs = map_fst (visit_rbexp visitor) rs
 
 let visit_bexp_prove_with visitor (es, rs) = (visit_ebexp_prove_with visitor es, visit_rbexp_prove_with visitor rs)
 
-let visit_instr visitor i =
+let visit_instr ?(reverse=false) visitor i =
+  let vlval v = visit_lval visitor v in
+  let vatom a = visit_atom visitor a in
   let act = visitor#vinstr i in
   match act with
   | SkipChildren -> i
@@ -3660,57 +3679,422 @@ let visit_instr visitor i =
        | DoChildren -> (i, Fun.id)
        | ChangeDoChildrenPost (i', f) -> (i', f)
        | _ -> failwith ("Never happen") in
+     (* Make the visiting order conform to the execution of instructions *)
      f (match i with
-        | Imov (v, a) -> Imov (visit_var visitor v, visit_atom visitor a)
-        | Ishl (v, a1, a2) -> Ishl (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Ishls (l, v, a, n) -> Ishls (visit_var visitor l, visit_var visitor v, visit_atom visitor a, n)
-        | Ishr (v, a1, a2) -> Ishr (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Ishrs (v, l, a, n) -> Ishrs (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
-        | Isar (v, a1, a2) -> Isar (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isars (v, l, a, n) -> Isars (visit_var visitor v, visit_var visitor l, visit_atom visitor a, n)
-        | Icshl (vh, vl, a1, a2, n) -> Icshl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
-        | Icshls (l, vh, vl, a1, a2, n) -> Icshls (visit_var visitor l, visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
-        | Icshr (vh, vl, a1, a2, n) -> Icshr (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2, n)
-        | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (visit_var visitor vh, visit_var visitor vl, visit_var visitor l, visit_atom visitor a1, visit_atom visitor a2, n)
-        | Irol (v, a, n) -> Irol (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
-        | Iror (v, a, n) -> Iror (visit_var visitor v, visit_atom visitor a, visit_atom visitor n)
-        | Inondet v -> Inondet (visit_var visitor v)
-        | Icmov (v, c, a1, a2) -> Icmov (visit_var visitor v, visit_atom visitor c, visit_atom visitor a1, visit_atom visitor a2)
+        | Imov (v, a) -> if reverse
+                         then let v' = vlval v in
+                              let a' = vatom a in
+                              Imov (v', a')
+                         else let a' = vatom a in
+                              let v' = vlval v in
+                              Imov (v', a')
+        | Ishl (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Ishl (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Ishl (v', a1', a2')
+        | Ishls (l, v, a, n) -> if reverse
+                                then let v' = vlval v in
+                                     let l' = vlval l in
+                                     let a' = vatom a in
+                                     Ishls (l', v', a', n)
+                                else let a' = vatom a in
+                                     let v' = vlval v in
+                                     let l' = vlval l in
+                                     Ishls (l', v', a', n)
+        | Ishr (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Ishr (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Ishr (v', a1', a2')
+        | Ishrs (v, l, a, n) -> if reverse
+                                then let l' = vlval l in
+                                     let v' = vlval v in
+                                     let a' = vatom a in
+                                     Ishrs (l', v', a', n)
+                                else let a' = vatom a in
+                                     let l' = vlval l in
+                                     let v' = vlval v in
+                                     Ishrs (l', v', a', n)
+        | Isar (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Isar (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Isar (v', a1', a2')
+        | Isars (v, l, a, n) -> if reverse
+                                then let l' = vlval l in
+                                     let v' = vlval v in
+                                     let a' = vatom a in
+                                     Isars (v', l', a', n)
+                                else let a' = vatom a in
+                                     let l' = vlval l in
+                                     let v' = vlval v in
+                                     Isars (v', l', a', n)
+        | Icshl (vh, vl, a1, a2, n) -> if reverse
+                                       then let vl' = vlval vl in
+                                            let vh' = vlval vh in
+                                            let a1' = vatom a1 in
+                                            let a2' = vatom a2 in
+                                            Icshl (vh', vl', a1', a2', n)
+                                       else let a1' = vatom a1 in
+                                            let a2' = vatom a2 in
+                                            let vl' = vlval vl in
+                                            let vh' = vlval vh in
+                                            Icshl (vh', vl', a1', a2', n)
+        | Icshls (l, vh, vl, a1, a2, n) -> if reverse
+                                           then let vl' = vlval vl in
+                                                let vh' = vlval vh in
+                                                let l' = vlval l in
+                                                let a1' = vatom a1 in
+                                                let a2' = vatom a2 in
+                                                Icshls (l', vh', vl', a1', a2', n)
+                                           else let a1' = vatom a1 in
+                                                let a2' = vatom a2 in
+                                                let vl' = vlval vl in
+                                                let vh' = vlval vh in
+                                                let l' = vlval l in
+                                                Icshls (l', vh', vl', a1', a2', n)
+        | Icshr (vh, vl, a1, a2, n) -> if reverse
+                                       then let vl' = vlval vl in
+                                            let vh' = vlval vh in
+                                            let a1' = vatom a1 in
+                                            let a2' = vatom a2 in
+                                            Icshr (vh', vl', a1', a2', n)
+                                       else let a1' = vatom a1 in
+                                            let a2' = vatom a2 in
+                                            let vl' = vlval vl in
+                                            let vh' = vlval vh in
+                                            Icshr (vh', vl', a1', a2', n)
+        | Icshrs (vh, vl, l, a1, a2, n) -> if reverse
+                                           then let l' = vlval l in
+                                                let vl' = vlval vl in
+                                                let vh' = vlval vh in
+                                                let a1' = vatom a1 in
+                                                let a2' = vatom a2 in
+                                                Icshrs (vh', vl', l', a1', a2', n)
+                                           else let a1' = vatom a1 in
+                                                let a2' = vatom a2 in
+                                                let l' = vlval l in
+                                                let vl' = vlval vl in
+                                                let vh' = vlval vh in
+                                                Icshrs (vh', vl', l', a1', a2', n)
+        | Irol (v, a, n) -> if reverse
+                            then let v' = vlval v in
+                                 let a' = vatom a in
+                                 let n' = vatom n in
+                                 Irol (v', a', n')
+                            else let a' = vatom a in
+                                 let n' = vatom n in
+                                 let v' = vlval v in
+                                 Irol (v', a', n')
+        | Iror (v, a, n) -> if reverse
+                            then let v' = vlval v in
+                                 let a' = vatom a in
+                                 let n' = vatom n in
+                                 Iror (v', a', n')
+                            else let a' = vatom a in
+                                 let n' = vatom n in
+                                 let v' = vlval v in
+                                 Iror (v', a', n')
+        | Inondet v -> let v' = vlval v in
+                       Inondet (v')
+        | Icmov (v, c, a1, a2) -> if reverse
+                                  then let v' = vlval v in
+                                       let c' = vatom c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       Icmov (v', c', a1', a2')
+                                  else let c' = vatom c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       let v' = vlval v in
+                                       Icmov (v', c', a1', a2')
         | Inop -> Inop
-        | Iadd (v, a1, a2) -> Iadd (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Iadds (c, v, a1, a2) -> Iadds (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Iadc (v, a1, a2, y) -> Iadc (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Iadcs (c, v, a1, a2, y) -> Iadcs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Isub (v, a1, a2) -> Isub (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isubc (c, v, a1, a2) -> Isubc (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isubb (c, v, a1, a2) -> Isubb (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isbc (v, a1, a2, y) -> Isbc (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Isbcs (c, v, a1, a2, y) -> Isbcs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Isbb (v, a1, a2, y) -> Isbb (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Isbbs (c, v, a1, a2, y) -> Isbbs (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2, visit_atom visitor y)
-        | Imul (v, a1, a2) -> Imul (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Imuls (c, v, a1, a2) -> Imuls (visit_var visitor c, visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Imull (vh, vl, a1, a2) -> Imull (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a1, visit_atom visitor a2)
-        | Imulj (v, a1, a2) -> Imulj (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isplit (vh, vl, a, n) -> Isplit (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
-        | Ispl (vh, vl, a, n) -> Ispl (visit_var visitor vh, visit_var visitor vl, visit_atom visitor a, n)
+        | Iadd (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Iadd (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Iadd (v', a1', a2')
+        | Iadds (c, v, a1, a2) -> if reverse
+                                  then let v' = vlval v in
+                                       let c' = vlval c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       Iadds (c', v', a1', a2')
+                                  else let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       let v' = vlval v in
+                                       let c' = vlval c in
+                                       Iadds (c', v', a1', a2')
+        | Iadc (v, a1, a2, y) -> if reverse
+                                 then let v' = vlval v in
+                                      let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      Iadc (v', a1', a2', y')
+                                 else let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      let v' = vlval v in
+                                      Iadc (v', a1', a2', y')
+        | Iadcs (c, v, a1, a2, y) -> if reverse
+                                     then let v' = vlval v in
+                                          let c' = vlval c in
+                                          let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          Iadcs (c', v', a1', a2', y')
+                                     else let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          let v' = vlval v in
+                                          let c' = vlval c in
+                                          Iadcs (c', v', a1', a2', y')
+        | Isub (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Isub (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Isub (v', a1', a2')
+        | Isubc (c, v, a1, a2) -> if reverse
+                                  then let v' = vlval v in
+                                       let c' = vlval c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       Isubc (c', v', a1', a2')
+                                  else let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       let v' = vlval v in
+                                       let c' = vlval c in
+                                       Isubc (c', v', a1', a2')
+        | Isubb (c, v, a1, a2) -> if reverse
+                                  then let v' = vlval v in
+                                       let c' = vlval c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       Isubb (c', v', a1', a2')
+                                  else let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       let v' = vlval v in
+                                       let c' = vlval c in
+                                       Isubb (c', v', a1', a2')
+        | Isbc (v, a1, a2, y) -> if reverse
+                                 then let v' = vlval v in
+                                      let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      Isbc (v', a1', a2', y')
+                                 else let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      let v' = vlval v in
+                                      Isbc (v', a1', a2', y')
+        | Isbcs (c, v, a1, a2, y) -> if reverse
+                                     then let v' = vlval v in
+                                          let c' = vlval c in
+                                          let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          Isbcs (c', v', a1', a2', y')
+                                     else let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          let v' = vlval v in
+                                          let c' = vlval c in
+                                          Isbcs (c', v', a1', a2', y')
+        | Isbb (v, a1, a2, y) -> if reverse
+                                 then let v' = vlval v in
+                                      let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      Isbb (v', a1', a2', y')
+                                 else let a1' = vatom a1 in
+                                      let a2' = vatom a2 in
+                                      let y' = vatom y in
+                                      let v' = vlval v in
+                                      Isbb (v', a1', a2', y')
+        | Isbbs (c, v, a1, a2, y) -> if reverse
+                                     then let v' = vlval v in
+                                          let c' = vlval c in
+                                          let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          Isbbs (c', v', a1', a2', y')
+                                     else let a1' = vatom a1 in
+                                          let a2' = vatom a2 in
+                                          let y' = vatom y in
+                                          let v' = vlval v in
+                                          let c' = vlval c in
+                                          Isbbs (c', v', a1', a2', y')
+        | Imul (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Imul (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Imul (v', a1', a2')
+        | Imuls (c, v, a1, a2) -> if reverse
+                                  then let v' = vlval v in
+                                       let c' = vlval c in
+                                       let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       Imuls (c', v', a1', a2')
+                                  else let a1' = vatom a1 in
+                                       let a2' = vatom a2 in
+                                       let v' = vlval v in
+                                       let c' = vlval c in
+                                       Imuls (c', v', a1', a2')
+        | Imull (vh, vl, a1, a2) -> if reverse
+                                    then let vl' = vlval vl in
+                                         let vh' = vlval vh in
+                                         let a1' = vatom a1 in
+                                         let a2' = vatom a2 in
+                                         Imull (vh', vl', a1', a2')
+                                    else let a1' = vatom a1 in
+                                         let a2' = vatom a2 in
+                                         let vl' = vlval vl in
+                                         let vh' = vlval vh in
+                                         Imull (vh', vl', a1', a2')
+        | Imulj (v, a1, a2) -> if reverse
+                               then let v' = vlval v in
+                                    let a1' = vatom a1 in
+                                    let a2' = vatom a2 in
+                                    Imulj (v', a1', a2')
+                               else let a1' = vatom a1 in
+                                    let a2' = vatom a2 in
+                                    let v' = vlval v in
+                                    Imulj (v', a1', a2')
+        | Isplit (vh, vl, a, n) -> if reverse
+                                   then let vl' = vlval vl in
+                                        let vh' = vlval vh in
+                                        let a' = vatom a in
+                                        Isplit (vh', vl', a', n)
+                                   else let a' = vatom a in
+                                        let vl' = vlval vl in
+                                        let vh' = vlval vh in
+                                        Isplit (vh', vl', a', n)
+        | Ispl (vh, vl, a, n) -> if reverse
+                                 then let vl' = vlval vl in
+                                      let vh' = vlval vh in
+                                      let a' = vatom a in
+                                      Ispl (vh', vl', a', n)
+                                 else let a' = vatom a in
+                                      let vl' = vlval vl in
+                                      let vh' = vlval vh in
+                                      Ispl (vh', vl', a', n)
         (* Comparison *)
-        | Iseteq (v, a1, a2) -> Iseteq (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Isetne (v, a1, a2) -> Isetne (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
+        | Iseteq (v, a1, a2) -> if reverse
+                                then let v' = vlval v in
+                                     let a1' = vatom a1 in
+                                     let a2' = vatom a2 in
+                                     Iseteq (v', a1', a2')
+                                else let a1' = vatom a1 in
+                                     let a2' = vatom a2 in
+                                     let v' = vlval v in
+                                     Iseteq (v', a1', a2')
+        | Isetne (v, a1, a2) -> if reverse
+                                then let v' = vlval v in
+                                     let a1' = vatom a1 in
+                                     let a2' = vatom a2 in
+                                     Isetne (v', a1', a2')
+                                else let a1' = vatom a1 in
+                                     let a2' = vatom a2 in
+                                     let v' = vlval v in
+                                     Isetne (v', a1', a2')
         (* Instructions that cannot be translated to polynomials *)
-        | Iand (v, a1, a2) -> Iand (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Ior (v, a1, a2) -> Ior (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Ixor (v, a1, a2) -> Ixor (visit_var visitor v, visit_atom visitor a1, visit_atom visitor a2)
-        | Inot (v, a) -> Inot (visit_var visitor v, visit_atom visitor a)
+        | Iand (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Iand (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Iand (v', a1', a2')
+        | Ior (v, a1, a2) -> if reverse
+                             then let v' = vlval v in
+                                  let a1' = vatom a1 in
+                                  let a2' = vatom a2 in
+                                  Ior (v', a1', a2')
+                             else let a1' = vatom a1 in
+                                  let a2' = vatom a2 in
+                                  let v' = vlval v in
+                                  Ior (v', a1', a2')
+        | Ixor (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Ixor (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Ixor (v', a1', a2')
+        | Inot (v, a) -> if reverse
+                         then let v' = vlval v in
+                              let a' = vatom a in
+                              Inot (v', a')
+                         else let a' = vatom a in
+                              let v' = vlval v in
+                              Inot (v', a')
         (* Type conversions *)
-        | Icast (od, v, a) -> Icast (apply_to_some (visit_var visitor) od, visit_var visitor v, visit_atom visitor a)
-        | Ivpc (v, a) -> Ivpc (visit_var visitor v, visit_atom visitor a)
-        | Ijoin (v, ah, al) -> Ijoin (visit_var visitor v, visit_atom visitor ah, visit_atom visitor al)
+        | Icast (od, v, a) -> if reverse
+                              then let v' = vlval v in
+                                   let od' = apply_to_some (vlval) od in
+                                   let a' = vatom a in
+                                   Icast (od', v', a')
+                              else let a' = vatom a in
+                                   let v' = vlval v in
+                                   let od' = apply_to_some (vlval) od in
+                                   Icast (od', v', a')
+        | Ivpc (v, a) -> if reverse
+                         then let v' = vlval v in
+                              let a' = vatom a in
+                              Ivpc (v', a')
+                         else let a' = vatom a in
+                              let v' = vlval v in
+                              Ivpc (v', a')
+        | Ijoin (v, ah, al) -> if reverse
+                               then let v' = vlval v in
+                                    let ah' = vatom ah in
+                                    let al' = vatom al in
+                                    Ijoin (v', ah', al')
+                               else let ah' = vatom ah in
+                                    let al' = vatom al in
+                                    let v' = vlval v in
+                                    Ijoin (v', ah', al')
         (* Specifications *)
         | Iassert e -> Iassert (visit_bexp_prove_with visitor e)
         | Iassume e -> Iassume (visit_bexp visitor e)
         | Icut e -> Icut (visit_bexp_prove_with visitor e)
-        | Ighost (vs, e) -> Ighost (VS.map (visit_var visitor) vs, visit_bexp visitor e))
+        | Ighost (vs, e) -> if reverse
+                            then let vs' = VS.map (visit_gvar visitor) vs in
+                                 let e' = visit_bexp visitor e in
+                                 Ighost (vs', e')
+                            else let e' = visit_bexp visitor e in
+                                 let vs' = VS.map (visit_gvar visitor) vs in
+                                 Ighost (vs', e')
+       )
 
 let visit_program visitor p =
   let act = visitor#vprogram p in
@@ -4697,12 +5081,9 @@ object (* (self) *)
   method vaconst _ = DoChildren
   method veconst _ = DoChildren
   method vrconst _ = DoChildren
-  method vvar v = ChangeTo {
-                      vname = v.vname;
-                      vtyp = v.vtyp;
-                      vsidx = default_non_ssa_idx;
-                      vid = v.vid
-                    }
+  method vvar v = ChangeTo { v with vsidx = default_non_ssa_idx }
+  method vlval v = ChangeTo { v with vsidx = default_non_ssa_idx }
+  method vgvar v = ChangeTo { v with vsidx = default_non_ssa_idx }
 end
 
 let dessa_visitor = new dessa_visitor
