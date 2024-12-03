@@ -839,14 +839,18 @@ ghost Y0@int16, Y1@int16, Y2@int16, Y3@int16:
 assert eqmod (poly Y0 [poly X [lr_b, lr_t],  poly X [r3_b, r3_t]])
              (2*F**2) [Q, Y0**2 - 1] /\
        eqmod (poly Y1 [poly X [r11_b, r11_t], poly X [r5_b, r5_t]])
-             (2*F**2) [Q, Y0**2 + 1] /\
+             (2*F**2) [Q, Y1**2 - 1] /\
        eqmod (poly Y2 [poly X [r2_b, r2_t],  poly X [r7_b, r7_t]])
              (2*F**2) [Q, Y2**2 - 1] /\
        eqmod (poly Y3 [poly X [r4_b, r4_t], poly X [r9_b, r9_t]])
-             (2*F**2) [Q, Y2**2 + 1]
+             (2*F**2) [Q, Y3**2 - 1]
        && true;
-*)
 
+ghost r11_b0@int16, r11_t0@int16, r4_b0@int16, r4_t0@int16:
+      r11_b0 = r11_b /\ r11_t0 = r11_t /\ r4_b0 = r4_b /\ r4_t0 = r4_t
+   && true;
+*)
+   
 (* sadd16	r8, lr, r11                              #! PC = 0x400d0c *)
 add r8_b lr_b r11_b;
 add r8_t lr_t r11_t;
@@ -891,6 +895,13 @@ assume eqmod lr_b (r5_b0 *  1600) [Q] /\
        [NQ2, NQ2] < [lr_b, lr_t] /\ [lr_b, lr_t] < [Q2, Q2]
     && [NQ2, NQ2] <s[lr_b, lr_t] /\ [lr_b, lr_t] <s[Q2, Q2];
 
+(* X**2 = 17**17*Y0 = 17**81*Y1, Y1 = 17**(256-64)*Y0 *)
+(* 1600 = 17**(256-64) % Q *)
+(*
+assert eqmod (poly Y0 [poly X [r11_b0, r11_t0], poly X [lr_b, lr_t]])
+       (2*F**2) [Q, Y0**2 + 1] && true;
+*)
+
 (* usub16	r5, r3, lr                               #! PC = 0x400d34 *)
 sub r5_b r3_b lr_b;
 sub r5_t r3_t lr_t;
@@ -927,6 +938,13 @@ assume eqmod lr_b (r9_b0 *  1600) [Q] /\
        [NQ2, NQ2] < [lr_b, lr_t] /\ [lr_b, lr_t] < [Q2, Q2]
     && [NQ2, NQ2] <s[lr_b, lr_t] /\ [lr_b, lr_t] <s[Q2, Q2];
 
+(* X**2 = 17**17*Y0 = 17**81*Y1, Y1 = 17**(256-64)*Y0 *)
+(* 1600 = 17**(256-64) % Q *)
+(*
+assert eqmod (poly Y2 [poly X [r4o_b, r4o_t], poly X [lr_b, lr_t]])
+       (2*F**2) [Q, Y2**2 + 1] && true;
+*)
+
 (* usub16	r9, r7, lr                               #! PC = 0x400d50 *)
 sub r9_b r7_b lr_b;
 sub r9_t r7_t lr_t;
@@ -935,16 +953,16 @@ add r7_b r7_b lr_b;
 add r7_t r7_t lr_t;
 
 (* level *)
-(* 
+(*
 assert eqmod (poly Y0 [poly X [r8_b, r8_t],  poly X [r3_b, r3_t],
                        poly X [r11_b, r11_t], poly X [r5_b, r5_t]])
              (4*F**2) [Q, Y0**4 - 1] /\
        eqmod (poly Y2 [poly X [r6_b, r6_t],  poly X [r7_b, r7_t],
                        poly X [r4_b, r4_t], poly X [r9_b, r9_t]])
-             (4*F**2) [Q, Y0**4 + 1]
+             (4*F**2) [Q, Y2**4 - 1]
        && true;
 *)
-   
+
 (* sadd16	r2, r8, r6                               #! PC = 0x400d58 *)
 add r2_b r8_b r6_b;
 add r2_t r8_t r6_t;
@@ -974,6 +992,8 @@ spl r7_t r7_b r7_w 16; cast r7_b@int16 r7_b;
 mov tmp_b lr_t; mov tmp_t r7_t;
 mov lr_b tmp_b; mov lr_t tmp_t;
 
+(* X**2 = 17**17*Y0 = 17**49*Y2, Y2 = 17**(256-32)*Y0 *)
+(* 40 = 17**(256-32) % Q *)
 assert eqmod lr_b (r7_b0 *    40) [Q] /\
        eqmod lr_t (r7_t0 *    40) [Q] /\
        [NQ2, NQ2] < [lr_b, lr_t] /\ [lr_b, lr_t] < [Q2, Q2]
@@ -1012,6 +1032,7 @@ spl r4_t r4_b r4_w 16; cast r4_b@int16 r4_b;
 mov tmp_b lr_t; mov tmp_t r4_t;
 mov lr_b tmp_b; mov lr_t tmp_t;
 
+(* 1600 = 40**2 % Q *)
 assert eqmod lr_b (r4_b0 *  1600) [Q] /\
        eqmod lr_t (r4_t0 *  1600) [Q] /\
        [NQ2, NQ2] < [lr_b, lr_t] /\ [lr_b, lr_t] < [Q2, Q2]
@@ -1050,6 +1071,7 @@ spl r9_t r9_b r9_w 16; cast r9_b@int16 r9_b;
 mov tmp_b lr_t; mov tmp_t r9_t;
 mov lr_b tmp_b; mov lr_t tmp_t;
 
+(* 749 = 40**3 % Q *)
 assert eqmod lr_b (r9_b1 *   749) [Q] /\
        eqmod lr_t (r9_t1 *   749) [Q] /\
        [NQ2, NQ2] < [lr_b, lr_t] /\ [lr_b, lr_t] < [Q2, Q2]
@@ -1097,6 +1119,7 @@ spl r3_t r3_b r3_w 16; cast r3_b@int16 r3_b;
 mov tmp_b lr_t; mov tmp_t r3_t;
 mov r3_b tmp_b; mov r3_t tmp_t;
 
+(* -848 = 17**(256-16) % Q *)
 assert eqmod r3_b (r3_b0 *  -848) [Q] /\
        eqmod r3_t (r3_t0 *  -848) [Q] /\
        [NQ2, NQ2] < [r3_b, r3_t] /\ [r3_b, r3_t] < [Q2, Q2]
@@ -1130,6 +1153,7 @@ spl r4_t r4_b r4_w 16; cast r4_b@int16 r4_b;
 mov tmp_b lr_t; mov tmp_t r4_t;
 mov r4_b tmp_b; mov r4_t tmp_t;
 
+(* 40 = (-848)**2 % Q *)
 assert eqmod r4_b (r4_b1 *    40) [Q] /\
        eqmod r4_t (r4_t1 *    40) [Q] /\
        [NQ2, NQ2] < [r4_b, r4_t] /\ [r4_b, r4_t] < [Q2, Q2]
@@ -1159,6 +1183,7 @@ spl r5_t r5_b r5_w 16; cast r5_b@int16 r5_b;
 mov tmp_b lr_t; mov tmp_t r5_t;
 mov r5_b tmp_b; mov r5_t tmp_t;
 
+(* -630 = (-848)**3 % Q *)
 assert eqmod r5_b (r5_b1 *  -630) [Q] /\
        eqmod r5_t (r5_t1 *  -630) [Q] /\
        [NQ2, NQ2] < [r5_b, r5_t] /\ [r5_b, r5_t] < [Q2, Q2]
@@ -1192,6 +1217,7 @@ spl r6_t r6_b r6_w 16; cast r6_b@int16 r6_b;
 mov tmp_b lr_t; mov tmp_t r6_t;
 mov r6_b tmp_b; mov r6_t tmp_t;
 
+(* 1600 = (-848)**4 % Q *)
 assert eqmod r6_b (r6_b0 *  1600) [Q] /\
        eqmod r6_t (r6_t0 *  1600) [Q] /\
        [NQ2, NQ2] < [r6_b, r6_t] /\ [r6_b, r6_t] < [Q2, Q2]
@@ -1221,6 +1247,7 @@ spl r7_t r7_b r7_w 16; cast r7_b@int16 r7_b;
 mov tmp_b lr_t; mov tmp_t r7_t;
 mov r7_b tmp_b; mov r7_t tmp_t;
 
+(* 1432 = (-848)**5 % Q *)
 assert eqmod r7_b (r7_b1 *  1432) [Q] /\
        eqmod r7_t (r7_t1 *  1432) [Q] /\
        [NQ2, NQ2] < [r7_b, r7_t] /\ [r7_b, r7_t] < [Q2, Q2]
@@ -1254,6 +1281,7 @@ spl r8_t r8_b r8_w 16; cast r8_b@int16 r8_b;
 mov tmp_b lr_t; mov tmp_t r8_t;
 mov r8_b tmp_b; mov r8_t tmp_t;
 
+(* 749 = (-848)**6 % Q *)
 assert eqmod r8_b (r8_b0 *   749) [Q] /\
        eqmod r8_t (r8_t0 *   749) [Q] /\
        [NQ2, NQ2] < [r8_b, r8_t] /\ [r8_b, r8_t] < [Q2, Q2]
@@ -1283,6 +1311,7 @@ spl r9_t r9_b r9_w 16; cast r9_b@int16 r9_b;
 mov tmp_b lr_t; mov tmp_t r9_t;
 mov r9_b tmp_b; mov r9_t tmp_t;
 
+(* 687 = (-848)**7 % Q *)
 assert eqmod r9_b (r9_b2 *   687) [Q] /\
        eqmod r9_t (r9_t2 *   687) [Q] /\
        [NQ2, NQ2] < [r9_b, r9_t] /\ [r9_b, r9_t] < [Q2, Q2]
@@ -1335,8 +1364,9 @@ assume [8*NQ2,8*NQ2]< [s0_b, s0_t] /\ [s0_b, s0_t]< [8*Q2,8*Q2] /\
        [1@16*NQ2,1@16*NQ2]<s[s6_b, s6_t] /\ [s6_b, s6_t]<s[1@16*Q2,1@16*Q2] /\
        [1@16*NQ2,1@16*NQ2]<s[s7_b, s7_t] /\ [s7_b, s7_t]<s[1@16*Q2,1@16*Q2];
 
+(* X**2 = 17**17*Y0 = 17**1*Z0, Y0 = 17**(256-16)*Z0 *)
 (* CUT 0 *)
-ghost Z0@int16: X**2 =  -848*17** 17*Z0 && true;
+ghost Z0@int16: X**2 = 17**1*Z0 (* -848*17** 17*Z0 *) && true;
 cut Q = 3329 /\ NQ = -3329 /\ Q2 = 1665 /\ NQ2 = -1665 /\
     eqmod (poly Z0 [poly X [s0_b, s0_t], poly X [s1_b, s1_t],
                     poly X [s2_b, s2_t], poly X [s3_b, s3_t],
@@ -1407,6 +1437,23 @@ add r4_t r8_t r9_t;
 (* ssub16	r9, r8, r9                               #! PC = 0x400ecc *)
 sub r9_b r8_b r9_b;
 sub r9_t r8_t r9_t;
+
+(* level *)
+(*
+ghost Y5@int16, Y6@int16, Y7@int16:
+      X**2 = 17**65*Y5 /\ X**2 = 17**33*Y6 /\ X**2 = 17**97*Y7
+   && true;
+assert eqmod (poly Z0 [poly X [lr_b, lr_t],  poly X [r3_b, r3_t]])
+             (2*F**2) [Q, Z0**2 - 1] /\
+       eqmod (poly Y5 [poly X [r11_b, r11_t],  poly X [r5_b, r5_t]])
+             (2*F**2) [Q, Y5**2 - 1] /\
+       eqmod (poly Y6 [poly X [r2_b, r2_t],  poly X [r7_b, r7_t]])
+             (2*F**2) [Q, Y6**2 - 1] /\
+       eqmod (poly Y7 [poly X [r4_b, r4_t],  poly X [r9_b, r9_t]])
+             (2*F**2) [Q, Y7**2 - 1]
+       prove with [all ghosts, precondition] && true;
+*)
+
 (* sadd16	r8, lr, r11                              #! PC = 0x400ed0 *)
 add r8_b lr_b r11_b;
 add r8_t lr_t r11_t;
@@ -1493,6 +1540,19 @@ sub r9_t r7_t lr_t;
 (* uadd16	r7, r7, lr                               #! PC = 0x400f18 *)
 add r7_b r7_b lr_b;
 add r7_t r7_t lr_t;
+
+(* level *)
+(*
+assert eqmod (poly Z0 [poly X [r8_b, r8_t],  poly X [r3_b, r3_t],
+                       poly X [r11_b, r11_t], poly X [r5_b, r5_t]])
+             (4*F**2) [Q, Z0**4 - 1] /\
+       eqmod (poly Y6 [poly X [r6_b, r6_t],  poly X [r7_b, r7_t],
+                       poly X [r4_b, r4_t], poly X [r9_b, r9_t]])
+             (4*F**2) [Q, Y6**4 - 1]
+       prove with [all ghosts, precondition]
+       && true;
+*)
+
 (* sadd16	r2, r8, r6                               #! PC = 0x400f1c *)
 add r2_b r8_b r6_b;
 add r2_t r8_t r6_t;
