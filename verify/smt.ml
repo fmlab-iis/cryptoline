@@ -941,7 +941,8 @@ let smtlib_espec vgen es =
     Ghost variables are excluded because their ranges may be unbounded.
    *)
   let (vgen, var_ranges) =
-    let program_vars = VS.diff (vars_espec es) (gvs_program es.esprog) in
+    (* Collection variables from polynomial equations rather than the input specification *)
+    let program_vars = VS.diff (VS.of_list vars) (gvs_program es.esprog) in
     smtlib_var_ranges vgen (VS.elements program_vars) in
   (* Return the string representation in SMTLIB *)
   (vgen,

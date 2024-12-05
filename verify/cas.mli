@@ -37,7 +37,11 @@ val bv2z_atom : Ast.Cryptoline.atom -> Ast.Cryptoline.eexp
 
 val bv2z_espec : var_gen -> Ast.Cryptoline.espec ->
                  var_gen * poly_spec
-(** a specification composed of polynomial equations *)
+(**
+ * A specification composed of polynomial equations.
+ * Note that some program variables may not appear in the equations and some
+ * new auxiliary variables may appear in the equations.
+ *)
 
 val polys_of_ebexp : var_gen -> Ast.Cryptoline.ebexp ->
                      var_gen * Ast.Cryptoline.var list * Ast.Cryptoline.eexp list
