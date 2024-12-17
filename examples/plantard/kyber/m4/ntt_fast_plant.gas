@@ -1,37 +1,61 @@
 #! sp! = %%EA
-#! [r$1c], $1c = %%EA
+#! [r1], $1c = R %%EA
 #! [r$1c] = %%EA
 #! [r$1c, $2c] = %%EA
 #! [sp, $1c] = %%EA
 #! [pc, $1c] = %%EA
-#! {%%s8-%%s22} = %%EA
+#! %%r1! = %%EA
 #! r$1c = %%r$1c
 #! lr = %%lr
 #! s$1c = %%s$1c
 
-#! movw $1v, \# $2c ; $3c -> mov $1v_b $2c@uint16;\nmov $1v_t 0@sint16
+#! movw $1v, \# $2c ; $3c -> mov $1v_b $2c@int16; mov $1v_t 0@int16; mov $1v $2c@int32
 #! movt $1v, \# $2c ; $3c -> mov $1v_t $2c@sint16
-#! ldr.w $1v, $2ea ; $3c -> mov $1v_b $2ea;\nmov $1v_t $2ea[+2]
-#! ldr.w $1v, $2ea , $3c -> mov $1v $2ea;\nmov zeta$1v zeta$2ea
-#! ldr.w $1v, $2ea -> mov $1v_b $2ea;\nmov $1v_t $2ea[+2]
-#! str.w $1v, $2ea ; $3c -> mov $2ea $1v_b;\nmov $2ea[+2] $1v_t
-#! str.w $1v, $2ea , $3c -> mov $2ea $1v_b;\nmov $2ea[+2] $1v_t
-#! str.w $1v, $2ea -> mov $2ea $1v_b;\nmov $2ea[+2] $1v_t
+#! ldr.w $1v, $2ea ; $3c -> mov [$1v_b, $1v_t] [$2ea, $2ea[+2]]
+#! ldr.w $1v, $2ea , $3c -> mov [$1v_b, $1v_t] [$2ea, $2ea[+2]]
+#! ldr.w $1v, R $2ea -> mov $1v $2ea
+#! ldr.w $1v, $2ea -> mov [$1v_b, $1v_t] [$2ea, $2ea[+2]]
+#! str.w $1v, $2ea ; $3c -> mov [$2ea, $2ea[+2]] [$1v_b, $1v_t]
+#! str.w $1v, $2ea , $3c -> mov [$2ea, $2ea[+2]] [$1v_b, $1v_t]
+#! str.w $1v, $2ea -> mov [$2ea, $2ea[+2]] [$1v_b, $1v_t]
 
-#! usub16 $1v, $2v, $3v -> sub $1v_b $2v_b $3v_b;\nsub $1v_t $2v_t $3v_t
-#! uadd16 $1v, $2v, $3v -> add $1v_b $2v_b $3v_b;\nadd $1v_t $2v_t $3v_t
-#! sub.w $1v, $2v, $3c -> subs dontcare $1v_b $2v_b $3c@uint16
-#! add.w $1v, $2v, $3c ; $4c -> adds dontcare $1v_b $2v_b $3c@uint16
-#! add.w $1v, $2v, $3c -> adds $1v_t $1v_b $2v_b $3c@uint16
-#! pkhtb $1v, $2v, $3v, asr \#16 -> mov tmp_b $3v_t;\nmov tmp_t $2v_t;\nmov $1v_b tmp_b;\nmov $1v_t tmp_t;\ncast $1v_lsb@sint32 $1v_b;\nassert true&&eqsmod $1v_lsb $2v_lsb00*zetas 3329@32;\nassume eqmod $1v_lsb $2v_lsb00*zetas 3329&&true;\ncast $1v_lst@sint32 $1v_t;\nassert true&&eqsmod $1v_lst $2v_lst00*zetas 3329@32;\nassume eqmod $1v_lst $2v_lst00*zetas 3329&&true
+#! usub16 $1v, $2v, $3v -> sub [$1v_b, $1v_t] [$2v_b, $2v_t] [$3v_b, $3v_t]
+#! uadd16 $1v, $2v, $3v -> add [$1v_b, $1v_t] [$2v_b, $2v_t] [$3v_b, $3v_t]
+#! sub.w $1v, $2v, $3c -> subs dc $1v $2v $3c@int32
+#! add.w $1v, $2v, $3c ; $4c -> adds dc $1v $2v $3c@int32
+#! add.w $1v, $2v, $3c -> adds dc $1v $2v $3c@int32
+#! pkhtb $1v, $2v, $3v, asr \#16 -> mov tmp_b $3v_t; mov tmp_t $2v_t;\nmov $1v_b tmp_b; mov $1v_t tmp_t
 
-#! smulwb $1v, $2v, $3v -> cast $3v_lsb@sint32 $3v_b;\nmov $3v_lsb00 $3v_lsb;\nmull tmp_t tmp_b $2v $3v_lsb;\nspl dontcare $1v_t tmp_t 16;\nspl $1v_b dontcare tmp_b 16 
-#! smulwt $1v, $2v, $3v -> cast $3v_lst@sint32 $3v_t;\nmov $3v_lst00 $3v_lst;\nmull tmp_t tmp_b $2v $3v_lst;\nspl dontcare $1v_t tmp_t 16;\nspl $1v_b dontcare tmp_b 16;\nmov zetas zeta$2v
-#! smlabt $1v, $2v, $3v, $4v -> cast $2v_sb@sint16 $2v_b;\nmull tmp_t tmp_b $2v_sb $3v_t;\nuadds carry $1v_b tmp_b $4v_b;\nadc $1v_t tmp_t $4v_t carry
-#! vldmia $1v!, $2ea -> mov s8 $2ea;\nmov s9 $2ea[+4];\nmov s10 $2ea[+8];\nmov s11 $2ea[+12];\nmov s12 $2ea[+16];\nmov s13 $2ea[+20];\nmov s14 $2ea[+24];\nmov s15 $2ea[+28];\nmov s16 $2ea[+32];\nmov s17 $2ea[+36];\nmov s18 $2ea[+40];\nmov s19 $2ea[+44];\nmov s20 $2ea[+48];\nmov s21 $2ea[+52];\nmov s22 $2ea[+56];\nmov zetas8 zeta$2ea;\nmov zetas9 zeta$2ea[+4];\nmov zetas10 zeta$2ea[+8];\nmov zetas11 zeta$2ea[+12];\nmov zetas12 zeta$2ea[+16];\nmov zetas13 zeta$2ea[+20];\nmov zetas14 zeta$2ea[+24];\nmov zetas15 zeta$2ea[+28];\nmov zetas16 zeta$2ea[+32];\nmov zetas17 zeta$2ea[+36];\nmov zetas18 zeta$2ea[+40];\nmov zetas19 zeta$2ea[+44];\nmov zetas20 zeta$2ea[+48];\nmov zetas21 zeta$2ea[+52];\nmov zetas22 zeta$2ea[+56]
-#! vmov $1v, $2v -> mov $1v_b $2v_b;\nmov $1v_t $2v_t;\nmov $1v $2v;\nmov zeta$1v zeta$2v
-#! cmp.w $1v, $2v -> mov r0_t r0_t
-#! ldrd	$1v, $2v, $3ea, #8 -> mov $1v $3ea;\nmov $2v $3ea[+4];\nmov zeta$1v zeta$3ea;\nmov zeta$2v zeta$3ea[+4]
+#! smulwb $1v, $2v, $3v -> vpc $3v_bW@int32 $3v_b; mulj tmp $2v $3v_bW; spl $1v_w dc tmp 16;\nspl $1v_t $1v_b $1v_w 16; cast $1v_b@int16 $1v_b; vpc $1v_t@int16 $1v_t
+#! smulwt $1v, $2v, $3v -> vpc $3v_tW@int32 $3v_t; mulj tmp $2v $3v_tW; spl $1v_w dc tmp 16;\nspl $1v_t $1v_b $1v_w 16; cast $1v_b@int16 $1v_b; vpc $1v_t@int16 $1v_t
+#! smlabt $1v, $2v, $3v, $4v -> mulj prod $2v_b $3v_t; add $1v_w prod $4v;\nspl $1v_t $1v_b $1v_w 16; cast $1v_b@int16 $1v_b
+#! vldmia $1ea, {%%s8-%%s22} -> mov  s8 $1ea[+0]; spl  s8_t  s8_b  s8 16; cast  s8_b@int16  s8_b;\nmov  s9 $1ea[+4]; spl  s9_t  s9_b  s9 16; cast  s9_b@int16  s9_b;\nmov s10 $1ea[+8]; spl s10_t s10_b s10 16; cast s10_b@int16 s10_b;\nmov s11 $1ea[+12]; spl s11_t s11_b s11 16; cast s11_b@int16 s11_b;\nmov s12 $1ea[+16]; spl s12_t s12_b s12 16; cast s12_b@int16 s12_b;\nmov s13 $1ea[+20]; spl s13_t s13_b s13 16; cast s13_b@int16 s13_b;\nmov s14 $1ea[+24]; spl s14_t s14_b s14 16; cast s14_b@int16 s14_b;\nmov s15 $1ea[+28]; spl s15_t s15_b s15 16; cast s15_b@int16 s15_b;\nmov s16 $1ea[+32]; spl s16_t s16_b s16 16; cast s16_b@int16 s16_b;\nmov s17 $1ea[+36]; spl s17_t s17_b s17 16; cast s17_b@int16 s17_b;\nmov s18 $1ea[+40]; spl s18_t s18_b s18 16; cast s18_b@int16 s18_b;\nmov s19 $1ea[+44]; spl s19_t s19_b s19 16; cast s19_b@int16 s19_b;\nmov s20 $1ea[+48]; spl s20_t s20_b s20 16; cast s20_b@int16 s20_b;\nmov s21 $1ea[+52]; spl s21_t s21_b s21 16; cast s21_b@int16 s21_b;\nmov s22 $1ea[+56]; spl s22_t s22_b s22 16; cast s22_b@int16 s22_b
+#! vmov $1v, %%lr -> mov $1v lr
+#! vmov $1v, %%r0 -> mov $1v r0
+#! vmov %%lr, $1v -> mov lr $1v
+#! vmov %%r0, $1v -> mov r0 $1v
+#! vmov $1v, %%s1$2c -> mov $1v s1$2c
+#! vmov $1v, %%s2$2c -> mov $1v s2$2c
+#! vmov $1v, %%s8 -> mov $1v s8
+#! vmov $1v, %%s9 -> mov $1v s9
+#! vmov %%r$1c, %%s0 -> mov [r$1c_b, r$1c_t] [s0_b, s0_t]
+#! vmov %%r$1c, %%s1 -> mov [r$1c_b, r$1c_t] [s1_b, s1_t]
+#! vmov %%r$1c, %%s2 -> mov [r$1c_b, r$1c_t] [s2_b, s2_t]
+#! vmov %%r$1c, %%s3 -> mov [r$1c_b, r$1c_t] [s3_b, s3_t]
+#! vmov %%r$1c, %%s4 -> mov [r$1c_b, r$1c_t] [s4_b, s4_t]
+#! vmov %%r$1c, %%s5 -> mov [r$1c_b, r$1c_t] [s5_b, s5_t]
+#! vmov %%r$1c, %%s6 -> mov [r$1c_b, r$1c_t] [s6_b, s6_t]
+#! vmov %%r$1c, %%s7 -> mov [r$1c_b, r$1c_t] [s7_b, s7_t]
+#! vmov %%s0, %%r$1c -> mov [s0_b, s0_t] [r$1c_b, r$1c_t]
+#! vmov %%s1, %%r$1c -> mov [s1_b, s1_t] [r$1c_b, r$1c_t]
+#! vmov %%s2, %%r$1c -> mov [s2_b, s2_t] [r$1c_b, r$1c_t]
+#! vmov %%s3, %%r$1c -> mov [s3_b, s3_t] [r$1c_b, r$1c_t]
+#! vmov %%s4, %%r$1c -> mov [s4_b, s4_t] [r$1c_b, r$1c_t]
+#! vmov %%s5, %%r$1c -> mov [s5_b, s5_t] [r$1c_b, r$1c_t]
+#! vmov %%s6, %%r$1c -> mov [s6_b, s6_t] [r$1c_b, r$1c_t]
+#! vmov %%s7, %%r$1c -> mov [s7_b, s7_t] [r$1c_b, r$1c_t]
+#! cmp.w $1v, $2v -> (* cmp.w $1v, $2v *)\nnop
+#! ldrd	$1v, $2v, R $3ea -> mov [$1v, $2v] [$3ea, $3ea[+4]]
 
 #ntt_fast:
 # r0 = 0xbefff1c4
