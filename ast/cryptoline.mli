@@ -143,6 +143,13 @@ module VM : Map.S with type key = var
 module IS : Set.S with type elt = int
 (** Sets of variable IDs *)
 
+(* Add a variable to a variable set. Update its type if the variable
+   is already in the set. *)
+val vs_add_upd : var -> VS.t -> VS.t
+
+(* Add variables in the first set to the second set using [vs_add_upd]. *)
+val vs_union_upd : VS.t -> VS.t -> VS.t
+
 
 (** {1 Algebraic Expressions} *)
 
@@ -1226,23 +1233,51 @@ val vars_bexp_prove_with : bexp_prove_with -> VS.t
 val vars_atom : atom -> VS.t
 (** [vars_atom a] is the set of variables in the atom [a]. *)
 
-val vars_instr : instr -> VS.t
-(** [vars_instr i] is the set of variables in the instruction [i]. *)
+val vars_instr : ?upd:bool -> instr -> VS.t
+(**
+ * [vars_instr ~upd:b i] is the set of variables in the instruction [i].
+ * If [b] is true, the type of a variable in the returned set is always
+ * updated when the variable is assigned in the instruction. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA instructions.
+ *)
 
-val vars_program : program -> VS.t
-(** [vars_program p] is the set of variables in the program [p]. *)
+val vars_program : ?upd:bool -> program -> VS.t
+(**
+ * [vars_program ~upd:b p] is the set of variables in the program [p].
+ * If [b] is true, the type of a variable in the returned set is always
+ * updated when the variable is assigned in the program. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA programs.
+ *)
 
 val lvs_instr : instr -> VS.t
 (** [lvs_instr i] is the set of variables with new values written in the instruction [i]. *)
 
-val lvs_program : program -> VS.t
-(** [lvs_program p] is the set of variables with new values written in the program [p]. *)
+val lvs_program : ?upd:bool -> program -> VS.t
+(**
+ * [lvs_program ~upd:b p] is the set of variables with new values written in the
+ * program [p]. If [b] is true, the type of a variable in the returned set is
+ * always updated when the variable is assigned in the program. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA programs.
+ *)
 
 val rvs_instr : instr -> VS.t
 (** [rvs_instr i] is the set of variables with values read in the instruction [i]. *)
 
-val rvs_program : program -> VS.t
-(** [rvs_program p] is the set of variables with values read in the program [p]. *)
+val rvs_program : ?upd:bool -> program -> VS.t
+(**
+ * [rvs_program ~upd:b p] is the set of variables with values read in the
+ * program [p]. If [b] is true, the type of a variable in the returned set is
+ * always updated when the variable is assigned in the program. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA programs.
+*)
 
 val lcarries_instr : instr -> VS.t
 (**
@@ -1250,32 +1285,61 @@ val lcarries_instr : instr -> VS.t
  * Only carries and borrows in addition and subtraction instructions are included.
  *)
 
-val lcarries_program : program -> VS.t
+val lcarries_program : ?upd:bool -> program -> VS.t
 (**
- * [lcarries_program p] is the set of carries and borrows assigned in the program [p].
- * Only carries and borrows in addition and subtraction instructions are included.
+ * [lcarries_program ~upd:b p] is the set of carries and borrows assigned in
+ * the program [p]. Only carries and borrows in addition and subtraction
+ * instructions are included. If [b] is true, the type of a variable in the
+ * returned set is always updated when the variable is assigned in the program.
+ * Otherwise, the type of a variable in the returned set remains unchanged once
+ * the variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA programs.
+
  *)
 
 val lbits_instr : instr -> VS.t
 (** [lbits_instr i] is the set of bit variables assigned in the instruction [i]. *)
 
-val lbits_program : program -> VS.t
-(** [lbits_program p] is the set of bit variables assigned in the program [p]. *)
+val lbits_program : ?upd:bool -> program -> VS.t
+(**
+ * [lbits_program ~upd:b p] is the set of bit variables assigned in the
+ * program [p]. If [b] is true, the type of a variable in the returned set
+ * is always updated when the variable is assigned in the program. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default and can be
+ * ignored for SSA programs.
+*)
 
 val gvs_instr : instr -> VS.t
 (** [gvs_instr i] is the set of ghost variables defined in the instruction [i]. *)
 
-val gvs_program : program -> VS.t
-(** [gvs_program p] is the set of ghost variables defined in the program [p]. *)
+val gvs_program : ?upd:bool -> program -> VS.t
+(**
+ * [gvs_program ~upd:b p] is the set of ghost variables defined in the program
+ * [p]. If [b] is true, the type of a variable in the returned set is always
+ * updated when the variable is assigned in the program. Otherwise,
+ * the type of a variable in the returned set remains unchanged once the
+ * variable is added to the set. [b] is [false] by default. [b] is typically
+ * used in parsing and can be ignored for a well-formed program.
+ *)
 
-val vars_spec : spec -> VS.t
-(** [vars_spec s] is the set of variables in the specification [s]. *)
+val vars_spec : ?upd:bool -> spec -> VS.t
+(**
+ * [vars_spec ~upd:b s] is the set of variables in the specification [s].
+ * See [vars_program] for more details about the tag [upd].
+ * *)
 
-val vars_espec : espec -> VS.t
-(** [vars_espec s] is the set of variables in the algebraic specification [s]. *)
+val vars_espec : ?upd:bool -> espec -> VS.t
+(**
+ * [vars_espec ~upd:b s] is the set of variables in the algebraic specification
+ * [s]. See [vars_program] for more details about the tag [upd].
+ *)
 
-val vars_rspec : rspec -> VS.t
-(** [vars_rspec s] is the set of variables in the range specification [s]. *)
+val vars_rspec : ?upd:bool -> rspec -> VS.t
+(**
+ * [vars_rspec ~upd:b s] is the set of variables in the range specification [s].
+ * See [vars_program] for more details about the tag [upd].
+ *)
 
 
 (** {1 Variable ID Sets} *)

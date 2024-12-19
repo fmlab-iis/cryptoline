@@ -1737,8 +1737,8 @@ let parse_inline_at ctx lno fname_token actuals_token =
     let check_types () =
       List.iter2 (fun formal actual ->
           if not (is_type_compatible formal actual) then
-            raise_at_line lno ("The type of the actual parameter " ^ string_of_atom actual
-                             ^ " is not compatible with the type of the formal parameter " ^ string_of_var formal))
+            raise_at_line lno ("The type of the actual parameter " ^ string_of_atom ~typ:true actual
+                             ^ " is not compatible with the type of the formal parameter " ^ string_of_var ~typ:true formal))
         formals actuals in
     check_length (); check_types() in
   (* Check: actual inputs should be defined *)
@@ -1863,9 +1863,9 @@ let parse_inline_at ctx lno fname_token actuals_token =
      collect variables again from the function body *)
   let _ =
     let p = tagged_program_untag (List.split p |> snd) in
-    let _ = VS.iter (ctx_define_var ctx) (lvs_program p) in
-    let _ = VS.iter (ctx_define_carry ctx) (lcarries_program p) in
-    let _ = VS.iter (ctx_define_ghost ctx) (gvs_program p) in
+    let _ = VS.iter (ctx_define_var ctx) (lvs_program ~upd:true p) in
+    let _ = VS.iter (ctx_define_carry ctx) (lcarries_program ~upd:true p) in
+    let _ = VS.iter (ctx_define_ghost ctx) (gvs_program ~upd:true p) in
     () in
   p
 

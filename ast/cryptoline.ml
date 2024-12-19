@@ -208,6 +208,13 @@ module VarElem : OrderedType with type t = var =
 module VS = Set.Make(VarElem)
 module VM = Map.Make(VarElem)
 
+(* Add a variable to a variable set. Update its type if the variable
+   is already in the set. *)
+let vs_add_upd v vs = VS.add v (VS.remove v vs)
+(* Add variables in the first set to the second set using [vs_add_upd]. *)
+let vs_union_upd vs_src vs_dst =
+  VS.fold (fun v vs -> vs_add_upd v vs) vs_src vs_dst
+
 
 (** Operators *)
 
@@ -1504,63 +1511,67 @@ let vars_atom a =
   | Avar v -> VS.singleton v
   | _ -> VS.empty
 
-let vars_instr i =
+let vars_instr ?(upd=false) i =
+  let addv = if upd then vs_add_upd else VS.add in
+  let unionv = if upd then vs_union_upd else VS.union in
   match i with
-  | Imov (v, a) -> VS.add v (vars_atom a)
+  | Imov (v, a) -> addv v (vars_atom a)
   | Ishl (v, a1, a2)
     | Ishr (v, a1, a2)
-    | Isar (v, a1, a2) -> VS.add v (VS.union (vars_atom a1) (vars_atom a2))
+    | Isar (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
   | Ishls (l, v, a, _)
     | Ishrs (v, l, a, _)
-    | Isars (v, l, a, _) -> VS.add l (VS.add v (vars_atom a))
+    | Isars (v, l, a, _) -> addv l (addv v (vars_atom a))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
-    | Imulj (v, a1, a2) -> VS.add v (VS.union (vars_atom a1) (vars_atom a2))
+    | Imulj (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
-    | Isbb (v, a1, a2, c) -> VS.add v (VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c))
+    | Isbb (v, a1, a2, c) -> addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom c))
     | Iadds (c, v, a1, a2)
     | Isubc (c, v, a1, a2)
     | Isubb (c, v, a1, a2)
     | Imuls (c, v, a1, a2) ->
-     VS.add c (VS.add v (VS.union (vars_atom a1) (vars_atom a2)))
+     addv c (addv v (unionv (vars_atom a1) (vars_atom a2)))
   | Iadcs (c, v, a1, a2, y)
     | Isbcs (c, v, a1, a2, y)
     | Isbbs (c, v, a1, a2, y) ->
-     VS.add c (VS.add v (VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom y)))
-  | Isplit (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
-  | Ispl (vh, vl, a, _) -> VS.add vh (VS.add vl (vars_atom a))
+     addv c (addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom y)))
+  | Isplit (vh, vl, a, _) -> addv vh (addv vl (vars_atom a))
+  | Ispl (vh, vl, a, _) -> addv vh (addv vl (vars_atom a))
   | Iseteq (v, a1, a2)
-  | Isetne (v, a1, a2) -> VS.add v (VS.union (vars_atom a1) (vars_atom a2))
+  | Isetne (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
-     VS.add vh (VS.add vl (VS.union (vars_atom a1) (vars_atom a2)))
+     addv vh (addv vl (unionv (vars_atom a1) (vars_atom a2)))
   | Icshls (l, vh, vl, a1, a2, _)
     | Icshrs (vh, vl, l, a1, a2, _) ->
-     VS.add vh (VS.add vl (VS.add l (VS.union (vars_atom a1) (vars_atom a2))))
+     addv vh (addv vl (addv l (unionv (vars_atom a1) (vars_atom a2))))
   | Irol (v, a, n)
-    | Iror (v, a, n) -> VS.add v (VS.union (vars_atom a) (vars_atom n))
+    | Iror (v, a, n) -> addv v (unionv (vars_atom a) (vars_atom n))
   | Inondet v -> VS.singleton v
-  | Icmov (v, c, a1, a2) -> VS.add v (VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2)))
+  | Icmov (v, c, a1, a2) -> addv v (unionv (vars_atom c) (unionv (vars_atom a1) (vars_atom a2)))
   | Inop -> VS.empty
   | Iand (v, a1, a2)
     | Ior (v, a1, a2)
-    | Ixor (v, a1, a2) ->  VS.add v (VS.union (vars_atom a1) (vars_atom a2))
-  | Inot (v, a) -> VS.add v (vars_atom a)
+    | Ixor (v, a1, a2) ->  addv v (unionv (vars_atom a1) (vars_atom a2))
+  | Inot (v, a) -> addv v (vars_atom a)
   | Icast (od, v, a) ->
      (match od with
-      | None -> VS.add v (vars_atom a)
-      | Some d -> VS.add d (VS.add v (vars_atom a)))
-  | Ivpc (v, a) -> VS.add v (vars_atom a)
-  | Ijoin (v, ah, al) -> VS.add v (VS.union (vars_atom ah) (vars_atom al))
+      | None -> addv v (vars_atom a)
+      | Some d -> addv d (addv v (vars_atom a)))
+  | Ivpc (v, a) -> addv v (vars_atom a)
+  | Ijoin (v, ah, al) -> addv v (unionv (vars_atom ah) (vars_atom al))
   | Iassert e -> vars_bexp_prove_with e
   | Iassume e -> vars_bexp e
   | Icut e -> vars_bexp_prove_with e
-  | Ighost (vs, e) -> VS.union vs (vars_bexp e)
+  | Ighost (vs, e) -> unionv vs (vars_bexp e)
 
-let vars_program p = List.fold_left (fun res i -> VS.union (vars_instr i) res) VS.empty p
+let vars_program ?(upd=false) p =
+  let unionv = if upd then vs_union_upd else VS.union in
+  List.fold_left (fun res i -> unionv (vars_instr ~upd i) res) VS.empty p
 
 let lvs_instr i =
   match i with
@@ -1611,7 +1622,9 @@ let lvs_instr i =
   | Icut _
   | Ighost _ -> VS.empty
 
-let lvs_program p = List.fold_left (fun res i -> VS.union (lvs_instr i) res) VS.empty p
+let lvs_program ?(upd=false) p =
+  let unionv = if upd then vs_union_upd else VS.union in
+  List.fold_left (fun res i -> unionv (lvs_instr i) res) VS.empty p
 
 let rvs_instr i =
   match i with
@@ -1662,7 +1675,9 @@ let rvs_instr i =
   | Icut e -> vars_bexp_prove_with e
   | Ighost (_, e) -> vars_bexp e
 
-let rvs_program p = List.fold_left (fun res i -> VS.union (rvs_instr i) res) VS.empty p
+let rvs_program ?(upd=false) p =
+  let unionv = if upd then vs_union_upd else VS.union in
+  List.fold_left (fun res i -> unionv (rvs_instr i) res) VS.empty p
 
 (* Carry/borrow variables introduced in an addition or a subtraction instruction. *)
 let lcarries_instr i =
@@ -1714,22 +1729,29 @@ let lcarries_instr i =
   | Icut _
   | Ighost _ -> VS.empty
 
-let lcarries_program p = List.fold_left (fun res i -> VS.union (lcarries_instr i) res) VS.empty p
+let lcarries_program ?(upd=false) p =
+  let unionv = if upd then vs_union_upd else VS.union in
+  List.fold_left (fun res i -> unionv (lcarries_instr i) res) VS.empty p
 
 (* Assigned bit variables *)
 let lbits_instr i = VS.filter var_is_bit (lvs_instr i)
-let lbits_program p = List.fold_left (fun res i -> VS.union (lbits_instr i) res) VS.empty p
+let lbits_program ?(upd=false) p = VS.filter var_is_bit (lvs_program ~upd p)
 
 let gvs_instr i =
   match i with
   | Ighost (vs, _) -> vs
   | _ -> VS.empty
 
-let gvs_program p = List.fold_left (fun res i -> VS.union res (gvs_instr i)) VS.empty p
+let gvs_program ?(upd=false) p =
+  let unionv = if upd then vs_union_upd else VS.union in
+  List.fold_left (fun res i -> unionv res (gvs_instr i)) VS.empty p
 
-let vars_spec s = VS.union (vars_bexp s.spre) (VS.union (vars_program s.sprog) (vars_bexp_prove_with s.spost))
-let vars_espec s = VS.union (vars_ebexp s.espre) (VS.union (vars_program s.esprog) (vars_ebexp_prove_with s.espost))
-let vars_rspec s = VS.union (vars_rbexp s.rspre) (VS.union (vars_program s.rsprog) (vars_rbexp_prove_with s.rspost))
+let vars_spec ?(upd=false) s =
+  VS.union (vars_bexp s.spre) (VS.union (vars_program ~upd s.sprog) (vars_bexp_prove_with s.spost))
+let vars_espec ?(upd=false) s =
+  VS.union (vars_ebexp s.espre) (VS.union (vars_program ~upd s.esprog) (vars_ebexp_prove_with s.espost))
+let vars_rspec ?(upd=false) s =
+  VS.union (vars_rbexp s.rspre) (VS.union (vars_program ~upd s.rsprog) (vars_rbexp_prove_with s.rspost))
 
 
 (** Variable ID Sets *)
