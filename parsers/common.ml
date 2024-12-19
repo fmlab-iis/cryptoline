@@ -1632,11 +1632,15 @@ let parse_call_at ctx lno fname_token actuals_token =
   let defined_actuals =
     List.rev_append (List.rev actual_ins) (List.filter (ctx_atom_is_defined ctx) actual_outs) in
   let ghost_actuals =
-    let ghost_suffix = Int.to_string (Random.int 10000) in
+    let rec ghost_name n =
+      let m = "ghost_" ^ n ^ "_" ^ Int.to_string (Random.int 100000) in
+      if ctx_name_is_var ctx m || ctx_name_is_ghost ctx m
+      then ghost_name n
+      else m in
     let mk_ghostvar a =
       match a with
-      | Avar v -> mkvar (v.vname ^ ghost_suffix) (typ_of_var v)
-      | Aconst (typ, _) -> mkvar ("g_" ^ ghost_suffix) typ in
+      | Avar v -> mkvar (ghost_name v.vname) (typ_of_var v)
+      | Aconst (typ, _) -> mkvar (ghost_name "const") typ in
     List.rev (List.rev_map mk_ghostvar defined_actuals) in
   let ghost_instr =
     let ghost_bexp =
@@ -1654,8 +1658,7 @@ let parse_call_at ctx lno fname_token actuals_token =
          defined_actuals ghost_actuals |> List.rev |> eands,
        List.rev_map2 (fun avar gvar -> mk_req avar gvar)
          defined_actuals ghost_actuals |> List.rev |> rands) in
-    let ghostVS = VS.of_list ghost_actuals in
-    TIghost (ghostVS, tagged_bexp_singleton Options.Std.all_track ghost_bexp) in
+    TIghost (VS.of_list ghost_actuals, tagged_bexp_singleton Options.Std.all_track ghost_bexp) in
   let (ghost_ins, _) =
     Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
   (* Assert precondition (involving only input parameters) *)
@@ -1703,6 +1706,8 @@ let parse_call_at ctx lno fname_token actuals_token =
                                     | Aconst _ -> raise_at_line lno ("Actual output parameters must be variables.")
                                   ) actual_outs) in
     List.iter (ctx_define_var ctx) actual_vars in
+  (* Define ghost variables *)
+  let _ = List.iter (ctx_define_ghost ctx) ghost_actuals in
   [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
     [(lno, assume_instr)]
 
