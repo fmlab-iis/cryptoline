@@ -176,10 +176,10 @@ vmovdqa		%ymm11,(128*\off+112)*2(%rdi)
 .endm
 
 .text
-.global cdecl(PQCLEAN_KYBER768_AVX2_ntt_avx)
-.global _cdecl(PQCLEAN_KYBER768_AVX2_ntt_avx)
-cdecl(PQCLEAN_KYBER768_AVX2_ntt_avx):
-_cdecl(PQCLEAN_KYBER768_AVX2_ntt_avx):
+.global cdecl(PQCLEAN_MLKEM768_AVX2_ntt_avx)
+.global _cdecl(PQCLEAN_MLKEM768_AVX2_ntt_avx)
+cdecl(PQCLEAN_MLKEM768_AVX2_ntt_avx):
+_cdecl(PQCLEAN_MLKEM768_AVX2_ntt_avx):
 vmovdqa		_16XQ*2(%rsi),%ymm0
 
 level0		0

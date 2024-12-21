@@ -134,7 +134,7 @@ shuffle8	6,4,9,4
 shuffle8	3,5,6,5
 shuffle8	8,11,3,11
 
-/* level5 */
+/* level 5 */
 vmovdqa		(_ZETAS_EXP+(1-\off)*224+16)*2(%rsi),%ymm2
 vmovdqa		(_ZETAS_EXP+(1-\off)*224+32)*2(%rsi),%ymm8
 
@@ -181,10 +181,10 @@ vmovdqa		%ymm11,(64*\off+176)*2(%rdi)
 .endm
 
 .text
-.global cdecl(PQCLEAN_KYBER768_AVX2_invntt_avx)
-.global _cdecl(PQCLEAN_KYBER768_AVX2_invntt_avx)
-cdecl(PQCLEAN_KYBER768_AVX2_invntt_avx):
-_cdecl(PQCLEAN_KYBER768_AVX2_invntt_avx):
+.global cdecl(PQCLEAN_MLKEM768_AVX2_invntt_avx)
+.global _cdecl(PQCLEAN_MLKEM768_AVX2_invntt_avx)
+cdecl(PQCLEAN_MLKEM768_AVX2_invntt_avx):
+_cdecl(PQCLEAN_MLKEM768_AVX2_invntt_avx):
 vmovdqa         _16XQ*2(%rsi),%ymm0
 
 intt_levels0t5	0

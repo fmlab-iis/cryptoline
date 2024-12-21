@@ -14,7 +14,7 @@
 #define MASK 4095
 #define SHIFT 32
 
-const qdata_t PQCLEAN_KYBER768_AVX2_qdata = {.coeffs = {
+const qdata_t PQCLEAN_MLKEM768_AVX2_qdata = {.coeffs = {
 //#define _16XQ 0
         Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q, Q,
 
