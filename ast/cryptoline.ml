@@ -710,7 +710,10 @@ let rec eq_ebexp e1 e2 =
   match e1, e2 with
   | Etrue, Etrue -> true
   | Eeq (e1a, e1b), Eeq (e2a, e2b) -> eq_eexp e1a e2a && eq_eexp e1b e2b
-  | Eeqmod (e1a, e1b, e1cs), Eeqmod (e2a, e2b, e2cs) -> eq_eexp e1a e2a && eq_eexp e1b e2b && (List.for_all2 eq_eexp e1cs e2cs)
+  | Eeqmod (e1a, e1b, e1cs), Eeqmod (e2a, e2b, e2cs) ->
+     List.length e1cs = List.length e2cs
+     && eq_eexp e1a e2a && eq_eexp e1b e2b
+     && (List.for_all2 eq_eexp e1cs e2cs)
   | Eand (e1a, e1b), Eand (e2a, e2b) -> eq_ebexp e1a e2a && eq_ebexp e1b e2b
   | _, _ -> false
 
