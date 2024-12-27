@@ -1,3 +1,27 @@
+(* popper: cv.exe -v -isafety -jobs 32 -slicing PQCLEAN_MLKEM768_AVX2_polyvec_ntt.vcl
+Parsing CryptoLine file:                        [OK]            0.0722 seconds
+Checking well-formedness:                       [OK]            0.0221 seconds
+
+Procedure main
+==============
+Transforming to SSA form:                   [OK]            0.0206 seconds
+Normalizing specification:                  [OK]            0.0183 seconds
+Rewriting assignments:                      [OK]            0.0170 seconds
+Verifying program safety:Overall            [OK]            31.4376 seconds
+Verifying range assertions:                 [OK]            20.4737 seconds
+Verifying range specification:              [OK]            31.2288 seconds
+Rewriting value-preserved casting:          [OK]            0.0025 seconds
+Verifying algebraic assertions:             [OK]            0.0071 seconds
+Verifying algebraic specification:          [OK]            2.8939 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                     [OK]            86.1098 seconds
+
+Summary
+=======
+Verification result:                        [OK]            86.2047 seconds
+*)
 proc main (
 int16 A00,int16 A01,int16 A02,int16 A03,int16 A04,int16 A05,int16 A06,
 int16 A07,int16 A08,int16 A09,int16 A0a,int16 A0b,int16 A0c,int16 A0d,
