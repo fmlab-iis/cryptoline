@@ -1,23 +1,26 @@
-(* quine: cv.exe -v -slicing -isafety -vo appearing -jobs 40 -enable_rewriting:eqmod PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_bot.cl
-Parsing CryptoLine file:                    [OK]            0.1142 seconds
-Checking well-formedness:                   [OK]            0.0329 seconds
+(* quine: cv.exe -v -isafety -jobs 40 -slicing -enable_rewriting:eqmod PQCLEAN_KYBER768_AARCH64__asm_intt_SIMD_top.cl
+Parsing CryptoLine file:                    [OK]            0.1344 seconds
+Checking well-formedness:                   [OK]            0.0401 seconds
 
 Procedure main
---------------
-Transforming to SSA form:                   [OK]            0.0318 seconds
-Normalizing specification:                  [OK]            0.0250 seconds
-Rewriting assignments:                      [OK]            0.0278 seconds
-Verifying program safety                    [OK]            16.9187 seconds
-Verifying range assertions:                 [OK]            0.0041 seconds
-Verifying range specification:              [OK]            0.7687 seconds
-Rewriting value-preserved casting:          [OK]            0.0239 seconds
-Verifying algebraic assertions:             [OK]            61.9630 seconds
-Verifying algebraic specification:          [OK]            7.2919 seconds
-Procedure verification:                     [OK]            87.0701 seconds
+==============
+Transforming to SSA form:                   [OK]            0.0343 seconds
+Normalizing specification:                  [OK]            0.0287 seconds
+Rewriting assignments:                      [OK]            0.0270 seconds
+Verifying program safety:                   [OK]            35.6844 seconds
+Verifying range assertions:                 [OK]            0.0106 seconds
+Verifying range specification:              [OK]            2.4228 seconds
+Rewriting value-preserved casting:          [OK]            0.0274 seconds
+Verifying algebraic assertions:             [OK]            76.6959 seconds
+Verifying algebraic specification:          [OK]            28.4321 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                     [OK]            143.3834 seconds
 
 Summary
--------
-Verification result:                        [OK]            87.2174 seconds
+=======
+Verification result:                        [OK]            143.5582 seconds
 *)
 
 proc main (
@@ -3358,7 +3361,8 @@ cut Q = 3329 /\ NQ = -3329 /\ B = 1665 /\ NB = -1665 /\
     [4@16*NB,4@16*NB,4@16*NB,4@16*NB,4@16*NB,4@16*NB,4@16*NB,4@16*NB]<s%v30 /\
     %v30<s[4@16*B,4@16*B,4@16*B,4@16*B,4@16*B,4@16*B,4@16*B,4@16*B] /\
     [2@16*NQ,2@16*NQ,2@16*NQ,2@16*NQ,2@16*NQ,2@16*NQ,2@16*NQ,2@16*NQ]<s%v31 /\
-    %v31<s[2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q];
+    %v31<s[2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q,2@16*Q]
+    prove with [cuts [7]];
 
 ghost %v28o4@int16[8],%v29o4@int16[8],%v30o4@int16[8],%v31o4@int16[8],
        %v8o6@int16[8], %v9o6@int16[8],%v10o6@int16[8],%v11o6@int16[8],
