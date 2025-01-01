@@ -1,3 +1,4 @@
+(* no input polynomial of NTT *)
 (* on frege: -v -isafety -safety-engine mip -jobs 24 -safety-track rng -enable_rewriting:eqmod
 Parsing CryptoLine file:                        [OK]            0.3637 seconds
 Checking well-formedness:                       [OK]            0.0786 seconds
