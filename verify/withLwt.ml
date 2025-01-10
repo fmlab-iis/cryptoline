@@ -640,26 +640,23 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
 
 let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
       mipvars constr =
-  let ifile = tmpfile "inputfmip_" "" in
-  let ofile = tmpfile "outputfmip_" "" in
+  let ifile = tmpfile "inputfmip_" ".py" in
+  let ofile = tmpfile "outputfmip_" ".py" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   match solver with
   | PPL ->
-     let ifile = ifile ^ ".py" in
      let%lwt _ = write_ppl_input ~comments ifile mipvars constr in
      let%lwt _ = run_ppl headers ifile ofile in
      let%lwt res = read_ppl_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
      Lwt.return (res = "False")
   | SCIP ->
-     let ifile = ifile ^ ".py" in
      let%lwt _ = write_scip_input ~comments ifile mipvars constr in
      let%lwt _ = run_scip headers ifile ofile in
      let%lwt res = read_scip_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
      Lwt.return (res = "infeasible")
   | ISL ->
-     let ifile = ifile ^ ".py" in
      let%lwt _ = write_isl_input ~comments ifile mipvars constr in
      let%lwt _ = run_isl headers ifile ofile in
      let%lwt res = read_isl_output ofile in
