@@ -75,9 +75,10 @@ let args_verifier =
      mk_arg_desc(["PATH"; "Use Mathematica command-line script interpreter at the specified"; "path."]));
     ("-mathematica_path", String (fun str -> mathematica_path := str),
      mk_arg_desc(["PATH"; "Set the path to Mathematica command-line script interpreter."]));
-    ("-mip-safety-solver", Symbol (["isl"; "ppl"],
+    ("-mip-safety-solver", Symbol (["isl"; "ppl"; "smt:z3:lia"],
                                    fun solver -> if solver = "isl" then Options.Std.mip_safety_solver := Options.Std.ISL
                                                  else if solver = "ppl" then Options.Std.mip_safety_solver := Options.Std.PPL
+                                                 else if solver = "smt:z3:lia" then Options.Std.mip_safety_solver := SMTSolver { algsmt_path = "Z3"; algsmt_logic = LIA }
                                                  else Stdlib.invalid_arg (Printf.sprintf "Unknown MIP solver for safety: %s" solver)),
                            mk_arg_desc([""; "Specify the MIP solver for safety checking. Use with the argument"; "`-safety-engine mip`."]));
     ("-no_carry_constraint", Clear carry_constraint, mk_arg_desc([""; "Do not add carry constraints."]));

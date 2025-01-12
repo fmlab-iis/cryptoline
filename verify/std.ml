@@ -530,7 +530,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
   res
 
 let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
-      mipvars constr =
+      vgen mipvars constr =
   let ifile = tmpfile "inputfimp_" ".py" in
   let ofile = tmpfile "outputfimp_" ".py" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
@@ -553,6 +553,32 @@ let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
      let res = read_isl_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "True"
+  | SMTSolver o when o.algsmt_logic = LIA ->
+     let verify_one_smtlib smtlib =
+       let ifile = tmpfile "inputfgb_" ".smt2" in
+       let ofile = tmpfile "outputfgb_" "" in
+       let _ =
+         let ch = open_out ifile in
+         let _ = if !debug then output_string ch (make_line_comments ";" comments) in
+         let _ = output_string ch smtlib; close_out ch in
+         Options.Std.trace "INPUT TO SMT Solver:";
+         Options.Std.trace_file ifile;
+         Options.Std.trace "" in
+       let _ =
+         let t1 = Unix.gettimeofday() in
+         let _ = unix (o.algsmt_path ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+         let t2 = Unix.gettimeofday() in
+         Options.Std.trace ("Execution time of SMT Solver " ^ o.algsmt_path ^ ": " ^ Options.Std.string_of_running_time t1 t2);
+         Options.Std.trace "OUTPUT FROM SMT SOLVER:";
+         Options.Std.trace_file ofile;
+         Options.Std.trace "" in
+       let res = read_one_line ofile = "unsat" in
+       let _ = cleanup [ifile; ofile] in
+       res in
+     let verify_one_mipvars_constr vgen (_mipvars, constrs) =
+       let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+       verify_one_smtlib smtlib in
+     verify_one_mipvars_constr vgen (mipvars, constr)
   | _ -> failwith "Algebraic range condition needs MIP solver."
 
 
@@ -764,14 +790,14 @@ let verify_safety_across_cuts options s hashopt =
 
 
 (* Verify safety conditions using MIP solvers. *)
-let verify_safety_mip_conditions ?comments _timeout indexed_infos _hashopt =
+let verify_safety_mip_conditions ?comments _timeout indexed_infos vgen _hashopt =
   let add_unsolved q res =
     match res with
     | Solved Unsat -> Unfinished [q]
     | Unfinished unsolved -> Unfinished (q::unsolved)
     | _ -> assert false in
   let mip_verifier ?comments (mipvars, constr) =
-    is_constr_feasible ~comments:(append_comments_option comments []) ~solver:!Options.Std.mip_safety_solver mipvars constr in
+    is_constr_feasible ~comments:(append_comments_option comments []) ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let fold_fun res (id, info) =
     match res with
       Solved Sat
@@ -819,9 +845,9 @@ let verify_safety_mip_of_cut_inc options ?comments vgen sid s hashopt =
                                                        "Timeout: " ^ string_of_int !timeout ] in
       let res =
         if !Options.Std.jobs > 1 then
-          WithLwt.verify_safety_mip_conditions ~comments !timeout !indexed_infos hashopt
+          WithLwt.verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt
         else
-          verify_safety_mip_conditions ~comments !timeout !indexed_infos hashopt in
+          verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt in
       let _ =
         match res with
           Solved r -> safe := if r = Unsat then Some true else Some false
@@ -1046,7 +1072,7 @@ let verify_espec_single_conjunct_mip ?comments vgen s =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   let helper (mipvars, constr) =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver mipvars constr in
+    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver vgen mipvars constr in
   List.for_all helper mipvars_constrs
 
 (* Verify an algebraic specification. The solver used can be specified in the

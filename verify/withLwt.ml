@@ -639,7 +639,7 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
   res
 
 let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
-      mipvars constr =
+      vgen mipvars constr =
   let ifile = tmpfile "inputfmip_" ".py" in
   let ofile = tmpfile "outputfmip_" ".py" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
@@ -662,6 +662,46 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
      let%lwt res = read_isl_output ofile in
      let%lwt _ = cleanup_lwt [ifile; ofile] in
      Lwt.return (res = "True")
+  | SMTSolver o when o.algsmt_logic = LIA ->
+     let verify_one_smtlib smtlib =
+       let ifile = tmpfile "inputfgb_" ".smt2" in
+       let ofile = tmpfile "outputfgb_" "" in
+       let%lwt _ =
+         let%lwt ifd = Lwt_unix.openfile ifile
+                         [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                         0o600 in
+         let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+         let%lwt _ = if !debug then Lwt_io.write ch (make_line_comments ";" comments) else Lwt.return_unit in
+         let%lwt _ = Lwt_io.write ch smtlib in
+         let%lwt _ = Lwt_io.close ch in
+         let%lwt _ =
+           let%lwt _ = Options.WithLwt.log_lock () in
+           let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
+           let%lwt _ = Options.WithLwt.trace_file ifile in
+           let%lwt _ = Options.WithLwt.trace "" in
+           let%lwt _ = Options.WithLwt.log_unlock () in
+           Lwt.return_unit in
+         Lwt.return_unit in
+       let%lwt _ =
+         let t1 = Unix.gettimeofday() in
+         let%lwt _ = Options.WithLwt.unix (o.algsmt_path ^ "  \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+         let t2 = Unix.gettimeofday() in
+         let%lwt _ = Options.WithLwt.log_lock () in
+         let%lwt _ = Options.WithLwt.trace ("Execution time of SMT Solver " ^ o.algsmt_path ^ ": " ^ Options.Std.string_of_running_time t1 t2) in
+         let%lwt _ = Options.WithLwt.trace "OUTPUT FROM SMT SOLVER:" in
+         let%lwt _ = Options.WithLwt.trace_file ofile in
+         let%lwt _ = Options.WithLwt.trace "" in
+         let%lwt _ = Options.WithLwt.log_unlock () in
+         Lwt.return_unit in
+       let%lwt line = read_one_line ofile in
+       let%lwt res = Lwt.return (line = "unsat") in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return res in
+     let verify_one_mipvars_constr vgen (_mipvars, constrs) =
+       let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+       verify_one_smtlib smtlib in
+     let%lwt res = verify_one_mipvars_constr vgen (mipvars, constr) in
+     Lwt.return res
   | _ -> failwith "Algebraic range condition needs MIP solver."
 
 
@@ -879,10 +919,10 @@ let verify_safety_lwt options ?comments s hashopt =
   else verify_safety_all_lwt options ?comments s hashopt
 
 
-let verify_safety_mip_conditions ?comments _timeout indexed_infos _hashopt =
+let verify_safety_mip_conditions ?comments _timeout indexed_infos vgen _hashopt =
   let headers = [] in
   let mip_verifier ?comments (mipvars, constr) =
-    is_constr_feasible ~comments:(append_comments_option comments []) headers ~solver:!Options.Std.mip_safety_solver mipvars constr in
+    is_constr_feasible ~comments:(append_comments_option comments []) headers ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let mk_promise (id, info) =
     let%lwt res =
       try%lwt
@@ -935,7 +975,7 @@ let verify_safety_mip_conditions ?comments _timeout indexed_infos _hashopt =
 let verify_safety_mip_cross_cuts_lwt options ?comments vgen s _hashopt =
   let assoc_safety_ids base i info = (base + i, info) in
   let mip_verifier ?comments header (mipvars, constr) =
-    is_constr_feasible ~comments:(append_comments_option comments []) header ~solver:!Options.Std.mip_safety_solver mipvars constr in
+    is_constr_feasible ~comments:(append_comments_option comments []) header ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let continue_helper ((res, _), _) = res in
   let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, info, res_str, timedout, safe) =
     let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
@@ -1146,7 +1186,7 @@ let verify_espec_single_conjunct_mip ?comments headers vgen s =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   let helper (mipvars, constr) =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers mipvars constr in
+    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers vgen mipvars constr in
   Lwt_list.for_all_p helper mipvars_constrs
 
 (*

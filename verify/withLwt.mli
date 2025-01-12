@@ -27,6 +27,7 @@ val verify_safety_mip_conditions :
   ?comments:(string list) ->
   int ->
   (int * Mip.mip_safety_condition_info) list ->
+  Cas.var_gen ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   (int * Mip.mip_safety_condition_info) Common.round_result
 
