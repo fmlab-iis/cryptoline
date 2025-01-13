@@ -576,7 +576,7 @@ let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
        let _ = cleanup [ifile; ofile] in
        res in
      let verify_one_mipvars_constr vgen (_mipvars, constrs) =
-       let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+       let (_, smtlib) = smtlib_ebexps_lia ~expn:false vgen constrs in
        verify_one_smtlib smtlib in
      verify_one_mipvars_constr vgen (mipvars, constr)
   | _ -> failwith "Algebraic range condition needs MIP solver."

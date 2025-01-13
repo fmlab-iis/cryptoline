@@ -28,26 +28,38 @@ val bexp_program_safe : Ast.Cryptoline.instr list -> Qfbv.Common.bexp
     [bexp_program_safe_conds]. *)
 
 
-val smtlib_ebexp_premise : Cas.var_gen -> Ast.Cryptoline.ebexp ->
+val smtlib_ebexp_premise : ?expn:bool ->
+                           Cas.var_gen -> Ast.Cryptoline.ebexp ->
                            Cas.var_gen * string
-(** Convert a premise to SMTLIB format *)
+(**
+ * Convert a premise to SMTLIB format.
+ * If the argument expn is false, this function will try to avoid using expn.
+*)
 
-val smtlib_ebexp_consequence : Cas.var_gen -> Ast.Cryptoline.ebexp ->
+val smtlib_ebexp_consequence : ?expn:bool ->
+                               Cas.var_gen -> Ast.Cryptoline.ebexp ->
                                Cas.var_gen * string list * string
 (**
  * Convert a consequence to SMTLIB format.
  * [smtlib_ebexp_premise] and [smtlib_ebexp_consequence] are different
  * in translating eqmod formulas. The second returned element is a list
  * of existentially quantified variables in translating eqmod formulas.
+ * If the argument expn is false, this function will try to avoid using expn.
  *)
 
-val smtlib_ebexps_lia : Cas.var_gen -> Ast.Cryptoline.ebexp list ->
+val smtlib_ebexps_lia : ?expn:bool ->
+                        Cas.var_gen -> Ast.Cryptoline.ebexp list ->
                         Cas.var_gen * string
 (**
  * Assert a list of linear algebraic predicates in SMTLIB format.
  * The predicates have to be linear but not checked in this function.
+ * If the argument expn is false, this function will try to avoid using expn.
  *)
 
-val smtlib_espec : Cas.var_gen -> Ast.Cryptoline.espec ->
+val smtlib_espec : ?expn:bool ->
+                   Cas.var_gen -> Ast.Cryptoline.espec ->
                    Cas.var_gen * string
-(** Converts an algebraic specification to SMTLIB format. *)
+(**
+ * Converts an algebraic specification to SMTLIB format.
+ * If the argument expn is false, this function will try to avoid using expn.
+*)

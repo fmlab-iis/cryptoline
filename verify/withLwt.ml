@@ -698,7 +698,7 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return res in
      let verify_one_mipvars_constr vgen (_mipvars, constrs) =
-       let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+       let (_, smtlib) = smtlib_ebexps_lia ~expn:false vgen constrs in
        verify_one_smtlib smtlib in
      let%lwt res = verify_one_mipvars_constr vgen (mipvars, constr) in
      Lwt.return res
