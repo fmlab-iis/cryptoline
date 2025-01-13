@@ -531,32 +531,41 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
 
 let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
       vgen mipvars constr =
-  let ifile = tmpfile "inputfimp_" ".py" in
-  let ofile = tmpfile "outputfimp_" ".py" in
-  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  let gen_files_py () =
+    let ifile = tmpfile "inputfmip_" ".py" in
+    let ofile = tmpfile "outputfmip_" ".log" in
+    let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+    (ifile, ofile, comments) in
+  let gen_files_smt () =
+    let ifile = tmpfile "inputfgb_" ".smt2" in
+    let ofile = tmpfile "outputfgb_" ".log" in
+    let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+    (ifile, ofile, comments) in
   match solver with
   | PPL ->
+     let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_ppl_input ~comments ifile mipvars constr in
      let _ = run_ppl ifile ofile in
      let res = read_ppl_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "False"
   | SCIP ->
+     let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_scip_input ~comments ifile mipvars constr in
      let _ = run_scip ifile ofile in
      let res = read_scip_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "infeasible"
   | ISL ->
+     let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_isl_input ~comments ifile mipvars constr in
      let _ = run_isl ifile ofile in
      let res = read_isl_output ofile in
      let _ = cleanup [ifile; ofile] in
      res = "True"
   | SMTSolver o when o.algsmt_logic = LIA ->
+     let (ifile, ofile, comments) = gen_files_smt() in
      let verify_one_smtlib smtlib =
-       let ifile = tmpfile "inputfgb_" ".smt2" in
-       let ofile = tmpfile "outputfgb_" "" in
        let _ =
          let ch = open_out ifile in
          let _ = if !debug then output_string ch (make_line_comments ";" comments) in
