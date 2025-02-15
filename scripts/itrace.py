@@ -169,7 +169,7 @@ class ARM64(Extractor):
             return {'addr':addr}
 
 class ARM32(Extractor):
-    branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
+    branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z|ldmia.*pc)\b')
     eapattern = re.compile(r'(?:\[([a-z]+[0-9]*)'
                                '(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\s*:\d+)?''\]'
                             '|(?:ld|st)m\w*\.?\w*\s+(\w+)!?,)')
@@ -187,6 +187,8 @@ class ARM32(Extractor):
         return b.group(1).startswith("bl")
 
     def isFunctionReturn(self, b):
+        if "ldmia" in b.group(1) and "pc" in b.group(1):
+            return True
         return b.group(1) == "bx"
 
     def getEA(self, insn, frame):
