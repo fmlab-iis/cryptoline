@@ -84,10 +84,10 @@ class X86_64(Extractor):
     branchpattern = re.compile(r'^(?:repz\s+)?(j\w*|call|ret)q?')
     # e.g. 0x400(%rax,%rbx,8), 0x123(%rdx), etc.
     eapattern = re.compile(r'(-?(?:0x)?[0-9a-f]+)?'
-                            '\(''%([a-z0-9]+)'
+                            '\\(''%([a-z0-9]+)'
                                 '(?:,%([a-z0-9]+),'
-                                '([1248]))?''\)'
-                            '(?:\s*,\s*%([a-z0-9]+))?')
+                                '([1248]))?''\\)'
+                            '(?:\\s*,\\s*%([a-z0-9]+))?')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -379,7 +379,7 @@ def trace():
                     unit = 'g' if wordsize == 64 else 'w'
                     try :
                         value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
-                        value = re.match('0x[0-9a-fA-F]+\s*<?.*>?\s*:\s+(0x[0-9a-fA-F]+)', value).group(1)
+                        value = re.match('0x[0-9a-fA-F]+\\s*<?.*>?\\s*:\\s+(0x[0-9a-fA-F]+)', value).group(1)
                     except gdb.MemoryError :
                         value = "'?'"
                     print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
