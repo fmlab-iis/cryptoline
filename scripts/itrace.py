@@ -128,8 +128,8 @@ class ARM64(Extractor):
     branchpattern = re.compile(r'^(b\.\w+|bl?r?|cbn?z|ret)\b')
     # e.g. [x20,#40], [x20],#8, [x20,x21]
     eapattern = re.compile(r'\[(x[0-9]+|sp)'
-                            '(?:\s*,\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\]'
-                            '(?:\s*,\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
+                            '(?:\\s*,\\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\\]'
+                            '(?:\\s*,\\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -171,8 +171,8 @@ class ARM64(Extractor):
 class ARM32(Extractor):
     branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
     eapattern = re.compile(r'(?:\[([a-z]+[0-9]*)'
-                               '(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\s*:\d+)?''\]'
-                            '|(?:ld|st)m\w*\.?\w*\s+(\w+)!?,)')
+                               '(?:\\s*,\\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\\s*:\\d+)?''\\]'
+                            '|(?:ld|st)m\\w*\\.?\\w*\\s+(\\w+)!?,)')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
