@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tested on:
-# - Ubuntu: 22.04
+# - Ubuntu: 24.04
 
 TOOLS_DIR=tools
 BOOLECTOR_VERSION=3.2.4

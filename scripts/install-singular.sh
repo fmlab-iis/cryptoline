@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # Tested on:
-# - Ubuntu: 22.04
+# - Ubuntu: 24.04
 
 TOOLS_DIR=tools
-SINGULAR_VERSION=4.4.0p6
+SINGULAR_VERSION=4.4.0p7
 SINGULAR_DIR=singular-${SINGULAR_VERSION}
 SINGULAR_TAR_GZ=singular-${SINGULAR_VERSION}.tar.gz
 SINGULAR_URL=https://github.com/Singular/Singular/archive/refs/tags/Release-${SINGULAR_VERSION//./-}.tar.gz

@@ -1,4 +1,4 @@
-FROM ubuntu:23.04
+FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-l", "-c"]
 
@@ -6,32 +6,48 @@ SHELL ["/bin/bash", "-l", "-c"]
 RUN apt update && apt upgrade -y
 RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
                    libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
-                   libreadline-dev opam pkg-config \
-                   python3-pip libmpc-dev
+                   libreadline-dev pkg-config opam python3-pip python3-venv \
+                   vim tmux
+
+
+# clean up password
+RUN passwd -d ubuntu
+
+WORKDIR /home/ubuntu
+
+RUN echo 'export PATH=$HOME/.local/bin:$HOME/abc:$PATH' >> .bashrc
+RUN echo 'eval $(opam env)' >> .bashrc
+RUN mkdir .local
+
+# set up islpy
+RUN python3 -m venv /home/ubuntu/.local
+RUN export PATH=/home/ubuntu/.local/bin:$PATH && pip3 install islpy pyppl pyscipopt
 
 # Install OCaml packages
-RUN opam init -a --disable-sandboxing \
-    && eval $(opam env) \
-    && opam switch create 4.14.2 4.14.2 \
-    && eval $(opam env) && opam install -y \
+RUN opam init -a --disable-sandboxing --root=/home/ubuntu/.opam \
+    && eval $(opam --root=/home/ubuntu/.opam env) \
+    && opam switch create 4.14.2 4.14.2 --root=/home/ubuntu/.opam \
+    && eval $(opam env --root=/home/ubuntu/.opam) && \
+    opam install -y --root=/home/ubuntu/.opam \
     ocamlfind dune zarith lwt lwt_ppx ppx_optcomp apron
 
 # Download CryptoLine and some external tools
-WORKDIR /home
 RUN git clone https://github.com/berkeley-abc/abc.git abc
 RUN git clone https://github.com/fmlab-iis/cryptoline.git cryptoline
 
 # Install abc
-WORKDIR /home/abc
-RUN make && install -m 755 -s abc /usr/bin/
+WORKDIR /home/ubuntu/abc
+RUN make && cp abc abc.rc /home/ubuntu/.local/bin
 
 # Install CryptoLine
-WORKDIR /home/cryptoline
+WORKDIR /home/ubuntu/cryptoline
 RUN dune build && dune install
 
 # Install Boolector and Singular
 RUN ./scripts/install-boolector.sh
 RUN ./scripts/install-singular.sh
 
-# Install MIP solvers
-RUN pip3 install --break-system-packages islpy pplpy
+WORKDIR /home/ubuntu
+RUN rm -rf abc cryptoline/tools/*
+RUN chown -R ubuntu.ubuntu cryptoline .opam .local .bash* .profile
+
