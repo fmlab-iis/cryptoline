@@ -3,51 +3,47 @@ FROM ubuntu:24.04
 SHELL ["/bin/bash", "-l", "-c"]
 
 # Install Ubuntu packages
-RUN apt update && apt upgrade -y
-RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
+RUN apt update && apt upgrade -y && \
+    apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
                    libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
                    libreadline-dev pkg-config opam python3-pip python3-venv \
                    vim tmux
 
-
-# clean up password
-RUN passwd -d ubuntu
-
 WORKDIR /home/ubuntu
-
-RUN echo 'export PATH=$HOME/.local/bin:$HOME/abc:$PATH' >> .bashrc
-RUN echo 'eval $(opam env)' >> .bashrc
-RUN mkdir .local
-
-# set up islpy
-RUN python3 -m venv /home/ubuntu/.local
-RUN export PATH=/home/ubuntu/.local/bin:$PATH && pip3 install islpy pyppl pyscipopt
 
 # Install OCaml packages
-RUN opam init -a --disable-sandboxing --root=/home/ubuntu/.opam \
-    && eval $(opam env --root=/home/ubuntu/.opam) \
-    && opam switch create 4.14.2 4.14.2 --root=/home/ubuntu/.opam \
-    && eval $(opam env --root=/home/ubuntu/.opam) && \
+RUN opam init -a --disable-sandboxing --root=/home/ubuntu/.opam && \
+    eval $(opam env --root=/home/ubuntu/.opam) && \
+    opam switch create 4.14.2 4.14.2 --root=/home/ubuntu/.opam && \
+    eval $(opam env --root=/home/ubuntu/.opam) && \
     opam install -y --root=/home/ubuntu/.opam \
-    ocamlfind dune zarith lwt lwt_ppx ppx_optcomp apron
+         ocamlfind dune zarith lwt lwt_ppx ppx_optcomp apron && \
+    opam clean --root=/home/ubuntu/.opam
 
 # Download CryptoLine and some external tools
-RUN git clone https://github.com/berkeley-abc/abc.git abc
-RUN git clone https://github.com/fmlab-iis/cryptoline.git cryptoline
+RUN git clone https://github.com/berkeley-abc/abc.git abc && \
+    git clone https://github.com/fmlab-iis/cryptoline.git cryptoline
 
 # Install abc
-WORKDIR /home/ubuntu/abc
-RUN make && cp abc abc.rc /home/ubuntu/.local/bin
-
-# Install CryptoLine
-WORKDIR /home/ubuntu/cryptoline
-RUN dune build && dune install
-
-# Install Boolector and Singular
-RUN ./scripts/install-boolector.sh
-RUN ./scripts/install-singular.sh
-
 WORKDIR /home/ubuntu
-RUN rm -rf abc cryptoline/tools/*
-RUN chown -R ubuntu.ubuntu cryptoline .opam .local .bash* .profile
+RUN pushd abc && make && mkdir -p /home/ubuntu/.local/bin && \
+    cp abc abc.rc /home/ubuntu/.local/bin && \
+    popd && rm -rf abc
+
+# Install CryptoLine, Boolector and Singular
+WORKDIR /home/ubuntu/cryptoline
+RUN dune build && dune install && dune clean && \
+    ./scripts/install-boolector.sh && ./scripts/install-singular.sh && \
+    rm -rf ./tools/*
+
+# set up isl and user account
+WORKDIR /home/ubuntu
+RUN python3 -m venv /home/ubuntu/.local && \
+    export PATH=/home/ubuntu/.local/bin:$PATH && \
+    pip3 install islpy pyscipopt && \
+    passwd -d ubuntu && \
+    echo 'export PATH=$HOME/.local/bin:$HOME/abc:$PATH' >> .bashrc && \
+    echo 'eval $(opam env)' >> .bashrc && \
+    chown -R ubuntu.ubuntu cryptoline .opam .local .bash* .profile
+
 
