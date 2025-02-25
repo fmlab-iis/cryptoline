@@ -25,7 +25,7 @@ RUN export PATH=/home/ubuntu/.local/bin:$PATH && pip3 install islpy pyppl pyscip
 
 # Install OCaml packages
 RUN opam init -a --disable-sandboxing --root=/home/ubuntu/.opam \
-    && eval $(opam --root=/home/ubuntu/.opam env) \
+    && eval $(opam env --root=/home/ubuntu/.opam) \
     && opam switch create 4.14.2 4.14.2 --root=/home/ubuntu/.opam \
     && eval $(opam env --root=/home/ubuntu/.opam) && \
     opam install -y --root=/home/ubuntu/.opam \
