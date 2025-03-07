@@ -112,12 +112,17 @@
 #! vpand $1ymm, $2ymm, $3ymm -> and %$3ymm@uint64[4] %$2ymm %$1ymm
 #! vpblendd \$0xaa, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] [%$2ymm[0], %$1ymm[1], %$2ymm[2], %$1ymm[3], %$2ymm[4], %$1ymm[5], %$2ymm[6], %$1ymm[7]]
 #! vpblendw \$0xaa, $2ymm, $1ymm, $3ymm -> mov %$3ymm@sint16[16] [%$1ymm[0], %$2ymm[0], %$1ymm[2], %$2ymm[2], %$1ymm[4], %$2ymm[4], %$1ymm[6], %$2ymm[6], %$1ymm[8], %$2ymm[8], %$1ymm[10], %$2ymm[10], %$1ymm[12], %$2ymm[12], %$1ymm[14], %$2ymm[14]]
-#! vpbroadcastd $1ea, $2ymm -> broadcast %$2ymm@uint32[8] 8 [$1ea]
+#! vpbroadcastd $1ea, $2ymm -> broadcast %$2ymm@sint32[8] 8 [$1ea]
+#! vpbroadcastw $1ea, $2ymm -> broadcast %$2ymm@sint16[16] 16 [$1ea]
+#! vpbroadcastq $1ea, $2ymm -> broadcast %$2ymm@sint64[4] 4 [$1ea]
+#! vbroadcasti128 $1ea, $2ymm -> broadcast %$2ymm@sint128[2] 2 [$1ea]
 #! vperm2i128 \$0x20, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[0, 1, 2, 3] ++ %$1ymm[0, 1, 2, 3])
 #! vperm2i128 \$0x31, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[4, 5, 6, 7] ++ %$1ymm[4, 5, 6, 7])
 #! vpmuldq $1ymm, $2ymm, $3ymm -> mulj %$3ymm@sint64[4] (%$2ymm[0, 2, 4, 6]) (%$1ymm[0, 2, 4, 6])
-#! vpmullw $1ymm, $2ymm, $3ymm -> smull %dc %$3ymm@uint16[16] %$1ymm %$2ymm
-#! vpmulhw $1ymm, $2ymm, $3ymm -> smull %$3ymm@sint16[16] %dc %$1ymm %$2ymm
+#! vpmullw $1ymm, $2ymm, $3ymm -> smull %dc %$3ymm@uint16[16] %$2ymm %$1ymm
+#! vpmullw $1ea, $2ymm, $3ymm -> smull %dc %$3ymm@uint16[16] %$2ymm\n      [$1ea[+0],$1ea[+2],$1ea[+4],$1ea[+6],\n       $1ea[+8],$1ea[+10],$1ea[+12],$1ea[+14],\n       $1ea[+16],$1ea[+18],$1ea[+20],$1ea[+22],\n       $1ea[+24],$1ea[+26],$1ea[+28],$1ea[+30]]
+#! vpmulhw $1ymm, $2ymm, $3ymm -> smull %$3ymm@sint16[16] %dc %$2ymm %$1ymm
+#! vpmulhw $1ea, $2ymm, $3ymm -> smull %$3ymm@sint16[16] %dc %$2ymm\n      [$1ea[+0],$1ea[+2],$1ea[+4],$1ea[+6],\n       $1ea[+8],$1ea[+10],$1ea[+12],$1ea[+14],\n       $1ea[+16],$1ea[+18],$1ea[+20],$1ea[+22],\n       $1ea[+24],$1ea[+26],$1ea[+28],$1ea[+30]]
 #! vpor $1xmm, $2xmm, $3xmm -> or %$3xmm@uint64[2] %$2xmm %$1xmm
 #! vpor $1ymm, $2ymm, $3ymm -> or %$3ymm@uint64[4] %$2ymm %$1ymm
 #! vpxor $1xmm, $2xmm, $3xmm -> xor %$3xmm@uint64[2] %$2xmm %$1xmm
