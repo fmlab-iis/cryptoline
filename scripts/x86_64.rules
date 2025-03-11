@@ -111,7 +111,7 @@
 #! vpand $1xmm, $2xmm, $3xmm -> and %$3xmm@uint64[2] %$2xmm %$1xmm
 #! vpand $1ymm, $2ymm, $3ymm -> and %$3ymm@uint64[4] %$2ymm %$1ymm
 #! vpblendd \$0xaa, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] [%$2ymm[0], %$1ymm[1], %$2ymm[2], %$1ymm[3], %$2ymm[4], %$1ymm[5], %$2ymm[6], %$1ymm[7]]
-#! vpblendw \$0xaa, $2ymm, $1ymm, $3ymm -> mov %$3ymm@sint16[16] [%$1ymm[0], %$2ymm[0], %$1ymm[2], %$2ymm[2], %$1ymm[4], %$2ymm[4], %$1ymm[6], %$2ymm[6], %$1ymm[8], %$2ymm[8], %$1ymm[10], %$2ymm[10], %$1ymm[12], %$2ymm[12], %$1ymm[14], %$2ymm[14]]
+#! vpblendw \$0xaa, $2ymm, $1ymm, $3ymm -> mov %$3ymm@sint16[16] [%$1ymm[0], %$2ymm[1], %$1ymm[2], %$2ymm[3], %$1ymm[4], %$2ymm[5], %$1ymm[6], %$2ymm[7], %$1ymm[8], %$2ymm[9], %$1ymm[10], %$2ymm[11], %$1ymm[12], %$2ymm[13], %$1ymm[14], %$2ymm[15]]
 #! vpbroadcastd $1ea, $2ymm -> broadcast %$2ymm@sint32[8] 8 [$1ea]
 #! vpbroadcastw $1ea, $2ymm -> broadcast %$2ymm@sint16[16] 16 [$1ea]
 #! vpbroadcastq $1ea, $2ymm -> broadcast %$2ymm@sint64[4] 4 [$1ea]
