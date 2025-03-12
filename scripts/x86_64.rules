@@ -57,6 +57,7 @@
 #! mov $1ea, $2v -> mov $2v $1ea
 #! mov $1v, $2ea -> mov $2ea $1v
 #! movabs $1c, $2v -> mov $2v $1c@uint64
+#! movq $1v, $2xmm -> mov %$2xmm@uint64[2] [$1v, %$2xmm[1]]
 #! mul $1v -> mull rdx rax rax $1v;\nsubc carry dc rdx 1@uint64; mov overflow carry
 #! mulq $1v -> mull rdx rax rax $1v
 #! mulq $1ea -> mull rdx rax rax $1ea
@@ -87,6 +88,7 @@
 #! paddd $1xmm, $2xmm -> adds %dc %$2xmm@uint32[4] %$2xmm %$1xmm
 #! palignr \$0x4, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[1, 2, 3] ++ %$2xmm[0])
 #! palignr \$0x8, $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$1xmm[1], %$2xmm[0]]
+#! pinsrq \$0x1, $1v, $2xmm -> mov %$2xmm@uint64[4] [%$2xmm[0], $1v]
 #! pextrq \$0x0, $1xmm, $2v -> mov %pextrq@uint64[2] %$1xmmq; mov [$2v, _] %pextrq
 #! pshufd \$0xe, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[2, 3, 0, 0])
 #! pshufd \$0x1b, $1xmm, $2xmm -> mov %$2xmm@uint32[4] (%$1xmm[3, 2, 1, 0])
@@ -97,6 +99,7 @@
 #! psrlq $1c, $2ymm -> split %$2ymm %dc %$2ymm@uint64[4] $1c
 #! punpcklqdq $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$2xmm[0], %$1xmm[0]]
 #! punpckhqdq $1xmm, $2xmm -> mov %$2xmm@uint64[2] [%$2xmm[1], %$1xmm[1]]
+#! vinserti128 \$0x1, $1xmm, $2ymm, $3ymm -> mov %$3ymm@uint64[4] (%$2ymm[0, 1] ++ %$1xmm[0, 1])
 #! vmovapd $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea,$1ea[+8],$1ea[+16],$1ea[+24]]
 #! vmovapd $1ymm, $2ea -> mov [$2ea,$2ea[+8],$2ea[+16],$2ea[+24]] %$1ymm@uint64[4]
 #! vmovdqa $1ea, $2ymm -> mov %$2ymm@uint64[4] [$1ea,$1ea[+8],$1ea[+16],$1ea[+24]]
@@ -116,6 +119,7 @@
 #! vpbroadcastw $1ea, $2ymm -> broadcast %$2ymm@sint16[16] 16 [$1ea]
 #! vpbroadcastq $1ea, $2ymm -> broadcast %$2ymm@sint64[4] 4 [$1ea]
 #! vbroadcasti128 $1ea, $2ymm -> broadcast %$2ymm@sint128[2] 2 [$1ea]
+#! vperm2i128 \$0x1, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[4, 5, 6, 7] ++ %$1ymm[0, 1, 2, 3])
 #! vperm2i128 \$0x20, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[0, 1, 2, 3] ++ %$1ymm[0, 1, 2, 3])
 #! vperm2i128 \$0x31, $1ymm, $2ymm, $3ymm -> mov %$3ymm@sint32[8] (%$2ymm[4, 5, 6, 7] ++ %$1ymm[4, 5, 6, 7])
 #! vpmuldq $1ymm, $2ymm, $3ymm -> mulj %$3ymm@sint64[4] (%$2ymm[0, 2, 4, 6]) (%$1ymm[0, 2, 4, 6])
