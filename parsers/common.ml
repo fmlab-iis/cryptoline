@@ -2498,7 +2498,7 @@ let parse_vbroadcast_at ctx lno dest_tok num src_tok =
   (* type check is done when unpacking, so relmtyp is not needed here *)
   let (_, src) = resolve_vec_with ctx lno src_tok in
   let len = List.length src in
-  let src_padded = `AVLIT (List.init (Z.to_int n) (fun i -> List.nth src (i mod len))) in
+  let src_padded = `AVLIT (List.init (len * Z.to_int n) (fun i -> List.nth src (i mod len))) in
   unpack_vinstr_11 parse_imov_at ctx lno dest_tok src_padded
 
 let recognize_instr_at ctx lno (instr : instr_t) =
