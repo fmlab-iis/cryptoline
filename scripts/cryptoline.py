@@ -354,7 +354,7 @@ def assert_unused_carries(instrs, annot=False, newline=False, check=False, cpath
         a list of instructions with assertions and assumptions inserted
     """
     res = []
-    cargs = "-v -disable_epost -disable_rpost -disable_safety -vracuts -1 " + cargs
+    cargs = "-v -disable_epost -disable_rpost -disable_safety -disable_eassertion -vracuts default -1 " + cargs
     used = set()
     instrs.reverse()
     for i in range(len(instrs)):
