@@ -82,7 +82,12 @@ procs:
 proc:
     PROC ID LPAR formals RPAR EQOP pre program post
                                                   { parse_proc (get_line_start()) $2 $4 $7 $8 $9 }
-  | CONST ID EQOP const_exp                       { parse_global_constant (get_line_start()) $2 $4 }
+  | CONST ID EQOP const_exp const_stmt_suffix     { parse_global_constant (get_line_start()) $2 $4 }
+;
+
+const_stmt_suffix:
+              {}
+  | SEMICOLON {}
 ;
 
 pre:
