@@ -819,7 +819,9 @@ cmpop_prefix:
 rexp_primary:
     defined_var                                   { parse_rexp_defined_var (get_line_start()) $1 }
   | CONST const_exp_primary const_exp_primary     { parse_rexp_const (get_line_start()) $2 $3 }
+  | CONST typ const_exp_primary                   { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $2)) $3 }
   | const_exp_primary AT const_exp_primary        { parse_rexp_const (get_line_start()) $3 $1 }
+  | const_exp_primary AT typ                      { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $3)) $1 }
   | LPAR rexp RPAR                                { fun ctx -> $2 ctx }
 ;
 
