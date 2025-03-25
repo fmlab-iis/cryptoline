@@ -390,13 +390,14 @@ def main():
 
   parser = ArgumentParser()
   parser.add_argument("gas_file", help="the gas file to be translated")
+  parser.add_argument("cl_file", help="the CL file for storing the translated result", nargs="?", default=None)
   parser.add_argument("-ac", "--auto-carry", help="automatically insert assertions and assumptions about unused carries", dest="auto_carries", action="store_true")
   parser.add_argument("-au", "--auto-unused", help="automatically mark unused variables", dest="auto_unused", action="store_true")
   parser.add_argument("--no-main", help="no `proc main`", dest="nomain", action="store_true")
   parser.add_argument("--no-pre", help="no precondition", dest="nopre", action="store_true")
   parser.add_argument("--no-post", help="no postcondition", dest="nopost", action="store_true")
   parser.add_argument("--no-sort", help="do not sort rules by length", dest="nosort", action="store_true")
-  parser.add_argument("-o", help="write output to the specified file", dest="output", default="")
+  parser.add_argument("-o", help="write output to the specified file", dest="output", default=None)
   parser.add_argument("-r", action="append", help="a file containing translation rules. Multiple -r arguments can be provided. A rule of a pattern in a former file has a higher priority than another rule of the same pattern in a latter file.", dest="rules", default=[])
   parser.add_argument("-re", help="use regular expressions in variable substitution", dest="use_re", action="store_true")
   parser.add_argument("-t", help="the default type of program inputs", dest="type", default="")
@@ -435,7 +436,13 @@ def main():
       print("  {} -> {}".format(i, tspec[1][i]))
 
   # Redirect output to a file
-  if (args.output != ""): sys.stdout = open(args.output, 'w')
+  output_file = None
+  if args.output != None and args.cl_file != None and args.output != args.cl_file:
+    print(f"Found multiple output files: {args.output}, {args.cl_file}. Please specify only one output file.")
+    sys.exit(-1)
+  if args.output != None: output_file = args.output
+  if args.cl_file != None: output_file = args.cl_file
+  if output_file != None: sys.stdout = open(output_file, 'w')
 
   # Translate instructions
   if verbose: t1 = process_time()
