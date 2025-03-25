@@ -499,8 +499,10 @@ val resolve_selection : ('a list -> selection -> 'a list) lined contextual
 val parse_typed_const : (typ -> Z.t contextual -> atom) lined contextual
 (** parse a typed constant *)
 
-val resolve_var_with : ([`AVAR of avar_prim_t] -> var) lined contextual
-(** resolve a scalar atom as a scalar variable *)
+val resolve_var_with : ?chktyp:bool -> ([`AVAR of avar_prim_t] -> atom) lined contextual
+(** Resolve a variable name as a scalar atom. if chktyp is false and the
+    variable name is a defined constant, the type of the constant is always
+    [bit_t]. *)
 
 val resolve_lv_with : (lv_prim_t -> typ option -> var) lined contextual
 (** resolve a scalar lvalue as a scalar variable *)
@@ -890,8 +892,14 @@ val parse_ebexp_vcmp : lno -> ecmpop -> eexp list contextual -> eexp list contex
 val parse_eexp_vec_elem : lno -> eexp list contextual -> Z.t -> eexp contextual
 (** [parse_eexp_vec_elem lno ve_tok zi] parses an access to a vector element *)
 
+val parse_eexp_defined_var : lno -> [`AVAR of avar_prim_t] -> eexp contextual
+(** [parse_eexp_defined_var lno v_tok] parses a defined var as an eexp *)
+
 val parse_eexp_pow : lno -> eexp contextual -> Z.t contextual -> eexp contextual
 (** [parse_eexp_pow lno e_tok i_tok] parses an exponentiation *)
+
+val parse_eexp_as_constant : lno -> eexp contextual -> Z.t contextual
+(** parse an eexp as a constant *)
 
 val parse_veexp_slices : lno -> eexp list contextual -> selection list -> eexp list contextual
 (** [parse_veexp_slices lno ve_tok sels] parses slices of vector eexps *)
@@ -1203,7 +1211,7 @@ val parse_fvar_cons : lno -> var_kind list -> var_kind list -> var_kind list
 
 (* ---------- Globals Parsing ---------- *)
 
-val parse_global_constant : lno -> string -> Z.t contextual -> unit contextual
+val parse_global_constant : lno -> string -> eexp contextual -> unit contextual
 (** [parse_global_constant lno name n_token] parses a globally defined named constant *)
 
 val parse_proc : lno -> string -> var_kind list * var_kind list -> tagged_bexp option contextual -> (lno * instr_t) list -> tagged_bexp_prove_with option contextual -> unit contextual

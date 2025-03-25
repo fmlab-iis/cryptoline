@@ -600,24 +600,45 @@ let parse_typed_const ctx lno ty n_token =
   in
   Aconst (ty, n)
 
-let resolve_var_with ctx lno (`AVAR {atmtyphint; atmname}) =
-  let v =
+let parse_named_constant lno cname =
+  fun ctx ->
+  try
+    SM.find cname ctx.cconsts
+  with Not_found ->
+    raise_at_line lno ("Undefined constant: " ^ cname)
+
+let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
+  let vo =
     try
-      ctx_find_var ctx atmname
+      Some (ctx_find_var ctx atmname)
     with Not_found ->
       begin
         try
-          ctx_find_ghost ctx atmname
+          Some (ctx_find_ghost ctx atmname)
         with Not_found ->
-          raise_at_line lno ("Variable " ^ atmname ^ " is undefined.")
+          None
       end in
-  let _ = match atmtyphint with
-    | None -> ()
-    | Some hinted_ty ->
-       if v.vtyp <> hinted_ty then
-         raise_at_line lno ("The type of variable " ^ atmname ^ " is inconsistent")
-       else () in
-  v
+  match vo with
+  | Some v ->
+     let _ =
+       match atmtyphint with
+       | None -> ()
+       | Some hinted_ty ->
+          if v.vtyp <> hinted_ty then
+            raise_at_line lno ("The type of variable " ^ atmname ^ " is inconsistent")
+          else () in
+     Avar v
+  | None ->
+     try
+       let n = parse_named_constant lno atmname ctx in
+       let ty = match atmtyphint with
+         | None -> if chktyp
+                   then raise_at_line lno (Printf.sprintf "Failed to infer the type of the constant %s" atmname)
+                   else bit_t
+         | Some ty -> ty in
+       Aconst (ty, n)
+     with Not_found ->
+       raise_at_line lno ("Variable " ^ atmname ^ " is undefined.")
 
 let resolve_lv_with ctx lno {lvname; lvtyphint} ty_opt =
   if ctx_name_is_ghost ctx lvname then
@@ -709,7 +730,7 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
                   | Some ty, _
                     | None, Some ty -> parse_typed_const ctx lno ty c.atmvalue
                   | _, _ -> raise_at_line lno ("Failed to determine the type of constant"))
-  | `AVAR v -> Avar (resolve_var_with ctx lno (`AVAR v))
+  | `AVAR v -> resolve_var_with ctx lno (`AVAR v)
   | `AVECELM v -> let (elmty, elms) = resolve_vec_with ctx lno (`AVECT { vecname = v.avecname; vectyphint = None }) in
                   let a =
                     try
@@ -2864,6 +2885,10 @@ let parse_eexp_vec_elem lno ve_tok zi =
   then raise_at_line lno ("Index is larger than " ^ (string_of_int (len-1)))
   else List.nth es i
 
+let parse_eexp_defined_var lno v_tok =
+  fun ctx ->
+  eexp_of_atom (resolve_var_with ~chktyp:false ctx lno v_tok)
+
 let parse_eexp_pow _lno e_tok i_tok =
   fun ctx ->
   let e = e_tok ctx in
@@ -2875,6 +2900,14 @@ let parse_eexp_pow _lno e_tok i_tok =
   if Z.equal i Z.zero then Econst Z.one
   else if Z.equal i Z.one then e
   else epow e (Econst i)
+
+let parse_eexp_as_constant lno e_tok =
+  fun ctx ->
+  let e = e_tok ctx in
+  try
+    eval_eexp_const e
+  with EvaluationException e ->
+    raise_at_line lno e
 
 let parse_veexp_slices lno ve_tok sels =
   fun ctx ->
@@ -3014,7 +3047,7 @@ let parse_rbexp_veqsrem lno ve1_tok ve2_tok vm_tok =
 
 let parse_rexp_defined_var lno v_tok =
   fun ctx ->
-  Rvar (resolve_var_with ctx lno v_tok)
+  rexp_of_atom (resolve_var_with ctx lno v_tok)
 
 let parse_rexp_const _lno w_tok n_tok =
   fun ctx ->
@@ -3358,13 +3391,6 @@ let parse_var_expansion lno prefix st ed =
       else v
     ) ((Z.to_int st)--(Z.to_int ed))
 
-let parse_named_constant lno cname =
-  fun ctx ->
-  try
-    SM.find cname ctx.cconsts
-  with Not_found ->
-    raise_at_line lno ("Undefined constant: " ^ cname)
-
 let parse_defined_var lno vname vtypopt =
   if vname = "_" then raise_at_line lno "Reading the value of variable _ is forbidden."
   else `AVAR { atmtyphint = vtypopt; atmname = vname }
@@ -3414,7 +3440,7 @@ let parse_fvar_cons lno fvs1 fvs2 =
 
 let parse_global_constant lno name n_token =
   fun ctx ->
-  let n = n_token ctx in
+  let n = eval_eexp_const (n_token ctx) in
   if SM.mem name ctx.cconsts
   then raise_at_line lno ("Redefined constant: " ^ name)
   else let _ = ctx.cconsts <- SM.add name n ctx.cconsts in

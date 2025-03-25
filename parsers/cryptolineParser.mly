@@ -82,7 +82,7 @@ procs:
 proc:
     PROC ID LPAR formals RPAR EQOP pre program post
                                                   { parse_proc (get_line_start()) $2 $4 $7 $8 $9 }
-  | CONST ID EQOP const_exp const_stmt_suffix     { parse_global_constant (get_line_start()) $2 $4 }
+  | CONST ID EQOP eexp const_stmt_suffix          { parse_global_constant (get_line_start()) $2 $4 }
 ;
 
 const_stmt_suffix:
@@ -671,11 +671,13 @@ cmpop_infix:
 ;
 
 eexp_primary:
-    defined_var                                   { let lno = get_line_start() in
-                                                    fun ctx -> Evar (resolve_var_with ctx lno $1)
-                                                  }
+    defined_var                                   { parse_eexp_defined_var (get_line_start()) $1 }
   | const                                         { fun ctx -> Econst ($1 ctx) }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
+;
+
+eexp_primary_as_const:
+  eexp_primary                                    { parse_eexp_as_constant (get_line_start()) $1 }
 ;
 
 eexp:
@@ -692,7 +694,7 @@ eexp:
   | eexp ADDOP eexp                               { fun ctx -> eadd ($1 ctx) ($3 ctx) }
   | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
-  | eexp POWOP const_exp_primary                  { parse_eexp_pow (get_line_start()) $1 $3 }
+  | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 $3 }
   | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
                                                   { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
@@ -734,7 +736,7 @@ veexp:
   | veexp ADDOP veexp                             { parse_veexp_add (get_line_start()) $1 $3 }
   | veexp SUBOP veexp                             { parse_veexp_sub (get_line_start()) $1 $3 }
   | veexp MULOP veexp                             { parse_veexp_mul (get_line_start()) $1 $3 }
-  | veexp POWOP const_exp_primary                 { parse_veexp_pow (get_line_start()) $1 $3 }
+  | veexp POWOP eexp_primary_as_const             { parse_veexp_pow (get_line_start()) $1 $3 }
   | veexp POWOP LSQUARE const_exp_list RSQUARE    { parse_veexp_pows (get_line_start()) $1 $4 }
   | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
                                                   { parse_veexp_limbs (get_line_start()) $2 $4 }
