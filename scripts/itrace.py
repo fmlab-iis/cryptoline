@@ -199,8 +199,9 @@ class ARM32(Extractor):
         debug("Effective address: Group 2: %s" % offset)
         addr = int(frame.read_register(base)) & 0xffffffff
         if base == 'pc':
-            cpsr = int(frame.read_register("cpsr"))
-            if cpsr & 0x20:     # is it Thumb?
+            isThumb = frame.architecture().name() == 'armv7e-m' or \
+                      int(frame.read_register("cpsr")) & 0x20 != 0
+            if isThumb:     # is it Thumb?
                 addr += 4
             else:
                 addr += 8
