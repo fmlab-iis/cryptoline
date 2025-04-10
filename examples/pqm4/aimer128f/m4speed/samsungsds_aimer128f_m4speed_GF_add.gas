@@ -1,0 +1,24 @@
+samsungsds_aimer128f_m4speed_GF_add:
+# r0 = 0x203fc7b8
+# r1 = 0x203fc788
+# r2 = 0x7238
+# r3 = 0x203fc778
+	#! -> SP = 0x203fc778
+	ldr.w	r3, [r1]                                  #! EA = L0x203fc788; Value = 0xb33290f1; PC = 0x5ee0
+	ldr.w	r12, [r2]                                 #! EA = L0x7238; Value = 0x03707344; PC = 0x5ee4
+	eor.w	r3, r3, r12                               #! PC = 0x5ee8
+	str.w	r3, [r0]                                  #! EA = L0x203fc7b8; PC = 0x5eec
+	ldr.w	r3, [r1, #4]                              #! EA = L0x203fc78c; Value = 0x0ac9f857; PC = 0x5ef0
+	ldr.w	r12, [r2, #4]                             #! EA = L0x723c; Value = 0x13198a2e; PC = 0x5ef4
+	eor.w	r3, r3, r12                               #! PC = 0x5ef8
+	str.w	r3, [r0, #4]                              #! EA = L0x203fc7bc; PC = 0x5efc
+	ldr.w	r3, [r1, #8]                              #! EA = L0x203fc790; Value = 0x7f2059ad; PC = 0x5f00
+	ldr.w	r12, [r2, #8]                             #! EA = L0x7240; Value = 0x85a308d3; PC = 0x5f04
+	eor.w	r3, r3, r12                               #! PC = 0x5f08
+	str.w	r3, [r0, #8]                              #! EA = L0x203fc7c0; PC = 0x5f0c
+	ldr.w	r3, [r1, #12]                             #! EA = L0x203fc794; Value = 0x229413f7; PC = 0x5f10
+	ldr.w	r12, [r2, #12]                            #! EA = L0x7244; Value = 0x243f6a88; PC = 0x5f14
+	eor.w	r3, r3, r12                               #! PC = 0x5f18
+	str.w	r3, [r0, #12]                             #! EA = L0x203fc7c4; PC = 0x5f1c
+	#! <- SP = 0x203fc778
+	#bx	lr                                          #! PC = 0x5f20
