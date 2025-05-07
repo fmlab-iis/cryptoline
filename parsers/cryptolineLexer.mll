@@ -249,8 +249,8 @@ token = parse
   | '&'                            { ANDOP }
   | "\xf0\x9f\x90\xac"             { DOLPHIN }
   (* Types *)
-  | ("uint"|"u") ((number+) as w)  { UINT (int_of_string w) }
-  | ("sint"|"int"|"i"|"s") ((number+) as w)
+  | ("uint") ((number+) as w)      { UINT (int_of_string w) }
+  | ("sint"|"int") ((number+) as w)
                                    { SINT (int_of_string w) }
   | "bit"                          { BIT }
   (* Numbers *)
