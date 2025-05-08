@@ -1,0 +1,40 @@
+#! $1c(sp) = %%EA
+#! $1c(ra) = %%EA
+#! $1c(a$2c) = %%EA
+#! $1c(t$2c) = %%EA
+#! a$1c = %%a$1c
+#! s$1c = %%s$1c
+#! t$1c = %%t$1c
+#! x$1c = %%x$1c
+#! ra = %%ra
+#! sp = %%sp
+
+#! add $1v, $2v, $3v -> add $1v $2v $3v
+#! addi $1v, $2v, $3c -> add $1v $2v ($3c)@int64
+#! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
+#! andi $1v, $2v, $3c -> and $1v@uint64 $2v ($3c)@int64
+#! lb $1v, $2ea -> cast lbs@int8 $2ea; vpc $1v@int64 lbs
+#! lbu $1v, $2ea -> cast lbs@uint8 $2ea; vpc $1v@uint64 lbs
+#! ld $1v, $2ea -> mov $1v $2ea
+#! li $1v, $2c -> mov $1v ($2c)@uint64
+#! lui $1v, $2c -> shl $1v ($2c)@int64 12@int64
+#! lw $1v, $2ea -> cast lws@int32 $2ea; vpc $1v@int64 lws
+#! mul $1v, $2v, $3v -> mull dc $1v $2v $3v
+#! mulhu $1v, $2v, $3v -> mull $1v dc $2v@uint64 $3v@uint64
+#! mv $1v, $2v -> mov $1v $2v
+#! neg $1v, $2v -> subc dc $1v 0@int64 $2v
+#! not $1v, $2v -> not $1v@uint64 $2v
+#! or $1v, $2v, $3v -> or $1v@uint64 $2v $3v
+#! sd $1v, $2ea -> mov $2ea $1v
+#! sw $1v, $2ea -> spl dc $2ea $1v 32
+#! slli $1v, $2v, $3c -> split dc slliL $2v (64-$3c); shl $1v slliL $3c@uint64
+#! slliw $1v, $2v, $3c -> split dc slliw $2v (32-$3c); shl slliw slliw $3c@uint64; spl dc0 L32 slliw;\ncast L32@int32 L32; vpc $1v@int64 L32
+#! sltiu $1v, $2v, $3c -> cast sltiu@uint64 $2v; subb borrow dc sltiu $3c@uint64; vpc $1v@uint64 borrow
+#! sltu $1v, $2v, $3v -> subb borrow dc $2v@uint64 $3v@uint64; vpc $1v@uint64 borrow
+#! srai $1v, $2v, $3c -> split $1v dc $2v $3c
+#! srli $1v, $2v, $3c -> cast srli@uint64 $2v; split $1v dc srli $3c
+#! srliw $1v, $2v, $3c -> spl dc L32 $2v 32; cast L32@int32 L32; split $1v dc1 L32 $3c; vpc $1v@int64 $1v
+#! sub $1v, $2v, $3v -> sub $1v $2v $3v
+#! xor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
+#! zext.b $1v, $2v -> split dc $1v $2v 8
+
