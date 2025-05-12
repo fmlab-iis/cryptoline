@@ -33,7 +33,7 @@
 #! sltu $1v, $2v, $3v -> subb $1v dc $2v@uint64 $3v@uint64; vpc $1v@uint64 $1v
 #! srai $1v, $2v, $3c -> split $1v dc $2v $3c
 #! srli $1v, $2v, $3c -> cast srli@uint64 $2v; split $1v dc srli $3c
-#! srliw $1v, $2v, $3c -> spl dc L32 $2v 32; cast L32@int32 L32; split $1v dc1 L32 $3c; vpc $1v@int64 $1v
+#! srliw $1v, $2v, $3c -> split dc srliw $2v 32; split $1v dc0 srliw $3c
 #! sub $1v, $2v, $3v -> sub $1v $2v $3v
 #! xor $1v, $2v, $3v -> xor $1v@uint64 $2v $3v
 #! zext.b $1v, $2v -> split dc $1v $2v 8
