@@ -29,8 +29,8 @@
 #! sw $1v, $2ea -> spl dc $2ea $1v 32
 #! slli $1v, $2v, $3c -> split dc slliL $2v (64-$3c); shl $1v slliL $3c@uint64
 #! slliw $1v, $2v, $3c -> split dc slliw $2v (32-$3c); shl slliw slliw $3c@uint64; spl dc0 L32 slliw;\ncast L32@int32 L32; vpc $1v@int64 L32
-#! sltiu $1v, $2v, $3c -> cast sltiu@uint64 $2v; subb borrow dc sltiu $3c@uint64; vpc $1v@uint64 borrow
-#! sltu $1v, $2v, $3v -> subb borrow dc $2v@uint64 $3v@uint64; vpc $1v@uint64 borrow
+#! sltiu $1v, $2v, $3c -> subb $1v dc $2v@uint64 $3c@uint64; vpc $1v@uint64 $1v
+#! sltu $1v, $2v, $3v -> subb $1v dc $2v@uint64 $3v@uint64; vpc $1v@uint64 $1v
 #! srai $1v, $2v, $3c -> split $1v dc $2v $3c
 #! srli $1v, $2v, $3c -> cast srli@uint64 $2v; split $1v dc srli $3c
 #! srliw $1v, $2v, $3c -> spl dc L32 $2v 32; cast L32@int32 L32; split $1v dc1 L32 $3c; vpc $1v@int64 $1v
