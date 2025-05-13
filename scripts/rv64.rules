@@ -13,6 +13,7 @@
 #! addi $1v, $2v, $3c -> add $1v $2v ($3c)@int64
 #! and $1v, $2v, $3v -> and $1v@uint64 $2v $3v
 #! andi $1v, $2v, $3c -> and $1v@uint64 $2v ($3c)@int64
+#! andn $1v, $2v, $3v -> not andn@uint64 $3v; and $1v@uint64 $2v andn
 #! lb $1v, $2ea -> cast lbs@int8 $2ea; vpc $1v@int64 lbs
 #! lbu $1v, $2ea -> cast lbs@uint8 $2ea; vpc $1v@uint64 lbs
 #! ld $1v, $2ea -> mov $1v $2ea
@@ -25,6 +26,8 @@
 #! neg $1v, $2v -> subc dc $1v 0@int64 $2v
 #! not $1v, $2v -> not $1v@uint64 $2v
 #! or $1v, $2v, $3v -> or $1v@uint64 $2v $3v
+#! rori $1v, $2v, $3c -> split roriL roriH $2v $3c; shl roriH roriH (64-$3c)@uint64;\nadd $1v roriL roriH
+#! roriw $1v, $2v, $3c -> spl dc L32 $2v 32; split roriwL roriwH L32 $3c;\nshl roriwH roriwH (32-$3c)@uint32; add $1v roriwL roriwH;\nvpc $1v@uint64 $1v
 #! sd $1v, $2ea -> mov $2ea $1v
 #! sw $1v, $2ea -> spl dc $2ea $1v 32
 #! slli $1v, $2v, $3c -> split dc slliL $2v (64-$3c); shl $1v slliL $3c@uint64
