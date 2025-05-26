@@ -78,12 +78,12 @@
 #! sbcs.w $1v, $2v, $3v -> sbcs carry $1v $2v $3v carry
 #! smlabb $1v, $2v, $3v, $4v -> spl dc $2vL $2v 16; cast $2vL@sint16 $2vL; spl dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vL $3vL; add $1v $4v prod
 #! smlabt $1v, $2v, $3v, $4v -> spl dc $2vL $2v 16; cast $2vL@sint16 $2vL; spl $3vH dc $3v 16; smulj prod $2vL $3vH; add $1v $4v prod
-#! smlal $1v, $2v, $3v, $4v -> smull smlH smlL $3v $4v; adds smlc $2v $2v smlL; adc $1v $1v smlH smlc
+#! smlal $1v, $2v, $3v, $4v -> smull smlH smlL $3v $4v; adds smlc $1v $1v smlL; adc $2v $2v smlH smlc
 #! smlatb $1v, $2v, $3v, $4v -> spl $2vH dc $2v 16; spl dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj prod $2vH $3vL; add $1v $4v prod
 #! smlatt $1v, $2v, $3v, $4v -> spl $2vH dc $2v 16; spl $3vH dc $3v 16; smulj prod $2vH $3vH; add $1v $4v prod
 #! smulbb $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vL $3vL
 #! smulbt $1v, $2v, $3v -> split dc $2vL $2v 16; cast $2vL@sint16 $2vL; split $3vH dc $3v 16; smulj $1v $2vL $3vH
-#! smull $1v, $2v, $3v, $4v -> smull $1v $2v $3v $4v
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v
 #! smultb $1v, $2v, $3v -> split $2vH dc $2v 16; split dc $3vL $3v 16; cast $3vL@sint16 $3vL; smulj $1v $2vH $3vL
 #! smultt $1v, $2v, $3v -> split $2vH dc $2v 16; split $3vH dc $3v 16; smulj $1v $2vH $3vH
 #! smulwb $1v, $2v, $3v -> split dc $3vL $3v 16; cast $3vL@sint32 $3vL; smulj $1vW $2v $3vL;\nspl $1vW dc $1vW 16; vpc $1v@sint32 $1vW
