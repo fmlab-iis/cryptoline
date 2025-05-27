@@ -1,13 +1,29 @@
-pqcrystals_dilithium_ntt:
+#! %%r1! = %%EA
+#! [pc, $1c] @ $2c = %%EA
+#! [r$1c, $2c] @ $3c = %%EA
+
+#! add.w $1v, %%r0, $2c @ $3c -> adds dc $1v r0 $2c@uint32
+#! add.w $1v, %%r0, $2c -> adds dc $1v r0 $2c@uint32
+#! cmp.w $1v, $2v -> (* cmp.w $1v, $2v *)\nnop
+#! cmp $1v, $2v -> (* cmp $1v, $2v *)\nnop
+#! mul.w $1v, $2v, $3v -> mull mdc $1v $2v $3v; cast $1v@int32 $1v
+#! smlal $1v, $2v, $3v, $4v -> smull smlH smlL $3v $4v; cast $1v@uint32 $1v; adds smlc $1v $1v smlL;\ncast $1v@int32 $1v; adc $2v $2v smlH smlc
+#! smull $1v, $2v, $3v, $4v -> smull $2v $1v $3v $4v; cast $1v@int32 $1v
+#! sub.w $1v, $2v, $3v, lsl \#1 -> shl slsl $3v 1@int32; sub $1v $2v slsl
+#! sub.w $1v, %%r0, $2c @ $3c -> subs dc $1v r0 $2c@uint32
+#! sub.w $1v, %%r0, $2c -> subs dc $1v r0 $2c@uint32
+#! vldmia $1ea, {%%s2-%%s8} -> mov [s2,s3,s4,s5,s6,s7,s8]\n    [$1ea[+0],$1ea[+4],$1ea[+8],$1ea[+12],$1ea[+16],$1ea[+20],$1ea[+24]]
+
+#pqcrystals_dilithium_ntt:
 # r0 = 0x203f0728
 # r1 = 0x203f0728
 # r2 = 0x0
 # r3 = 0xfffffffc
 	#! -> SP = 0x203ef248
-	stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}#! EA = L0x203ef248; PC = 0x5374
-	ldr.w	r2, [pc, #2544]	@ 0x5d6c <inv_ntt_asm_smull_qinv>#! EA = L0x5d6c; Value = 0xfc7fdfff; PC = 0x5378
-	ldr.w	r3, [pc, #2544]	@ 0x5d70 <inv_ntt_asm_smull_q>#! EA = L0x5d70; Value = 0x007fe001; PC = 0x537c
-	ldr.w	r1, [pc, #1460]	@ 0x5938 <pqcrystals_dilithium_ntt+1476>#! EA = L0x5938; Value = 0x00007f98; PC = 0x5380
+	#stmdb	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, lr}#! EA = L0x203ef248; PC = 0x5374
+	ldr.w	r2, [pc, #2544]	@ 0x5d6c #! EA = L0x5d6c; Value = 0xfc7fdfff; PC = 0x5378
+	ldr.w	r3, [pc, #2544]	@ 0x5d70 #! EA = L0x5d70; Value = 0x007fe001; PC = 0x537c
+	ldr.w	r1, [pc, #1460]	@ 0x5938 #! EA = L0x5938; Value = 0x00007f98; PC = 0x5380
 	vldmia	r1!, {s2-s8}                             #! EA = L0x7f98; PC = 0x5384
 	vmov	s0, r1                                     #! PC = 0x5388
 	add.w	r10, r0, #128	@ 0x80                      #! PC = 0x538c
@@ -7611,10 +7627,10 @@ pqcrystals_dilithium_ntt:
 	str.w	r5, [r0], #16                             #! EA = L0x203f0b18; PC = 0x5928
 	cmp.w	r4, r0                                    #! PC = 0x592c
 	#bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930
-	ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x203ef224; Value = 0x203f0b28; PC = 0x5934
+	#ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x203ef224; Value = 0x203f0b28; PC = 0x5934
 	cmp	r4, r5                                      #! PC = 0x445a
 	#bne.n	0x4450 <pqcrystals_dilithium_polyvecl_ntt+8>#! PC = 0x445c
 	mov	r0, r4                                      #! PC = 0x4450
-	add.w	r4, r4, #1024	@ 0x400                     #! PC = 0x4452
+	#add.w	r4, r4, #1024	@ 0x400                     #! PC = 0x4452
 	#bl	0x3c94 <pqcrystals_dilithium_poly_ntt>      #! PC = 0x4456
 	#! -> SP = 0x203ef248
