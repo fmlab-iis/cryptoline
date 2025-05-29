@@ -1,3 +1,27 @@
+(* popper: cv.exe -v -isafety -slicing -enable_rewriting:eqmod -jobs 128 pqcrystals_dilithium_ntt.cl
+Parsing CryptoLine file:                [OK]            0.1242 seconds
+Checking well-formedness:               [OK]            0.0447 seconds
+
+Procedure main
+==============
+Transforming to SSA form:               [OK]            0.0266 seconds
+Normalizing specification:              [OK]            0.0234 seconds
+Rewriting assignments:                  [OK]            0.0218 seconds
+Verifying program safety:               [OK]            1097.9075 seconds
+Verifying range assertions:             [OK]            0.0030 seconds
+Verifying range specification:          [OK]            228.0362 seconds
+Rewriting value-preserved casting:      [OK]            0.0068 seconds
+Verifying algebraic assertions:         [OK]            13.1546 seconds
+Verifying algebraic specification:      [OK]            6906.6068 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                 [OK]            8245.8013 seconds
+
+Summary
+=======
+Verification result:                    [OK]            8245.9672 seconds
+*)
 proc main (
 int32 c00,int32 c01,int32 c02,int32 c03,int32 c04,int32 c05,int32 c06,
 int32 c07,int32 c08,int32 c09,int32 c0a,int32 c0b,int32 c0c,int32 c0d,
@@ -175,6 +199,7 @@ Q = 8380417@32 /\ Q2 = 4190208@32 /\ NQ2 = (-4190209)@32 /\
 
 }
 
+
 (**************** inputs ****************)
 
 mov L0x203f0728 c00; mov L0x203f072c c01; mov L0x203f0730 c02;
@@ -263,6 +288,53 @@ mov L0x203f0b00 cf6; mov L0x203f0b04 cf7; mov L0x203f0b08 cf8;
 mov L0x203f0b0c cf9; mov L0x203f0b10 cfa; mov L0x203f0b14 cfb;
 mov L0x203f0b18 cfc; mov L0x203f0b1c cfd; mov L0x203f0b20 cfe;
 mov L0x203f0b24 cff;
+
+(**************** input polynomial ****************)
+
+ghost F@int32:
+F**2 = c00*X**  0+c01*X**  1+c02*X**  2+c03*X**  3+c04*X**  4+c05*X**  5+
+       c06*X**  6+c07*X**  7+c08*X**  8+c09*X**  9+c0a*X** 10+c0b*X** 11+
+       c0c*X** 12+c0d*X** 13+c0e*X** 14+c0f*X** 15+c10*X** 16+c11*X** 17+
+       c12*X** 18+c13*X** 19+c14*X** 20+c15*X** 21+c16*X** 22+c17*X** 23+
+       c18*X** 24+c19*X** 25+c1a*X** 26+c1b*X** 27+c1c*X** 28+c1d*X** 29+
+       c1e*X** 30+c1f*X** 31+c20*X** 32+c21*X** 33+c22*X** 34+c23*X** 35+
+       c24*X** 36+c25*X** 37+c26*X** 38+c27*X** 39+c28*X** 40+c29*X** 41+
+       c2a*X** 42+c2b*X** 43+c2c*X** 44+c2d*X** 45+c2e*X** 46+c2f*X** 47+
+       c30*X** 48+c31*X** 49+c32*X** 50+c33*X** 51+c34*X** 52+c35*X** 53+
+       c36*X** 54+c37*X** 55+c38*X** 56+c39*X** 57+c3a*X** 58+c3b*X** 59+
+       c3c*X** 60+c3d*X** 61+c3e*X** 62+c3f*X** 63+c40*X** 64+c41*X** 65+
+       c42*X** 66+c43*X** 67+c44*X** 68+c45*X** 69+c46*X** 70+c47*X** 71+
+       c48*X** 72+c49*X** 73+c4a*X** 74+c4b*X** 75+c4c*X** 76+c4d*X** 77+
+       c4e*X** 78+c4f*X** 79+c50*X** 80+c51*X** 81+c52*X** 82+c53*X** 83+
+       c54*X** 84+c55*X** 85+c56*X** 86+c57*X** 87+c58*X** 88+c59*X** 89+
+       c5a*X** 90+c5b*X** 91+c5c*X** 92+c5d*X** 93+c5e*X** 94+c5f*X** 95+
+       c60*X** 96+c61*X** 97+c62*X** 98+c63*X** 99+c64*X**100+c65*X**101+
+       c66*X**102+c67*X**103+c68*X**104+c69*X**105+c6a*X**106+c6b*X**107+
+       c6c*X**108+c6d*X**109+c6e*X**110+c6f*X**111+c70*X**112+c71*X**113+
+       c72*X**114+c73*X**115+c74*X**116+c75*X**117+c76*X**118+c77*X**119+
+       c78*X**120+c79*X**121+c7a*X**122+c7b*X**123+c7c*X**124+c7d*X**125+
+       c7e*X**126+c7f*X**127+c80*X**128+c81*X**129+c82*X**130+c83*X**131+
+       c84*X**132+c85*X**133+c86*X**134+c87*X**135+c88*X**136+c89*X**137+
+       c8a*X**138+c8b*X**139+c8c*X**140+c8d*X**141+c8e*X**142+c8f*X**143+
+       c90*X**144+c91*X**145+c92*X**146+c93*X**147+c94*X**148+c95*X**149+
+       c96*X**150+c97*X**151+c98*X**152+c99*X**153+c9a*X**154+c9b*X**155+
+       c9c*X**156+c9d*X**157+c9e*X**158+c9f*X**159+ca0*X**160+ca1*X**161+
+       ca2*X**162+ca3*X**163+ca4*X**164+ca5*X**165+ca6*X**166+ca7*X**167+
+       ca8*X**168+ca9*X**169+caa*X**170+cab*X**171+cac*X**172+cad*X**173+
+       cae*X**174+caf*X**175+cb0*X**176+cb1*X**177+cb2*X**178+cb3*X**179+
+       cb4*X**180+cb5*X**181+cb6*X**182+cb7*X**183+cb8*X**184+cb9*X**185+
+       cba*X**186+cbb*X**187+cbc*X**188+cbd*X**189+cbe*X**190+cbf*X**191+
+       cc0*X**192+cc1*X**193+cc2*X**194+cc3*X**195+cc4*X**196+cc5*X**197+
+       cc6*X**198+cc7*X**199+cc8*X**200+cc9*X**201+cca*X**202+ccb*X**203+
+       ccc*X**204+ccd*X**205+cce*X**206+ccf*X**207+cd0*X**208+cd1*X**209+
+       cd2*X**210+cd3*X**211+cd4*X**212+cd5*X**213+cd6*X**214+cd7*X**215+
+       cd8*X**216+cd9*X**217+cda*X**218+cdb*X**219+cdc*X**220+cdd*X**221+
+       cde*X**222+cdf*X**223+ce0*X**224+ce1*X**225+ce2*X**226+ce3*X**227+
+       ce4*X**228+ce5*X**229+ce6*X**230+ce7*X**231+ce8*X**232+ce9*X**233+
+       cea*X**234+ceb*X**235+cec*X**236+ced*X**237+cee*X**238+cef*X**239+
+       cf0*X**240+cf1*X**241+cf2*X**242+cf3*X**243+cf4*X**244+cf5*X**245+
+       cf6*X**246+cf7*X**247+cf8*X**248+cf9*X**249+cfa*X**250+cfb*X**251+
+       cfc*X**252+cfd*X**253+cfe*X**254+cff*X**255 && true;
 
 nondet L0x5938@uint32;
 nondet r0@uint32;
@@ -16640,6 +16712,11 @@ mov r6 L0x203f072c;
 mov r7 L0x203f0730;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0734; Value = 0xffda1667; PC = 0x58d0 *)
 mov r8 L0x203f0734;
+
+ghost r5o192@int32, r6o192@int32, r7o192@int32, r8o192@int32:
+      r5o192 = r5 /\ r6o192 = r6 /\ r7o192 = r7 /\ r8o192 = r8
+   && r5o192 = r5 /\ r6o192 = r6 /\ r7o192 = r7 /\ r8o192 = r8;
+   
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -16654,6 +16731,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o192,r8o192]*[K**  2,K**  2])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o192,r8o192]*[K**  2,K**  2])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -16662,6 +16747,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o193@int32, r8o193@int32:
+      r6o193 = r6 /\ r8o193 = r8
+   && r6o193 = r6 /\ r8o193 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -16676,6 +16766,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o193,r8o193]*[K**  1,K**129])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o193,r8o193]*[K**  1,K**129])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -16695,6 +16793,32 @@ mov L0x203f0728 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 64 ****************)
+
+cut eqmod L0x203f0728 (poly X [r5o192,r6o192,r7o192,r8o192]) [Q,X-K**  1]/\
+    eqmod L0x203f072c (poly X [r5o192,r6o192,r7o192,r8o192]) [Q,X-K**257]/\
+    eqmod L0x203f0730 (poly X [r5o192,r6o192,r7o192,r8o192]) [Q,X-K**129]/\
+    eqmod L0x203f0734 (poly X [r5o192,r6o192,r7o192,r8o192]) [Q,X-K**385]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]/\
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]/\
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]/\
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]/\
+    [L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+     
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80a4; Value = 0x002358d4; PC = 0x58b8 *)
@@ -16711,6 +16835,11 @@ mov r6 L0x203f073c;
 mov r7 L0x203f0740;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0744; Value = 0x005244e3; PC = 0x58d0 *)
 mov r8 L0x203f0744;
+
+ghost r5o194@int32, r6o194@int32, r7o194@int32, r8o194@int32:
+      r5o194 = r5 /\ r6o194 = r6 /\ r7o194 = r7 /\ r8o194 = r8
+   && r5o194 = r5 /\ r6o194 = r6 /\ r7o194 = r7 /\ r8o194 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -16725,6 +16854,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o194,r8o194]*[K**130,K**130])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o194,r8o194]*[K**130,K**130])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -16733,6 +16870,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o195@int32, r8o195@int32:
+      r6o195 = r6 /\ r8o195 = r8
+   && r6o195 = r6 /\ r8o195 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -16747,6 +16889,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o195,r8o195]*[K** 65,K**193])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o195,r8o195]*[K** 65,K**193])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -16766,6 +16916,32 @@ mov L0x203f0738 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 65 ****************)
+
+cut eqmod L0x203f0738 (poly X [r5o194,r6o194,r7o194,r8o194]) [Q,X-K** 65]/\
+    eqmod L0x203f073c (poly X [r5o194,r6o194,r7o194,r8o194]) [Q,X-K**321]/\
+    eqmod L0x203f0740 (poly X [r5o194,r6o194,r7o194,r8o194]) [Q,X-K**193]/\
+    eqmod L0x203f0744 (poly X [r5o194,r6o194,r7o194,r8o194]) [Q,X-K**449]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]/\
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]/\
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]/\
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]/\
+    [L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80b0; Value = 0xffccff72; PC = 0x58b8 *)
@@ -16782,6 +16958,11 @@ mov r6 L0x203f074c;
 mov r7 L0x203f0750;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0754; Value = 0xffd26d3a; PC = 0x58d0 *)
 mov r8 L0x203f0754;
+
+ghost r5o196@int32, r6o196@int32, r7o196@int32, r8o196@int32:
+      r5o196 = r5 /\ r6o196 = r6 /\ r7o196 = r7 /\ r8o196 = r8
+   && r5o196 = r5 /\ r6o196 = r6 /\ r7o196 = r7 /\ r8o196 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -16796,6 +16977,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o196,r8o196]*[K** 66,K** 66])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o196,r8o196]*[K** 66,K** 66])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -16804,6 +16993,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o197@int32, r8o197@int32:
+      r6o197 = r6 /\ r8o197 = r8
+   && r6o197 = r6 /\ r8o197 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -16818,6 +17012,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o197,r8o197]*[K** 33,K**161])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o197,r8o197]*[K** 33,K**161])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -16837,6 +17039,32 @@ mov L0x203f0748 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 66 ****************)
+
+cut eqmod L0x203f0748 (poly X [r5o196,r6o196,r7o196,r8o196]) [Q,X-K** 33]/\
+    eqmod L0x203f074c (poly X [r5o196,r6o196,r7o196,r8o196]) [Q,X-K**289]/\
+    eqmod L0x203f0750 (poly X [r5o196,r6o196,r7o196,r8o196]) [Q,X-K**161]/\
+    eqmod L0x203f0754 (poly X [r5o196,r6o196,r7o196,r8o196]) [Q,X-K**417]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]/\
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]/\
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]/\
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]/\
+    [L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80bc; Value = 0xffdaab9f; PC = 0x58b8 *)
@@ -16853,6 +17081,11 @@ mov r6 L0x203f075c;
 mov r7 L0x203f0760;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0764; Value = 0xff5e23a4; PC = 0x58d0 *)
 mov r8 L0x203f0764;
+
+ghost r5o198@int32, r6o198@int32, r7o198@int32, r8o198@int32:
+      r5o198 = r5 /\ r6o198 = r6 /\ r7o198 = r7 /\ r8o198 = r8
+   && r5o198 = r5 /\ r6o198 = r6 /\ r7o198 = r7 /\ r8o198 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -16867,6 +17100,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o198,r8o198]*[K**194,K**194])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o198,r8o198]*[K**194,K**194])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -16875,6 +17116,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o199@int32, r8o199@int32:
+      r6o199 = r6 /\ r8o199 = r8
+   && r6o199 = r6 /\ r8o199 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -16889,6 +17135,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o199,r8o199]*[K** 97,K**225])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o199,r8o199]*[K** 97,K**225])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -16908,6 +17162,32 @@ mov L0x203f0758 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 67 ****************)
+
+cut eqmod L0x203f0758 (poly X [r5o198,r6o198,r7o198,r8o198]) [Q,X-K** 97]/\
+    eqmod L0x203f075c (poly X [r5o198,r6o198,r7o198,r8o198]) [Q,X-K**353]/\
+    eqmod L0x203f0760 (poly X [r5o198,r6o198,r7o198,r8o198]) [Q,X-K**225]/\
+    eqmod L0x203f0764 (poly X [r5o198,r6o198,r7o198,r8o198]) [Q,X-K**481]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]/\
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]/\
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]/\
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]/\
+    [L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80c8; Value = 0x000412f5; PC = 0x58b8 *)
@@ -16924,6 +17204,11 @@ mov r6 L0x203f076c;
 mov r7 L0x203f0770;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0774; Value = 0x003d0197; PC = 0x58d0 *)
 mov r8 L0x203f0774;
+
+ghost r5o200@int32, r6o200@int32, r7o200@int32, r8o200@int32:
+      r5o200 = r5 /\ r6o200 = r6 /\ r7o200 = r7 /\ r8o200 = r8
+   && r5o200 = r5 /\ r6o200 = r6 /\ r7o200 = r7 /\ r8o200 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -16938,6 +17223,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o200,r8o200]*[K** 34,K** 34])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o200,r8o200]*[K** 34,K** 34])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -16946,6 +17239,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o201@int32, r8o201@int32:
+      r6o201 = r6 /\ r8o201 = r8
+   && r6o201 = r6 /\ r8o201 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -16960,6 +17258,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o201,r8o201]*[K** 17,K**145])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o201,r8o201]*[K** 17,K**145])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -16979,6 +17285,32 @@ mov L0x203f0768 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 68 ****************)
+
+cut eqmod L0x203f0768 (poly X [r5o200,r6o200,r7o200,r8o200]) [Q,X-K** 17]/\
+    eqmod L0x203f076c (poly X [r5o200,r6o200,r7o200,r8o200]) [Q,X-K**273]/\
+    eqmod L0x203f0770 (poly X [r5o200,r6o200,r7o200,r8o200]) [Q,X-K**145]/\
+    eqmod L0x203f0774 (poly X [r5o200,r6o200,r7o200,r8o200]) [Q,X-K**401]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]/\
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]/\
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]/\
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]/\
+    [L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80d4; Value = 0xffed24f0; PC = 0x58b8 *)
@@ -16995,6 +17327,11 @@ mov r6 L0x203f077c;
 mov r7 L0x203f0780;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0784; Value = 0x0048a13b; PC = 0x58d0 *)
 mov r8 L0x203f0784;
+
+ghost r5o202@int32, r6o202@int32, r7o202@int32, r8o202@int32:
+      r5o202 = r5 /\ r6o202 = r6 /\ r7o202 = r7 /\ r8o202 = r8
+   && r5o202 = r5 /\ r6o202 = r6 /\ r7o202 = r7 /\ r8o202 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17009,6 +17346,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o202,r8o202]*[K**162,K**162])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o202,r8o202]*[K**162,K**162])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17017,6 +17362,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o203@int32, r8o203@int32:
+      r6o203 = r6 /\ r8o203 = r8
+   && r6o203 = r6 /\ r8o203 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17031,6 +17381,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o203,r8o203]*[K** 81,K**209])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o203,r8o203]*[K** 81,K**209])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17050,6 +17408,32 @@ mov L0x203f0778 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 69 ****************)
+
+cut eqmod L0x203f0778 (poly X [r5o202,r6o202,r7o202,r8o202]) [Q,X-K** 81]/\
+    eqmod L0x203f077c (poly X [r5o202,r6o202,r7o202,r8o202]) [Q,X-K**337]/\
+    eqmod L0x203f0780 (poly X [r5o202,r6o202,r7o202,r8o202]) [Q,X-K**209]/\
+    eqmod L0x203f0784 (poly X [r5o202,r6o202,r7o202,r8o202]) [Q,X-K**465]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]/\
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]/\
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]/\
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]/\
+    [L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80e0; Value = 0xffca48a0; PC = 0x58b8 *)
@@ -17066,6 +17450,11 @@ mov r6 L0x203f078c;
 mov r7 L0x203f0790;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0794; Value = 0x0028aa5c; PC = 0x58d0 *)
 mov r8 L0x203f0794;
+
+ghost r5o204@int32, r6o204@int32, r7o204@int32, r8o204@int32:
+      r5o204 = r5 /\ r6o204 = r6 /\ r7o204 = r7 /\ r8o204 = r8
+   && r5o204 = r5 /\ r6o204 = r6 /\ r7o204 = r7 /\ r8o204 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17080,6 +17469,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o204,r8o204]*[K** 98,K** 98])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o204,r8o204]*[K** 98,K** 98])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17088,6 +17485,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o205@int32, r8o205@int32:
+      r6o205 = r6 /\ r8o205 = r8
+   && r6o205 = r6 /\ r8o205 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17102,6 +17504,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o205,r8o205]*[K** 49,K**177])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o205,r8o205]*[K** 49,K**177])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17121,6 +17531,32 @@ mov L0x203f0788 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 70 ****************)
+
+cut eqmod L0x203f0788 (poly X [r5o204,r6o204,r7o204,r8o204]) [Q,X-K** 49]/\
+    eqmod L0x203f078c (poly X [r5o204,r6o204,r7o204,r8o204]) [Q,X-K**305]/\
+    eqmod L0x203f0790 (poly X [r5o204,r6o204,r7o204,r8o204]) [Q,X-K**177]/\
+    eqmod L0x203f0794 (poly X [r5o204,r6o204,r7o204,r8o204]) [Q,X-K**433]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]/\
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]/\
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]/\
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]/\
+    [L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80ec; Value = 0xffedbb56; PC = 0x58b8 *)
@@ -17137,6 +17573,11 @@ mov r6 L0x203f079c;
 mov r7 L0x203f07a0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07a4; Value = 0xffbe6d6a; PC = 0x58d0 *)
 mov r8 L0x203f07a4;
+
+ghost r5o206@int32, r6o206@int32, r7o206@int32, r8o206@int32:
+      r5o206 = r5 /\ r6o206 = r6 /\ r7o206 = r7 /\ r8o206 = r8
+   && r5o206 = r5 /\ r6o206 = r6 /\ r7o206 = r7 /\ r8o206 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17151,6 +17592,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o206,r8o206]*[K**226,K**226])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o206,r8o206]*[K**226,K**226])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17159,6 +17608,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o207@int32, r8o207@int32:
+      r6o207 = r6 /\ r8o207 = r8
+   && r6o207 = r6 /\ r8o207 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17173,6 +17627,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o207,r8o207]*[K**113,K**241])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o207,r8o207]*[K**113,K**241])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17192,6 +17654,32 @@ mov L0x203f0798 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 71 ****************)
+
+cut eqmod L0x203f0798 (poly X [r5o206,r6o206,r7o206,r8o206]) [Q,X-K**113]/\
+    eqmod L0x203f079c (poly X [r5o206,r6o206,r7o206,r8o206]) [Q,X-K**369]/\
+    eqmod L0x203f07a0 (poly X [r5o206,r6o206,r7o206,r8o206]) [Q,X-K**241]/\
+    eqmod L0x203f07a4 (poly X [r5o206,r6o206,r7o206,r8o206]) [Q,X-K**497]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]/\
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]/\
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]/\
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]/\
+    [L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [32,33,34,35]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x80f8; Value = 0x000dbe5e; PC = 0x58b8 *)
@@ -17208,6 +17696,11 @@ mov r6 L0x203f07ac;
 mov r7 L0x203f07b0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07b4; Value = 0x000d23a8; PC = 0x58d0 *)
 mov r8 L0x203f07b4;
+
+ghost r5o208@int32, r6o208@int32, r7o208@int32, r8o208@int32:
+      r5o208 = r5 /\ r6o208 = r6 /\ r7o208 = r7 /\ r8o208 = r8
+   && r5o208 = r5 /\ r6o208 = r6 /\ r7o208 = r7 /\ r8o208 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17222,6 +17715,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o208,r8o208]*[K** 18,K** 18])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o208,r8o208]*[K** 18,K** 18])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17230,6 +17731,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o209@int32, r8o209@int32:
+      r6o209 = r6 /\ r8o209 = r8
+   && r6o209 = r6 /\ r8o209 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17244,6 +17750,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o209,r8o209]*[K**  9,K**137])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o209,r8o209]*[K**  9,K**137])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17263,6 +17777,32 @@ mov L0x203f07a8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 72 ****************)
+
+cut eqmod L0x203f07a8 (poly X [r5o208,r6o208,r7o208,r8o208]) [Q,X-K**  9]/\
+    eqmod L0x203f07ac (poly X [r5o208,r6o208,r7o208,r8o208]) [Q,X-K**265]/\
+    eqmod L0x203f07b0 (poly X [r5o208,r6o208,r7o208,r8o208]) [Q,X-K**137]/\
+    eqmod L0x203f07b4 (poly X [r5o208,r6o208,r7o208,r8o208]) [Q,X-K**393]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]/\
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]/\
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]/\
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]/\
+    [L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8104; Value = 0x000de0e6; PC = 0x58b8 *)
@@ -17279,6 +17819,11 @@ mov r6 L0x203f07bc;
 mov r7 L0x203f07c0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07c4; Value = 0xff95defc; PC = 0x58d0 *)
 mov r8 L0x203f07c4;
+
+ghost r5o210@int32, r6o210@int32, r7o210@int32, r8o210@int32:
+      r5o210 = r5 /\ r6o210 = r6 /\ r7o210 = r7 /\ r8o210 = r8
+   && r5o210 = r5 /\ r6o210 = r6 /\ r7o210 = r7 /\ r8o210 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17293,6 +17838,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o210,r8o210]*[K**146,K**146])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o210,r8o210]*[K**146,K**146])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17301,6 +17854,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o211@int32, r8o211@int32:
+      r6o211 = r6 /\ r8o211 = r8
+   && r6o211 = r6 /\ r8o211 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17315,6 +17873,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o211,r8o211]*[K** 73,K**201])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o211,r8o211]*[K** 73,K**201])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17334,6 +17900,32 @@ mov L0x203f07b8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 73 ****************)
+
+cut eqmod L0x203f07b8 (poly X [r5o210,r6o210,r7o210,r8o210]) [Q,X-K** 73]/\
+    eqmod L0x203f07bc (poly X [r5o210,r6o210,r7o210,r8o210]) [Q,X-K**329]/\
+    eqmod L0x203f07c0 (poly X [r5o210,r6o210,r7o210,r8o210]) [Q,X-K**201]/\
+    eqmod L0x203f07c4 (poly X [r5o210,r6o210,r7o210,r8o210]) [Q,X-K**457]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]/\
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]/\
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]/\
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]/\
+    [L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8110; Value = 0x00078f83; PC = 0x58b8 *)
@@ -17350,6 +17942,11 @@ mov r6 L0x203f07cc;
 mov r7 L0x203f07d0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07d4; Value = 0xffdbe53d; PC = 0x58d0 *)
 mov r8 L0x203f07d4;
+
+ghost r5o212@int32, r6o212@int32, r7o212@int32, r8o212@int32:
+      r5o212 = r5 /\ r6o212 = r6 /\ r7o212 = r7 /\ r8o212 = r8
+   && r5o212 = r5 /\ r6o212 = r6 /\ r7o212 = r7 /\ r8o212 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17364,6 +17961,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o212,r8o212]*[K** 82,K** 82])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o212,r8o212]*[K** 82,K** 82])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17372,6 +17977,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o213@int32, r8o213@int32:
+      r6o213 = r6 /\ r8o213 = r8
+   && r6o213 = r6 /\ r8o213 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17386,6 +17996,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o213,r8o213]*[K** 41,K**169])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o213,r8o213]*[K** 41,K**169])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17405,6 +18023,32 @@ mov L0x203f07c8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 74 ****************)
+
+cut eqmod L0x203f07c8 (poly X [r5o212,r6o212,r7o212,r8o212]) [Q,X-K** 41]/\
+    eqmod L0x203f07cc (poly X [r5o212,r6o212,r7o212,r8o212]) [Q,X-K**297]/\
+    eqmod L0x203f07d0 (poly X [r5o212,r6o212,r7o212,r8o212]) [Q,X-K**169]/\
+    eqmod L0x203f07d4 (poly X [r5o212,r6o212,r7o212,r8o212]) [Q,X-K**425]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]/\
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]/\
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]/\
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]/\
+    [L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x811c; Value = 0xffff5704; PC = 0x58b8 *)
@@ -17421,6 +18065,11 @@ mov r6 L0x203f07dc;
 mov r7 L0x203f07e0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07e4; Value = 0x001975fb; PC = 0x58d0 *)
 mov r8 L0x203f07e4;
+
+ghost r5o214@int32, r6o214@int32, r7o214@int32, r8o214@int32:
+      r5o214 = r5 /\ r6o214 = r6 /\ r7o214 = r7 /\ r8o214 = r8
+   && r5o214 = r5 /\ r6o214 = r6 /\ r7o214 = r7 /\ r8o214 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17435,6 +18084,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o214,r8o214]*[K**210,K**210])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o214,r8o214]*[K**210,K**210])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17443,6 +18100,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o215@int32, r8o215@int32:
+      r6o215 = r6 /\ r8o215 = r8
+   && r6o215 = r6 /\ r8o215 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17457,6 +18119,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o215,r8o215]*[K**105,K**233])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o215,r8o215]*[K**105,K**233])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17476,6 +18146,32 @@ mov L0x203f07d8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 75 ****************)
+
+cut eqmod L0x203f07d8 (poly X [r5o214,r6o214,r7o214,r8o214]) [Q,X-K**105]/\
+    eqmod L0x203f07dc (poly X [r5o214,r6o214,r7o214,r8o214]) [Q,X-K**361]/\
+    eqmod L0x203f07e0 (poly X [r5o214,r6o214,r7o214,r8o214]) [Q,X-K**233]/\
+    eqmod L0x203f07e4 (poly X [r5o214,r6o214,r7o214,r8o214]) [Q,X-K**489]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]/\
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]/\
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]/\
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]/\
+    [L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8128; Value = 0xfff60021; PC = 0x58b8 *)
@@ -17492,6 +18188,11 @@ mov r6 L0x203f07ec;
 mov r7 L0x203f07f0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f07f4; Value = 0x000a5c25; PC = 0x58d0 *)
 mov r8 L0x203f07f4;
+
+ghost r5o216@int32, r6o216@int32, r7o216@int32, r8o216@int32:
+      r5o216 = r5 /\ r6o216 = r6 /\ r7o216 = r7 /\ r8o216 = r8
+   && r5o216 = r5 /\ r6o216 = r6 /\ r7o216 = r7 /\ r8o216 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17506,6 +18207,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o216,r8o216]*[K** 50,K** 50])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o216,r8o216]*[K** 50,K** 50])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17514,6 +18223,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o217@int32, r8o217@int32:
+      r6o217 = r6 /\ r8o217 = r8
+   && r6o217 = r6 /\ r8o217 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17528,6 +18242,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o217,r8o217]*[K** 25,K**153])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o217,r8o217]*[K** 25,K**153])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17547,6 +18269,32 @@ mov L0x203f07e8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 76 ****************)
+
+cut eqmod L0x203f07e8 (poly X [r5o216,r6o216,r7o216,r8o216]) [Q,X-K** 25]/\
+    eqmod L0x203f07ec (poly X [r5o216,r6o216,r7o216,r8o216]) [Q,X-K**281]/\
+    eqmod L0x203f07f0 (poly X [r5o216,r6o216,r7o216,r8o216]) [Q,X-K**153]/\
+    eqmod L0x203f07f4 (poly X [r5o216,r6o216,r7o216,r8o216]) [Q,X-K**409]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]/\
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]/\
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]/\
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]/\
+    [L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8134; Value = 0x001f0084; PC = 0x58b8 *)
@@ -17563,6 +18311,11 @@ mov r6 L0x203f07fc;
 mov r7 L0x203f0800;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0804; Value = 0xffb2aaff; PC = 0x58d0 *)
 mov r8 L0x203f0804;
+
+ghost r5o218@int32, r6o218@int32, r7o218@int32, r8o218@int32:
+      r5o218 = r5 /\ r6o218 = r6 /\ r7o218 = r7 /\ r8o218 = r8
+   && r5o218 = r5 /\ r6o218 = r6 /\ r7o218 = r7 /\ r8o218 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17577,6 +18330,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o218,r8o218]*[K**178,K**178])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o218,r8o218]*[K**178,K**178])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17585,6 +18346,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o219@int32, r8o219@int32:
+      r6o219 = r6 /\ r8o219 = r8
+   && r6o219 = r6 /\ r8o219 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17599,6 +18365,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o219,r8o219]*[K** 89,K**217])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o219,r8o219]*[K** 89,K**217])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17618,6 +18392,32 @@ mov L0x203f07f8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 77 ****************)
+
+cut eqmod L0x203f07f8 (poly X [r5o218,r6o218,r7o218,r8o218]) [Q,X-K** 89]/\
+    eqmod L0x203f07fc (poly X [r5o218,r6o218,r7o218,r8o218]) [Q,X-K**345]/\
+    eqmod L0x203f0800 (poly X [r5o218,r6o218,r7o218,r8o218]) [Q,X-K**217]/\
+    eqmod L0x203f0804 (poly X [r5o218,r6o218,r7o218,r8o218]) [Q,X-K**473]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]/\
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]/\
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]/\
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]/\
+    [L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8140; Value = 0xffc9b97d; PC = 0x58b8 *)
@@ -17634,6 +18434,11 @@ mov r6 L0x203f080c;
 mov r7 L0x203f0810;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0814; Value = 0x00284a3d; PC = 0x58d0 *)
 mov r8 L0x203f0814;
+
+ghost r5o220@int32, r6o220@int32, r7o220@int32, r8o220@int32:
+      r5o220 = r5 /\ r6o220 = r6 /\ r7o220 = r7 /\ r8o220 = r8
+   && r5o220 = r5 /\ r6o220 = r6 /\ r7o220 = r7 /\ r8o220 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17648,6 +18453,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o220,r8o220]*[K**114,K**114])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o220,r8o220]*[K**114,K**114])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17656,6 +18469,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o221@int32, r8o221@int32:
+      r6o221 = r6 /\ r8o221 = r8
+   && r6o221 = r6 /\ r8o221 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17670,6 +18488,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o221,r8o221]*[K** 57,K**185])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o221,r8o221]*[K** 57,K**185])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17689,6 +18515,32 @@ mov L0x203f0808 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 78 ****************)
+
+cut eqmod L0x203f0808 (poly X [r5o220,r6o220,r7o220,r8o220]) [Q,X-K** 57]/\
+    eqmod L0x203f080c (poly X [r5o220,r6o220,r7o220,r8o220]) [Q,X-K**313]/\
+    eqmod L0x203f0810 (poly X [r5o220,r6o220,r7o220,r8o220]) [Q,X-K**185]/\
+    eqmod L0x203f0814 (poly X [r5o220,r6o220,r7o220,r8o220]) [Q,X-K**441]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]/\
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]/\
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]/\
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]/\
+    [L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x814c; Value = 0xfff44592; PC = 0x58b8 *)
@@ -17705,6 +18557,11 @@ mov r6 L0x203f081c;
 mov r7 L0x203f0820;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0824; Value = 0xfffccfc3; PC = 0x58d0 *)
 mov r8 L0x203f0824;
+
+ghost r5o222@int32, r6o222@int32, r7o222@int32, r8o222@int32:
+      r5o222 = r5 /\ r6o222 = r6 /\ r7o222 = r7 /\ r8o222 = r8
+   && r5o222 = r5 /\ r6o222 = r6 /\ r7o222 = r7 /\ r8o222 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17719,6 +18576,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o222,r8o222]*[K**242,K**242])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o222,r8o222]*[K**242,K**242])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17727,6 +18592,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o223@int32, r8o223@int32:
+      r6o223 = r6 /\ r8o223 = r8
+   && r6o223 = r6 /\ r8o223 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17741,6 +18611,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o223,r8o223]*[K**121,K**249])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o223,r8o223]*[K**121,K**249])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17760,6 +18638,32 @@ mov L0x203f0818 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 79 ****************)
+
+cut eqmod L0x203f0818 (poly X [r5o222,r6o222,r7o222,r8o222]) [Q,X-K**121]/\
+    eqmod L0x203f081c (poly X [r5o222,r6o222,r7o222,r8o222]) [Q,X-K**377]/\
+    eqmod L0x203f0820 (poly X [r5o222,r6o222,r7o222,r8o222]) [Q,X-K**249]/\
+    eqmod L0x203f0824 (poly X [r5o222,r6o222,r7o222,r8o222]) [Q,X-K**505]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]/\
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]/\
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]/\
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]/\
+    [L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [36,37,38,39]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8158; Value = 0x00053919; PC = 0x58b8 *)
@@ -17776,6 +18680,11 @@ mov r6 L0x203f082c;
 mov r7 L0x203f0830;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0834; Value = 0xffec13fc; PC = 0x58d0 *)
 mov r8 L0x203f0834;
+
+ghost r5o224@int32, r6o224@int32, r7o224@int32, r8o224@int32:
+      r5o224 = r5 /\ r6o224 = r6 /\ r7o224 = r7 /\ r8o224 = r8
+   && r5o224 = r5 /\ r6o224 = r6 /\ r7o224 = r7 /\ r8o224 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17790,6 +18699,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o224,r8o224]*[K** 10,K** 10])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o224,r8o224]*[K** 10,K** 10])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17798,6 +18715,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o225@int32, r8o225@int32:
+      r6o225 = r6 /\ r8o225 = r8
+   && r6o225 = r6 /\ r8o225 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17812,6 +18734,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o225,r8o225]*[K**  5,K**133])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o225,r8o225]*[K**  5,K**133])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17831,6 +18761,32 @@ mov L0x203f0828 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 80 ****************)
+
+cut eqmod L0x203f0828 (poly X [r5o224,r6o224,r7o224,r8o224]) [Q,X-K**  5]/\
+    eqmod L0x203f082c (poly X [r5o224,r6o224,r7o224,r8o224]) [Q,X-K**261]/\
+    eqmod L0x203f0830 (poly X [r5o224,r6o224,r7o224,r8o224]) [Q,X-K**133]/\
+    eqmod L0x203f0834 (poly X [r5o224,r6o224,r7o224,r8o224]) [Q,X-K**389]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]/\
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]/\
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]/\
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]/\
+    [L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8164; Value = 0xffdacd41; PC = 0x58b8 *)
@@ -17847,6 +18803,11 @@ mov r6 L0x203f083c;
 mov r7 L0x203f0840;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0844; Value = 0xfff5669a; PC = 0x58d0 *)
 mov r8 L0x203f0844;
+
+ghost r5o226@int32, r6o226@int32, r7o226@int32, r8o226@int32:
+      r5o226 = r5 /\ r6o226 = r6 /\ r7o226 = r7 /\ r8o226 = r8
+   && r5o226 = r5 /\ r6o226 = r6 /\ r7o226 = r7 /\ r8o226 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17861,6 +18822,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o226,r8o226]*[K**138,K**138])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o226,r8o226]*[K**138,K**138])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17869,6 +18838,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o227@int32, r8o227@int32:
+      r6o227 = r6 /\ r8o227 = r8
+   && r6o227 = r6 /\ r8o227 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17883,6 +18857,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o227,r8o227]*[K** 69,K**197])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o227,r8o227]*[K** 69,K**197])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17902,6 +18884,32 @@ mov L0x203f0838 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 81 ****************)
+
+cut eqmod L0x203f0838 (poly X [r5o226,r6o226,r7o226,r8o226]) [Q,X-K** 69]/\
+    eqmod L0x203f083c (poly X [r5o226,r6o226,r7o226,r8o226]) [Q,X-K**325]/\
+    eqmod L0x203f0840 (poly X [r5o226,r6o226,r7o226,r8o226]) [Q,X-K**197]/\
+    eqmod L0x203f0844 (poly X [r5o226,r6o226,r7o226,r8o226]) [Q,X-K**453]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]/\
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]/\
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]/\
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]/\
+    [L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8170; Value = 0x003472e7; PC = 0x58b8 *)
@@ -17918,6 +18926,11 @@ mov r6 L0x203f084c;
 mov r7 L0x203f0850;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0854; Value = 0x0001126f; PC = 0x58d0 *)
 mov r8 L0x203f0854;
+
+ghost r5o228@int32, r6o228@int32, r7o228@int32, r8o228@int32:
+      r5o228 = r5 /\ r6o228 = r6 /\ r7o228 = r7 /\ r8o228 = r8
+   && r5o228 = r5 /\ r6o228 = r6 /\ r7o228 = r7 /\ r8o228 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -17932,6 +18945,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o228,r8o228]*[K** 74,K** 74])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o228,r8o228]*[K** 74,K** 74])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -17940,6 +18961,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o229@int32, r8o229@int32:
+      r6o229 = r6 /\ r8o229 = r8
+   && r6o229 = r6 /\ r8o229 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -17954,6 +18980,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o229,r8o229]*[K** 37,K**165])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o229,r8o229]*[K** 37,K**165])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -17973,6 +19007,32 @@ mov L0x203f0848 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 82 ****************)
+
+cut eqmod L0x203f0848 (poly X [r5o228,r6o228,r7o228,r8o228]) [Q,X-K** 37]/\
+    eqmod L0x203f084c (poly X [r5o228,r6o228,r7o228,r8o228]) [Q,X-K**293]/\
+    eqmod L0x203f0850 (poly X [r5o228,r6o228,r7o228,r8o228]) [Q,X-K**165]/\
+    eqmod L0x203f0854 (poly X [r5o228,r6o228,r7o228,r8o228]) [Q,X-K**421]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]/\
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]/\
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]/\
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]/\
+    [L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x817c; Value = 0x001a7cc7; PC = 0x58b8 *)
@@ -17989,6 +19049,11 @@ mov r6 L0x203f085c;
 mov r7 L0x203f0860;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0864; Value = 0xffb96a0b; PC = 0x58d0 *)
 mov r8 L0x203f0864;
+
+ghost r5o230@int32, r6o230@int32, r7o230@int32, r8o230@int32:
+      r5o230 = r5 /\ r6o230 = r6 /\ r7o230 = r7 /\ r8o230 = r8
+   && r5o230 = r5 /\ r6o230 = r6 /\ r7o230 = r7 /\ r8o230 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18003,6 +19068,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o230,r8o230]*[K**202,K**202])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o230,r8o230]*[K**202,K**202])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18011,6 +19084,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o231@int32, r8o231@int32:
+      r6o231 = r6 /\ r8o231 = r8
+   && r6o231 = r6 /\ r8o231 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18025,6 +19103,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o231,r8o231]*[K**101,K**229])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o231,r8o231]*[K**101,K**229])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18044,6 +19130,32 @@ mov L0x203f0858 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 83 ****************)
+
+cut eqmod L0x203f0858 (poly X [r5o230,r6o230,r7o230,r8o230]) [Q,X-K**101]/\
+    eqmod L0x203f085c (poly X [r5o230,r6o230,r7o230,r8o230]) [Q,X-K**357]/\
+    eqmod L0x203f0860 (poly X [r5o230,r6o230,r7o230,r8o230]) [Q,X-K**229]/\
+    eqmod L0x203f0864 (poly X [r5o230,r6o230,r7o230,r8o230]) [Q,X-K**485]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]/\
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]/\
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]/\
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]/\
+    [L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8188; Value = 0x002b5ee5; PC = 0x58b8 *)
@@ -18060,6 +19172,11 @@ mov r6 L0x203f086c;
 mov r7 L0x203f0870;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0874; Value = 0xff798b83; PC = 0x58d0 *)
 mov r8 L0x203f0874;
+
+ghost r5o232@int32, r6o232@int32, r7o232@int32, r8o232@int32:
+      r5o232 = r5 /\ r6o232 = r6 /\ r7o232 = r7 /\ r8o232 = r8
+   && r5o232 = r5 /\ r6o232 = r6 /\ r7o232 = r7 /\ r8o232 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18074,6 +19191,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o232,r8o232]*[K** 42,K** 42])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o232,r8o232]*[K** 42,K** 42])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18082,6 +19207,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o233@int32, r8o233@int32:
+      r6o233 = r6 /\ r8o233 = r8
+   && r6o233 = r6 /\ r8o233 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18096,6 +19226,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o233,r8o233]*[K** 21,K**149])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o233,r8o233]*[K** 21,K**149])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18115,6 +19253,32 @@ mov L0x203f0868 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 84 ****************)
+
+cut eqmod L0x203f0868 (poly X [r5o232,r6o232,r7o232,r8o232]) [Q,X-K** 21]/\
+    eqmod L0x203f086c (poly X [r5o232,r6o232,r7o232,r8o232]) [Q,X-K**277]/\
+    eqmod L0x203f0870 (poly X [r5o232,r6o232,r7o232,r8o232]) [Q,X-K**149]/\
+    eqmod L0x203f0874 (poly X [r5o232,r6o232,r7o232,r8o232]) [Q,X-K**405]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]/\
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]/\
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]/\
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]/\
+    [L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8194; Value = 0xffd87a3a; PC = 0x58b8 *)
@@ -18131,6 +19295,11 @@ mov r6 L0x203f087c;
 mov r7 L0x203f0880;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0884; Value = 0xff770d7f; PC = 0x58d0 *)
 mov r8 L0x203f0884;
+
+ghost r5o234@int32, r6o234@int32, r7o234@int32, r8o234@int32:
+      r5o234 = r5 /\ r6o234 = r6 /\ r7o234 = r7 /\ r8o234 = r8
+   && r5o234 = r5 /\ r6o234 = r6 /\ r7o234 = r7 /\ r8o234 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18145,6 +19314,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o234,r8o234]*[K**170,K**170])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o234,r8o234]*[K**170,K**170])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18153,6 +19330,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o235@int32, r8o235@int32:
+      r6o235 = r6 /\ r8o235 = r8
+   && r6o235 = r6 /\ r8o235 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18167,6 +19349,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o235,r8o235]*[K** 85,K**213])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o235,r8o235]*[K** 85,K**213])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18186,6 +19376,32 @@ mov L0x203f0878 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 85 ****************)
+
+cut eqmod L0x203f0878 (poly X [r5o234,r6o234,r7o234,r8o234]) [Q,X-K** 85]/\
+    eqmod L0x203f087c (poly X [r5o234,r6o234,r7o234,r8o234]) [Q,X-K**341]/\
+    eqmod L0x203f0880 (poly X [r5o234,r6o234,r7o234,r8o234]) [Q,X-K**213]/\
+    eqmod L0x203f0884 (poly X [r5o234,r6o234,r7o234,r8o234]) [Q,X-K**469]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]/\
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]/\
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]/\
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]/\
+    [L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81a0; Value = 0x003de11c; PC = 0x58b8 *)
@@ -18202,6 +19418,11 @@ mov r6 L0x203f088c;
 mov r7 L0x203f0890;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0894; Value = 0xff88bbd7; PC = 0x58d0 *)
 mov r8 L0x203f0894;
+
+ghost r5o236@int32, r6o236@int32, r7o236@int32, r8o236@int32:
+      r5o236 = r5 /\ r6o236 = r6 /\ r7o236 = r7 /\ r8o236 = r8
+   && r5o236 = r5 /\ r6o236 = r6 /\ r7o236 = r7 /\ r8o236 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18216,6 +19437,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o236,r8o236]*[K**106,K**106])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o236,r8o236]*[K**106,K**106])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18224,6 +19453,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o237@int32, r8o237@int32:
+      r6o237 = r6 /\ r8o237 = r8
+   && r6o237 = r6 /\ r8o237 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18238,6 +19472,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o237,r8o237]*[K** 53,K**181])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o237,r8o237]*[K** 53,K**181])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18257,6 +19499,32 @@ mov L0x203f0888 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 86 ****************)
+
+cut eqmod L0x203f0888 (poly X [r5o236,r6o236,r7o236,r8o236]) [Q,X-K** 53]/\
+    eqmod L0x203f088c (poly X [r5o236,r6o236,r7o236,r8o236]) [Q,X-K**309]/\
+    eqmod L0x203f0890 (poly X [r5o236,r6o236,r7o236,r8o236]) [Q,X-K**181]/\
+    eqmod L0x203f0894 (poly X [r5o236,r6o236,r7o236,r8o236]) [Q,X-K**437]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]/\
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]/\
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]/\
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]/\
+    [L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81ac; Value = 0x0025f051; PC = 0x58b8 *)
@@ -18273,6 +19541,11 @@ mov r6 L0x203f089c;
 mov r7 L0x203f08a0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08a4; Value = 0xffd4ad47; PC = 0x58d0 *)
 mov r8 L0x203f08a4;
+
+ghost r5o238@int32, r6o238@int32, r7o238@int32, r8o238@int32:
+      r5o238 = r5 /\ r6o238 = r6 /\ r7o238 = r7 /\ r8o238 = r8
+   && r5o238 = r5 /\ r6o238 = r6 /\ r7o238 = r7 /\ r8o238 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18287,6 +19560,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o238,r8o238]*[K**234,K**234])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o238,r8o238]*[K**234,K**234])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18295,6 +19576,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o239@int32, r8o239@int32:
+      r6o239 = r6 /\ r8o239 = r8
+   && r6o239 = r6 /\ r8o239 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18309,6 +19595,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o239,r8o239]*[K**117,K**245])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o239,r8o239]*[K**117,K**245])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18328,6 +19622,32 @@ mov L0x203f0898 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 87 ****************)
+
+cut eqmod L0x203f0898 (poly X [r5o238,r6o238,r7o238,r8o238]) [Q,X-K**117]/\
+    eqmod L0x203f089c (poly X [r5o238,r6o238,r7o238,r8o238]) [Q,X-K**373]/\
+    eqmod L0x203f08a0 (poly X [r5o238,r6o238,r7o238,r8o238]) [Q,X-K**245]/\
+    eqmod L0x203f08a4 (poly X [r5o238,r6o238,r7o238,r8o238]) [Q,X-K**501]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]/\
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]/\
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]/\
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]/\
+    [L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [40,41,42,43]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81b8; Value = 0xffc68518; PC = 0x58b8 *)
@@ -18344,6 +19664,11 @@ mov r6 L0x203f08ac;
 mov r7 L0x203f08b0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08b4; Value = 0xffc295fd; PC = 0x58d0 *)
 mov r8 L0x203f08b4;
+
+ghost r5o240@int32, r6o240@int32, r7o240@int32, r8o240@int32:
+      r5o240 = r5 /\ r6o240 = r6 /\ r7o240 = r7 /\ r8o240 = r8
+   && r5o240 = r5 /\ r6o240 = r6 /\ r7o240 = r7 /\ r8o240 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18358,6 +19683,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o240,r8o240]*[K** 26,K** 26])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o240,r8o240]*[K** 26,K** 26])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18366,6 +19699,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o241@int32, r8o241@int32:
+      r6o241 = r6 /\ r8o241 = r8
+   && r6o241 = r6 /\ r8o241 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18380,6 +19718,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o241,r8o241]*[K** 13,K**141])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o241,r8o241]*[K** 13,K**141])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18399,6 +19745,32 @@ mov L0x203f08a8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 88 ****************)
+
+cut eqmod L0x203f08a8 (poly X [r5o240,r6o240,r7o240,r8o240]) [Q,X-K** 13]/\
+    eqmod L0x203f08ac (poly X [r5o240,r6o240,r7o240,r8o240]) [Q,X-K**269]/\
+    eqmod L0x203f08b0 (poly X [r5o240,r6o240,r7o240,r8o240]) [Q,X-K**141]/\
+    eqmod L0x203f08b4 (poly X [r5o240,r6o240,r7o240,r8o240]) [Q,X-K**397]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]/\
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]/\
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]/\
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]/\
+    [L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81c4; Value = 0x00283891; PC = 0x58b8 *)
@@ -18415,6 +19787,11 @@ mov r6 L0x203f08bc;
 mov r7 L0x203f08c0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08c4; Value = 0x000e45ef; PC = 0x58d0 *)
 mov r8 L0x203f08c4;
+
+ghost r5o242@int32, r6o242@int32, r7o242@int32, r8o242@int32:
+      r5o242 = r5 /\ r6o242 = r6 /\ r7o242 = r7 /\ r8o242 = r8
+   && r5o242 = r5 /\ r6o242 = r6 /\ r7o242 = r7 /\ r8o242 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18429,6 +19806,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o242,r8o242]*[K**154,K**154])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o242,r8o242]*[K**154,K**154])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18437,6 +19822,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o243@int32, r8o243@int32:
+      r6o243 = r6 /\ r8o243 = r8
+   && r6o243 = r6 /\ r8o243 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18451,6 +19841,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o243,r8o243]*[K** 77,K**205])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o243,r8o243]*[K** 77,K**205])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18470,6 +19868,32 @@ mov L0x203f08b8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 89 ****************)
+
+cut eqmod L0x203f08b8 (poly X [r5o242,r6o242,r7o242,r8o242]) [Q,X-K** 77]/\
+    eqmod L0x203f08bc (poly X [r5o242,r6o242,r7o242,r8o242]) [Q,X-K**333]/\
+    eqmod L0x203f08c0 (poly X [r5o242,r6o242,r7o242,r8o242]) [Q,X-K**205]/\
+    eqmod L0x203f08c4 (poly X [r5o242,r6o242,r7o242,r8o242]) [Q,X-K**461]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]/\
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]/\
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]/\
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]/\
+    [L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81d0; Value = 0xffd25089; PC = 0x58b8 *)
@@ -18486,6 +19910,11 @@ mov r6 L0x203f08cc;
 mov r7 L0x203f08d0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08d4; Value = 0xffed6183; PC = 0x58d0 *)
 mov r8 L0x203f08d4;
+
+ghost r5o244@int32, r6o244@int32, r7o244@int32, r8o244@int32:
+      r5o244 = r5 /\ r6o244 = r6 /\ r7o244 = r7 /\ r8o244 = r8
+   && r5o244 = r5 /\ r6o244 = r6 /\ r7o244 = r7 /\ r8o244 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18500,6 +19929,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o244,r8o244]*[K** 90,K** 90])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o244,r8o244]*[K** 90,K** 90])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18508,6 +19945,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o245@int32, r8o245@int32:
+      r6o245 = r6 /\ r8o245 = r8
+   && r6o245 = r6 /\ r8o245 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18522,6 +19964,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o245,r8o245]*[K** 45,K**173])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o245,r8o245]*[K** 45,K**173])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18541,6 +19991,32 @@ mov L0x203f08c8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 90 ****************)
+
+cut eqmod L0x203f08c8 (poly X [r5o244,r6o244,r7o244,r8o244]) [Q,X-K** 45]/\
+    eqmod L0x203f08cc (poly X [r5o244,r6o244,r7o244,r8o244]) [Q,X-K**301]/\
+    eqmod L0x203f08d0 (poly X [r5o244,r6o244,r7o244,r8o244]) [Q,X-K**173]/\
+    eqmod L0x203f08d4 (poly X [r5o244,r6o244,r7o244,r8o244]) [Q,X-K**429]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]/\
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]/\
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]/\
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]/\
+    [L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81dc; Value = 0x001d0b4b; PC = 0x58b8 *)
@@ -18557,6 +20033,11 @@ mov r6 L0x203f08dc;
 mov r7 L0x203f08e0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08e4; Value = 0xffc17a55; PC = 0x58d0 *)
 mov r8 L0x203f08e4;
+
+ghost r5o246@int32, r6o246@int32, r7o246@int32, r8o246@int32:
+      r5o246 = r5 /\ r6o246 = r6 /\ r7o246 = r7 /\ r8o246 = r8
+   && r5o246 = r5 /\ r6o246 = r6 /\ r7o246 = r7 /\ r8o246 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18571,6 +20052,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o246,r8o246]*[K**218,K**218])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o246,r8o246]*[K**218,K**218])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18579,6 +20068,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o247@int32, r8o247@int32:
+      r6o247 = r6 /\ r8o247 = r8
+   && r6o247 = r6 /\ r8o247 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18593,6 +20087,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o247,r8o247]*[K**109,K**237])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o247,r8o247]*[K**109,K**237])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18612,6 +20114,32 @@ mov L0x203f08d8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 91 ****************)
+
+cut eqmod L0x203f08d8 (poly X [r5o246,r6o246,r7o246,r8o246]) [Q,X-K**109]/\
+    eqmod L0x203f08dc (poly X [r5o246,r6o246,r7o246,r8o246]) [Q,X-K**365]/\
+    eqmod L0x203f08e0 (poly X [r5o246,r6o246,r7o246,r8o246]) [Q,X-K**237]/\
+    eqmod L0x203f08e4 (poly X [r5o246,r6o246,r7o246,r8o246]) [Q,X-K**493]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]/\
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]/\
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]/\
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]/\
+    [L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81e8; Value = 0xffeba8be; PC = 0x58b8 *)
@@ -18628,6 +20156,11 @@ mov r6 L0x203f08ec;
 mov r7 L0x203f08f0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f08f4; Value = 0xff9a944d; PC = 0x58d0 *)
 mov r8 L0x203f08f4;
+
+ghost r5o248@int32, r6o248@int32, r7o248@int32, r8o248@int32:
+      r5o248 = r5 /\ r6o248 = r6 /\ r7o248 = r7 /\ r8o248 = r8
+   && r5o248 = r5 /\ r6o248 = r6 /\ r7o248 = r7 /\ r8o248 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18642,6 +20175,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o248,r8o248]*[K** 58,K** 58])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o248,r8o248]*[K** 58,K** 58])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18650,6 +20191,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o249@int32, r8o249@int32:
+      r6o249 = r6 /\ r8o249 = r8
+   && r6o249 = r6 /\ r8o249 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18664,6 +20210,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o249,r8o249]*[K** 29,K**157])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o249,r8o249]*[K** 29,K**157])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18683,6 +20237,32 @@ mov L0x203f08e8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 92 ****************)
+
+cut eqmod L0x203f08e8 (poly X [r5o248,r6o248,r7o248,r8o248]) [Q,X-K** 29]/\
+    eqmod L0x203f08ec (poly X [r5o248,r6o248,r7o248,r8o248]) [Q,X-K**285]/\
+    eqmod L0x203f08f0 (poly X [r5o248,r6o248,r7o248,r8o248]) [Q,X-K**157]/\
+    eqmod L0x203f08f4 (poly X [r5o248,r6o248,r7o248,r8o248]) [Q,X-K**413]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]/\
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]/\
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]/\
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]/\
+    [L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x81f4; Value = 0xffcd5e3e; PC = 0x58b8 *)
@@ -18699,6 +20279,11 @@ mov r6 L0x203f08fc;
 mov r7 L0x203f0900;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0904; Value = 0xffdcb7f7; PC = 0x58d0 *)
 mov r8 L0x203f0904;
+
+ghost r5o250@int32, r6o250@int32, r7o250@int32, r8o250@int32:
+      r5o250 = r5 /\ r6o250 = r6 /\ r7o250 = r7 /\ r8o250 = r8
+   && r5o250 = r5 /\ r6o250 = r6 /\ r7o250 = r7 /\ r8o250 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18713,6 +20298,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o250,r8o250]*[K**186,K**186])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o250,r8o250]*[K**186,K**186])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18721,6 +20314,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o251@int32, r8o251@int32:
+      r6o251 = r6 /\ r8o251 = r8
+   && r6o251 = r6 /\ r8o251 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18735,6 +20333,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o251,r8o251]*[K** 93,K**221])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o251,r8o251]*[K** 93,K**221])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18754,6 +20360,32 @@ mov L0x203f08f8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 93 ****************)
+
+cut eqmod L0x203f08f8 (poly X [r5o250,r6o250,r7o250,r8o250]) [Q,X-K** 93]/\
+    eqmod L0x203f08fc (poly X [r5o250,r6o250,r7o250,r8o250]) [Q,X-K**349]/\
+    eqmod L0x203f0900 (poly X [r5o250,r6o250,r7o250,r8o250]) [Q,X-K**221]/\
+    eqmod L0x203f0904 (poly X [r5o250,r6o250,r7o250,r8o250]) [Q,X-K**477]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]/\
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]/\
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]/\
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]/\
+    [L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8200; Value = 0xfff91de4; PC = 0x58b8 *)
@@ -18770,6 +20402,11 @@ mov r6 L0x203f090c;
 mov r7 L0x203f0910;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0914; Value = 0xff74223b; PC = 0x58d0 *)
 mov r8 L0x203f0914;
+
+ghost r5o252@int32, r6o252@int32, r7o252@int32, r8o252@int32:
+      r5o252 = r5 /\ r6o252 = r6 /\ r7o252 = r7 /\ r8o252 = r8
+   && r5o252 = r5 /\ r6o252 = r6 /\ r7o252 = r7 /\ r8o252 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18784,6 +20421,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o252,r8o252]*[K**122,K**122])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o252,r8o252]*[K**122,K**122])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18792,6 +20437,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o253@int32, r8o253@int32:
+      r6o253 = r6 /\ r8o253 = r8
+   && r6o253 = r6 /\ r8o253 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18806,6 +20456,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o253,r8o253]*[K** 61,K**189])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o253,r8o253]*[K** 61,K**189])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18825,6 +20483,32 @@ mov L0x203f0908 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 94 ****************)
+
+cut eqmod L0x203f0908 (poly X [r5o252,r6o252,r7o252,r8o252]) [Q,X-K** 61]/\
+    eqmod L0x203f090c (poly X [r5o252,r6o252,r7o252,r8o252]) [Q,X-K**317]/\
+    eqmod L0x203f0910 (poly X [r5o252,r6o252,r7o252,r8o252]) [Q,X-K**189]/\
+    eqmod L0x203f0914 (poly X [r5o252,r6o252,r7o252,r8o252]) [Q,X-K**445]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]/\
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]/\
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]/\
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]/\
+    [L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x820c; Value = 0x00327283; PC = 0x58b8 *)
@@ -18841,6 +20525,11 @@ mov r6 L0x203f091c;
 mov r7 L0x203f0920;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0924; Value = 0xffafb9cd; PC = 0x58d0 *)
 mov r8 L0x203f0924;
+
+ghost r5o254@int32, r6o254@int32, r7o254@int32, r8o254@int32:
+      r5o254 = r5 /\ r6o254 = r6 /\ r7o254 = r7 /\ r8o254 = r8
+   && r5o254 = r5 /\ r6o254 = r6 /\ r7o254 = r7 /\ r8o254 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18855,6 +20544,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8]
+              ([r7o254,r8o254]*[K**250,K**250])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8]
+             ([r7o254,r8o254]*[K**250,K**250])
+              [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18863,6 +20560,11 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o255@int32, r8o255@int32:
+      r6o255 = r6 /\ r8o255 = r8
+   && r6o255 = r6 /\ r8o255 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18877,6 +20579,14 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8]
+              ([r6o255,r8o255]*[K**125,K**253])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8]
+             ([r6o255,r8o255]*[K**125,K**253])
+              [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18896,6 +20606,32 @@ mov L0x203f0918 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 95 ****************)
+
+cut eqmod L0x203f0918 (poly X [r5o254,r6o254,r7o254,r8o254]) [Q,X-K**125]/\
+    eqmod L0x203f091c (poly X [r5o254,r6o254,r7o254,r8o254]) [Q,X-K**381]/\
+    eqmod L0x203f0920 (poly X [r5o254,r6o254,r7o254,r8o254]) [Q,X-K**253]/\
+    eqmod L0x203f0924 (poly X [r5o254,r6o254,r7o254,r8o254]) [Q,X-K**509]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]/\
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]/\
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]/\
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]/\
+    [L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [44,45,46,47]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8218; Value = 0xffec7953; PC = 0x58b8 *)
@@ -18912,6 +20648,11 @@ mov r6 L0x203f092c;
 mov r7 L0x203f0930;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0934; Value = 0x004d1102; PC = 0x58d0 *)
 mov r8 L0x203f0934;
+
+ghost r5o256@int32, r6o256@int32, r7o256@int32, r8o256@int32:
+      r5o256 = r5 /\ r6o256 = r6 /\ r7o256 = r7 /\ r8o256 = r8
+   && r5o256 = r5 /\ r6o256 = r6 /\ r7o256 = r7 /\ r8o256 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18926,6 +20667,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o256,r8o256]*[K**  6,K**  6])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o256,r8o256]*[K**  6,K**  6]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -18934,6 +20680,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o257@int32, r8o257@int32:
+      r6o257 = r6 /\ r8o257 = r8 && r6o257 = r6 /\ r8o257 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -18948,6 +20698,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o257,r8o257]*[K**  3,K**131])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o257,r8o257]*[K**  3,K**131]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -18967,6 +20722,32 @@ mov L0x203f0928 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 96 ****************)
+
+cut eqmod L0x203f0928 (poly X [r5o256,r6o256,r7o256,r8o256]) [Q,X-K**  3]/\
+    eqmod L0x203f092c (poly X [r5o256,r6o256,r7o256,r8o256]) [Q,X-K**259]/\
+    eqmod L0x203f0930 (poly X [r5o256,r6o256,r7o256,r8o256]) [Q,X-K**131]/\
+    eqmod L0x203f0934 (poly X [r5o256,r6o256,r7o256,r8o256]) [Q,X-K**387]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]/\
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]/\
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]/\
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]/\
+    [L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8224; Value = 0xffd92578; PC = 0x58b8 *)
@@ -18983,6 +20764,11 @@ mov r6 L0x203f093c;
 mov r7 L0x203f0940;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0944; Value = 0x006755ac; PC = 0x58d0 *)
 mov r8 L0x203f0944;
+
+ghost r5o258@int32, r6o258@int32, r7o258@int32, r8o258@int32:
+      r5o258 = r5 /\ r6o258 = r6 /\ r7o258 = r7 /\ r8o258 = r8
+   && r5o258 = r5 /\ r6o258 = r6 /\ r7o258 = r7 /\ r8o258 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -18997,6 +20783,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o258,r8o258]*[K**134,K**134])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o258,r8o258]*[K**134,K**134]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19005,6 +20796,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o259@int32, r8o259@int32:
+      r6o259 = r6 /\ r8o259 = r8 && r6o259 = r6 /\ r8o259 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19019,6 +20814,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o259,r8o259]*[K** 67,K**195])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o259,r8o259]*[K** 67,K**195]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19038,6 +20838,32 @@ mov L0x203f0938 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 97 ****************)
+
+cut eqmod L0x203f0938 (poly X [r5o258,r6o258,r7o258,r8o258]) [Q,X-K** 67]/\
+    eqmod L0x203f093c (poly X [r5o258,r6o258,r7o258,r8o258]) [Q,X-K**323]/\
+    eqmod L0x203f0940 (poly X [r5o258,r6o258,r7o258,r8o258]) [Q,X-K**195]/\
+    eqmod L0x203f0944 (poly X [r5o258,r6o258,r7o258,r8o258]) [Q,X-K**451]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]/\
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]/\
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]/\
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]/\
+    [L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8230; Value = 0x0016e405; PC = 0x58b8 *)
@@ -19054,6 +20880,11 @@ mov r6 L0x203f094c;
 mov r7 L0x203f0950;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0954; Value = 0xffc580a1; PC = 0x58d0 *)
 mov r8 L0x203f0954;
+
+ghost r5o260@int32, r6o260@int32, r7o260@int32, r8o260@int32:
+      r5o260 = r5 /\ r6o260 = r6 /\ r7o260 = r7 /\ r8o260 = r8
+   && r5o260 = r5 /\ r6o260 = r6 /\ r7o260 = r7 /\ r8o260 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19068,6 +20899,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o260,r8o260]*[K** 70,K** 70])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o260,r8o260]*[K** 70,K** 70]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19076,6 +20912,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o261@int32, r8o261@int32:
+      r6o261 = r6 /\ r8o261 = r8 && r6o261 = r6 /\ r8o261 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19090,6 +20930,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o261,r8o261]*[K** 35,K**163])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o261,r8o261]*[K** 35,K**163]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19109,6 +20954,32 @@ mov L0x203f0948 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 98 ****************)
+
+cut eqmod L0x203f0948 (poly X [r5o260,r6o260,r7o260,r8o260]) [Q,X-K** 35]/\
+    eqmod L0x203f094c (poly X [r5o260,r6o260,r7o260,r8o260]) [Q,X-K**291]/\
+    eqmod L0x203f0950 (poly X [r5o260,r6o260,r7o260,r8o260]) [Q,X-K**163]/\
+    eqmod L0x203f0954 (poly X [r5o260,r6o260,r7o260,r8o260]) [Q,X-K**419]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]/\
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]/\
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]/\
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]/\
+    [L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x823c; Value = 0x00221de8; PC = 0x58b8 *)
@@ -19125,6 +20996,11 @@ mov r6 L0x203f095c;
 mov r7 L0x203f0960;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0964; Value = 0x0035a349; PC = 0x58d0 *)
 mov r8 L0x203f0964;
+
+ghost r5o262@int32, r6o262@int32, r7o262@int32, r8o262@int32:
+      r5o262 = r5 /\ r6o262 = r6 /\ r7o262 = r7 /\ r8o262 = r8
+   && r5o262 = r5 /\ r6o262 = r6 /\ r7o262 = r7 /\ r8o262 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19139,6 +21015,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o262,r8o262]*[K**198,K**198])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o262,r8o262]*[K**198,K**198]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19147,6 +21028,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o263@int32, r8o263@int32:
+      r6o263 = r6 /\ r8o263 = r8 && r6o263 = r6 /\ r8o263 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19161,6 +21046,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o263,r8o263]*[K** 99,K**227])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o263,r8o263]*[K** 99,K**227]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19180,6 +21070,32 @@ mov L0x203f0958 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 99 ****************)
+
+cut eqmod L0x203f0958 (poly X [r5o262,r6o262,r7o262,r8o262]) [Q,X-K** 99]/\
+    eqmod L0x203f095c (poly X [r5o262,r6o262,r7o262,r8o262]) [Q,X-K**355]/\
+    eqmod L0x203f0960 (poly X [r5o262,r6o262,r7o262,r8o262]) [Q,X-K**227]/\
+    eqmod L0x203f0964 (poly X [r5o262,r6o262,r7o262,r8o262]) [Q,X-K**483]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]/\
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]/\
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]/\
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]/\
+    [L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8248; Value = 0xfff7b934; PC = 0x58b8 *)
@@ -19196,6 +21112,11 @@ mov r6 L0x203f096c;
 mov r7 L0x203f0970;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0974; Value = 0x00b5f556; PC = 0x58d0 *)
 mov r8 L0x203f0974;
+
+ghost r5o264@int32, r6o264@int32, r7o264@int32, r8o264@int32:
+      r5o264 = r5 /\ r6o264 = r6 /\ r7o264 = r7 /\ r8o264 = r8
+   && r5o264 = r5 /\ r6o264 = r6 /\ r7o264 = r7 /\ r8o264 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19210,6 +21131,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o264,r8o264]*[K** 38,K** 38])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o264,r8o264]*[K** 38,K** 38]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19218,6 +21144,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o265@int32, r8o265@int32:
+      r6o265 = r6 /\ r8o265 = r8 && r6o265 = r6 /\ r8o265 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19232,6 +21162,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o265,r8o265]*[K** 19,K**147])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o265,r8o265]*[K** 19,K**147]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19251,6 +21186,32 @@ mov L0x203f0968 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 100 ****************)
+
+cut eqmod L0x203f0968 (poly X [r5o264,r6o264,r7o264,r8o264]) [Q,X-K** 19]/\
+    eqmod L0x203f096c (poly X [r5o264,r6o264,r7o264,r8o264]) [Q,X-K**275]/\
+    eqmod L0x203f0970 (poly X [r5o264,r6o264,r7o264,r8o264]) [Q,X-K**147]/\
+    eqmod L0x203f0974 (poly X [r5o264,r6o264,r7o264,r8o264]) [Q,X-K**403]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]/\
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]/\
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]/\
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]/\
+    [L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8254; Value = 0xffe67ff8; PC = 0x58b8 *)
@@ -19267,6 +21228,11 @@ mov r6 L0x203f097c;
 mov r7 L0x203f0980;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0984; Value = 0x0060f032; PC = 0x58d0 *)
 mov r8 L0x203f0984;
+
+ghost r5o266@int32, r6o266@int32, r7o266@int32, r8o266@int32:
+      r5o266 = r5 /\ r6o266 = r6 /\ r7o266 = r7 /\ r8o266 = r8
+   && r5o266 = r5 /\ r6o266 = r6 /\ r7o266 = r7 /\ r8o266 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19281,6 +21247,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o266,r8o266]*[K**166,K**166])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o266,r8o266]*[K**166,K**166]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19289,6 +21260,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o267@int32, r8o267@int32:
+      r6o267 = r6 /\ r8o267 = r8 && r6o267 = r6 /\ r8o267 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19303,6 +21278,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o267,r8o267]*[K** 83,K**211])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o267,r8o267]*[K** 83,K**211]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19322,6 +21302,32 @@ mov L0x203f0978 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 101 ****************)
+
+cut eqmod L0x203f0978 (poly X [r5o266,r6o266,r7o266,r8o266]) [Q,X-K** 83]/\
+    eqmod L0x203f097c (poly X [r5o266,r6o266,r7o266,r8o266]) [Q,X-K**339]/\
+    eqmod L0x203f0980 (poly X [r5o266,r6o266,r7o266,r8o266]) [Q,X-K**211]/\
+    eqmod L0x203f0984 (poly X [r5o266,r6o266,r7o266,r8o266]) [Q,X-K**467]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]/\
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]/\
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]/\
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]/\
+    [L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8260; Value = 0xffd8911b; PC = 0x58b8 *)
@@ -19338,6 +21344,11 @@ mov r6 L0x203f098c;
 mov r7 L0x203f0990;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0994; Value = 0x0000c5c0; PC = 0x58d0 *)
 mov r8 L0x203f0994;
+
+ghost r5o268@int32, r6o268@int32, r7o268@int32, r8o268@int32:
+      r5o268 = r5 /\ r6o268 = r6 /\ r7o268 = r7 /\ r8o268 = r8
+   && r5o268 = r5 /\ r6o268 = r6 /\ r7o268 = r7 /\ r8o268 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19352,6 +21363,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o268,r8o268]*[K**102,K**102])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o268,r8o268]*[K**102,K**102]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19360,6 +21376,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o269@int32, r8o269@int32:
+      r6o269 = r6 /\ r8o269 = r8 && r6o269 = r6 /\ r8o269 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19374,6 +21394,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o269,r8o269]*[K** 51,K**179])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o269,r8o269]*[K** 51,K**179]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19393,6 +21418,32 @@ mov L0x203f0988 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 102 ****************)
+
+cut eqmod L0x203f0988 (poly X [r5o268,r6o268,r7o268,r8o268]) [Q,X-K** 51]/\
+    eqmod L0x203f098c (poly X [r5o268,r6o268,r7o268,r8o268]) [Q,X-K**307]/\
+    eqmod L0x203f0990 (poly X [r5o268,r6o268,r7o268,r8o268]) [Q,X-K**179]/\
+    eqmod L0x203f0994 (poly X [r5o268,r6o268,r7o268,r8o268]) [Q,X-K**435]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]/\
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]/\
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]/\
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]/\
+    [L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x826c; Value = 0x000910d8; PC = 0x58b8 *)
@@ -19409,6 +21460,11 @@ mov r6 L0x203f099c;
 mov r7 L0x203f09a0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09a4; Value = 0x001ee7d0; PC = 0x58d0 *)
 mov r8 L0x203f09a4;
+
+ghost r5o270@int32, r6o270@int32, r7o270@int32, r8o270@int32:
+      r5o270 = r5 /\ r6o270 = r6 /\ r7o270 = r7 /\ r8o270 = r8
+   && r5o270 = r5 /\ r6o270 = r6 /\ r7o270 = r7 /\ r8o270 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19423,6 +21479,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o270,r8o270]*[K**230,K**230])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o270,r8o270]*[K**230,K**230]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19431,6 +21492,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o271@int32, r8o271@int32:
+      r6o271 = r6 /\ r8o271 = r8 && r6o271 = r6 /\ r8o271 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19445,6 +21510,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o271,r8o271]*[K**115,K**243])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o271,r8o271]*[K**115,K**243]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19464,6 +21534,32 @@ mov L0x203f0998 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 103 ****************)
+
+cut eqmod L0x203f0998 (poly X [r5o270,r6o270,r7o270,r8o270]) [Q,X-K**115]/\
+    eqmod L0x203f099c (poly X [r5o270,r6o270,r7o270,r8o270]) [Q,X-K**371]/\
+    eqmod L0x203f09a0 (poly X [r5o270,r6o270,r7o270,r8o270]) [Q,X-K**243]/\
+    eqmod L0x203f09a4 (poly X [r5o270,r6o270,r7o270,r8o270]) [Q,X-K**499]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]/\
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]/\
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]/\
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]/\
+    [L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [48,49,50,51]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8278; Value = 0xffe14658; PC = 0x58b8 *)
@@ -19480,6 +21576,11 @@ mov r6 L0x203f09ac;
 mov r7 L0x203f09b0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09b4; Value = 0x006d7963; PC = 0x58d0 *)
 mov r8 L0x203f09b4;
+
+ghost r5o272@int32, r6o272@int32, r7o272@int32, r8o272@int32:
+      r5o272 = r5 /\ r6o272 = r6 /\ r7o272 = r7 /\ r8o272 = r8
+   && r5o272 = r5 /\ r6o272 = r6 /\ r7o272 = r7 /\ r8o272 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19494,6 +21595,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o272,r8o272]*[K** 22,K** 22])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o272,r8o272]*[K** 22,K** 22]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19502,6 +21608,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o273@int32, r8o273@int32:
+      r6o273 = r6 /\ r8o273 = r8 && r6o273 = r6 /\ r8o273 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19516,6 +21626,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o273,r8o273]*[K** 11,K**139])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o273,r8o273]*[K** 11,K**139]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19535,6 +21650,32 @@ mov L0x203f09a8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 104 ****************)
+
+cut eqmod L0x203f09a8 (poly X [r5o272,r6o272,r7o272,r8o272]) [Q,X-K** 11]/\
+    eqmod L0x203f09ac (poly X [r5o272,r6o272,r7o272,r8o272]) [Q,X-K**267]/\
+    eqmod L0x203f09b0 (poly X [r5o272,r6o272,r7o272,r8o272]) [Q,X-K**139]/\
+    eqmod L0x203f09b4 (poly X [r5o272,r6o272,r7o272,r8o272]) [Q,X-K**395]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]/\
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]/\
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]/\
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]/\
+    [L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8284; Value = 0x002573b7; PC = 0x58b8 *)
@@ -19551,6 +21692,11 @@ mov r6 L0x203f09bc;
 mov r7 L0x203f09c0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09c4; Value = 0x001f1f4b; PC = 0x58d0 *)
 mov r8 L0x203f09c4;
+
+ghost r5o274@int32, r6o274@int32, r7o274@int32, r8o274@int32:
+      r5o274 = r5 /\ r6o274 = r6 /\ r7o274 = r7 /\ r8o274 = r8
+   && r5o274 = r5 /\ r6o274 = r6 /\ r7o274 = r7 /\ r8o274 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19565,6 +21711,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o274,r8o274]*[K**150,K**150])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o274,r8o274]*[K**150,K**150]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19573,6 +21724,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o275@int32, r8o275@int32:
+      r6o275 = r6 /\ r8o275 = r8 && r6o275 = r6 /\ r8o275 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19587,6 +21742,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o275,r8o275]*[K** 75,K**203])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o275,r8o275]*[K** 75,K**203]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19606,6 +21766,32 @@ mov L0x203f09b8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 105 ****************)
+
+cut eqmod L0x203f09b8 (poly X [r5o274,r6o274,r7o274,r8o274]) [Q,X-K** 75]/\
+    eqmod L0x203f09bc (poly X [r5o274,r6o274,r7o274,r8o274]) [Q,X-K**331]/\
+    eqmod L0x203f09c0 (poly X [r5o274,r6o274,r7o274,r8o274]) [Q,X-K**203]/\
+    eqmod L0x203f09c4 (poly X [r5o274,r6o274,r7o274,r8o274]) [Q,X-K**459]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]/\
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]/\
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]/\
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]/\
+    [L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8290; Value = 0x001ddd98; PC = 0x58b8 *)
@@ -19622,6 +21808,11 @@ mov r6 L0x203f09cc;
 mov r7 L0x203f09d0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09d4; Value = 0x009331f8; PC = 0x58d0 *)
 mov r8 L0x203f09d4;
+
+ghost r5o276@int32, r6o276@int32, r7o276@int32, r8o276@int32:
+      r5o276 = r5 /\ r6o276 = r6 /\ r7o276 = r7 /\ r8o276 = r8
+   && r5o276 = r5 /\ r6o276 = r6 /\ r7o276 = r7 /\ r8o276 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19636,6 +21827,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o276,r8o276]*[K** 86,K** 86])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o276,r8o276]*[K** 86,K** 86]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19644,6 +21840,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o277@int32, r8o277@int32:
+      r6o277 = r6 /\ r8o277 = r8 && r6o277 = r6 /\ r8o277 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19658,6 +21858,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o277,r8o277]*[K** 43,K**171])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o277,r8o277]*[K** 43,K**171]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19677,6 +21882,32 @@ mov L0x203f09c8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 106 ****************)
+
+cut eqmod L0x203f09c8 (poly X [r5o276,r6o276,r7o276,r8o276]) [Q,X-K** 43]/\
+    eqmod L0x203f09cc (poly X [r5o276,r6o276,r7o276,r8o276]) [Q,X-K**299]/\
+    eqmod L0x203f09d0 (poly X [r5o276,r6o276,r7o276,r8o276]) [Q,X-K**171]/\
+    eqmod L0x203f09d4 (poly X [r5o276,r6o276,r7o276,r8o276]) [Q,X-K**427]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]/\
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]/\
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]/\
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]/\
+    [L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x829c; Value = 0x0002d4bb; PC = 0x58b8 *)
@@ -19693,6 +21924,11 @@ mov r6 L0x203f09dc;
 mov r7 L0x203f09e0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09e4; Value = 0x00515ea6; PC = 0x58d0 *)
 mov r8 L0x203f09e4;
+
+ghost r5o278@int32, r6o278@int32, r7o278@int32, r8o278@int32:
+      r5o278 = r5 /\ r6o278 = r6 /\ r7o278 = r7 /\ r8o278 = r8
+   && r5o278 = r5 /\ r6o278 = r6 /\ r7o278 = r7 /\ r8o278 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19707,6 +21943,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o278,r8o278]*[K**214,K**214])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o278,r8o278]*[K**214,K**214]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19715,6 +21956,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o279@int32, r8o279@int32:
+      r6o279 = r6 /\ r8o279 = r8 && r6o279 = r6 /\ r8o279 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19729,6 +21974,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o279,r8o279]*[K**107,K**235])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o279,r8o279]*[K**107,K**235]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19748,6 +21998,32 @@ mov L0x203f09d8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 107 ****************)
+
+cut eqmod L0x203f09d8 (poly X [r5o278,r6o278,r7o278,r8o278]) [Q,X-K**107]/\
+    eqmod L0x203f09dc (poly X [r5o278,r6o278,r7o278,r8o278]) [Q,X-K**363]/\
+    eqmod L0x203f09e0 (poly X [r5o278,r6o278,r7o278,r8o278]) [Q,X-K**235]/\
+    eqmod L0x203f09e4 (poly X [r5o278,r6o278,r7o278,r8o278]) [Q,X-K**491]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]/\
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]/\
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]/\
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]/\
+    [L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82a8; Value = 0xffcf6cbe; PC = 0x58b8 *)
@@ -19764,6 +22040,11 @@ mov r6 L0x203f09ec;
 mov r7 L0x203f09f0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f09f4; Value = 0x0041792f; PC = 0x58d0 *)
 mov r8 L0x203f09f4;
+
+ghost r5o280@int32, r6o280@int32, r7o280@int32, r8o280@int32:
+      r5o280 = r5 /\ r6o280 = r6 /\ r7o280 = r7 /\ r8o280 = r8
+   && r5o280 = r5 /\ r6o280 = r6 /\ r7o280 = r7 /\ r8o280 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19778,6 +22059,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o280,r8o280]*[K** 54,K** 54])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o280,r8o280]*[K** 54,K** 54]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19786,6 +22072,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o281@int32, r8o281@int32:
+      r6o281 = r6 /\ r8o281 = r8 && r6o281 = r6 /\ r8o281 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19800,6 +22090,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o281,r8o281]*[K** 27,K**155])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o281,r8o281]*[K** 27,K**155]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19819,6 +22114,32 @@ mov L0x203f09e8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 108 ****************)
+
+cut eqmod L0x203f09e8 (poly X [r5o280,r6o280,r7o280,r8o280]) [Q,X-K** 27]/\
+    eqmod L0x203f09ec (poly X [r5o280,r6o280,r7o280,r8o280]) [Q,X-K**283]/\
+    eqmod L0x203f09f0 (poly X [r5o280,r6o280,r7o280,r8o280]) [Q,X-K**155]/\
+    eqmod L0x203f09f4 (poly X [r5o280,r6o280,r7o280,r8o280]) [Q,X-K**411]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]/\
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]/\
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]/\
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]/\
+    [L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82b4; Value = 0x0018aa08; PC = 0x58b8 *)
@@ -19835,6 +22156,11 @@ mov r6 L0x203f09fc;
 mov r7 L0x203f0a00;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a04; Value = 0x0063c773; PC = 0x58d0 *)
 mov r8 L0x203f0a04;
+
+ghost r5o282@int32, r6o282@int32, r7o282@int32, r8o282@int32:
+      r5o282 = r5 /\ r6o282 = r6 /\ r7o282 = r7 /\ r8o282 = r8
+   && r5o282 = r5 /\ r6o282 = r6 /\ r7o282 = r7 /\ r8o282 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19849,6 +22175,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o282,r8o282]*[K**182,K**182])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o282,r8o282]*[K**182,K**182]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19857,6 +22188,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o283@int32, r8o283@int32:
+      r6o283 = r6 /\ r8o283 = r8 && r6o283 = r6 /\ r8o283 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19871,6 +22206,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o283,r8o283]*[K** 91,K**219])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o283,r8o283]*[K** 91,K**219]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19890,6 +22230,32 @@ mov L0x203f09f8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 109 ****************)
+
+cut eqmod L0x203f09f8 (poly X [r5o282,r6o282,r7o282,r8o282]) [Q,X-K** 91]/\
+    eqmod L0x203f09fc (poly X [r5o282,r6o282,r7o282,r8o282]) [Q,X-K**347]/\
+    eqmod L0x203f0a00 (poly X [r5o282,r6o282,r7o282,r8o282]) [Q,X-K**219]/\
+    eqmod L0x203f0a04 (poly X [r5o282,r6o282,r7o282,r8o282]) [Q,X-K**475]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]/\
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]/\
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]/\
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]/\
+    [L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82c0; Value = 0x000c5ca5; PC = 0x58b8 *)
@@ -19906,6 +22272,11 @@ mov r6 L0x203f0a0c;
 mov r7 L0x203f0a10;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a14; Value = 0x00078585; PC = 0x58d0 *)
 mov r8 L0x203f0a14;
+
+ghost r5o284@int32, r6o284@int32, r7o284@int32, r8o284@int32:
+      r5o284 = r5 /\ r6o284 = r6 /\ r7o284 = r7 /\ r8o284 = r8
+   && r5o284 = r5 /\ r6o284 = r6 /\ r7o284 = r7 /\ r8o284 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19920,6 +22291,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o284,r8o284]*[K**118,K**118])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o284,r8o284]*[K**118,K**118]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19928,6 +22304,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o285@int32, r8o285@int32:
+      r6o285 = r6 /\ r8o285 = r8 && r6o285 = r6 /\ r8o285 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -19942,6 +22322,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o285,r8o285]*[K** 59,K**187])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o285,r8o285]*[K** 59,K**187]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -19961,6 +22346,32 @@ mov L0x203f0a08 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 110 ****************)
+
+cut eqmod L0x203f0a08 (poly X [r5o284,r6o284,r7o284,r8o284]) [Q,X-K** 59]/\
+    eqmod L0x203f0a0c (poly X [r5o284,r6o284,r7o284,r8o284]) [Q,X-K**315]/\
+    eqmod L0x203f0a10 (poly X [r5o284,r6o284,r7o284,r8o284]) [Q,X-K**187]/\
+    eqmod L0x203f0a14 (poly X [r5o284,r6o284,r7o284,r8o284]) [Q,X-K**443]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]/\
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]/\
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]/\
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]/\
+    [L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82cc; Value = 0xffc7a167; PC = 0x58b8 *)
@@ -19977,6 +22388,11 @@ mov r6 L0x203f0a1c;
 mov r7 L0x203f0a20;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a24; Value = 0xfff9191d; PC = 0x58d0 *)
 mov r8 L0x203f0a24;
+
+ghost r5o286@int32, r6o286@int32, r7o286@int32, r8o286@int32:
+      r5o286 = r5 /\ r6o286 = r6 /\ r7o286 = r7 /\ r8o286 = r8
+   && r5o286 = r5 /\ r6o286 = r6 /\ r7o286 = r7 /\ r8o286 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -19991,6 +22407,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o286,r8o286]*[K**246,K**246])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o286,r8o286]*[K**246,K**246]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -19999,6 +22420,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o287@int32, r8o287@int32:
+      r6o287 = r6 /\ r8o287 = r8 && r6o287 = r6 /\ r8o287 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20013,6 +22438,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o287,r8o287]*[K**123,K**251])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o287,r8o287]*[K**123,K**251]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20032,6 +22462,32 @@ mov L0x203f0a18 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 111 ****************)
+
+cut eqmod L0x203f0a18 (poly X [r5o286,r6o286,r7o286,r8o286]) [Q,X-K**123]/\
+    eqmod L0x203f0a1c (poly X [r5o286,r6o286,r7o286,r8o286]) [Q,X-K**379]/\
+    eqmod L0x203f0a20 (poly X [r5o286,r6o286,r7o286,r8o286]) [Q,X-K**251]/\
+    eqmod L0x203f0a24 (poly X [r5o286,r6o286,r7o286,r8o286]) [Q,X-K**507]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]/\
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]/\
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]/\
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]/\
+    [L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [52,53,54,55]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82d8; Value = 0xffd1a13c; PC = 0x58b8 *)
@@ -20048,6 +22504,11 @@ mov r6 L0x203f0a2c;
 mov r7 L0x203f0a30;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a34; Value = 0x00486cfe; PC = 0x58d0 *)
 mov r8 L0x203f0a34;
+
+ghost r5o288@int32, r6o288@int32, r7o288@int32, r8o288@int32:
+      r5o288 = r5 /\ r6o288 = r6 /\ r7o288 = r7 /\ r8o288 = r8
+   && r5o288 = r5 /\ r6o288 = r6 /\ r7o288 = r7 /\ r8o288 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20062,6 +22523,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o288,r8o288]*[K** 14,K** 14])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o288,r8o288]*[K** 14,K** 14]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20070,6 +22536,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o289@int32, r8o289@int32:
+      r6o289 = r6 /\ r8o289 = r8 && r6o289 = r6 /\ r8o289 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20084,6 +22554,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o289,r8o289]*[K**  7,K**135])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o289,r8o289]*[K**  7,K**135]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20103,6 +22578,32 @@ mov L0x203f0a28 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 112 ****************)
+
+cut eqmod L0x203f0a28 (poly X [r5o288,r6o288,r7o288,r8o288]) [Q,X-K**  7]/\
+    eqmod L0x203f0a2c (poly X [r5o288,r6o288,r7o288,r8o288]) [Q,X-K**263]/\
+    eqmod L0x203f0a30 (poly X [r5o288,r6o288,r7o288,r8o288]) [Q,X-K**135]/\
+    eqmod L0x203f0a34 (poly X [r5o288,r6o288,r7o288,r8o288]) [Q,X-K**391]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]/\
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]/\
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]/\
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]/\
+    [L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82e4; Value = 0x003b0115; PC = 0x58b8 *)
@@ -20119,6 +22620,11 @@ mov r6 L0x203f0a3c;
 mov r7 L0x203f0a40;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a44; Value = 0xfff340a0; PC = 0x58d0 *)
 mov r8 L0x203f0a44;
+
+ghost r5o290@int32, r6o290@int32, r7o290@int32, r8o290@int32:
+      r5o290 = r5 /\ r6o290 = r6 /\ r7o290 = r7 /\ r8o290 = r8
+   && r5o290 = r5 /\ r6o290 = r6 /\ r7o290 = r7 /\ r8o290 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20133,6 +22639,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o290,r8o290]*[K**142,K**142])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o290,r8o290]*[K**142,K**142]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20141,6 +22652,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o291@int32, r8o291@int32:
+      r6o291 = r6 /\ r8o291 = r8 && r6o291 = r6 /\ r8o291 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20155,6 +22670,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o291,r8o291]*[K** 71,K**199])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o291,r8o291]*[K** 71,K**199]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20174,6 +22694,32 @@ mov L0x203f0a38 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 113 ****************)
+
+cut eqmod L0x203f0a38 (poly X [r5o290,r6o290,r7o290,r8o290]) [Q,X-K** 71]/\
+    eqmod L0x203f0a3c (poly X [r5o290,r6o290,r7o290,r8o290]) [Q,X-K**327]/\
+    eqmod L0x203f0a40 (poly X [r5o290,r6o290,r7o290,r8o290]) [Q,X-K**199]/\
+    eqmod L0x203f0a44 (poly X [r5o290,r6o290,r7o290,r8o290]) [Q,X-K**455]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]/\
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]/\
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]/\
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]/\
+    [L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82f0; Value = 0x0021c4f7; PC = 0x58b8 *)
@@ -20190,6 +22736,11 @@ mov r6 L0x203f0a4c;
 mov r7 L0x203f0a50;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a54; Value = 0x006098c8; PC = 0x58d0 *)
 mov r8 L0x203f0a54;
+
+ghost r5o292@int32, r6o292@int32, r7o292@int32, r8o292@int32:
+      r5o292 = r5 /\ r6o292 = r6 /\ r7o292 = r7 /\ r8o292 = r8
+   && r5o292 = r5 /\ r6o292 = r6 /\ r7o292 = r7 /\ r8o292 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20204,6 +22755,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o292,r8o292]*[K** 78,K** 78])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o292,r8o292]*[K** 78,K** 78]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20212,6 +22768,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o293@int32, r8o293@int32:
+      r6o293 = r6 /\ r8o293 = r8 && r6o293 = r6 /\ r8o293 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20226,6 +22786,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o293,r8o293]*[K** 39,K**167])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o293,r8o293]*[K** 39,K**167]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20245,6 +22810,32 @@ mov L0x203f0a48 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 114 ****************)
+
+cut eqmod L0x203f0a48 (poly X [r5o292,r6o292,r7o292,r8o292]) [Q,X-K** 39]/\
+    eqmod L0x203f0a4c (poly X [r5o292,r6o292,r7o292,r8o292]) [Q,X-K**295]/\
+    eqmod L0x203f0a50 (poly X [r5o292,r6o292,r7o292,r8o292]) [Q,X-K**167]/\
+    eqmod L0x203f0a54 (poly X [r5o292,r6o292,r7o292,r8o292]) [Q,X-K**423]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]/\
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]/\
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]/\
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]/\
+    [L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x82fc; Value = 0x001a35e7; PC = 0x58b8 *)
@@ -20261,6 +22852,11 @@ mov r6 L0x203f0a5c;
 mov r7 L0x203f0a60;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a64; Value = 0x0002e80a; PC = 0x58d0 *)
 mov r8 L0x203f0a64;
+
+ghost r5o294@int32, r6o294@int32, r7o294@int32, r8o294@int32:
+      r5o294 = r5 /\ r6o294 = r6 /\ r7o294 = r7 /\ r8o294 = r8
+   && r5o294 = r5 /\ r6o294 = r6 /\ r7o294 = r7 /\ r8o294 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20275,6 +22871,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o294,r8o294]*[K**206,K**206])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o294,r8o294]*[K**206,K**206]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20283,6 +22884,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o295@int32, r8o295@int32:
+      r6o295 = r6 /\ r8o295 = r8 && r6o295 = r6 /\ r8o295 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20297,6 +22902,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o295,r8o295]*[K**103,K**231])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o295,r8o295]*[K**103,K**231]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20316,6 +22926,32 @@ mov L0x203f0a58 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 115 ****************)
+
+cut eqmod L0x203f0a58 (poly X [r5o294,r6o294,r7o294,r8o294]) [Q,X-K**103]/\
+    eqmod L0x203f0a5c (poly X [r5o294,r6o294,r7o294,r8o294]) [Q,X-K**359]/\
+    eqmod L0x203f0a60 (poly X [r5o294,r6o294,r7o294,r8o294]) [Q,X-K**231]/\
+    eqmod L0x203f0a64 (poly X [r5o294,r6o294,r7o294,r8o294]) [Q,X-K**487]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]/\
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]/\
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]/\
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]/\
+    [L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8308; Value = 0xfff97d45; PC = 0x58b8 *)
@@ -20332,6 +22968,11 @@ mov r6 L0x203f0a6c;
 mov r7 L0x203f0a70;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a74; Value = 0x0006ab82; PC = 0x58d0 *)
 mov r8 L0x203f0a74;
+
+ghost r5o296@int32, r6o296@int32, r7o296@int32, r8o296@int32:
+      r5o296 = r5 /\ r6o296 = r6 /\ r7o296 = r7 /\ r8o296 = r8
+   && r5o296 = r5 /\ r6o296 = r6 /\ r7o296 = r7 /\ r8o296 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20346,6 +22987,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o296,r8o296]*[K** 46,K** 46])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o296,r8o296]*[K** 46,K** 46]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20354,6 +23000,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o297@int32, r8o297@int32:
+      r6o297 = r6 /\ r8o297 = r8 && r6o297 = r6 /\ r8o297 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20368,6 +23018,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o297,r8o297]*[K** 23,K**151])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o297,r8o297]*[K** 23,K**151]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20387,6 +23042,32 @@ mov L0x203f0a68 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 116 ****************)
+
+cut eqmod L0x203f0a68 (poly X [r5o296,r6o296,r7o296,r8o296]) [Q,X-K** 23]/\
+    eqmod L0x203f0a6c (poly X [r5o296,r6o296,r7o296,r8o296]) [Q,X-K**279]/\
+    eqmod L0x203f0a70 (poly X [r5o296,r6o296,r7o296,r8o296]) [Q,X-K**151]/\
+    eqmod L0x203f0a74 (poly X [r5o296,r6o296,r7o296,r8o296]) [Q,X-K**407]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]/\
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]/\
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]/\
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]/\
+    [L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8314; Value = 0xffe47cae; PC = 0x58b8 *)
@@ -20403,6 +23084,11 @@ mov r6 L0x203f0a7c;
 mov r7 L0x203f0a80;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a84; Value = 0x00146386; PC = 0x58d0 *)
 mov r8 L0x203f0a84;
+
+ghost r5o298@int32, r6o298@int32, r7o298@int32, r8o298@int32:
+      r5o298 = r5 /\ r6o298 = r6 /\ r7o298 = r7 /\ r8o298 = r8
+   && r5o298 = r5 /\ r6o298 = r6 /\ r7o298 = r7 /\ r8o298 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20417,6 +23103,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o298,r8o298]*[K**174,K**174])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o298,r8o298]*[K**174,K**174]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20425,6 +23116,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o299@int32, r8o299@int32:
+      r6o299 = r6 /\ r8o299 = r8 && r6o299 = r6 /\ r8o299 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20439,6 +23134,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o299,r8o299]*[K** 87,K**215])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o299,r8o299]*[K** 87,K**215]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20458,6 +23158,32 @@ mov L0x203f0a78 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 117 ****************)
+
+cut eqmod L0x203f0a78 (poly X [r5o298,r6o298,r7o298,r8o298]) [Q,X-K** 87]/\
+    eqmod L0x203f0a7c (poly X [r5o298,r6o298,r7o298,r8o298]) [Q,X-K**343]/\
+    eqmod L0x203f0a80 (poly X [r5o298,r6o298,r7o298,r8o298]) [Q,X-K**215]/\
+    eqmod L0x203f0a84 (poly X [r5o298,r6o298,r7o298,r8o298]) [Q,X-K**471]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]/\
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]/\
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]/\
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]/\
+    [L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8320; Value = 0xffe68e98; PC = 0x58b8 *)
@@ -20474,6 +23200,11 @@ mov r6 L0x203f0a8c;
 mov r7 L0x203f0a90;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0a94; Value = 0xfff4c108; PC = 0x58d0 *)
 mov r8 L0x203f0a94;
+
+ghost r5o300@int32, r6o300@int32, r7o300@int32, r8o300@int32:
+      r5o300 = r5 /\ r6o300 = r6 /\ r7o300 = r7 /\ r8o300 = r8
+   && r5o300 = r5 /\ r6o300 = r6 /\ r7o300 = r7 /\ r8o300 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20488,6 +23219,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o300,r8o300]*[K**110,K**110])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o300,r8o300]*[K**110,K**110]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20496,6 +23232,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o301@int32, r8o301@int32:
+      r6o301 = r6 /\ r8o301 = r8 && r6o301 = r6 /\ r8o301 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20510,6 +23250,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o301,r8o301]*[K** 55,K**183])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o301,r8o301]*[K** 55,K**183]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20529,6 +23274,32 @@ mov L0x203f0a88 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 118 ****************)
+
+cut eqmod L0x203f0a88 (poly X [r5o300,r6o300,r7o300,r8o300]) [Q,X-K** 55]/\
+    eqmod L0x203f0a8c (poly X [r5o300,r6o300,r7o300,r8o300]) [Q,X-K**311]/\
+    eqmod L0x203f0a90 (poly X [r5o300,r6o300,r7o300,r8o300]) [Q,X-K**183]/\
+    eqmod L0x203f0a94 (poly X [r5o300,r6o300,r7o300,r8o300]) [Q,X-K**439]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]/\
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]/\
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]/\
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]/\
+    [L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x832c; Value = 0xfffc05da; PC = 0x58b8 *)
@@ -20545,6 +23316,11 @@ mov r6 L0x203f0a9c;
 mov r7 L0x203f0aa0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0aa4; Value = 0xffb58880; PC = 0x58d0 *)
 mov r8 L0x203f0aa4;
+
+ghost r5o302@int32, r6o302@int32, r7o302@int32, r8o302@int32:
+      r5o302 = r5 /\ r6o302 = r6 /\ r7o302 = r7 /\ r8o302 = r8
+   && r5o302 = r5 /\ r6o302 = r6 /\ r7o302 = r7 /\ r8o302 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20559,6 +23335,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o302,r8o302]*[K**238,K**238])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o302,r8o302]*[K**238,K**238]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20567,6 +23348,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o303@int32, r8o303@int32:
+      r6o303 = r6 /\ r8o303 = r8 && r6o303 = r6 /\ r8o303 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20581,6 +23366,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o303,r8o303]*[K**119,K**247])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o303,r8o303]*[K**119,K**247]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20600,6 +23390,32 @@ mov L0x203f0a98 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 119 ****************)
+
+cut eqmod L0x203f0a98 (poly X [r5o302,r6o302,r7o302,r8o302]) [Q,X-K**119]/\
+    eqmod L0x203f0a9c (poly X [r5o302,r6o302,r7o302,r8o302]) [Q,X-K**375]/\
+    eqmod L0x203f0aa0 (poly X [r5o302,r6o302,r7o302,r8o302]) [Q,X-K**247]/\
+    eqmod L0x203f0aa4 (poly X [r5o302,r6o302,r7o302,r8o302]) [Q,X-K**503]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]/\
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]/\
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]/\
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]/\
+    [L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [56,57,58,59]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8338; Value = 0xffd32764; PC = 0x58b8 *)
@@ -20616,6 +23432,11 @@ mov r6 L0x203f0aac;
 mov r7 L0x203f0ab0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0ab4; Value = 0xffdfe3e2; PC = 0x58d0 *)
 mov r8 L0x203f0ab4;
+
+ghost r5o304@int32, r6o304@int32, r7o304@int32, r8o304@int32:
+      r5o304 = r5 /\ r6o304 = r6 /\ r7o304 = r7 /\ r8o304 = r8
+   && r5o304 = r5 /\ r6o304 = r6 /\ r7o304 = r7 /\ r8o304 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20630,6 +23451,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o304,r8o304]*[K** 30,K** 30])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o304,r8o304]*[K** 30,K** 30]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20638,6 +23464,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o305@int32, r8o305@int32:
+      r6o305 = r6 /\ r8o305 = r8 && r6o305 = r6 /\ r8o305 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20652,6 +23482,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o305,r8o305]*[K** 15,K**143])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o305,r8o305]*[K** 15,K**143]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20671,6 +23506,32 @@ mov L0x203f0aa8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 120 ****************)
+
+cut eqmod L0x203f0aa8 (poly X [r5o304,r6o304,r7o304,r8o304]) [Q,X-K** 15]/\
+    eqmod L0x203f0aac (poly X [r5o304,r6o304,r7o304,r8o304]) [Q,X-K**271]/\
+    eqmod L0x203f0ab0 (poly X [r5o304,r6o304,r7o304,r8o304]) [Q,X-K**143]/\
+    eqmod L0x203f0ab4 (poly X [r5o304,r6o304,r7o304,r8o304]) [Q,X-K**399]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]/\
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]/\
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]/\
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]/\
+    [L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8344; Value = 0xfff993dd; PC = 0x58b8 *)
@@ -20687,6 +23548,11 @@ mov r6 L0x203f0abc;
 mov r7 L0x203f0ac0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0ac4; Value = 0xfff99bc2; PC = 0x58d0 *)
 mov r8 L0x203f0ac4;
+
+ghost r5o306@int32, r6o306@int32, r7o306@int32, r8o306@int32:
+      r5o306 = r5 /\ r6o306 = r6 /\ r7o306 = r7 /\ r8o306 = r8
+   && r5o306 = r5 /\ r6o306 = r6 /\ r7o306 = r7 /\ r8o306 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20701,6 +23567,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o306,r8o306]*[K**158,K**158])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o306,r8o306]*[K**158,K**158]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20709,6 +23580,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o307@int32, r8o307@int32:
+      r6o307 = r6 /\ r8o307 = r8 && r6o307 = r6 /\ r8o307 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20723,6 +23598,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o307,r8o307]*[K** 79,K**207])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o307,r8o307]*[K** 79,K**207]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20742,6 +23622,32 @@ mov L0x203f0ab8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 121 ****************)
+
+cut eqmod L0x203f0ab8 (poly X [r5o306,r6o306,r7o306,r8o306]) [Q,X-K** 79]/\
+    eqmod L0x203f0abc (poly X [r5o306,r6o306,r7o306,r8o306]) [Q,X-K**335]/\
+    eqmod L0x203f0ac0 (poly X [r5o306,r6o306,r7o306,r8o306]) [Q,X-K**207]/\
+    eqmod L0x203f0ac4 (poly X [r5o306,r6o306,r7o306,r8o306]) [Q,X-K**463]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]/\
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]/\
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]/\
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]/\
+    [L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8350; Value = 0x0002cc93; PC = 0x58b8 *)
@@ -20758,6 +23664,11 @@ mov r6 L0x203f0acc;
 mov r7 L0x203f0ad0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0ad4; Value = 0x001155c8; PC = 0x58d0 *)
 mov r8 L0x203f0ad4;
+
+ghost r5o308@int32, r6o308@int32, r7o308@int32, r8o308@int32:
+      r5o308 = r5 /\ r6o308 = r6 /\ r7o308 = r7 /\ r8o308 = r8
+   && r5o308 = r5 /\ r6o308 = r6 /\ r7o308 = r7 /\ r8o308 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20772,6 +23683,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o308,r8o308]*[K** 94,K** 94])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o308,r8o308]*[K** 94,K** 94]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20780,6 +23696,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o309@int32, r8o309@int32:
+      r6o309 = r6 /\ r8o309 = r8 && r6o309 = r6 /\ r8o309 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20794,6 +23714,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o309,r8o309]*[K** 47,K**175])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o309,r8o309]*[K** 47,K**175]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20813,6 +23738,32 @@ mov L0x203f0ac8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 122 ****************)
+
+cut eqmod L0x203f0ac8 (poly X [r5o308,r6o308,r7o308,r8o308]) [Q,X-K** 47]/\
+    eqmod L0x203f0acc (poly X [r5o308,r6o308,r7o308,r8o308]) [Q,X-K**303]/\
+    eqmod L0x203f0ad0 (poly X [r5o308,r6o308,r7o308,r8o308]) [Q,X-K**175]/\
+    eqmod L0x203f0ad4 (poly X [r5o308,r6o308,r7o308,r8o308]) [Q,X-K**431]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]/\
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]/\
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]/\
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]/\
+    [L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x835c; Value = 0x00189c2a; PC = 0x58b8 *)
@@ -20829,6 +23780,11 @@ mov r6 L0x203f0adc;
 mov r7 L0x203f0ae0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0ae4; Value = 0xffd13098; PC = 0x58d0 *)
 mov r8 L0x203f0ae4;
+
+ghost r5o310@int32, r6o310@int32, r7o310@int32, r8o310@int32:
+      r5o310 = r5 /\ r6o310 = r6 /\ r7o310 = r7 /\ r8o310 = r8
+   && r5o310 = r5 /\ r6o310 = r6 /\ r7o310 = r7 /\ r8o310 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20843,6 +23799,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o310,r8o310]*[K**222,K**222])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o310,r8o310]*[K**222,K**222]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20851,6 +23812,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o311@int32, r8o311@int32:
+      r6o311 = r6 /\ r8o311 = r8 && r6o311 = r6 /\ r8o311 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20865,6 +23830,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o311,r8o311]*[K**111,K**239])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o311,r8o311]*[K**111,K**239]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20884,6 +23854,32 @@ mov L0x203f0ad8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 123 ****************)
+
+cut eqmod L0x203f0ad8 (poly X [r5o310,r6o310,r7o310,r8o310]) [Q,X-K**111]/\
+    eqmod L0x203f0adc (poly X [r5o310,r6o310,r7o310,r8o310]) [Q,X-K**367]/\
+    eqmod L0x203f0ae0 (poly X [r5o310,r6o310,r7o310,r8o310]) [Q,X-K**239]/\
+    eqmod L0x203f0ae4 (poly X [r5o310,r6o310,r7o310,r8o310]) [Q,X-K**495]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]/\
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]/\
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]/\
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]/\
+    [L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8368; Value = 0xfff78a50; PC = 0x58b8 *)
@@ -20900,6 +23896,11 @@ mov r6 L0x203f0aec;
 mov r7 L0x203f0af0;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0af4; Value = 0x003a1726; PC = 0x58d0 *)
 mov r8 L0x203f0af4;
+
+ghost r5o312@int32, r6o312@int32, r7o312@int32, r8o312@int32:
+      r5o312 = r5 /\ r6o312 = r6 /\ r7o312 = r7 /\ r8o312 = r8
+   && r5o312 = r5 /\ r6o312 = r6 /\ r7o312 = r7 /\ r8o312 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20914,6 +23915,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o312,r8o312]*[K** 62,K** 62])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o312,r8o312]*[K** 62,K** 62]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20922,6 +23928,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o313@int32, r8o313@int32:
+      r6o313 = r6 /\ r8o313 = r8 && r6o313 = r6 /\ r8o313 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -20936,6 +23946,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o313,r8o313]*[K** 31,K**159])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o313,r8o313]*[K** 31,K**159]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -20955,6 +23970,32 @@ mov L0x203f0ae8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 124 ****************)
+
+cut eqmod L0x203f0ae8 (poly X [r5o312,r6o312,r7o312,r8o312]) [Q,X-K** 31]/\
+    eqmod L0x203f0aec (poly X [r5o312,r6o312,r7o312,r8o312]) [Q,X-K**287]/\
+    eqmod L0x203f0af0 (poly X [r5o312,r6o312,r7o312,r8o312]) [Q,X-K**159]/\
+    eqmod L0x203f0af4 (poly X [r5o312,r6o312,r7o312,r8o312]) [Q,X-K**415]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]/\
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]/\
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]/\
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]/\
+    [L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8374; Value = 0xffff434e; PC = 0x58b8 *)
@@ -20971,6 +24012,11 @@ mov r6 L0x203f0afc;
 mov r7 L0x203f0b00;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0b04; Value = 0x001bc0a6; PC = 0x58d0 *)
 mov r8 L0x203f0b04;
+
+ghost r5o314@int32, r6o314@int32, r7o314@int32, r8o314@int32:
+      r5o314 = r5 /\ r6o314 = r6 /\ r7o314 = r7 /\ r8o314 = r8
+   && r5o314 = r5 /\ r6o314 = r6 /\ r7o314 = r7 /\ r8o314 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -20985,6 +24031,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o314,r8o314]*[K**190,K**190])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o314,r8o314]*[K**190,K**190]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -20993,6 +24044,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o315@int32, r8o315@int32:
+      r6o315 = r6 /\ r8o315 = r8 && r6o315 = r6 /\ r8o315 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -21007,6 +24062,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o315,r8o315]*[K** 95,K**223])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o315,r8o315]*[K** 95,K**223]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -21026,6 +24086,32 @@ mov L0x203f0af8 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 125 ****************)
+
+cut eqmod L0x203f0af8 (poly X [r5o314,r6o314,r7o314,r8o314]) [Q,X-K** 95]/\
+    eqmod L0x203f0afc (poly X [r5o314,r6o314,r7o314,r8o314]) [Q,X-K**351]/\
+    eqmod L0x203f0b00 (poly X [r5o314,r6o314,r7o314,r8o314]) [Q,X-K**223]/\
+    eqmod L0x203f0b04 (poly X [r5o314,r6o314,r7o314,r8o314]) [Q,X-K**479]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]/\
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]/\
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]/\
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]/\
+    [L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x8380; Value = 0x003c15ca; PC = 0x58b8 *)
@@ -21042,6 +24128,11 @@ mov r6 L0x203f0b0c;
 mov r7 L0x203f0b10;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0b14; Value = 0x000badf4; PC = 0x58d0 *)
 mov r8 L0x203f0b14;
+
+ghost r5o316@int32, r6o316@int32, r7o316@int32, r8o316@int32:
+      r5o316 = r5 /\ r6o316 = r6 /\ r7o316 = r7 /\ r8o316 = r8
+   && r5o316 = r5 /\ r6o316 = r6 /\ r7o316 = r7 /\ r8o316 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -21056,6 +24147,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o316,r8o316]*[K**126,K**126])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o316,r8o316]*[K**126,K**126]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -21064,6 +24160,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o317@int32, r8o317@int32:
+      r6o317 = r6 /\ r8o317 = r8 && r6o317 = r6 /\ r8o317 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -21078,6 +24178,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o317,r8o317]*[K** 63,K**191])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o317,r8o317]*[K** 63,K**191]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -21097,6 +24202,32 @@ mov L0x203f0b08 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 126 ****************)
+
+cut eqmod L0x203f0b08 (poly X [r5o316,r6o316,r7o316,r8o316]) [Q,X-K** 63]/\
+    eqmod L0x203f0b0c (poly X [r5o316,r6o316,r7o316,r8o316]) [Q,X-K**319]/\
+    eqmod L0x203f0b10 (poly X [r5o316,r6o316,r7o316,r8o316]) [Q,X-K**191]/\
+    eqmod L0x203f0b14 (poly X [r5o316,r6o316,r7o316,r8o316]) [Q,X-K**447]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]/\
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]/\
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]/\
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]/\
+    [L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* ldr.w	r12, [r1, #4]                             #! EA = L0x838c; Value = 0xfff316b6; PC = 0x58b8 *)
@@ -21113,6 +24244,11 @@ mov r6 L0x203f0b1c;
 mov r7 L0x203f0b20;
 (* ldr.w	r8, [r0, #12]                             #! EA = L0x203f0b24; Value = 0x0037c77c; PC = 0x58d0 *)
 mov r8 L0x203f0b24;
+
+ghost r5o318@int32, r6o318@int32, r7o318@int32, r8o318@int32:
+      r5o318 = r5 /\ r6o318 = r6 /\ r7o318 = r7 /\ r8o318 = r8
+   && r5o318 = r5 /\ r6o318 = r6 /\ r7o318 = r7 /\ r8o318 = r8;
+
 (* smull	r9, r7, r7, r11                           #! PC = 0x58d4 *)
 smull r7 r9 r7 r11; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58d8 *)
@@ -21127,6 +24263,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x58e8 *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r7,r8] ([r7o318,r8o318]*[K**254,K**254])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r7,r8] ([r7o318,r8o318]*[K**254,K**254]) [Q, Q] && true;
+
 (* add	r5, r7                                      #! PC = 0x58ec *)
 add r5 r5 r7;
 (* add	r6, r8                                      #! PC = 0x58ee *)
@@ -21135,6 +24276,10 @@ add r6 r6 r8;
 shl slsl r7 1@int32; sub r7 r5 slsl;
 (* sub.w	r8, r6, r8, lsl #1                        #! PC = 0x58f4 *)
 shl slsl r8 1@int32; sub r8 r6 slsl;
+
+ghost r6o319@int32, r8o319@int32:
+      r6o319 = r6 /\ r8o319 = r8 && r6o319 = r6 /\ r8o319 = r8;
+
 (* smull	r9, r6, r6, r12                           #! PC = 0x58f8 *)
 smull r6 r9 r6 r12; cast r9@int32 r9;
 (* mul.w	r10, r9, r2                               #! PC = 0x58fc *)
@@ -21149,6 +24294,11 @@ mull mdc r10 r9 r2; cast r10@int32 r10;
 (* smlal	r9, r8, r10, r3                           #! PC = 0x590c *)
 smull smlH smlL r10 r3; cast r9@uint32 r9; adds smlc r9 r9 smlL;
 cast r9@int32 r9; adc r8 r8 smlH smlc;
+
+eassert eqmod [r6,r8] ([r6o319,r8o319]*[K**127,K**255])
+              [Q, Q] prove with [algebra solver isl, precondition];
+assume eqmod [r6,r8] ([r6o319,r8o319]*[K**127,K**255]) [Q, Q] && true;
+
 (* add	r5, r6                                      #! PC = 0x5910 *)
 add r5 r5 r6;
 (* add	r7, r8                                      #! PC = 0x5912 *)
@@ -21168,6 +24318,32 @@ mov L0x203f0b18 r5;
 (* cmp.w	r4, r0                                    #! PC = 0x592c *)
 (* cmp.w r4, r0 *)
 nop;
+
+(**************** CUT 127 ****************)
+
+cut eqmod L0x203f0b18 (poly X [r5o318,r6o318,r7o318,r8o318]) [Q,X-K**127]/\
+    eqmod L0x203f0b1c (poly X [r5o318,r6o318,r7o318,r8o318]) [Q,X-K**383]/\
+    eqmod L0x203f0b20 (poly X [r5o318,r6o318,r7o318,r8o318]) [Q,X-K**255]/\
+    eqmod L0x203f0b24 (poly X [r5o318,r6o318,r7o318,r8o318]) [Q,X-K**511]
+    prove with [precondition]
+ && [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]/\
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]/\
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]/\
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]/\
+    [13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2]<=s
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]/\
+    [L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24]<=s
+    [13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+    prove with [precondition, cuts [60,61,62,63]];
+
 (* #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! PC = 0x5930 *)
 #bne.w	0x58b8 <pqcrystals_dilithium_ntt+1348>   #! 0x5930 = 0x5930;
 (* #ldmia.w	sp!, {r4, r5, r6, r7, r8, r9, r10, r11, pc}#! EA = L0x203ef224; Value = 0x203f0b28; PC = 0x5934 *)
@@ -21186,9 +24362,555 @@ mov r0 r4;
 (* #! -> SP = 0x203ef248 *)
 #! 0x203ef248 = 0x203ef248;
 
+
 {
-  true
-  &&
-  true
+(**************** postcondition ****************)
+
+eqmod (F**2) L0x203f0728 [Q,X-K**  1]/\eqmod (F**2) L0x203f072c [Q,X-K**257]/\
+eqmod (F**2) L0x203f0730 [Q,X-K**129]/\eqmod (F**2) L0x203f0734 [Q,X-K**385]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 64]],
+eqmod (F**2) L0x203f0738 [Q,X-K** 65]/\eqmod (F**2) L0x203f073c [Q,X-K**321]/\
+eqmod (F**2) L0x203f0740 [Q,X-K**193]/\eqmod (F**2) L0x203f0744 [Q,X-K**449]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 65]],
+eqmod (F**2) L0x203f0748 [Q,X-K** 33]/\eqmod (F**2) L0x203f074c [Q,X-K**289]/\
+eqmod (F**2) L0x203f0750 [Q,X-K**161]/\eqmod (F**2) L0x203f0754 [Q,X-K**417]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 66]],
+eqmod (F**2) L0x203f0758 [Q,X-K** 97]/\eqmod (F**2) L0x203f075c [Q,X-K**353]/\
+eqmod (F**2) L0x203f0760 [Q,X-K**225]/\eqmod (F**2) L0x203f0764 [Q,X-K**481]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 67]],
+eqmod (F**2) L0x203f0768 [Q,X-K** 17]/\eqmod (F**2) L0x203f076c [Q,X-K**273]/\
+eqmod (F**2) L0x203f0770 [Q,X-K**145]/\eqmod (F**2) L0x203f0774 [Q,X-K**401]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 68]],
+eqmod (F**2) L0x203f0778 [Q,X-K** 81]/\eqmod (F**2) L0x203f077c [Q,X-K**337]/\
+eqmod (F**2) L0x203f0780 [Q,X-K**209]/\eqmod (F**2) L0x203f0784 [Q,X-K**465]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 69]],
+eqmod (F**2) L0x203f0788 [Q,X-K** 49]/\eqmod (F**2) L0x203f078c [Q,X-K**305]/\
+eqmod (F**2) L0x203f0790 [Q,X-K**177]/\eqmod (F**2) L0x203f0794 [Q,X-K**433]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 70]],
+eqmod (F**2) L0x203f0798 [Q,X-K**113]/\eqmod (F**2) L0x203f079c [Q,X-K**369]/\
+eqmod (F**2) L0x203f07a0 [Q,X-K**241]/\eqmod (F**2) L0x203f07a4 [Q,X-K**497]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35, 71]],
+eqmod (F**2) L0x203f07a8 [Q,X-K**  9]/\eqmod (F**2) L0x203f07ac [Q,X-K**265]/\
+eqmod (F**2) L0x203f07b0 [Q,X-K**137]/\eqmod (F**2) L0x203f07b4 [Q,X-K**393]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 72]],
+eqmod (F**2) L0x203f07b8 [Q,X-K** 73]/\eqmod (F**2) L0x203f07bc [Q,X-K**329]/\
+eqmod (F**2) L0x203f07c0 [Q,X-K**201]/\eqmod (F**2) L0x203f07c4 [Q,X-K**457]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 73]],
+eqmod (F**2) L0x203f07c8 [Q,X-K** 41]/\eqmod (F**2) L0x203f07cc [Q,X-K**297]/\
+eqmod (F**2) L0x203f07d0 [Q,X-K**169]/\eqmod (F**2) L0x203f07d4 [Q,X-K**425]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 74]],
+eqmod (F**2) L0x203f07d8 [Q,X-K**105]/\eqmod (F**2) L0x203f07dc [Q,X-K**361]/\
+eqmod (F**2) L0x203f07e0 [Q,X-K**233]/\eqmod (F**2) L0x203f07e4 [Q,X-K**489]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 75]],
+eqmod (F**2) L0x203f07e8 [Q,X-K** 25]/\eqmod (F**2) L0x203f07ec [Q,X-K**281]/\
+eqmod (F**2) L0x203f07f0 [Q,X-K**153]/\eqmod (F**2) L0x203f07f4 [Q,X-K**409]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 76]],
+eqmod (F**2) L0x203f07f8 [Q,X-K** 89]/\eqmod (F**2) L0x203f07fc [Q,X-K**345]/\
+eqmod (F**2) L0x203f0800 [Q,X-K**217]/\eqmod (F**2) L0x203f0804 [Q,X-K**473]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 77]],
+eqmod (F**2) L0x203f0808 [Q,X-K** 57]/\eqmod (F**2) L0x203f080c [Q,X-K**313]/\
+eqmod (F**2) L0x203f0810 [Q,X-K**185]/\eqmod (F**2) L0x203f0814 [Q,X-K**441]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 78]],
+eqmod (F**2) L0x203f0818 [Q,X-K**121]/\eqmod (F**2) L0x203f081c [Q,X-K**377]/\
+eqmod (F**2) L0x203f0820 [Q,X-K**249]/\eqmod (F**2) L0x203f0824 [Q,X-K**505]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,36,37,38,39, 79]],
+eqmod (F**2) L0x203f0828 [Q,X-K**  5]/\eqmod (F**2) L0x203f082c [Q,X-K**261]/\
+eqmod (F**2) L0x203f0830 [Q,X-K**133]/\eqmod (F**2) L0x203f0834 [Q,X-K**389]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 80]],
+eqmod (F**2) L0x203f0838 [Q,X-K** 69]/\eqmod (F**2) L0x203f083c [Q,X-K**325]/\
+eqmod (F**2) L0x203f0840 [Q,X-K**197]/\eqmod (F**2) L0x203f0844 [Q,X-K**453]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 81]],
+eqmod (F**2) L0x203f0848 [Q,X-K** 37]/\eqmod (F**2) L0x203f084c [Q,X-K**293]/\
+eqmod (F**2) L0x203f0850 [Q,X-K**165]/\eqmod (F**2) L0x203f0854 [Q,X-K**421]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 82]],
+eqmod (F**2) L0x203f0858 [Q,X-K**101]/\eqmod (F**2) L0x203f085c [Q,X-K**357]/\
+eqmod (F**2) L0x203f0860 [Q,X-K**229]/\eqmod (F**2) L0x203f0864 [Q,X-K**485]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 83]],
+eqmod (F**2) L0x203f0868 [Q,X-K** 21]/\eqmod (F**2) L0x203f086c [Q,X-K**277]/\
+eqmod (F**2) L0x203f0870 [Q,X-K**149]/\eqmod (F**2) L0x203f0874 [Q,X-K**405]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 84]],
+eqmod (F**2) L0x203f0878 [Q,X-K** 85]/\eqmod (F**2) L0x203f087c [Q,X-K**341]/\
+eqmod (F**2) L0x203f0880 [Q,X-K**213]/\eqmod (F**2) L0x203f0884 [Q,X-K**469]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 85]],
+eqmod (F**2) L0x203f0888 [Q,X-K** 53]/\eqmod (F**2) L0x203f088c [Q,X-K**309]/\
+eqmod (F**2) L0x203f0890 [Q,X-K**181]/\eqmod (F**2) L0x203f0894 [Q,X-K**437]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 86]],
+eqmod (F**2) L0x203f0898 [Q,X-K**117]/\eqmod (F**2) L0x203f089c [Q,X-K**373]/\
+eqmod (F**2) L0x203f08a0 [Q,X-K**245]/\eqmod (F**2) L0x203f08a4 [Q,X-K**501]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,40,41,42,43, 87]],
+eqmod (F**2) L0x203f08a8 [Q,X-K** 13]/\eqmod (F**2) L0x203f08ac [Q,X-K**269]/\
+eqmod (F**2) L0x203f08b0 [Q,X-K**141]/\eqmod (F**2) L0x203f08b4 [Q,X-K**397]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 88]],
+eqmod (F**2) L0x203f08b8 [Q,X-K** 77]/\eqmod (F**2) L0x203f08bc [Q,X-K**333]/\
+eqmod (F**2) L0x203f08c0 [Q,X-K**205]/\eqmod (F**2) L0x203f08c4 [Q,X-K**461]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 89]],
+eqmod (F**2) L0x203f08c8 [Q,X-K** 45]/\eqmod (F**2) L0x203f08cc [Q,X-K**301]/\
+eqmod (F**2) L0x203f08d0 [Q,X-K**173]/\eqmod (F**2) L0x203f08d4 [Q,X-K**429]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 90]],
+eqmod (F**2) L0x203f08d8 [Q,X-K**109]/\eqmod (F**2) L0x203f08dc [Q,X-K**365]/\
+eqmod (F**2) L0x203f08e0 [Q,X-K**237]/\eqmod (F**2) L0x203f08e4 [Q,X-K**493]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 91]],
+eqmod (F**2) L0x203f08e8 [Q,X-K** 29]/\eqmod (F**2) L0x203f08ec [Q,X-K**285]/\
+eqmod (F**2) L0x203f08f0 [Q,X-K**157]/\eqmod (F**2) L0x203f08f4 [Q,X-K**413]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 92]],
+eqmod (F**2) L0x203f08f8 [Q,X-K** 93]/\eqmod (F**2) L0x203f08fc [Q,X-K**349]/\
+eqmod (F**2) L0x203f0900 [Q,X-K**221]/\eqmod (F**2) L0x203f0904 [Q,X-K**477]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 93]],
+eqmod (F**2) L0x203f0908 [Q,X-K** 61]/\eqmod (F**2) L0x203f090c [Q,X-K**317]/\
+eqmod (F**2) L0x203f0910 [Q,X-K**189]/\eqmod (F**2) L0x203f0914 [Q,X-K**445]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 94]],
+eqmod (F**2) L0x203f0918 [Q,X-K**125]/\eqmod (F**2) L0x203f091c [Q,X-K**381]/\
+eqmod (F**2) L0x203f0920 [Q,X-K**253]/\eqmod (F**2) L0x203f0924 [Q,X-K**509]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,44,45,46,47, 95]],
+eqmod (F**2) L0x203f0928 [Q,X-K**  3]/\eqmod (F**2) L0x203f092c [Q,X-K**259]/\
+eqmod (F**2) L0x203f0930 [Q,X-K**131]/\eqmod (F**2) L0x203f0934 [Q,X-K**387]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51, 96]],
+eqmod (F**2) L0x203f0938 [Q,X-K** 67]/\eqmod (F**2) L0x203f093c [Q,X-K**323]/\
+eqmod (F**2) L0x203f0940 [Q,X-K**195]/\eqmod (F**2) L0x203f0944 [Q,X-K**451]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51, 97]],
+eqmod (F**2) L0x203f0948 [Q,X-K** 35]/\eqmod (F**2) L0x203f094c [Q,X-K**291]/\
+eqmod (F**2) L0x203f0950 [Q,X-K**163]/\eqmod (F**2) L0x203f0954 [Q,X-K**419]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51, 98]],
+eqmod (F**2) L0x203f0958 [Q,X-K** 99]/\eqmod (F**2) L0x203f095c [Q,X-K**355]/\
+eqmod (F**2) L0x203f0960 [Q,X-K**227]/\eqmod (F**2) L0x203f0964 [Q,X-K**483]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51, 99]],
+eqmod (F**2) L0x203f0968 [Q,X-K** 19]/\eqmod (F**2) L0x203f096c [Q,X-K**275]/\
+eqmod (F**2) L0x203f0970 [Q,X-K**147]/\eqmod (F**2) L0x203f0974 [Q,X-K**403]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51,100]],
+eqmod (F**2) L0x203f0978 [Q,X-K** 83]/\eqmod (F**2) L0x203f097c [Q,X-K**339]/\
+eqmod (F**2) L0x203f0980 [Q,X-K**211]/\eqmod (F**2) L0x203f0984 [Q,X-K**467]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51,101]],
+eqmod (F**2) L0x203f0988 [Q,X-K** 51]/\eqmod (F**2) L0x203f098c [Q,X-K**307]/\
+eqmod (F**2) L0x203f0990 [Q,X-K**179]/\eqmod (F**2) L0x203f0994 [Q,X-K**435]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51,102]],
+eqmod (F**2) L0x203f0998 [Q,X-K**115]/\eqmod (F**2) L0x203f099c [Q,X-K**371]/\
+eqmod (F**2) L0x203f09a0 [Q,X-K**243]/\eqmod (F**2) L0x203f09a4 [Q,X-K**499]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,48,49,50,51,103]],
+eqmod (F**2) L0x203f09a8 [Q,X-K** 11]/\eqmod (F**2) L0x203f09ac [Q,X-K**267]/\
+eqmod (F**2) L0x203f09b0 [Q,X-K**139]/\eqmod (F**2) L0x203f09b4 [Q,X-K**395]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,104]],
+eqmod (F**2) L0x203f09b8 [Q,X-K** 75]/\eqmod (F**2) L0x203f09bc [Q,X-K**331]/\
+eqmod (F**2) L0x203f09c0 [Q,X-K**203]/\eqmod (F**2) L0x203f09c4 [Q,X-K**459]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,105]],
+eqmod (F**2) L0x203f09c8 [Q,X-K** 43]/\eqmod (F**2) L0x203f09cc [Q,X-K**299]/\
+eqmod (F**2) L0x203f09d0 [Q,X-K**171]/\eqmod (F**2) L0x203f09d4 [Q,X-K**427]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,106]],
+eqmod (F**2) L0x203f09d8 [Q,X-K**107]/\eqmod (F**2) L0x203f09dc [Q,X-K**363]/\
+eqmod (F**2) L0x203f09e0 [Q,X-K**235]/\eqmod (F**2) L0x203f09e4 [Q,X-K**491]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,107]],
+eqmod (F**2) L0x203f09e8 [Q,X-K** 27]/\eqmod (F**2) L0x203f09ec [Q,X-K**283]/\
+eqmod (F**2) L0x203f09f0 [Q,X-K**155]/\eqmod (F**2) L0x203f09f4 [Q,X-K**411]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,108]],
+eqmod (F**2) L0x203f09f8 [Q,X-K** 91]/\eqmod (F**2) L0x203f09fc [Q,X-K**347]/\
+eqmod (F**2) L0x203f0a00 [Q,X-K**219]/\eqmod (F**2) L0x203f0a04 [Q,X-K**475]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,109]],
+eqmod (F**2) L0x203f0a08 [Q,X-K** 59]/\eqmod (F**2) L0x203f0a0c [Q,X-K**315]/\
+eqmod (F**2) L0x203f0a10 [Q,X-K**187]/\eqmod (F**2) L0x203f0a14 [Q,X-K**443]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,110]],
+eqmod (F**2) L0x203f0a18 [Q,X-K**123]/\eqmod (F**2) L0x203f0a1c [Q,X-K**379]/\
+eqmod (F**2) L0x203f0a20 [Q,X-K**251]/\eqmod (F**2) L0x203f0a24 [Q,X-K**507]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,52,53,54,55,111]],
+eqmod (F**2) L0x203f0a28 [Q,X-K**  7]/\eqmod (F**2) L0x203f0a2c [Q,X-K**263]/\
+eqmod (F**2) L0x203f0a30 [Q,X-K**135]/\eqmod (F**2) L0x203f0a34 [Q,X-K**391]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,112]],
+eqmod (F**2) L0x203f0a38 [Q,X-K** 71]/\eqmod (F**2) L0x203f0a3c [Q,X-K**327]/\
+eqmod (F**2) L0x203f0a40 [Q,X-K**199]/\eqmod (F**2) L0x203f0a44 [Q,X-K**455]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,113]],
+eqmod (F**2) L0x203f0a48 [Q,X-K** 39]/\eqmod (F**2) L0x203f0a4c [Q,X-K**295]/\
+eqmod (F**2) L0x203f0a50 [Q,X-K**167]/\eqmod (F**2) L0x203f0a54 [Q,X-K**423]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,114]],
+eqmod (F**2) L0x203f0a58 [Q,X-K**103]/\eqmod (F**2) L0x203f0a5c [Q,X-K**359]/\
+eqmod (F**2) L0x203f0a60 [Q,X-K**231]/\eqmod (F**2) L0x203f0a64 [Q,X-K**487]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,115]],
+eqmod (F**2) L0x203f0a68 [Q,X-K** 23]/\eqmod (F**2) L0x203f0a6c [Q,X-K**279]/\
+eqmod (F**2) L0x203f0a70 [Q,X-K**151]/\eqmod (F**2) L0x203f0a74 [Q,X-K**407]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,116]],
+eqmod (F**2) L0x203f0a78 [Q,X-K** 87]/\eqmod (F**2) L0x203f0a7c [Q,X-K**343]/\
+eqmod (F**2) L0x203f0a80 [Q,X-K**215]/\eqmod (F**2) L0x203f0a84 [Q,X-K**471]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,117]],
+eqmod (F**2) L0x203f0a88 [Q,X-K** 55]/\eqmod (F**2) L0x203f0a8c [Q,X-K**311]/\
+eqmod (F**2) L0x203f0a90 [Q,X-K**183]/\eqmod (F**2) L0x203f0a94 [Q,X-K**439]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,118]],
+eqmod (F**2) L0x203f0a98 [Q,X-K**119]/\eqmod (F**2) L0x203f0a9c [Q,X-K**375]/\
+eqmod (F**2) L0x203f0aa0 [Q,X-K**247]/\eqmod (F**2) L0x203f0aa4 [Q,X-K**503]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,56,57,58,59,119]],
+eqmod (F**2) L0x203f0aa8 [Q,X-K** 15]/\eqmod (F**2) L0x203f0aac [Q,X-K**271]/\
+eqmod (F**2) L0x203f0ab0 [Q,X-K**143]/\eqmod (F**2) L0x203f0ab4 [Q,X-K**399]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,120]],
+eqmod (F**2) L0x203f0ab8 [Q,X-K** 79]/\eqmod (F**2) L0x203f0abc [Q,X-K**335]/\
+eqmod (F**2) L0x203f0ac0 [Q,X-K**207]/\eqmod (F**2) L0x203f0ac4 [Q,X-K**463]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,121]],
+eqmod (F**2) L0x203f0ac8 [Q,X-K** 47]/\eqmod (F**2) L0x203f0acc [Q,X-K**303]/\
+eqmod (F**2) L0x203f0ad0 [Q,X-K**175]/\eqmod (F**2) L0x203f0ad4 [Q,X-K**431]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,122]],
+eqmod (F**2) L0x203f0ad8 [Q,X-K**111]/\eqmod (F**2) L0x203f0adc [Q,X-K**367]/\
+eqmod (F**2) L0x203f0ae0 [Q,X-K**239]/\eqmod (F**2) L0x203f0ae4 [Q,X-K**495]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,123]],
+eqmod (F**2) L0x203f0ae8 [Q,X-K** 31]/\eqmod (F**2) L0x203f0aec [Q,X-K**287]/\
+eqmod (F**2) L0x203f0af0 [Q,X-K**159]/\eqmod (F**2) L0x203f0af4 [Q,X-K**415]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,124]],
+eqmod (F**2) L0x203f0af8 [Q,X-K** 95]/\eqmod (F**2) L0x203f0afc [Q,X-K**351]/\
+eqmod (F**2) L0x203f0b00 [Q,X-K**223]/\eqmod (F**2) L0x203f0b04 [Q,X-K**479]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,125]],
+eqmod (F**2) L0x203f0b08 [Q,X-K** 63]/\eqmod (F**2) L0x203f0b0c [Q,X-K**319]/\
+eqmod (F**2) L0x203f0b10 [Q,X-K**191]/\eqmod (F**2) L0x203f0b14 [Q,X-K**447]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,126]],
+eqmod (F**2) L0x203f0b18 [Q,X-K**127]/\eqmod (F**2) L0x203f0b1c [Q,X-K**383]/\
+eqmod (F**2) L0x203f0b20 [Q,X-K**255]/\eqmod (F**2) L0x203f0b24 [Q,X-K**511]
+prove with [precondition, all ghosts,
+cuts [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,
+      20,21,22,23,24,25,26,27,28,29,30,31,60,61,62,63,127]]
+ &&
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734,
+ L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744] /\
+[L0x203f0728,L0x203f072c,L0x203f0730,L0x203f0734,
+ L0x203f0738,L0x203f073c,L0x203f0740,L0x203f0744] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754,
+ L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764] /\
+[L0x203f0748,L0x203f074c,L0x203f0750,L0x203f0754,
+ L0x203f0758,L0x203f075c,L0x203f0760,L0x203f0764] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774,
+ L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784] /\
+[L0x203f0768,L0x203f076c,L0x203f0770,L0x203f0774,
+ L0x203f0778,L0x203f077c,L0x203f0780,L0x203f0784] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794,
+ L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4] /\
+[L0x203f0788,L0x203f078c,L0x203f0790,L0x203f0794,
+ L0x203f0798,L0x203f079c,L0x203f07a0,L0x203f07a4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4,
+ L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4] /\
+[L0x203f07a8,L0x203f07ac,L0x203f07b0,L0x203f07b4,
+ L0x203f07b8,L0x203f07bc,L0x203f07c0,L0x203f07c4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4,
+ L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4] /\
+[L0x203f07c8,L0x203f07cc,L0x203f07d0,L0x203f07d4,
+ L0x203f07d8,L0x203f07dc,L0x203f07e0,L0x203f07e4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4,
+ L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804] /\
+[L0x203f07e8,L0x203f07ec,L0x203f07f0,L0x203f07f4,
+ L0x203f07f8,L0x203f07fc,L0x203f0800,L0x203f0804] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814,
+ L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824] /\
+[L0x203f0808,L0x203f080c,L0x203f0810,L0x203f0814,
+ L0x203f0818,L0x203f081c,L0x203f0820,L0x203f0824] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834,
+ L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844] /\
+[L0x203f0828,L0x203f082c,L0x203f0830,L0x203f0834,
+ L0x203f0838,L0x203f083c,L0x203f0840,L0x203f0844] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854,
+ L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864] /\
+[L0x203f0848,L0x203f084c,L0x203f0850,L0x203f0854,
+ L0x203f0858,L0x203f085c,L0x203f0860,L0x203f0864] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874,
+ L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884] /\
+[L0x203f0868,L0x203f086c,L0x203f0870,L0x203f0874,
+ L0x203f0878,L0x203f087c,L0x203f0880,L0x203f0884] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894,
+ L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4] /\
+[L0x203f0888,L0x203f088c,L0x203f0890,L0x203f0894,
+ L0x203f0898,L0x203f089c,L0x203f08a0,L0x203f08a4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4,
+ L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4] /\
+[L0x203f08a8,L0x203f08ac,L0x203f08b0,L0x203f08b4,
+ L0x203f08b8,L0x203f08bc,L0x203f08c0,L0x203f08c4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4,
+ L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4] /\
+[L0x203f08c8,L0x203f08cc,L0x203f08d0,L0x203f08d4,
+ L0x203f08d8,L0x203f08dc,L0x203f08e0,L0x203f08e4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4,
+ L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904] /\
+[L0x203f08e8,L0x203f08ec,L0x203f08f0,L0x203f08f4,
+ L0x203f08f8,L0x203f08fc,L0x203f0900,L0x203f0904] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914,
+ L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924] /\
+[L0x203f0908,L0x203f090c,L0x203f0910,L0x203f0914,
+ L0x203f0918,L0x203f091c,L0x203f0920,L0x203f0924] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934,
+ L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944] /\
+[L0x203f0928,L0x203f092c,L0x203f0930,L0x203f0934,
+ L0x203f0938,L0x203f093c,L0x203f0940,L0x203f0944] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954,
+ L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964] /\
+[L0x203f0948,L0x203f094c,L0x203f0950,L0x203f0954,
+ L0x203f0958,L0x203f095c,L0x203f0960,L0x203f0964] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974,
+ L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984] /\
+[L0x203f0968,L0x203f096c,L0x203f0970,L0x203f0974,
+ L0x203f0978,L0x203f097c,L0x203f0980,L0x203f0984] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994,
+ L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4] /\
+[L0x203f0988,L0x203f098c,L0x203f0990,L0x203f0994,
+ L0x203f0998,L0x203f099c,L0x203f09a0,L0x203f09a4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4,
+ L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4] /\
+[L0x203f09a8,L0x203f09ac,L0x203f09b0,L0x203f09b4,
+ L0x203f09b8,L0x203f09bc,L0x203f09c0,L0x203f09c4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4,
+ L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4] /\
+[L0x203f09c8,L0x203f09cc,L0x203f09d0,L0x203f09d4,
+ L0x203f09d8,L0x203f09dc,L0x203f09e0,L0x203f09e4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4,
+ L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04] /\
+[L0x203f09e8,L0x203f09ec,L0x203f09f0,L0x203f09f4,
+ L0x203f09f8,L0x203f09fc,L0x203f0a00,L0x203f0a04] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14,
+ L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24] /\
+[L0x203f0a08,L0x203f0a0c,L0x203f0a10,L0x203f0a14,
+ L0x203f0a18,L0x203f0a1c,L0x203f0a20,L0x203f0a24] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34,
+ L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44] /\
+[L0x203f0a28,L0x203f0a2c,L0x203f0a30,L0x203f0a34,
+ L0x203f0a38,L0x203f0a3c,L0x203f0a40,L0x203f0a44] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54,
+ L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64] /\
+[L0x203f0a48,L0x203f0a4c,L0x203f0a50,L0x203f0a54,
+ L0x203f0a58,L0x203f0a5c,L0x203f0a60,L0x203f0a64] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74,
+ L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84] /\
+[L0x203f0a68,L0x203f0a6c,L0x203f0a70,L0x203f0a74,
+ L0x203f0a78,L0x203f0a7c,L0x203f0a80,L0x203f0a84] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94,
+ L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4] /\
+[L0x203f0a88,L0x203f0a8c,L0x203f0a90,L0x203f0a94,
+ L0x203f0a98,L0x203f0a9c,L0x203f0aa0,L0x203f0aa4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4,
+ L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4] /\
+[L0x203f0aa8,L0x203f0aac,L0x203f0ab0,L0x203f0ab4,
+ L0x203f0ab8,L0x203f0abc,L0x203f0ac0,L0x203f0ac4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4,
+ L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4] /\
+[L0x203f0ac8,L0x203f0acc,L0x203f0ad0,L0x203f0ad4,
+ L0x203f0ad8,L0x203f0adc,L0x203f0ae0,L0x203f0ae4] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4,
+ L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04] /\
+[L0x203f0ae8,L0x203f0aec,L0x203f0af0,L0x203f0af4,
+ L0x203f0af8,L0x203f0afc,L0x203f0b00,L0x203f0b04] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2] /\
+[13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2,
+ 13@32*NQ2,13@32*NQ2,13@32*NQ2,13@32*NQ2] <=s
+[L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14,
+ L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24] /\
+[L0x203f0b08,L0x203f0b0c,L0x203f0b10,L0x203f0b14,
+ L0x203f0b18,L0x203f0b1c,L0x203f0b20,L0x203f0b24] <=s
+[13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2,13@32*Q2]
+prove with [all cuts]
 }
 
