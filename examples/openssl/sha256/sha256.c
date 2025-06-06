@@ -6,6 +6,7 @@ char data[16] = { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7,
 char out[32];
 
 int main (void) {
+  OPENSSL_cpuid_setup ();
   SHA256_Init (&c);
   SHA256_Update (&c, data, 16);
   SHA256_Final (out, &c);
