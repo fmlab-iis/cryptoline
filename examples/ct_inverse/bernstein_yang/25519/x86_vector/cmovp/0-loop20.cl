@@ -103,7 +103,7 @@ cast s1@sint2 tmp;
 
                    eqmod f1 1@20 2@20,
                    fuv1 = (sext f1 44) + (sext u1 43) * (2**(40))@64 + (sext v1 62) * (2**(61))@64,
-                   grs1 = (sext (sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63 1)  
+                   grs1 = (sext ((sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63) 1)  
                   ],
                and[m <s const 64 0, eqmod g const 20 1 const 20 2,
                    g1 * 2@20 = g + f,
@@ -125,7 +125,7 @@ cast s1@sint2 tmp;
 
                    eqmod f1 1@20 2@20,
                    fuv1 = (sext f1 44) + (sext u1 43) * (2**(40))@64 + (sext v1 62) * (2**(61))@64,
-                   grs1 = (sext (sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63 1)],
+                   grs1 = (sext ((sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63) 1)],
                and[eqmod g const 20 0 const 20 2,
                    g1 * 2@20 = g,
                    f1 = f,
@@ -146,7 +146,7 @@ cast s1@sint2 tmp;
 
                    eqmod f1 1@20 2@20,
                    fuv1 = (sext f1 44) + (sext u1 43) * (2**(40))@64 + (sext v1 62) * (2**(61))@64,
-                   grs1 = (sext (sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63 1)]
+                   grs1 = (sext ((sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63) 1)]
 
      ]
 }

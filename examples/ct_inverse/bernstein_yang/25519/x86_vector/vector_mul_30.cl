@@ -27,7 +27,7 @@ proc main (sint64 u , sint64 v , sint64 r , sint64 s ,
            ) =
 {
   and[
-  eqmod u *
+  eqmod (u *
        ((F0 * (2**(30*0))) +
         (F1 * (2**(30*1))) +
         (F2 * (2**(30*2))) +
@@ -46,10 +46,10 @@ proc main (sint64 u , sint64 v , sint64 r , sint64 s ,
         (G5 * (2**(30*5))) +
         (G6 * (2**(30*6))) +
         (G7 * (2**(30*7))) +
-        (G8 * (2**(30*8))))
+        (G8 * (2**(30*8)))))
        0
-       (2**(60)),
-  eqmod r *
+       (2**60),
+  eqmod (r *
        ((F0 * (2**(30*0))) +
         (F1 * (2**(30*1))) +
         (F2 * (2**(30*2))) +
@@ -68,7 +68,7 @@ proc main (sint64 u , sint64 v , sint64 r , sint64 s ,
         (G5 * (2**(30*5))) +
         (G6 * (2**(30*6))) +
         (G7 * (2**(30*7))) +
-        (G8 * (2**(30*8))))
+        (G8 * (2**(30*8)))))
        0
        (2**(60))
        ]
@@ -742,10 +742,10 @@ mov carryy_1 ymm8_1;
 mov carryy_2 ymm8_2;
 mov carryy_3 ymm8_3;
 
-assert true && (sext carryy_0 - (2**(33))@64 29) * (2**(30))@93 = (sext out0_0 29);
-assert true && (sext carryy_1 - (2**(33))@64 29) * (2**(30))@93 = (sext out0_1 29);
-assert true && (sext carryy_2 - (2**(33))@64 29) * (2**(30))@93 = (sext out0_2 29);
-assert true && (sext carryy_3 - (2**(33))@64 29) * (2**(30))@93 = (sext out0_3 29);
+assert true && (sext (carryy_0 - (2**(33))@64) 29) * (2**(30))@93 = (sext out0_0 29);
+assert true && (sext (carryy_1 - (2**(33))@64) 29) * (2**(30))@93 = (sext out0_1 29);
+assert true && (sext (carryy_2 - (2**(33))@64) 29) * (2**(30))@93 = (sext out0_2 29);
+assert true && (sext (carryy_3 - (2**(33))@64) 29) * (2**(30))@93 = (sext out0_3 29);
 assume (carryy_0 - (2**(33))) * (2**(30)) = out0_0 && true;
 assume (carryy_1 - (2**(33))) * (2**(30)) = out0_1 && true;
 assume (carryy_2 - (2**(33))) * (2**(30)) = out0_2 && true;
@@ -917,14 +917,14 @@ assume uuss_1 = luuss0_1 + luuss1_1 * (2**(30)) && true;
 assume uuss_2 = luuss0_2 + luuss1_2 * (2**(30)) && true;
 assume uuss_3 = luuss0_3 + luuss1_3 * (2**(30)) && true;
 
-assert true && eqmod uuss_0 - (sext luuss0_0 32) 0@64 (2**(30))@64;
-assert true && eqmod uuss_1 - (sext luuss0_1 32) 0@64 (2**(30))@64;
-assert true && eqmod uuss_2 - (sext luuss0_2 32) 0@64 (2**(30))@64;
-assert true && eqmod uuss_3 - (sext luuss0_3 32) 0@64 (2**(30))@64;
-assume eqmod uuss_0 - luuss0_0 0 (2**(30)) && true;
-assume eqmod uuss_1 - luuss0_1 0 (2**(30)) && true;
-assume eqmod uuss_2 - luuss0_2 0 (2**(30)) && true;
-assume eqmod uuss_3 - luuss0_3 0 (2**(30)) && true;
+assert true && eqmod (uuss_0 - (sext luuss0_0 32)) 0@64 (2**(30))@64;
+assert true && eqmod (uuss_1 - (sext luuss0_1 32)) 0@64 (2**(30))@64;
+assert true && eqmod (uuss_2 - (sext luuss0_2 32)) 0@64 (2**(30))@64;
+assert true && eqmod (uuss_3 - (sext luuss0_3 32)) 0@64 (2**(30))@64;
+assume eqmod (uuss_0 - luuss0_0) 0 (2**(30)) && true;
+assume eqmod (uuss_1 - luuss0_1) 0 (2**(30)) && true;
+assume eqmod (uuss_2 - luuss0_2) 0 (2**(30)) && true;
+assume eqmod (uuss_3 - luuss0_3) 0 (2**(30)) && true;
 
 (* vpsrlq $30,%ymm1,%ymm1 *)
 cast tmp_0@uint64 ymm1_0;
@@ -965,14 +965,14 @@ assume vvrr_1 = lvvrr0_1 + lvvrr1_1 * (2**(30)) && true;
 assume vvrr_2 = lvvrr0_2 + lvvrr1_2 * (2**(30)) && true;
 assume vvrr_3 = lvvrr0_3 + lvvrr1_3 * (2**(30)) && true;
 
-assert true && eqmod vvrr_0 - (sext lvvrr0_0 32) 0@64 (2**(30))@64;
-assert true && eqmod vvrr_1 - (sext lvvrr0_1 32) 0@64 (2**(30))@64;
-assert true && eqmod vvrr_2 - (sext lvvrr0_2 32) 0@64 (2**(30))@64;
-assert true && eqmod vvrr_3 - (sext lvvrr0_3 32) 0@64 (2**(30))@64;
-assume eqmod vvrr_0 - lvvrr0_0 0 (2**(30)) && true;
-assume eqmod vvrr_1 - lvvrr0_1 0 (2**(30)) && true;
-assume eqmod vvrr_2 - lvvrr0_2 0 (2**(30)) && true;
-assume eqmod vvrr_3 - lvvrr0_3 0 (2**(30)) && true;
+assert true && eqmod (vvrr_0 - (sext lvvrr0_0 32)) 0@64 (2**(30))@64;
+assert true && eqmod (vvrr_1 - (sext lvvrr0_1 32)) 0@64 (2**(30))@64;
+assert true && eqmod (vvrr_2 - (sext lvvrr0_2 32)) 0@64 (2**(30))@64;
+assert true && eqmod (vvrr_3 - (sext lvvrr0_3 32)) 0@64 (2**(30))@64;
+assume eqmod (vvrr_0 - lvvrr0_0) 0 (2**(30)) && true;
+assume eqmod (vvrr_1 - lvvrr0_1) 0 (2**(30)) && true;
+assume eqmod (vvrr_2 - lvvrr0_2) 0 (2**(30)) && true;
+assume eqmod (vvrr_3 - lvvrr0_3) 0 (2**(30)) && true;
 
 (* vpmuldq %ymm3,%ymm2,%ymm2 *)
 
@@ -1035,7 +1035,7 @@ adds dontcare_1 ymm2_1 ymm2_1 ymm8_1;
 adds dontcare_2 ymm2_2 ymm2_2 ymm8_2;
 adds dontcare_3 ymm2_3 ymm2_3 ymm8_3;
 
-assert eqmod oout0_0 + oout1_0*(2**(30)) 0 2**(60) && true;
+assert eqmod (oout0_0 + oout1_0*(2**30)) 0 (2**60) && true;
 
 assert true && ymm2_0 = oout1_0 + carryy_0;
 #assert true && (oout1_0 + carryy_0) * (2**(30)) = ;
@@ -1208,10 +1208,10 @@ mov carryy_1 ymm2_1;
 mov carryy_2 ymm2_2;
 mov carryy_3 ymm2_3;
 
-assert true && (sext carryy_0 - (2**(33))@64 29) * (2**(30))@93 = (sext out1_0 29) - (2**(33))@93;
-assert true && (sext carryy_1 - (2**(33))@64 29) * (2**(30))@93 = (sext out1_1 29) - (2**(33))@93;
-assert true && (sext carryy_2 - (2**(33))@64 29) * (2**(30))@93 = (sext out1_2 29) - (2**(33))@93;
-assert true && (sext carryy_3 - (2**(33))@64 29) * (2**(30))@93 = (sext out1_3 29) - (2**(33))@93;
+assert true && (sext (carryy_0 - (2**(33))@64) 29) * (2**(30))@93 = (sext out1_0 29) - (2**(33))@93;
+assert true && (sext (carryy_1 - (2**(33))@64) 29) * (2**(30))@93 = (sext out1_1 29) - (2**(33))@93;
+assert true && (sext (carryy_2 - (2**(33))@64) 29) * (2**(30))@93 = (sext out1_2 29) - (2**(33))@93;
+assert true && (sext (carryy_3 - (2**(33))@64) 29) * (2**(30))@93 = (sext out1_3 29) - (2**(33))@93;
 assume (carryy_0 - (2**(33))) * (2**(30)) = out1_0 - (2**(33)) && true;
 assume (carryy_1 - (2**(33))) * (2**(30)) = out1_1 - (2**(33)) && true;
 assume (carryy_2 - (2**(33))) * (2**(30)) = out1_2 - (2**(33)) && true;
@@ -4029,7 +4029,7 @@ and[
 and[
 
   eq
-        u *
+       (u *
         (F0
        + F1*(2**(30*1))
        + F2*(2**(30*2))
@@ -4050,9 +4050,9 @@ and[
        + G6*(2**(30*6))
        + G7*(2**(30*7))
        + G8*(2**(30*8))
-        )
+        ))
 
-       (f0
+      ((f0
       + f1*(2**(30*1))
       + f2*(2**(30*2))
       + f3*(2**(30*3))
@@ -4061,10 +4061,10 @@ and[
       + f6*(2**(30*6))
       + f7*(2**(30*7))
       + f8*(2**(30*8)))
-       * (2**(60)),
+       * (2**60)),
 
   eq
-        r *
+       (r *
         (F0
        + F1*(2**(30*1))
        + F2*(2**(30*2))
@@ -4085,9 +4085,9 @@ and[
        + G6*(2**(30*6))
        + G7*(2**(30*7))
        + G8*(2**(30*8))
-        )
+        ))
 
-       (g0
+      ((g0
       + g1*(2**(30*1))
       + g2*(2**(30*2))
       + g3*(2**(30*3))
@@ -4096,10 +4096,10 @@ and[
       + g6*(2**(30*6))
       + g7*(2**(30*7))
       + g8*(2**(30*8)))
-       * (2**(60)),
+       * (2**(60))),
 
   eqmod
-        u *
+       (u *
         (V0
        + V1*(2**(30*1))
        + V2*(2**(30*2))
@@ -4120,9 +4120,9 @@ and[
        + S6*(2**(30*6))
        + S7*(2**(30*7))
        + S8*(2**(30*8))
-        )
+        ))
 
-       (v0
+      ((v0
       + v1*(2**(30*1))
       + v2*(2**(30*2))
       + v3*(2**(30*3))
@@ -4131,11 +4131,11 @@ and[
       + v6*(2**(30*6))
       + v7*(2**(30*7))
       + v8*(2**(30*8)))
-       * (2**(60))
+       * (2**60))
 
-        2**(255)-19,
+       (2**(255)-19),
   eqmod
-        r *
+        (r *
         (V0
        + V1*(2**(30*1))
        + V2*(2**(30*2))
@@ -4156,9 +4156,9 @@ and[
        + S6*(2**(30*6))
        + S7*(2**(30*7))
        + S8*(2**(30*8))
-        )
+        ))
 
-       (s0
+       ((s0
       + s1*(2**(30*1))
       + s2*(2**(30*2))
       + s3*(2**(30*3))
@@ -4167,9 +4167,9 @@ and[
       + s6*(2**(30*6))
       + s7*(2**(30*7))
       + s8*(2**(30*8)))
-       * (2**(60))
+       * (2**60))
 
-        2**(255)-19
+       (2**(255)-19)
         
         ]
 &&

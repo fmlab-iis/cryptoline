@@ -148,7 +148,7 @@ cast rdi@sint64 tmp;
 and rsi@uint64 rsi (2**(64-48)-1)@sint64;
 shl rsi rsi 48;
 
-assert true && (sext slimbs 64 [rsi, rdi] 64) = (sext slimbs 64 [low, high] 64) * (2**48)@192;
+assert true && (sext (slimbs 64 [rsi, rdi]) 64) = (sext (slimbs 64 [low, high]) 64) * (2**48)@192;
 assume limbs 64 [rsi, rdi] = limbs 64 [low, high] * (2**48) && true;
 
 #assert limbs 64 [rsi, rdi] = (V8 * u + S8 * v) * (2**48) && true;
@@ -218,7 +218,7 @@ ssplit rcx dontcare rcx 12;
 
 mov t2 rcx;
 
-assert true && slimbs 64 [a2, t1, t2] = (sext limbs 64 [low, high] 64) * (2**52)@192;
+assert true && slimbs 64 [a2, t1, t2] = (sext (limbs 64 [low, high]) 64) * (2**52)@192;
 assume limbs 64 [a2, t1, t2] = limbs 64 [low, high] * (2**52) && true;
 
 (* add  %r8,%rsi *)
@@ -290,7 +290,7 @@ ssplit rcx dontcare rcx 8;
 ssplit rdx dontcare rdx 63;
 
 cast rcx@uint64 rcx;
-assert true && (sext slimbs 64 [low, high] 128) * (2**56)@256 = slimbs 64 [r12, r8, rcx, rdx];
+assert true && (sext (slimbs 64 [low, high]) 128) * (2**56)@256 = slimbs 64 [r12, r8, rcx, rdx];
 assume limbs 64 [low, high] * (2**56) = limbs 64 [r12, r8, rcx, rdx] && true;
 
 (* add  %r8,%r9 *)
@@ -362,7 +362,7 @@ ssplit rdx dontcare rdx 63;
 
 cast rcx@uint64 rcx;
 cast tmp@uint64 rdx;
-assert true && (sext slimbs 64 [low, high] 192) * (2**60)@320 = slimbs 64 [r13, r8, rcx, tmp, rdx];
+assert true && (sext (slimbs 64 [low, high]) 192) * (2**60)@320 = slimbs 64 [r13, r8, rcx, tmp, rdx];
 assume limbs 64 [low, high] * (2**60) = limbs 64 [r13, r8, rcx, tmp, rdx] && true;
 
 (* add  %r8,%r12 *)
@@ -424,7 +424,7 @@ ssplit rdx dontcare rdx 63;
 
 cast rcx@uint64 rcx;
 cast tmp@uint64 rdx;
-assert true && (sext slimbs 64 [low, high] 192) = slimbs 64 [r8, rcx, tmp, tmp, rdx];
+assert true && (sext (slimbs 64 [low, high]) 192) = slimbs 64 [r8, rcx, tmp, tmp, rdx];
 assume limbs 64 [low, high] = limbs 64 [r8, rcx, tmp, tmp, rdx] && true;
 
 (* add  %r8,%r13 *)
@@ -474,7 +474,7 @@ adcs carry rdi rdi rdi carry;
 mov a3 rsi;
 mov a4 rdi;
 
-assert true && slimbs 64 [q0, q1, q2, q3, q4] = (sext slimbs 64 [q0, q1, q2, a3] 64) + (sext a4 256) * (2**255)@320;
+assert true && slimbs 64 [q0, q1, q2, q3, q4] = (sext (slimbs 64 [q0, q1, q2, a3]) 64) + (sext a4 256) * (2**255)@320;
 assume limbs 64 [q0, q1, q2, q3, q4] = limbs 64 [q0, q1, q2, a3] + a4 * (2**255) && true;
 
 (* mov  %rdi,%rcx *)
@@ -495,7 +495,7 @@ cast tmp@uint64 rcx;
 mov low rax;
 mov high rdx;
 
-assert true && (sext slimbs 64 [low, high] 192) = slimbs 64 [rax, rdx, tmp, tmp, rcx];
+assert true && (sext (slimbs 64 [low, high]) 192) = slimbs 64 [rax, rdx, tmp, tmp, rcx];
 assume limbs 64 [low, high] = limbs 64 [rax, rdx, tmp, tmp, rcx] && true;
 
 (* xor  %rdi,%rdi *)
@@ -517,8 +517,8 @@ mov p2 r9;
 mov p3 rsi;
 mov p4 rdi;
 
-assert eqmod limbs 64 [p0, p1, p2, p3, p4] 
-             limbs 64 [q0, q1, q2, q3, q4]
+assert eqmod (limbs 64 [p0, p1, p2, p3, p4])
+             (limbs 64 [q0, q1, q2, q3, q4])
              (2**(255)-19) && true;
 
 (* btr  $63,%rsi *)
@@ -530,7 +530,7 @@ adcs carry rdi rdi rdi carry;
 mov b3 rsi;
 mov b4 rdi;
 
-assert true && slimbs 64 [p0, p1, p2, p3, p4] = (sext slimbs 64 [p0, p1, p2, b3] 64) + (sext b4 256) * (2**255)@320;
+assert true && slimbs 64 [p0, p1, p2, p3, p4] = (sext (slimbs 64 [p0, p1, p2, b3]) 64) + (sext b4 256) * (2**255)@320;
 assume limbs 64 [p0, p1, p2, p3, p4] = limbs 64 [p0, p1, p2, b3] + b4 * (2**255) && true;
 
 (* mov  %rdi,%rcx *)
@@ -551,7 +551,7 @@ cast tmp@uint64 rcx;
 mov low rax;
 mov high rdx;
 
-assert true && (sext slimbs 64 [low, high] 128) = slimbs 64 [rax, rdx, tmp, tmp];
+assert true && (sext (slimbs 64 [low, high]) 128) = slimbs 64 [rax, rdx, tmp, tmp];
 assume limbs 64 [low, high] = limbs 64 [rax, rdx, tmp, tmp] && true;
 
 mov t0 r13;
@@ -577,11 +577,11 @@ mov g1 r12;
 mov g2 r9;
 mov g3 rsi;
 
-assert true && (sext slimbs 64 [t0, t1, t2, t3] 64) + 19@320 * (sext b4 256) = (sext slimbs 64 [g0, g1, g2, g3] 64);
+assert true && (sext (slimbs 64 [t0, t1, t2, t3]) 64) + 19@320 * (sext b4 256) = (sext (slimbs 64 [g0, g1, g2, g3]) 64);
 assume limbs 64 [t0, t1, t2, t3] + 19 * b4 = limbs 64 [g0, g1, g2, g3] && true;
 
-assert eqmod limbs 64 [p0, p1, p2, p3, p4] 
-             limbs 64 [g0, g1, g2, g3]
+assert eqmod (limbs 64 [p0, p1, p2, p3, p4])
+             (limbs 64 [g0, g1, g2, g3])
              (2**(255)-19) && true;
 
 (* xor  %rdi,%rdi *)
@@ -658,36 +658,36 @@ mov c1 rdi_8;
 mov c2 rdi_16;
 mov c3 rdi_24;
 
-assert true && eqmod limbs 64 [c0, c1, c2, c3]
-                    slimbs 64 [g0, g1, g2, g3]
+assert true && eqmod (limbs 64 [c0, c1, c2, c3])
+                     (slimbs 64 [g0, g1, g2, g3])
                      (2**(255)-19)@256;
-assume eqmod limbs 64 [c0, c1, c2, c3]
-             limbs 64 [g0, g1, g2, g3]
+assume eqmod (limbs 64 [c0, c1, c2, c3])
+             (limbs 64 [g0, g1, g2, g3])
              (2**(255)-19) && true;
 {
   and[eqmod
       
-      limbs 64 [c0, c1, c2, c3]
+      (limbs 64 [c0, c1, c2, c3])
       
-      u *((V0 * (2**(30*0))) +
-          (V1 * (2**(30*1))) +
-          (V2 * (2**(30*2))) +
-          (V3 * (2**(30*3))) +
-          (V4 * (2**(30*4))) +
-          (V5 * (2**(30*5))) +
-          (V6 * (2**(30*6))) +
-          (V7 * (2**(30*7))) +
-          (V8 * (2**(30*8))))
-    + v *((S0 * (2**(30*0))) +
-          (S1 * (2**(30*1))) +
-          (S2 * (2**(30*2))) +
-          (S3 * (2**(30*3))) +
-          (S4 * (2**(30*4))) +
-          (S5 * (2**(30*5))) +
-          (S6 * (2**(30*6))) +
-          (S7 * (2**(30*7))) +
-          (S8 * (2**(30*8))))
-      
+      (u *((V0 * (2**(30*0))) +
+           (V1 * (2**(30*1))) +
+           (V2 * (2**(30*2))) +
+           (V3 * (2**(30*3))) +
+           (V4 * (2**(30*4))) +
+           (V5 * (2**(30*5))) +
+           (V6 * (2**(30*6))) +
+           (V7 * (2**(30*7))) +
+           (V8 * (2**(30*8))))
+     + v *((S0 * (2**(30*0))) +
+           (S1 * (2**(30*1))) +
+           (S2 * (2**(30*2))) +
+           (S3 * (2**(30*3))) +
+           (S4 * (2**(30*4))) +
+           (S5 * (2**(30*5))) +
+           (S6 * (2**(30*6))) +
+           (S7 * (2**(30*7))) +
+           (S8 * (2**(30*8)))))
+       
       (2**(255)-19) 
 
       ]

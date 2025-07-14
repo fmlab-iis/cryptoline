@@ -75,8 +75,8 @@ mov b3 rdi;
   true
   &&
   and[
-      eqmod limbs 64 [a0, a1, a2, a3]
-            limbs 64 [b0, b1, b2, b3]
+      eqmod (limbs 64 [a0, a1, a2, a3])
+            (limbs 64 [b0, b1, b2, b3])
             (2**(255) - 19)@256,
 
             limbs 64 [b0, b1, b2, b3] >=s 0@256,

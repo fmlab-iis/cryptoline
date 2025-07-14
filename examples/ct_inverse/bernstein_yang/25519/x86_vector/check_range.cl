@@ -2,7 +2,7 @@ proc loop (sint64 f0, sint64 g0, sint64 DELTA, sint64 F, sint64 G0, sint64 G, si
 {true && true}
 
 assert
-  eqmod 2**(61) 0 M
+  eqmod (2**61) 0 M
   &&
   and[ const 64 (-(2**63)) <s DELTA, DELTA <s const 64 (2**63) - 1@64,
        eqmod F const 64 1 const 64 2,
@@ -30,9 +30,9 @@ assume
 
 cast LSB_g@sint1 g;
 assert true && 
-  and[eqmod g - (sext LSB_g 63) 0@64 2@64];
+  and[eqmod (g - (sext LSB_g 63)) 0@64 2@64];
 assume  
-  and[eqmod g - LSB_g 0 2] && true;
+  and[eqmod (g - LSB_g) 0 2] && true;
 
 
 mov M0 M;
@@ -106,21 +106,21 @@ assume true &&
 
 assume and[
       eqmod
-      U * f0 + V * g0
+      (U * f0 + V * g0)
       0
       M,
       eqmod
-      Q * f0 + R * g0
+      (Q * f0 + R * g0)
       0
       M,
       eqmod
-      U * f0 + V * g0
-      F * M
-      2**(64),
+      (U * f0 + V * g0)
+      (F * M)
+      (2**64),
       eqmod
-      Q * f0 + R * g0
-      G * M
-      2**(64)] && true;
+      (Q * f0 + R * g0)
+      (G * M)
+      (2**64)] && true;
 
 {true && true}
 

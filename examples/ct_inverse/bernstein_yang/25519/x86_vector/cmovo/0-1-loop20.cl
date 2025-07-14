@@ -107,7 +107,7 @@ assert true && and[g1 * 2@20 = g - f,
       
                    eqmod f1 1@20 2@20,
                    fuv1 = (sext f1 44) + (sext u1 43) * (2**(40))@64 + (sext v1 62) * (2**(61))@64,
-                   grs1 = (sext (sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63 1)
+                   grs1 = (sext ((sext g1 43) + (sext r1 42) * (2**(40))@63 + (sext s1 61) * (2**(61))@63) 1)
 
                    ];
 

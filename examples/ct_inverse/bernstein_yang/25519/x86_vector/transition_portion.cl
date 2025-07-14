@@ -1,8 +1,8 @@
 proc main (sint64 f0, sint64 f, sint64 g0, sint64 g, sint64 u, sint64 v, sint64 r, sint64 s) =
 {
   and[
-      eqmod g * v + f * u 0 (2**(60)),
-      eqmod g * s + f * r 0 (2**(60))
+      eqmod (g * v + f * u) 0 (2**(60)),
+      eqmod (g * s + f * r) 0 (2**(60))
       ]
   &&
   and[
@@ -110,11 +110,11 @@ mov G rdx;
 
 {
   and[
-      eqmod F * (2**60)
-            u * f + v * g + (u * f0 + v * g0) * (2**60)
+      eqmod (F * (2**60))
+            (u * f + v * g + (u * f0 + v * g0) * (2**60))
             (2**124),
-      eqmod G * (2**60)
-            r * f + s * g + (r * f0 + s * g0) * (2**60)
+      eqmod (G * (2**60))
+            (r * f + s * g + (r * f0 + s * g0) * (2**60))
             (2**124)
       ]
   &&

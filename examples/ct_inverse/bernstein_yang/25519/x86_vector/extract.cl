@@ -20,8 +20,8 @@ proc main (sint64 f0, sint64 g0, sint64 fuv, sint64 grs, sint64 m, sint20 f, sin
 }
 
 assume true && and[
-                   eqmod (sext u 43) * f0 + g0 * (sext v 43) 0@64 (2**(20))@64,
-                   eqmod (sext r 43) * f0 + g0 * (sext s 43) 0@64 (2**(20))@64
+                   eqmod ((sext u 43) * f0 + g0 * (sext v 43)) 0@64 (2**(20))@64,
+                   eqmod ((sext r 43) * f0 + g0 * (sext s 43)) 0@64 (2**(20))@64
                          ];
 
 mov r9 grs;
@@ -93,11 +93,11 @@ assert true && and[
       (sext r 43) = r_,
       (sext s 43) = s_
       ];
-assert true && eqmod (sext u 43) * f0 + g0 * (sext v 43) 0@64 (2**(20))@64; 
-assert true && eqmod (sext r 43) * f0 + g0 * (sext s 43) 0@64 (2**(20))@64; 
+assert true && eqmod ((sext u 43) * f0 + g0 * (sext v 43)) 0@64 (2**(20))@64; 
+assert true && eqmod ((sext r 43) * f0 + g0 * (sext s 43)) 0@64 (2**(20))@64; 
 
-assume true && eqmod u_ * f0 + g0 * v_ 0@64 (2**(20))@64; 
-assume true && eqmod r_ * f0 + g0 * s_ 0@64 (2**(20))@64; 
+assume true && eqmod (u_ * f0 + g0 * v_) 0@64 (2**20)@64; 
+assume true && eqmod (r_ * f0 + g0 * s_) 0@64 (2**20)@64; 
 
 (* sar  $20,%rdi *)
 
@@ -113,7 +113,7 @@ cast rdi@sint64 rdi;
 ssplit rdi dontcare rdi 20;
 
 assert true && rdi * (2**20)@64 = rdio;
-assume eqmod rdi * (2**20) rdio (2**64) && true;
+assume eqmod (rdi * (2**20)) rdio (2**64) && true;
 
 (* sar  $20,%rdx *)
 
@@ -129,7 +129,7 @@ cast rdx@sint64 rdx;
 ssplit rdx dontcare rdx 20;
 
 assert true && rdx * (2**20)@64 = rdxo;
-assume eqmod rdx * (2**20) rdxo (2**64) && true;
+assume eqmod (rdx * (2**20)) rdxo (2**64) && true;
 
 
 mov f_ rdi;
@@ -138,12 +138,12 @@ mov g_ rdx;
 {
   and[
       eqmod 
-      f_ * (2**20)
-      u_ * f0 + g0 * v_
+      (f_ * (2**20))
+      (u_ * f0 + g0 * v_)
       (2**64),
       eqmod 
-      g_ * (2**20)
-      r_ * f0 + g0 * s_
+      (g_ * (2**20))
+      (r_ * f0 + g0 * s_)
       (2**64)
       ]
   &&
