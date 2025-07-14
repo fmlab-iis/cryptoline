@@ -14,24 +14,24 @@ Verification result:                    [OK]            0.251728 seconds
 proc main (sint64 f0, sint64 g0, sint64 m, sint64 f, sint64 g, sint64 u, sint64 v, sint64 r, sint64 s, sint64 M0, sint64 M) =
 {
   and[
-      eqmod 2**(60) 0 M0,
+      eqmod (2**60) 0 M0,
       eqmod f 1 2,
       eqmod
-      u * f0 + v * g0
+      (u * f0 + v * g0)
       0
       M0,
       eqmod
-      r * f0 + s * g0
+      (r * f0 + s * g0)
       0
       M0,
       eqmod
-      u * f0 + v * g0
-      f * M0
-      2**(64),
+      (u * f0 + v * g0)
+      (f * M0)
+      (2**64),
       eqmod
-      r * f0 + s * g0
-      g * M0
-      2**(64),
+      (r * f0 + s * g0)
+      (g * M0)
+      (2**64),
       M = M0 * 2]
   &&
   true
@@ -56,21 +56,21 @@ assume (S - s - v) = 0 && true;
 {
   and[
       eqmod
-      U * f0 + V * g0
+      (U * f0 + V * g0)
       0
       M,
       eqmod
-      R * f0 + S * g0
+      (R * f0 + S * g0)
       0
       M,
       eqmod
-      U * f0 + V * g0
-      F * M
-      2**(64),
+      (U * f0 + V * g0)
+      (F * M)
+      (2**64),
       eqmod
-      R * f0 + S * g0
-      G * M
-      2**(64),
+      (R * f0 + S * g0)
+      (G * M)
+      (2**64),
       M = M0 * 2]
   &&
   true
