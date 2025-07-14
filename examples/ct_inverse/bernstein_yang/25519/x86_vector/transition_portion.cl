@@ -44,7 +44,7 @@ smull rdx rax r13 rax;
 (* add  %rax,%rbx *)
 adds carry rbx rax rbx;
 (* adc %rdx,%rbp *)
-adcs carry rbp rdx rbp carry;
+adc rbp rdx rbp carry;
 assert rbx + rbp * (2**(64)) = g * s + f * r && true;
 (* shrd $60,%rbp,%rbx *)
 
