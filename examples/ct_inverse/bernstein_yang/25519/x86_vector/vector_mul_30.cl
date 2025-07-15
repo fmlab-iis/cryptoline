@@ -1,3 +1,28 @@
+(* popper: cv.exe -jobs 64 -v -isafety -slicing vector_mul_30.cl
+Parsing CryptoLine file:                [OK]            0.0161 seconds
+Checking well-formedness:               [OK]            0.0042 seconds
+
+Procedure main
+==============
+Transforming to SSA form:               [OK]            0.0021 seconds
+Normalizing specification:              [OK]            0.0024 seconds
+Rewriting assignments:                  [OK]            0.0026 seconds
+Verifying program safety:               [OK]            197.9124 seconds
+Verifying range assertions:             [OK]            170.1618 seconds
+Verifying range specification:          [OK]            655.8167 seconds
+Rewriting value-preserved casting:      [OK]            0.0016 seconds
+Verifying algebraic assertions:         [OK]            1.2972 seconds
+Verifying algebraic specification:      [OK]            32.9921 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                 [OK]            1058.1910 seconds
+
+Summary
+=======
+Verification result:                    [OK]            1058.2114 seconds
+*)
+
 (* quine: -v -isafety -jobs 40 -isafety_timeout 6000 -slicing vector_mul_30.cl
 Parsing Cryptoline file:                [OK]            0.020356 seconds
 Checking well-formedness:               [OK]            0.005812 seconds
@@ -329,10 +354,10 @@ mov ymm4_2 tmp_0;
 mov ymm4_3 tmp_1;
 
 (* lower 32 bits of FVGS0 *)
-cast lFVGS0_0@sint32 ymm2_0;
-cast lFVGS0_1@sint32 ymm2_1;
-cast lFVGS0_2@sint32 ymm2_2;
-cast lFVGS0_3@sint32 ymm2_3;
+vpc lFVGS0_0@sint32 ymm2_0;
+vpc lFVGS0_1@sint32 ymm2_1;
+vpc lFVGS0_2@sint32 ymm2_2;
+vpc lFVGS0_3@sint32 ymm2_3;
 assert true && (sext lFVGS0_0 32) = ymm2_0;
 assert true && (sext lFVGS0_1 32) = ymm2_1;
 assert true && (sext lFVGS0_2 32) = ymm2_2;
@@ -342,10 +367,10 @@ assume lFVGS0_1 = ymm2_1 && true;
 assume lFVGS0_2 = ymm2_2 && true;
 assume lFVGS0_3 = ymm2_3 && true;
 (* lower 32 bits of GSFV0 *)
-cast lGSFV0_0@sint32 ymm4_0;
-cast lGSFV0_1@sint32 ymm4_1;
-cast lGSFV0_2@sint32 ymm4_2;
-cast lGSFV0_3@sint32 ymm4_3;
+vpc lGSFV0_0@sint32 ymm4_0;
+vpc lGSFV0_1@sint32 ymm4_1;
+vpc lGSFV0_2@sint32 ymm4_2;
+vpc lGSFV0_3@sint32 ymm4_3;
 assert true && (sext lGSFV0_0 32) = ymm4_0;
 assert true && (sext lGSFV0_1 32) = ymm4_1;
 assert true && (sext lGSFV0_2 32) = ymm4_2;
@@ -387,10 +412,10 @@ and ymm6_1@uint64 ymm3_1 ymm5_1;
 and ymm6_2@uint64 ymm3_2 ymm5_2;
 and ymm6_3@uint64 ymm3_3 ymm5_3;
 
-cast tmp0@uint64 ymm6_0;
-cast tmp1@uint64 ymm6_1;
-cast tmp2@uint64 ymm6_2;
-cast tmp3@uint64 ymm6_3;
+vpc tmp0@uint64 ymm6_0;
+vpc tmp1@uint64 ymm6_1;
+vpc tmp2@uint64 ymm6_2;
+vpc tmp3@uint64 ymm6_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -424,10 +449,10 @@ assume eqmod uuss_2 uuss0_2 (2**(30)) && true;
 assume eqmod uuss_3 uuss0_3 (2**(30)) && true;
 
 (* lower 32 bits of uuss0 *)
-cast luuss0_0@sint32 ymm6_0;
-cast luuss0_1@sint32 ymm6_1;
-cast luuss0_2@sint32 ymm6_2;
-cast luuss0_3@sint32 ymm6_3;
+vpc luuss0_0@sint32 ymm6_0;
+vpc luuss0_1@sint32 ymm6_1;
+vpc luuss0_2@sint32 ymm6_2;
+vpc luuss0_3@sint32 ymm6_3;
 assert true && (sext luuss0_0 32) = ymm6_0;
 assert true && (sext luuss0_1 32) = ymm6_1;
 assert true && (sext luuss0_2 32) = ymm6_2;
@@ -450,10 +475,10 @@ and ymm7_1@uint64 ymm1_1 ymm5_1;
 and ymm7_2@uint64 ymm1_2 ymm5_2;
 and ymm7_3@uint64 ymm1_3 ymm5_3;
 
-cast tmp0@uint64 ymm7_0;
-cast tmp1@uint64 ymm7_1;
-cast tmp2@uint64 ymm7_2;
-cast tmp3@uint64 ymm7_3;
+vpc tmp0@uint64 ymm7_0;
+vpc tmp1@uint64 ymm7_1;
+vpc tmp2@uint64 ymm7_2;
+vpc tmp3@uint64 ymm7_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -487,10 +512,10 @@ assume eqmod vvrr_2 vvrr0_2 (2**(30)) && true;
 assume eqmod vvrr_3 vvrr0_3 (2**(30)) && true;
 
 (* lower 32 bits of vvrr0 *)
-cast lvvrr0_0@sint32 ymm7_0;
-cast lvvrr0_1@sint32 ymm7_1;
-cast lvvrr0_2@sint32 ymm7_2;
-cast lvvrr0_3@sint32 ymm7_3;
+vpc lvvrr0_0@sint32 ymm7_0;
+vpc lvvrr0_1@sint32 ymm7_1;
+vpc lvvrr0_2@sint32 ymm7_2;
+vpc lvvrr0_3@sint32 ymm7_3;
 assert true && (sext lvvrr0_0 32) = ymm7_0;
 assert true && (sext lvvrr0_1 32) = ymm7_1;
 assert true && (sext lvvrr0_2 32) = ymm7_2;
@@ -539,10 +564,10 @@ join ymm9_1 h_1 l_1;
 join ymm9_2 h_2 l_2;
 join ymm9_3 h_3 l_3;
 (* vpaddq %ymm9,%ymm8,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm9_0 ymm8_0;
-adds dontcare_1 ymm8_1 ymm9_1 ymm8_1;
-adds dontcare_2 ymm8_2 ymm9_2 ymm8_2;
-adds dontcare_3 ymm8_3 ymm9_3 ymm8_3;
+add ymm8_0 ymm9_0 ymm8_0;
+add ymm8_1 ymm9_1 ymm8_1;
+add ymm8_2 ymm9_2 ymm8_2;
+add ymm8_3 ymm9_3 ymm8_3;
 
 (* oout0 *)
 mov oout0_0 ymm8_0;
@@ -609,10 +634,10 @@ and ymm11_1@uint64 ymm11_1 ymm5_1;
 and ymm11_2@uint64 ymm11_2 ymm5_2;
 and ymm11_3@uint64 ymm11_3 ymm5_3;
 
-cast tmp0@uint64 ymm11_0;
-cast tmp1@uint64 ymm11_1;
-cast tmp2@uint64 ymm11_2;
-cast tmp3@uint64 ymm11_3;
+vpc tmp0@uint64 ymm11_0;
+vpc tmp1@uint64 ymm11_1;
+vpc tmp2@uint64 ymm11_2;
+vpc tmp3@uint64 ymm11_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -691,10 +716,10 @@ mov b_1 ymm12_1;
 mov b_2 ymm12_2; 
 mov b_3 ymm12_3; 
 
-subb dontcare_0 ymm8_0 ymm8_0 ymm12_0;
-subb dontcare_1 ymm8_1 ymm8_1 ymm12_1;
-subb dontcare_2 ymm8_2 ymm8_2 ymm12_2;
-subb dontcare_3 ymm8_3 ymm8_3 ymm12_3;
+sub ymm8_0 ymm8_0 ymm12_0;
+sub ymm8_1 ymm8_1 ymm12_1;
+sub ymm8_2 ymm8_2 ymm12_2;
+sub ymm8_3 ymm8_3 ymm12_3;
 
 assume ymm8_0 = a_0 - b_0 && true;
 assume ymm8_1 = a_1 - b_1 && true;
@@ -756,10 +781,10 @@ mov tmp0 ymm8_0;
 mov tmp1 ymm8_1;
 mov tmp2 ymm8_2;
 mov tmp3 ymm8_3;
-cast ymm8_0@sint64 tmp0;
-cast ymm8_1@sint64 tmp1;
-cast ymm8_2@sint64 tmp2;
-cast ymm8_3@sint64 tmp3;
+vpc ymm8_0@sint64 tmp0;
+vpc ymm8_1@sint64 tmp1;
+vpc ymm8_2@sint64 tmp2;
+vpc ymm8_3@sint64 tmp3;
 assume tmp0 = ymm8_0 && true;
 assume tmp1 = ymm8_1 && true;
 assume tmp2 = ymm8_2 && true;
@@ -782,10 +807,10 @@ shl ymm11_1 ymm11_1 15;
 shl ymm11_2 ymm11_2 15;
 shl ymm11_3 ymm11_3 15;
 
-cast ymm11_0@sint64 ymm11_0;
-cast ymm11_1@sint64 ymm11_1;
-cast ymm11_2@sint64 ymm11_2;
-cast ymm11_3@sint64 ymm11_3;
+vpc ymm11_0@sint64 ymm11_0;
+vpc ymm11_1@sint64 ymm11_1;
+vpc ymm11_2@sint64 ymm11_2;
+vpc ymm11_3@sint64 ymm11_3;
 
 assume ymm11_0 = tmp0 * (2**(15)) && true;
 assume ymm11_1 = tmp1 * (2**(15)) && true;
@@ -808,10 +833,10 @@ mov ymm13_2 tmp_0;
 mov ymm13_3 tmp_1;
 
 (* lower 32 bits of FVGS1 *)
-cast lFVGS1_0@sint32 ymm12_0;
-cast lFVGS1_1@sint32 ymm12_1;
-cast lFVGS1_2@sint32 ymm12_2;
-cast lFVGS1_3@sint32 ymm12_3;
+vpc lFVGS1_0@sint32 ymm12_0;
+vpc lFVGS1_1@sint32 ymm12_1;
+vpc lFVGS1_2@sint32 ymm12_2;
+vpc lFVGS1_3@sint32 ymm12_3;
 assert true && (sext lFVGS1_0 32) = ymm12_0;
 assert true && (sext lFVGS1_1 32) = ymm12_1;
 assert true && (sext lFVGS1_2 32) = ymm12_2;
@@ -821,10 +846,10 @@ assume lFVGS1_1 = ymm12_1 && true;
 assume lFVGS1_2 = ymm12_2 && true;
 assume lFVGS1_3 = ymm12_3 && true;
 (* lower 32 bits of GSFV1 *)
-cast lGSFV1_0@sint32 ymm13_0;
-cast lGSFV1_1@sint32 ymm13_1;
-cast lGSFV1_2@sint32 ymm13_2;
-cast lGSFV1_3@sint32 ymm13_3;
+vpc lGSFV1_0@sint32 ymm13_0;
+vpc lGSFV1_1@sint32 ymm13_1;
+vpc lGSFV1_2@sint32 ymm13_2;
+vpc lGSFV1_3@sint32 ymm13_3;
 assert true && (sext lGSFV1_0 32) = ymm13_0;
 assert true && (sext lGSFV1_1 32) = ymm13_1;
 assert true && (sext lGSFV1_2 32) = ymm13_2;
@@ -873,10 +898,10 @@ join ymm15_1 h_1 l_1;
 join ymm15_2 h_2 l_2;
 join ymm15_3 h_3 l_3;
 (* vpaddq %ymm15,%ymm14,%ymm14 *)
-adds dontcare_0 ymm14_0 ymm15_0 ymm14_0;
-adds dontcare_1 ymm14_1 ymm15_1 ymm14_1;
-adds dontcare_2 ymm14_2 ymm15_2 ymm14_2;
-adds dontcare_3 ymm14_3 ymm15_3 ymm14_3;
+add ymm14_0 ymm15_0 ymm14_0;
+add ymm14_1 ymm15_1 ymm14_1;
+add ymm14_2 ymm15_2 ymm14_2;
+add ymm14_3 ymm15_3 ymm14_3;
 (* vpsrlq $30,%ymm3,%ymm3 *)
 cast tmp_0@uint64 ymm3_0;
 cast tmp_1@uint64 ymm3_1;
@@ -886,10 +911,10 @@ usplit ymm3_0 dontcare_0 tmp_0 30;
 usplit ymm3_1 dontcare_1 tmp_1 30;
 usplit ymm3_2 dontcare_2 tmp_2 30;
 usplit ymm3_3 dontcare_3 tmp_3 30;
-cast ymm3_0@uint64 ymm3_0;
-cast ymm3_1@uint64 ymm3_1;
-cast ymm3_2@uint64 ymm3_2;
-cast ymm3_3@uint64 ymm3_3;
+vpc ymm3_0@uint64 ymm3_0;
+vpc ymm3_1@uint64 ymm3_1;
+vpc ymm3_2@uint64 ymm3_2;
+vpc ymm3_3@uint64 ymm3_3;
 
 (* uuss1 *)
 mov uuss1_0 ymm3_0;
@@ -935,10 +960,10 @@ usplit ymm1_0 dontcare_0 tmp_0 30;
 usplit ymm1_1 dontcare_1 tmp_1 30;
 usplit ymm1_2 dontcare_2 tmp_2 30;
 usplit ymm1_3 dontcare_3 tmp_3 30;
-cast ymm1_0@uint64 ymm1_0;
-cast ymm1_1@uint64 ymm1_1;
-cast ymm1_2@uint64 ymm1_2;
-cast ymm1_3@uint64 ymm1_3;
+vpc ymm1_0@uint64 ymm1_0;
+vpc ymm1_1@uint64 ymm1_1;
+vpc ymm1_2@uint64 ymm1_2;
+vpc ymm1_3@uint64 ymm1_3;
 
 (* vvrr1 *)
 mov vvrr1_0 ymm1_0;
@@ -1013,15 +1038,15 @@ join ymm4_1 h_1 l_1;
 join ymm4_2 h_2 l_2;
 join ymm4_3 h_3 l_3;
 (* vpaddq %ymm4,%ymm2,%ymm2 *)
-adds dontcare_0 ymm2_0 ymm4_0 ymm2_0;
-adds dontcare_1 ymm2_1 ymm4_1 ymm2_1;
-adds dontcare_2 ymm2_2 ymm4_2 ymm2_2;
-adds dontcare_3 ymm2_3 ymm4_3 ymm2_3;
+add ymm2_0 ymm4_0 ymm2_0;
+add ymm2_1 ymm4_1 ymm2_1;
+add ymm2_2 ymm4_2 ymm2_2;
+add ymm2_3 ymm4_3 ymm2_3;
 (* vpaddq %ymm2,%ymm14,%ymm2 *)
-adds dontcare_0 ymm2_0 ymm2_0 ymm14_0;
-adds dontcare_1 ymm2_1 ymm2_1 ymm14_1;
-adds dontcare_2 ymm2_2 ymm2_2 ymm14_2;
-adds dontcare_3 ymm2_3 ymm2_3 ymm14_3;
+add ymm2_0 ymm2_0 ymm14_0;
+add ymm2_1 ymm2_1 ymm14_1;
+add ymm2_2 ymm2_2 ymm14_2;
+add ymm2_3 ymm2_3 ymm14_3;
 
 (* oout1 *)
 mov oout1_0 ymm2_0;
@@ -1030,10 +1055,10 @@ mov oout1_2 ymm2_2;
 mov oout1_3 ymm2_3;
 
 (* vpaddq %ymm2,%ymm8,%ymm2 *)
-adds dontcare_0 ymm2_0 ymm2_0 ymm8_0;
-adds dontcare_1 ymm2_1 ymm2_1 ymm8_1;
-adds dontcare_2 ymm2_2 ymm2_2 ymm8_2;
-adds dontcare_3 ymm2_3 ymm2_3 ymm8_3;
+add ymm2_0 ymm2_0 ymm8_0;
+add ymm2_1 ymm2_1 ymm8_1;
+add ymm2_2 ymm2_2 ymm8_2;
+add ymm2_3 ymm2_3 ymm8_3;
 
 assert eqmod (oout0_0 + oout1_0*(2**30)) 0 (2**60) && true;
 
@@ -1081,10 +1106,10 @@ and ymm4_1@uint64 ymm4_1 ymm5_1;
 and ymm4_2@uint64 ymm4_2 ymm5_2;
 and ymm4_3@uint64 ymm4_3 ymm5_3;
 
-cast tmp0@uint64 ymm4_0;
-cast tmp1@uint64 ymm4_1;
-cast tmp2@uint64 ymm4_2;
-cast tmp3@uint64 ymm4_3;
+vpc tmp0@uint64 ymm4_0;
+vpc tmp1@uint64 ymm4_1;
+vpc tmp2@uint64 ymm4_2;
+vpc tmp3@uint64 ymm4_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -1158,10 +1183,10 @@ mov b_1 ymm8_1;
 mov b_2 ymm8_2; 
 mov b_3 ymm8_3; 
 
-subb dontcare_0 ymm2_0 ymm2_0 ymm8_0;
-subb dontcare_1 ymm2_1 ymm2_1 ymm8_1;
-subb dontcare_2 ymm2_2 ymm2_2 ymm8_2;
-subb dontcare_3 ymm2_3 ymm2_3 ymm8_3;
+sub ymm2_0 ymm2_0 ymm8_0;
+sub ymm2_1 ymm2_1 ymm8_1;
+sub ymm2_2 ymm2_2 ymm8_2;
+sub ymm2_3 ymm2_3 ymm8_3;
 
 assume ymm2_0 = a_0 - b_0 && true;
 assume ymm2_1 = a_1 - b_1 && true;
@@ -1222,10 +1247,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -1249,10 +1274,10 @@ shl ymm4_1 ymm4_1 15;
 shl ymm4_2 ymm4_2 15;
 shl ymm4_3 ymm4_3 15;
 
-cast ymm4_0@sint64 ymm4_0;
-cast ymm4_1@sint64 ymm4_1;
-cast ymm4_2@sint64 ymm4_2;
-cast ymm4_3@sint64 ymm4_3;
+vpc ymm4_0@sint64 ymm4_0;
+vpc ymm4_1@sint64 ymm4_1;
+vpc ymm4_2@sint64 ymm4_2;
+vpc ymm4_3@sint64 ymm4_3;
 
 assume ymm4_0 = tmp0 * (2**(15)) && true;
 assume ymm4_1 = tmp1 * (2**(15)) && true;
@@ -1275,10 +1300,10 @@ mov ymm9_2 tmp_0;
 mov ymm9_3 tmp_1;
 
 (* lower 32 bits of FVGS2 *)
-cast lFVGS2_0@sint32 ymm8_0;
-cast lFVGS2_1@sint32 ymm8_1;
-cast lFVGS2_2@sint32 ymm8_2;
-cast lFVGS2_3@sint32 ymm8_3;
+vpc lFVGS2_0@sint32 ymm8_0;
+vpc lFVGS2_1@sint32 ymm8_1;
+vpc lFVGS2_2@sint32 ymm8_2;
+vpc lFVGS2_3@sint32 ymm8_3;
 assert true && (sext lFVGS2_0 32) = ymm8_0;
 assert true && (sext lFVGS2_1 32) = ymm8_1;
 assert true && (sext lFVGS2_2 32) = ymm8_2;
@@ -1288,10 +1313,10 @@ assume lFVGS2_1 = ymm8_1 && true;
 assume lFVGS2_2 = ymm8_2 && true;
 assume lFVGS2_3 = ymm8_3 && true;
 (* lower 32 bits of GSFV2 *)
-cast lGSFV2_0@sint32 ymm9_0;
-cast lGSFV2_1@sint32 ymm9_1;
-cast lGSFV2_2@sint32 ymm9_2;
-cast lGSFV2_3@sint32 ymm9_3;
+vpc lGSFV2_0@sint32 ymm9_0;
+vpc lGSFV2_1@sint32 ymm9_1;
+vpc lGSFV2_2@sint32 ymm9_2;
+vpc lGSFV2_3@sint32 ymm9_3;
 assert true && (sext lGSFV2_0 32) = ymm9_0;
 assert true && (sext lGSFV2_1 32) = ymm9_1;
 assert true && (sext lGSFV2_2 32) = ymm9_2;
@@ -1340,10 +1365,10 @@ join ymm12_1 h_1 l_1;
 join ymm12_2 h_2 l_2;
 join ymm12_3 h_3 l_3;
 (* vpaddq %ymm12,%ymm10,%ymm10 *)
-adds dontcare_0 ymm10_0 ymm12_0 ymm10_0;
-adds dontcare_1 ymm10_1 ymm12_1 ymm10_1;
-adds dontcare_2 ymm10_2 ymm12_2 ymm10_2;
-adds dontcare_3 ymm10_3 ymm12_3 ymm10_3;
+add ymm10_0 ymm12_0 ymm10_0;
+add ymm10_1 ymm12_1 ymm10_1;
+add ymm10_2 ymm12_2 ymm10_2;
+add ymm10_3 ymm12_3 ymm10_3;
 (* vpmuldq %ymm6,%ymm8,%ymm12 *)
 
 mov a_0 luuss0_0;
@@ -1383,15 +1408,15 @@ join ymm13_1 h_1 l_1;
 join ymm13_2 h_2 l_2;
 join ymm13_3 h_3 l_3;
 (* vpaddq %ymm13,%ymm12,%ymm12 *)
-adds dontcare_0 ymm12_0 ymm13_0 ymm12_0;
-adds dontcare_1 ymm12_1 ymm13_1 ymm12_1;
-adds dontcare_2 ymm12_2 ymm13_2 ymm12_2;
-adds dontcare_3 ymm12_3 ymm13_3 ymm12_3;
+add ymm12_0 ymm13_0 ymm12_0;
+add ymm12_1 ymm13_1 ymm12_1;
+add ymm12_2 ymm13_2 ymm12_2;
+add ymm12_3 ymm13_3 ymm12_3;
 (* vpaddq %ymm12,%ymm10,%ymm12 *)
-adds dontcare_0 ymm12_0 ymm12_0 ymm10_0;
-adds dontcare_1 ymm12_1 ymm12_1 ymm10_1;
-adds dontcare_2 ymm12_2 ymm12_2 ymm10_2;
-adds dontcare_3 ymm12_3 ymm12_3 ymm10_3;
+add ymm12_0 ymm12_0 ymm10_0;
+add ymm12_1 ymm12_1 ymm10_1;
+add ymm12_2 ymm12_2 ymm10_2;
+add ymm12_3 ymm12_3 ymm10_3;
 
 (* oout2 *)
 mov oout2_0 ymm12_0;
@@ -1400,10 +1425,10 @@ mov oout2_2 ymm12_2;
 mov oout2_3 ymm12_3;
 
 (* vpaddq %ymm12,%ymm2,%ymm12 *)
-adds dontcare_0 ymm12_0 ymm12_0 ymm2_0;
-adds dontcare_1 ymm12_1 ymm12_1 ymm2_1;
-adds dontcare_2 ymm12_2 ymm12_2 ymm2_2;
-adds dontcare_3 ymm12_3 ymm12_3 ymm2_3;
+add ymm12_0 ymm12_0 ymm2_0;
+add ymm12_1 ymm12_1 ymm2_1;
+add ymm12_2 ymm12_2 ymm2_2;
+add ymm12_3 ymm12_3 ymm2_3;
 
 (* out2 *)
 mov out2_0 ymm12_0;
@@ -1421,10 +1446,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm12_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm12_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm12_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare2_0 tmp_0 30;
 usplit ymm2_1 dontcare2_1 tmp_1 30;
 usplit ymm2_2 dontcare2_2 tmp_2 30;
@@ -1449,10 +1474,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -1474,10 +1499,10 @@ mov ymm13_2 tmp_0;
 mov ymm13_3 tmp_1;
 
 (* lower 32 bits of FVGS3 *)
-cast lFVGS3_0@sint32 ymm10_0;
-cast lFVGS3_1@sint32 ymm10_1;
-cast lFVGS3_2@sint32 ymm10_2;
-cast lFVGS3_3@sint32 ymm10_3;
+vpc lFVGS3_0@sint32 ymm10_0;
+vpc lFVGS3_1@sint32 ymm10_1;
+vpc lFVGS3_2@sint32 ymm10_2;
+vpc lFVGS3_3@sint32 ymm10_3;
 assert true && (sext lFVGS3_0 32) = ymm10_0;
 assert true && (sext lFVGS3_1 32) = ymm10_1;
 assert true && (sext lFVGS3_2 32) = ymm10_2;
@@ -1487,10 +1512,10 @@ assume lFVGS3_1 = ymm10_1 && true;
 assume lFVGS3_2 = ymm10_2 && true;
 assume lFVGS3_3 = ymm10_3 && true;
 (* lower 32 bits of GSFV3 *)
-cast lGSFV3_0@sint32 ymm13_0;
-cast lGSFV3_1@sint32 ymm13_1;
-cast lGSFV3_2@sint32 ymm13_2;
-cast lGSFV3_3@sint32 ymm13_3;
+vpc lGSFV3_0@sint32 ymm13_0;
+vpc lGSFV3_1@sint32 ymm13_1;
+vpc lGSFV3_2@sint32 ymm13_2;
+vpc lGSFV3_3@sint32 ymm13_3;
 assert true && (sext lGSFV3_0 32) = ymm13_0;
 assert true && (sext lGSFV3_1 32) = ymm13_1;
 assert true && (sext lGSFV3_2 32) = ymm13_2;
@@ -1539,10 +1564,10 @@ join ymm9_1 h_1 l_1;
 join ymm9_2 h_2 l_2;
 join ymm9_3 h_3 l_3;
 (* vpaddq %ymm9,%ymm8,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm9_0 ymm8_0;
-adds dontcare_1 ymm8_1 ymm9_1 ymm8_1;
-adds dontcare_2 ymm8_2 ymm9_2 ymm8_2;
-adds dontcare_3 ymm8_3 ymm9_3 ymm8_3;
+add ymm8_0 ymm9_0 ymm8_0;
+add ymm8_1 ymm9_1 ymm8_1;
+add ymm8_2 ymm9_2 ymm8_2;
+add ymm8_3 ymm9_3 ymm8_3;
 (* vpmuldq %ymm6,%ymm10,%ymm9 *)
 
 mov a_0 luuss0_0;
@@ -1582,15 +1607,15 @@ join ymm14_1 h_1 l_1;
 join ymm14_2 h_2 l_2;
 join ymm14_3 h_3 l_3;
 (* vpaddq %ymm14,%ymm9,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm14_0 ymm9_0;
-adds dontcare_1 ymm9_1 ymm14_1 ymm9_1;
-adds dontcare_2 ymm9_2 ymm14_2 ymm9_2;
-adds dontcare_3 ymm9_3 ymm14_3 ymm9_3;
+add ymm9_0 ymm14_0 ymm9_0;
+add ymm9_1 ymm14_1 ymm9_1;
+add ymm9_2 ymm14_2 ymm9_2;
+add ymm9_3 ymm14_3 ymm9_3;
 (* vpaddq %ymm9,%ymm8,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm9_0 ymm8_0;
-adds dontcare_1 ymm9_1 ymm9_1 ymm8_1;
-adds dontcare_2 ymm9_2 ymm9_2 ymm8_2;
-adds dontcare_3 ymm9_3 ymm9_3 ymm8_3;
+add ymm9_0 ymm9_0 ymm8_0;
+add ymm9_1 ymm9_1 ymm8_1;
+add ymm9_2 ymm9_2 ymm8_2;
+add ymm9_3 ymm9_3 ymm8_3;
 
 (* oout3 *)
 mov oout3_0 ymm9_0;
@@ -1599,10 +1624,10 @@ mov oout3_2 ymm9_2;
 mov oout3_3 ymm9_3;
 
 (* vpaddq %ymm9,%ymm2,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm9_0 ymm2_0;
-adds dontcare_1 ymm9_1 ymm9_1 ymm2_1;
-adds dontcare_2 ymm9_2 ymm9_2 ymm2_2;
-adds dontcare_3 ymm9_3 ymm9_3 ymm2_3;
+add ymm9_0 ymm9_0 ymm2_0;
+add ymm9_1 ymm9_1 ymm2_1;
+add ymm9_2 ymm9_2 ymm2_2;
+add ymm9_3 ymm9_3 ymm2_3;
 
 (* out3 *)
 mov out3_0 ymm9_0;
@@ -1622,10 +1647,10 @@ and ymm12_1@uint64 ymm12_1 ymm5_1;
 and ymm12_2@uint64 ymm12_2 ymm5_2;
 and ymm12_3@uint64 ymm12_3 ymm5_3;
 
-cast tmp0@uint64 ymm12_0;
-cast tmp1@uint64 ymm12_1;
-cast tmp2@uint64 ymm12_2;
-cast tmp3@uint64 ymm12_3;
+vpc tmp0@uint64 ymm12_0;
+vpc tmp1@uint64 ymm12_1;
+vpc tmp2@uint64 ymm12_2;
+vpc tmp3@uint64 ymm12_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -1676,10 +1701,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm9_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm9_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm9_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare3_0 tmp_0 30;
 usplit ymm2_1 dontcare3_1 tmp_1 30;
 usplit ymm2_2 dontcare3_2 tmp_2 30;
@@ -1704,10 +1729,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -1725,10 +1750,10 @@ and ymm9_1@uint64 ymm9_1 ymm5_1;
 and ymm9_2@uint64 ymm9_2 ymm5_2;
 and ymm9_3@uint64 ymm9_3 ymm5_3;
 
-cast tmp0@uint64 ymm9_0;
-cast tmp1@uint64 ymm9_1;
-cast tmp2@uint64 ymm9_2;
-cast tmp3@uint64 ymm9_3;
+vpc tmp0@uint64 ymm9_0;
+vpc tmp1@uint64 ymm9_1;
+vpc tmp2@uint64 ymm9_2;
+vpc tmp3@uint64 ymm9_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -1780,10 +1805,10 @@ shl ymm8_1 ymm9_1 30;
 shl ymm8_2 ymm9_2 30;
 shl ymm8_3 ymm9_3 30;
 (* vpaddq %ymm8,%ymm12,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm8_0 ymm12_0;
-adds dontcare_1 ymm8_1 ymm8_1 ymm12_1;
-adds dontcare_2 ymm8_2 ymm8_2 ymm12_2;
-adds dontcare_3 ymm8_3 ymm8_3 ymm12_3;
+add ymm8_0 ymm8_0 ymm12_0;
+add ymm8_1 ymm8_1 ymm12_1;
+add ymm8_2 ymm8_2 ymm12_2;
+add ymm8_3 ymm8_3 ymm12_3;
 (* vmovapd %ymm8,608(%rsp) *)
 mov rsp_608_0 ymm8_0;
 mov rsp_608_1 ymm8_1;
@@ -1809,10 +1834,10 @@ mov ymm9_2 tmp_0;
 mov ymm9_3 tmp_1;
 
 (* lower 32 bits of FVGS4 *)
-cast lFVGS4_0@sint32 ymm8_0;
-cast lFVGS4_1@sint32 ymm8_1;
-cast lFVGS4_2@sint32 ymm8_2;
-cast lFVGS4_3@sint32 ymm8_3;
+vpc lFVGS4_0@sint32 ymm8_0;
+vpc lFVGS4_1@sint32 ymm8_1;
+vpc lFVGS4_2@sint32 ymm8_2;
+vpc lFVGS4_3@sint32 ymm8_3;
 assert true && (sext lFVGS4_0 32) = ymm8_0;
 assert true && (sext lFVGS4_1 32) = ymm8_1;
 assert true && (sext lFVGS4_2 32) = ymm8_2;
@@ -1822,10 +1847,10 @@ assume lFVGS4_1 = ymm8_1 && true;
 assume lFVGS4_2 = ymm8_2 && true;
 assume lFVGS4_3 = ymm8_3 && true;
 (* lower 32 bits of GSFV4 *)
-cast lGSFV4_0@sint32 ymm9_0;
-cast lGSFV4_1@sint32 ymm9_1;
-cast lGSFV4_2@sint32 ymm9_2;
-cast lGSFV4_3@sint32 ymm9_3;
+vpc lGSFV4_0@sint32 ymm9_0;
+vpc lGSFV4_1@sint32 ymm9_1;
+vpc lGSFV4_2@sint32 ymm9_2;
+vpc lGSFV4_3@sint32 ymm9_3;
 assert true && (sext lGSFV4_0 32) = ymm9_0;
 assert true && (sext lGSFV4_1 32) = ymm9_1;
 assert true && (sext lGSFV4_2 32) = ymm9_2;
@@ -1874,10 +1899,10 @@ join ymm13_1 h_1 l_1;
 join ymm13_2 h_2 l_2;
 join ymm13_3 h_3 l_3;
 (* vpaddq %ymm13,%ymm10,%ymm10 *)
-adds dontcare_0 ymm10_0 ymm13_0 ymm10_0;
-adds dontcare_1 ymm10_1 ymm13_1 ymm10_1;
-adds dontcare_2 ymm10_2 ymm13_2 ymm10_2;
-adds dontcare_3 ymm10_3 ymm13_3 ymm10_3;
+add ymm10_0 ymm13_0 ymm10_0;
+add ymm10_1 ymm13_1 ymm10_1;
+add ymm10_2 ymm13_2 ymm10_2;
+add ymm10_3 ymm13_3 ymm10_3;
 (* vpmuldq %ymm6,%ymm8,%ymm13 *)
 
 mov a_0 luuss0_0;
@@ -1917,15 +1942,15 @@ join ymm14_1 h_1 l_1;
 join ymm14_2 h_2 l_2;
 join ymm14_3 h_3 l_3;
 (* vpaddq %ymm14,%ymm13,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm14_0 ymm13_0;
-adds dontcare_1 ymm13_1 ymm14_1 ymm13_1;
-adds dontcare_2 ymm13_2 ymm14_2 ymm13_2;
-adds dontcare_3 ymm13_3 ymm14_3 ymm13_3;
+add ymm13_0 ymm14_0 ymm13_0;
+add ymm13_1 ymm14_1 ymm13_1;
+add ymm13_2 ymm14_2 ymm13_2;
+add ymm13_3 ymm14_3 ymm13_3;
 (* vpaddq %ymm13,%ymm10,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm13_0 ymm10_0;
-adds dontcare_1 ymm13_1 ymm13_1 ymm10_1;
-adds dontcare_2 ymm13_2 ymm13_2 ymm10_2;
-adds dontcare_3 ymm13_3 ymm13_3 ymm10_3;
+add ymm13_0 ymm13_0 ymm10_0;
+add ymm13_1 ymm13_1 ymm10_1;
+add ymm13_2 ymm13_2 ymm10_2;
+add ymm13_3 ymm13_3 ymm10_3;
 
 (* oout4 *)
 mov oout4_0 ymm13_0;
@@ -1934,10 +1959,10 @@ mov oout4_2 ymm13_2;
 mov oout4_3 ymm13_3;
 
 (* vpaddq %ymm13,%ymm2,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm13_0 ymm2_0;
-adds dontcare_1 ymm13_1 ymm13_1 ymm2_1;
-adds dontcare_2 ymm13_2 ymm13_2 ymm2_2;
-adds dontcare_3 ymm13_3 ymm13_3 ymm2_3;
+add ymm13_0 ymm13_0 ymm2_0;
+add ymm13_1 ymm13_1 ymm2_1;
+add ymm13_2 ymm13_2 ymm2_2;
+add ymm13_3 ymm13_3 ymm2_3;
 
 (* out4 *)
 mov out4_0 ymm13_0;
@@ -1955,10 +1980,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm13_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm13_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm13_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare4_0 tmp_0 30;
 usplit ymm2_1 dontcare4_1 tmp_1 30;
 usplit ymm2_2 dontcare4_2 tmp_2 30;
@@ -1983,10 +2008,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -2008,10 +2033,10 @@ mov ymm14_2 tmp_0;
 mov ymm14_3 tmp_1;
 
 (* lower 32 bits of FVGS5 *)
-cast lFVGS5_0@sint32 ymm10_0;
-cast lFVGS5_1@sint32 ymm10_1;
-cast lFVGS5_2@sint32 ymm10_2;
-cast lFVGS5_3@sint32 ymm10_3;
+vpc lFVGS5_0@sint32 ymm10_0;
+vpc lFVGS5_1@sint32 ymm10_1;
+vpc lFVGS5_2@sint32 ymm10_2;
+vpc lFVGS5_3@sint32 ymm10_3;
 assert true && (sext lFVGS5_0 32) = ymm10_0;
 assert true && (sext lFVGS5_1 32) = ymm10_1;
 assert true && (sext lFVGS5_2 32) = ymm10_2;
@@ -2021,10 +2046,10 @@ assume lFVGS5_1 = ymm10_1 && true;
 assume lFVGS5_2 = ymm10_2 && true;
 assume lFVGS5_3 = ymm10_3 && true;
 (* lower 32 bits of GSFV5 *)
-cast lGSFV5_0@sint32 ymm14_0;
-cast lGSFV5_1@sint32 ymm14_1;
-cast lGSFV5_2@sint32 ymm14_2;
-cast lGSFV5_3@sint32 ymm14_3;
+vpc lGSFV5_0@sint32 ymm14_0;
+vpc lGSFV5_1@sint32 ymm14_1;
+vpc lGSFV5_2@sint32 ymm14_2;
+vpc lGSFV5_3@sint32 ymm14_3;
 assert true && (sext lGSFV5_0 32) = ymm14_0;
 assert true && (sext lGSFV5_1 32) = ymm14_1;
 assert true && (sext lGSFV5_2 32) = ymm14_2;
@@ -2073,10 +2098,10 @@ join ymm9_1 h_1 l_1;
 join ymm9_2 h_2 l_2;
 join ymm9_3 h_3 l_3;
 (* vpaddq %ymm9,%ymm8,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm9_0 ymm8_0;
-adds dontcare_1 ymm8_1 ymm9_1 ymm8_1;
-adds dontcare_2 ymm8_2 ymm9_2 ymm8_2;
-adds dontcare_3 ymm8_3 ymm9_3 ymm8_3;
+add ymm8_0 ymm9_0 ymm8_0;
+add ymm8_1 ymm9_1 ymm8_1;
+add ymm8_2 ymm9_2 ymm8_2;
+add ymm8_3 ymm9_3 ymm8_3;
 (* vpmuldq %ymm6,%ymm10,%ymm9 *)
 
 mov a_0 luuss0_0;
@@ -2116,15 +2141,15 @@ join ymm15_1 h_1 l_1;
 join ymm15_2 h_2 l_2;
 join ymm15_3 h_3 l_3;
 (* vpaddq %ymm15,%ymm9,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm15_0 ymm9_0;
-adds dontcare_1 ymm9_1 ymm15_1 ymm9_1;
-adds dontcare_2 ymm9_2 ymm15_2 ymm9_2;
-adds dontcare_3 ymm9_3 ymm15_3 ymm9_3;
+add ymm9_0 ymm15_0 ymm9_0;
+add ymm9_1 ymm15_1 ymm9_1;
+add ymm9_2 ymm15_2 ymm9_2;
+add ymm9_3 ymm15_3 ymm9_3;
 (* vpaddq %ymm9,%ymm8,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm9_0 ymm8_0;
-adds dontcare_1 ymm9_1 ymm9_1 ymm8_1;
-adds dontcare_2 ymm9_2 ymm9_2 ymm8_2;
-adds dontcare_3 ymm9_3 ymm9_3 ymm8_3;
+add ymm9_0 ymm9_0 ymm8_0;
+add ymm9_1 ymm9_1 ymm8_1;
+add ymm9_2 ymm9_2 ymm8_2;
+add ymm9_3 ymm9_3 ymm8_3;
 
 (* oout5 *)
 mov oout5_0 ymm9_0;
@@ -2133,10 +2158,10 @@ mov oout5_2 ymm9_2;
 mov oout5_3 ymm9_3;
 
 (* vpaddq %ymm9,%ymm2,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm9_0 ymm2_0;
-adds dontcare_1 ymm9_1 ymm9_1 ymm2_1;
-adds dontcare_2 ymm9_2 ymm9_2 ymm2_2;
-adds dontcare_3 ymm9_3 ymm9_3 ymm2_3;
+add ymm9_0 ymm9_0 ymm2_0;
+add ymm9_1 ymm9_1 ymm2_1;
+add ymm9_2 ymm9_2 ymm2_2;
+add ymm9_3 ymm9_3 ymm2_3;
 (* out5 *)
 mov out5_0 ymm9_0;
 mov out5_1 ymm9_1;
@@ -2153,10 +2178,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm9_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm9_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm9_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare5_0 tmp_0 30;
 usplit ymm2_1 dontcare5_1 tmp_1 30;
 usplit ymm2_2 dontcare5_2 tmp_2 30;
@@ -2181,10 +2206,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -2202,10 +2227,10 @@ and ymm9_1@uint64 ymm9_1 ymm5_1;
 and ymm9_2@uint64 ymm9_2 ymm5_2;
 and ymm9_3@uint64 ymm9_3 ymm5_3;
 
-cast tmp0@uint64 ymm9_0;
-cast tmp1@uint64 ymm9_1;
-cast tmp2@uint64 ymm9_2;
-cast tmp3@uint64 ymm9_3;
+vpc tmp0@uint64 ymm9_0;
+vpc tmp1@uint64 ymm9_1;
+vpc tmp2@uint64 ymm9_2;
+vpc tmp3@uint64 ymm9_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -2258,10 +2283,10 @@ and ymm13_1@uint64 ymm13_1 ymm5_1;
 and ymm13_2@uint64 ymm13_2 ymm5_2;
 and ymm13_3@uint64 ymm13_3 ymm5_3;
 
-cast tmp0@uint64 ymm13_0;
-cast tmp1@uint64 ymm13_1;
-cast tmp2@uint64 ymm13_2;
-cast tmp3@uint64 ymm13_3;
+vpc tmp0@uint64 ymm13_0;
+vpc tmp1@uint64 ymm13_1;
+vpc tmp2@uint64 ymm13_2;
+vpc tmp3@uint64 ymm13_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -2313,10 +2338,10 @@ shl ymm8_1 ymm9_1 30;
 shl ymm8_2 ymm9_2 30;
 shl ymm8_3 ymm9_3 30;
 (* vpaddq %ymm8,%ymm13,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm8_0 ymm13_0;
-adds dontcare_1 ymm8_1 ymm8_1 ymm13_1;
-adds dontcare_2 ymm8_2 ymm8_2 ymm13_2;
-adds dontcare_3 ymm8_3 ymm8_3 ymm13_3;
+add ymm8_0 ymm8_0 ymm13_0;
+add ymm8_1 ymm8_1 ymm13_1;
+add ymm8_2 ymm8_2 ymm13_2;
+add ymm8_3 ymm8_3 ymm13_3;
 (* vmovapd %ymm8,640(%rsp) *)
 mov rsp_640_0 ymm8_0;
 mov rsp_640_1 ymm8_1;
@@ -2342,10 +2367,10 @@ mov ymm13_2 tmp_0;
 mov ymm13_3 tmp_1;
 
 (* lower 32 bits of FVGS6 *)
-cast lFVGS6_0@sint32 ymm8_0;
-cast lFVGS6_1@sint32 ymm8_1;
-cast lFVGS6_2@sint32 ymm8_2;
-cast lFVGS6_3@sint32 ymm8_3;
+vpc lFVGS6_0@sint32 ymm8_0;
+vpc lFVGS6_1@sint32 ymm8_1;
+vpc lFVGS6_2@sint32 ymm8_2;
+vpc lFVGS6_3@sint32 ymm8_3;
 assert true && (sext lFVGS6_0 32) = ymm8_0;
 assert true && (sext lFVGS6_1 32) = ymm8_1;
 assert true && (sext lFVGS6_2 32) = ymm8_2;
@@ -2355,10 +2380,10 @@ assume lFVGS6_1 = ymm8_1 && true;
 assume lFVGS6_2 = ymm8_2 && true;
 assume lFVGS6_3 = ymm8_3 && true;
 (* lower 32 bits of GSFV6 *)
-cast lGSFV6_0@sint32 ymm13_0;
-cast lGSFV6_1@sint32 ymm13_1;
-cast lGSFV6_2@sint32 ymm13_2;
-cast lGSFV6_3@sint32 ymm13_3;
+vpc lGSFV6_0@sint32 ymm13_0;
+vpc lGSFV6_1@sint32 ymm13_1;
+vpc lGSFV6_2@sint32 ymm13_2;
+vpc lGSFV6_3@sint32 ymm13_3;
 assert true && (sext lGSFV6_0 32) = ymm13_0;
 assert true && (sext lGSFV6_1 32) = ymm13_1;
 assert true && (sext lGSFV6_2 32) = ymm13_2;
@@ -2407,10 +2432,10 @@ join ymm14_1 h_1 l_1;
 join ymm14_2 h_2 l_2;
 join ymm14_3 h_3 l_3;
 (* vpaddq %ymm14,%ymm10,%ymm10 *)
-adds dontcare_0 ymm10_0 ymm14_0 ymm10_0;
-adds dontcare_1 ymm10_1 ymm14_1 ymm10_1;
-adds dontcare_2 ymm10_2 ymm14_2 ymm10_2;
-adds dontcare_3 ymm10_3 ymm14_3 ymm10_3;
+add ymm10_0 ymm14_0 ymm10_0;
+add ymm10_1 ymm14_1 ymm10_1;
+add ymm10_2 ymm14_2 ymm10_2;
+add ymm10_3 ymm14_3 ymm10_3;
 (* vpmuldq %ymm6,%ymm8,%ymm14 *)
 
 mov a_0 luuss0_0;
@@ -2450,15 +2475,15 @@ join ymm15_1 h_1 l_1;
 join ymm15_2 h_2 l_2;
 join ymm15_3 h_3 l_3;
 (* vpaddq %ymm15,%ymm14,%ymm14 *)
-adds dontcare_0 ymm14_0 ymm15_0 ymm14_0;
-adds dontcare_1 ymm14_1 ymm15_1 ymm14_1;
-adds dontcare_2 ymm14_2 ymm15_2 ymm14_2;
-adds dontcare_3 ymm14_3 ymm15_3 ymm14_3;
+add ymm14_0 ymm15_0 ymm14_0;
+add ymm14_1 ymm15_1 ymm14_1;
+add ymm14_2 ymm15_2 ymm14_2;
+add ymm14_3 ymm15_3 ymm14_3;
 (* vpaddq %ymm14,%ymm10,%ymm14 *)
-adds dontcare_0 ymm14_0 ymm14_0 ymm10_0;
-adds dontcare_1 ymm14_1 ymm14_1 ymm10_1;
-adds dontcare_2 ymm14_2 ymm14_2 ymm10_2;
-adds dontcare_3 ymm14_3 ymm14_3 ymm10_3;
+add ymm14_0 ymm14_0 ymm10_0;
+add ymm14_1 ymm14_1 ymm10_1;
+add ymm14_2 ymm14_2 ymm10_2;
+add ymm14_3 ymm14_3 ymm10_3;
 
 (* oout6 *)
 mov oout6_0 ymm14_0;
@@ -2467,10 +2492,10 @@ mov oout6_2 ymm14_2;
 mov oout6_3 ymm14_3;
 
 (* vpaddq %ymm14,%ymm2,%ymm14 *)
-adds dontcare_0 ymm14_0 ymm14_0 ymm2_0;
-adds dontcare_1 ymm14_1 ymm14_1 ymm2_1;
-adds dontcare_2 ymm14_2 ymm14_2 ymm2_2;
-adds dontcare_3 ymm14_3 ymm14_3 ymm2_3;
+add ymm14_0 ymm14_0 ymm2_0;
+add ymm14_1 ymm14_1 ymm2_1;
+add ymm14_2 ymm14_2 ymm2_2;
+add ymm14_3 ymm14_3 ymm2_3;
 
 (* out6 *)
 mov out6_0 ymm14_0;
@@ -2488,10 +2513,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm14_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm14_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm14_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare6_0 tmp_0 30;
 usplit ymm2_1 dontcare6_1 tmp_1 30;
 usplit ymm2_2 dontcare6_2 tmp_2 30;
@@ -2516,10 +2541,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -2546,10 +2571,10 @@ mov ymm10_2 tmp_0;
 mov ymm10_3 tmp_1;
 
 (* lower 32 bits of FVGS7 *)
-cast lFVGS7_0@sint32 ymm9_0;
-cast lFVGS7_1@sint32 ymm9_1;
-cast lFVGS7_2@sint32 ymm9_2;
-cast lFVGS7_3@sint32 ymm9_3;
+vpc lFVGS7_0@sint32 ymm9_0;
+vpc lFVGS7_1@sint32 ymm9_1;
+vpc lFVGS7_2@sint32 ymm9_2;
+vpc lFVGS7_3@sint32 ymm9_3;
 assert true && (sext lFVGS7_0 32) = ymm9_0;
 assert true && (sext lFVGS7_1 32) = ymm9_1;
 assert true && (sext lFVGS7_2 32) = ymm9_2;
@@ -2559,10 +2584,10 @@ assume lFVGS7_1 = ymm9_1 && true;
 assume lFVGS7_2 = ymm9_2 && true;
 assume lFVGS7_3 = ymm9_3 && true;
 (* lower 32 bits of GSFV7 *)
-cast lGSFV7_0@sint32 ymm10_0;
-cast lGSFV7_1@sint32 ymm10_1;
-cast lGSFV7_2@sint32 ymm10_2;
-cast lGSFV7_3@sint32 ymm10_3;
+vpc lGSFV7_0@sint32 ymm10_0;
+vpc lGSFV7_1@sint32 ymm10_1;
+vpc lGSFV7_2@sint32 ymm10_2;
+vpc lGSFV7_3@sint32 ymm10_3;
 assert true && (sext lGSFV7_0 32) = ymm10_0;
 assert true && (sext lGSFV7_1 32) = ymm10_1;
 assert true && (sext lGSFV7_2 32) = ymm10_2;
@@ -2611,10 +2636,10 @@ join ymm13_1 h_1 l_1;
 join ymm13_2 h_2 l_2;
 join ymm13_3 h_3 l_3;
 (* vpaddq %ymm13,%ymm8,%ymm8 *)
-adds dontcare_0 ymm8_0 ymm13_0 ymm8_0;
-adds dontcare_1 ymm8_1 ymm13_1 ymm8_1;
-adds dontcare_2 ymm8_2 ymm13_2 ymm8_2;
-adds dontcare_3 ymm8_3 ymm13_3 ymm8_3;
+add ymm8_0 ymm13_0 ymm8_0;
+add ymm8_1 ymm13_1 ymm8_1;
+add ymm8_2 ymm13_2 ymm8_2;
+add ymm8_3 ymm13_3 ymm8_3;
 (* vpmuldq %ymm6,%ymm9,%ymm13 *)
 
 mov a_0 luuss0_0;
@@ -2654,15 +2679,15 @@ join ymm15_1 h_1 l_1;
 join ymm15_2 h_2 l_2;
 join ymm15_3 h_3 l_3;
 (* vpaddq %ymm15,%ymm13,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm15_0 ymm13_0;
-adds dontcare_1 ymm13_1 ymm15_1 ymm13_1;
-adds dontcare_2 ymm13_2 ymm15_2 ymm13_2;
-adds dontcare_3 ymm13_3 ymm15_3 ymm13_3;
+add ymm13_0 ymm15_0 ymm13_0;
+add ymm13_1 ymm15_1 ymm13_1;
+add ymm13_2 ymm15_2 ymm13_2;
+add ymm13_3 ymm15_3 ymm13_3;
 (* vpaddq %ymm13,%ymm8,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm13_0 ymm8_0;
-adds dontcare_1 ymm13_1 ymm13_1 ymm8_1;
-adds dontcare_2 ymm13_2 ymm13_2 ymm8_2;
-adds dontcare_3 ymm13_3 ymm13_3 ymm8_3;
+add ymm13_0 ymm13_0 ymm8_0;
+add ymm13_1 ymm13_1 ymm8_1;
+add ymm13_2 ymm13_2 ymm8_2;
+add ymm13_3 ymm13_3 ymm8_3;
 
 (* oout7 *)
 mov oout7_0 ymm13_0;
@@ -2671,10 +2696,10 @@ mov oout7_2 ymm13_2;
 mov oout7_3 ymm13_3;
 
 (* vpaddq %ymm13,%ymm2,%ymm13 *)
-adds dontcare_0 ymm13_0 ymm13_0 ymm2_0;
-adds dontcare_1 ymm13_1 ymm13_1 ymm2_1;
-adds dontcare_2 ymm13_2 ymm13_2 ymm2_2;
-adds dontcare_3 ymm13_3 ymm13_3 ymm2_3;
+add ymm13_0 ymm13_0 ymm2_0;
+add ymm13_1 ymm13_1 ymm2_1;
+add ymm13_2 ymm13_2 ymm2_2;
+add ymm13_3 ymm13_3 ymm2_3;
 
 (* out7 *)
 mov out7_0 ymm13_0;
@@ -2692,10 +2717,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm13_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm13_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm13_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare7_0 tmp_0 30;
 usplit ymm2_1 dontcare7_1 tmp_1 30;
 usplit ymm2_2 dontcare7_2 tmp_2 30;
@@ -2720,10 +2745,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -2741,10 +2766,10 @@ and ymm14_1@uint64 ymm14_1 ymm5_1;
 and ymm14_2@uint64 ymm14_2 ymm5_2;
 and ymm14_3@uint64 ymm14_3 ymm5_3;
 
-cast tmp0@uint64 ymm14_0;
-cast tmp1@uint64 ymm14_1;
-cast tmp2@uint64 ymm14_2;
-cast tmp3@uint64 ymm14_3;
+vpc tmp0@uint64 ymm14_0;
+vpc tmp1@uint64 ymm14_1;
+vpc tmp2@uint64 ymm14_2;
+vpc tmp3@uint64 ymm14_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -2806,10 +2831,10 @@ mov ymm14_2 tmp_0;
 mov ymm14_3 tmp_1;
 
 (* lower 32 bits of FVGS8 *)
-cast lFVGS8_0@sint32 ymm8_0;
-cast lFVGS8_1@sint32 ymm8_1;
-cast lFVGS8_2@sint32 ymm8_2;
-cast lFVGS8_3@sint32 ymm8_3;
+vpc lFVGS8_0@sint32 ymm8_0;
+vpc lFVGS8_1@sint32 ymm8_1;
+vpc lFVGS8_2@sint32 ymm8_2;
+vpc lFVGS8_3@sint32 ymm8_3;
 assert true && (sext lFVGS8_0 32) = ymm8_0;
 assert true && (sext lFVGS8_1 32) = ymm8_1;
 assert true && (sext lFVGS8_2 32) = ymm8_2;
@@ -2819,10 +2844,10 @@ assume lFVGS8_1 = ymm8_1 && true;
 assume lFVGS8_2 = ymm8_2 && true;
 assume lFVGS8_3 = ymm8_3 && true;
 (* lower 32 bits of GSFV8 *)
-cast lGSFV8_0@sint32 ymm14_0;
-cast lGSFV8_1@sint32 ymm14_1;
-cast lGSFV8_2@sint32 ymm14_2;
-cast lGSFV8_3@sint32 ymm14_3;
+vpc lGSFV8_0@sint32 ymm14_0;
+vpc lGSFV8_1@sint32 ymm14_1;
+vpc lGSFV8_2@sint32 ymm14_2;
+vpc lGSFV8_3@sint32 ymm14_3;
 assert true && (sext lGSFV8_0 32) = ymm14_0;
 assert true && (sext lGSFV8_1 32) = ymm14_1;
 assert true && (sext lGSFV8_2 32) = ymm14_2;
@@ -2871,10 +2896,10 @@ join ymm10_1 h_1 l_1;
 join ymm10_2 h_2 l_2;
 join ymm10_3 h_3 l_3;
 (* vpaddq %ymm10,%ymm9,%ymm9 *)
-adds dontcare_0 ymm9_0 ymm10_0 ymm9_0;
-adds dontcare_1 ymm9_1 ymm10_1 ymm9_1;
-adds dontcare_2 ymm9_2 ymm10_2 ymm9_2;
-adds dontcare_3 ymm9_3 ymm10_3 ymm9_3;
+add ymm9_0 ymm10_0 ymm9_0;
+add ymm9_1 ymm10_1 ymm9_1;
+add ymm9_2 ymm10_2 ymm9_2;
+add ymm9_3 ymm10_3 ymm9_3;
 (* vpmuldq %ymm6,%ymm8,%ymm6 *)
 
 mov a_0 luuss0_0;
@@ -2914,15 +2939,15 @@ join ymm7_1 h_1 l_1;
 join ymm7_2 h_2 l_2;
 join ymm7_3 h_3 l_3;
 (* vpaddq %ymm7,%ymm6,%ymm6 *)
-adds dontcare_0 ymm6_0 ymm7_0 ymm6_0;
-adds dontcare_1 ymm6_1 ymm7_1 ymm6_1;
-adds dontcare_2 ymm6_2 ymm7_2 ymm6_2;
-adds dontcare_3 ymm6_3 ymm7_3 ymm6_3;
+add ymm6_0 ymm7_0 ymm6_0;
+add ymm6_1 ymm7_1 ymm6_1;
+add ymm6_2 ymm7_2 ymm6_2;
+add ymm6_3 ymm7_3 ymm6_3;
 (* vpaddq %ymm6,%ymm9,%ymm6 *)
-adds dontcare_0 ymm6_0 ymm6_0 ymm9_0;
-adds dontcare_1 ymm6_1 ymm6_1 ymm9_1;
-adds dontcare_2 ymm6_2 ymm6_2 ymm9_2;
-adds dontcare_3 ymm6_3 ymm6_3 ymm9_3;
+add ymm6_0 ymm6_0 ymm9_0;
+add ymm6_1 ymm6_1 ymm9_1;
+add ymm6_2 ymm6_2 ymm9_2;
+add ymm6_3 ymm6_3 ymm9_3;
 
 (* oout8 *)
 mov oout8_0 ymm6_0;
@@ -2931,15 +2956,15 @@ mov oout8_2 ymm6_2;
 mov oout8_3 ymm6_3;
 
 (* vpaddq %ymm6,%ymm2,%ymm6 *)
-adds dontcare_0 ymm6_0 ymm6_0 ymm2_0;
-adds dontcare_1 ymm6_1 ymm6_1 ymm2_1;
-adds dontcare_2 ymm6_2 ymm6_2 ymm2_2;
-adds dontcare_3 ymm6_3 ymm6_3 ymm2_3;
+add ymm6_0 ymm6_0 ymm2_0;
+add ymm6_1 ymm6_1 ymm2_1;
+add ymm6_2 ymm6_2 ymm2_2;
+add ymm6_3 ymm6_3 ymm2_3;
 (* vpaddq %ymm6,%ymm11,%ymm6 *)
-adds dontcare_0 ymm6_0 ymm6_0 ymm11_0;
-adds dontcare_1 ymm6_1 ymm6_1 ymm11_1;
-adds dontcare_2 ymm6_2 ymm6_2 ymm11_2;
-adds dontcare_3 ymm6_3 ymm6_3 ymm11_3;
+add ymm6_0 ymm6_0 ymm11_0;
+add ymm6_1 ymm6_1 ymm11_1;
+add ymm6_2 ymm6_2 ymm11_2;
+add ymm6_3 ymm6_3 ymm11_3;
 
 (* out8 *)
 mov out8_0 ymm6_0;
@@ -2957,10 +2982,10 @@ adds dontcare_1 ymm2_1 ymm0_1 ymm6_1;
 adds dontcare_2 ymm2_2 ymm0_2 ymm6_2;
 adds dontcare_3 ymm2_3 ymm0_3 ymm6_3;
 (* vpsrlq $30,%ymm2,%ymm2 *)
-cast tmp_0@uint64 ymm2_0;
-cast tmp_1@uint64 ymm2_1;
-cast tmp_2@uint64 ymm2_2;
-cast tmp_3@uint64 ymm2_3;
+vpc tmp_0@uint64 ymm2_0;
+vpc tmp_1@uint64 ymm2_1;
+vpc tmp_2@uint64 ymm2_2;
+vpc tmp_3@uint64 ymm2_3;
 usplit ymm2_0 dontcare8_0 tmp_0 30;
 usplit ymm2_1 dontcare8_1 tmp_1 30;
 usplit ymm2_2 dontcare8_2 tmp_2 30;
@@ -2985,10 +3010,10 @@ mov tmp0 ymm2_0;
 mov tmp1 ymm2_1;
 mov tmp2 ymm2_2;
 mov tmp3 ymm2_3;
-cast ymm2_0@sint64 tmp0;
-cast ymm2_1@sint64 tmp1;
-cast ymm2_2@sint64 tmp2;
-cast ymm2_3@sint64 tmp3;
+vpc ymm2_0@sint64 tmp0;
+vpc ymm2_1@sint64 tmp1;
+vpc ymm2_2@sint64 tmp2;
+vpc ymm2_3@sint64 tmp3;
 assume tmp0 = ymm2_0 && true;
 assume tmp1 = ymm2_1 && true;
 assume tmp2 = ymm2_2 && true;
@@ -3006,10 +3031,10 @@ and ymm13_1@uint64 ymm13_1 ymm5_1;
 and ymm13_2@uint64 ymm13_2 ymm5_2;
 and ymm13_3@uint64 ymm13_3 ymm5_3;
 
-cast tmp0@uint64 ymm13_0;
-cast tmp1@uint64 ymm13_1;
-cast tmp2@uint64 ymm13_2;
-cast tmp3@uint64 ymm13_3;
+vpc tmp0@uint64 ymm13_0;
+vpc tmp1@uint64 ymm13_1;
+vpc tmp2@uint64 ymm13_2;
+vpc tmp3@uint64 ymm13_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -3094,10 +3119,10 @@ join ymm1_1 h_1 l_1;
 join ymm1_2 h_2 l_2;
 join ymm1_3 h_3 l_3;
 (* vpaddq %ymm1,%ymm3,%ymm1 *)
-adds dontcare_0 ymm1_0 ymm1_0 ymm3_0;
-adds dontcare_1 ymm1_1 ymm1_1 ymm3_1;
-adds dontcare_2 ymm1_2 ymm1_2 ymm3_2;
-adds dontcare_3 ymm1_3 ymm1_3 ymm3_3;
+add ymm1_0 ymm1_0 ymm3_0;
+add ymm1_1 ymm1_1 ymm3_1;
+add ymm1_2 ymm1_2 ymm3_2;
+add ymm1_3 ymm1_3 ymm3_3;
 
 (* oout9 *)
 mov oout9_0 ymm1_0;
@@ -3106,15 +3131,15 @@ mov oout9_2 ymm1_2;
 mov oout9_3 ymm1_3;
 
 (* vpaddq %ymm4,%ymm1,%ymm4 *)
-adds dontcare_0 ymm4_0 ymm4_0 ymm1_0;
-adds dontcare_1 ymm4_1 ymm4_1 ymm1_1;
-adds dontcare_2 ymm4_2 ymm4_2 ymm1_2;
-adds dontcare_3 ymm4_3 ymm4_3 ymm1_3;
+add ymm4_0 ymm4_0 ymm1_0;
+add ymm4_1 ymm4_1 ymm1_1;
+add ymm4_2 ymm4_2 ymm1_2;
+add ymm4_3 ymm4_3 ymm1_3;
 (* vpaddq %ymm4,%ymm2,%ymm4 *)
-adds dontcare_0 ymm4_0 ymm4_0 ymm2_0;
-adds dontcare_1 ymm4_1 ymm4_1 ymm2_1;
-adds dontcare_2 ymm4_2 ymm4_2 ymm2_2;
-adds dontcare_3 ymm4_3 ymm4_3 ymm2_3;
+add ymm4_0 ymm4_0 ymm2_0;
+add ymm4_1 ymm4_1 ymm2_1;
+add ymm4_2 ymm4_2 ymm2_2;
+add ymm4_3 ymm4_3 ymm2_3;
 
 (* out9 *)
 mov out9_0 ymm4_0;
@@ -3132,10 +3157,10 @@ adds dontcare_1 ymm1_1 ymm0_1 ymm4_1;
 adds dontcare_2 ymm1_2 ymm0_2 ymm4_2;
 adds dontcare_3 ymm1_3 ymm0_3 ymm4_3;
 (* vpsrlq $30,%ymm1,%ymm1 *)
-cast tmp_0@uint64 ymm1_0;
-cast tmp_1@uint64 ymm1_1;
-cast tmp_2@uint64 ymm1_2;
-cast tmp_3@uint64 ymm1_3;
+vpc tmp_0@uint64 ymm1_0;
+vpc tmp_1@uint64 ymm1_1;
+vpc tmp_2@uint64 ymm1_2;
+vpc tmp_3@uint64 ymm1_3;
 usplit ymm1_0 dontcare9_0 tmp_0 30;
 usplit ymm1_1 dontcare9_1 tmp_1 30;
 usplit ymm1_2 dontcare9_2 tmp_2 30;
@@ -3160,10 +3185,10 @@ mov tmp0 ymm1_0;
 mov tmp1 ymm1_1;
 mov tmp2 ymm1_2;
 mov tmp3 ymm1_3;
-cast ymm1_0@sint64 tmp0;
-cast ymm1_1@sint64 tmp1;
-cast ymm1_2@sint64 tmp2;
-cast ymm1_3@sint64 tmp3;
+vpc ymm1_0@sint64 tmp0;
+vpc ymm1_1@sint64 tmp1;
+vpc ymm1_2@sint64 tmp2;
+vpc ymm1_3@sint64 tmp3;
 assume tmp0 = ymm1_0 && true;
 assume tmp1 = ymm1_1 && true;
 assume tmp2 = ymm1_2 && true;
@@ -3188,10 +3213,10 @@ and ymm6_1@uint64 ymm6_1 ymm5_1;
 and ymm6_2@uint64 ymm6_2 ymm5_2;
 and ymm6_3@uint64 ymm6_3 ymm5_3;
 
-cast tmp0@uint64 ymm6_0;
-cast tmp1@uint64 ymm6_1;
-cast tmp2@uint64 ymm6_2;
-cast tmp3@uint64 ymm6_3;
+vpc tmp0@uint64 ymm6_0;
+vpc tmp1@uint64 ymm6_1;
+vpc tmp2@uint64 ymm6_2;
+vpc tmp3@uint64 ymm6_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -3257,10 +3282,10 @@ adds dontcarea_1 ymm6_1 ymm0_1 ymm1_1;
 adds dontcarea_2 ymm6_2 ymm0_2 ymm1_2;
 adds dontcarea_3 ymm6_3 ymm0_3 ymm1_3;
 (* vpsrlq $15,%ymm6,%ymm6 *)
-cast tmp_0@uint64 ymm6_0;
-cast tmp_1@uint64 ymm6_1;
-cast tmp_2@uint64 ymm6_2;
-cast tmp_3@uint64 ymm6_3;
+vpc tmp_0@uint64 ymm6_0;
+vpc tmp_1@uint64 ymm6_1;
+vpc tmp_2@uint64 ymm6_2;
+vpc tmp_3@uint64 ymm6_3;
 usplit ymm6_0 dontcare10_0 tmp_0 15;
 usplit ymm6_1 dontcare10_1 tmp_1 15;
 usplit ymm6_2 dontcare10_2 tmp_2 15;
@@ -3285,10 +3310,10 @@ mov tmp0 ymm6_0;
 mov tmp1 ymm6_1;
 mov tmp2 ymm6_2;
 mov tmp3 ymm6_3;
-cast ymm6_0@sint64 tmp0;
-cast ymm6_1@sint64 tmp1;
-cast ymm6_2@sint64 tmp2;
-cast ymm6_3@sint64 tmp3;
+vpc ymm6_0@sint64 tmp0;
+vpc ymm6_1@sint64 tmp1;
+vpc ymm6_2@sint64 tmp2;
+vpc ymm6_3@sint64 tmp3;
 assume tmp0 = ymm6_0 && true;
 assume tmp1 = ymm6_1 && true;
 assume tmp2 = ymm6_2 && true;
@@ -3356,10 +3381,10 @@ and ymm4_1@uint64 ymm4_1 ymm5_1;
 and ymm4_2@uint64 ymm4_2 ymm5_2;
 and ymm4_3@uint64 ymm4_3 ymm5_3;
 
-cast tmp0@uint64 ymm4_0;
-cast tmp1@uint64 ymm4_1;
-cast tmp2@uint64 ymm4_2;
-cast tmp3@uint64 ymm4_3;
+vpc tmp0@uint64 ymm4_0;
+vpc tmp1@uint64 ymm4_1;
+vpc tmp2@uint64 ymm4_2;
+vpc tmp3@uint64 ymm4_3;
 usplit dc0 bot0 tmp0 30;
 usplit dc1 bot1 tmp1 30;
 usplit dc2 bot2 tmp2 30;
@@ -3412,8 +3437,8 @@ and ymm1_1@uint64 ymm1_1 ymm2_1;
 and ymm1_2@uint64 ymm1_2 ymm2_2;
 and ymm1_3@uint64 ymm1_3 ymm2_3;
 
-cast tmp1@uint64 ymm1_1;
-cast tmp3@uint64 ymm1_3;
+vpc tmp1@uint64 ymm1_1;
+vpc tmp3@uint64 ymm1_3;
 usplit dc1 bot1 tmp1 15;
 usplit dc3 bot3 tmp3 15;
 assert true && and[dc1 = 0@64, bot1 = ymm1_1];
@@ -3490,18 +3515,18 @@ mov ymm12o_1 ymm12_1;
 mov ymm12o_2 ymm12_2;
 mov ymm12o_3 ymm12_3;
 
-cast a0@sint64 ymm12_0;
-cast a1@sint64 ymm12_1;
-cast a2@sint64 ymm12_2;
-cast a3@sint64 ymm12_3;
+vpc a0@sint64 ymm12_0;
+vpc a1@sint64 ymm12_1;
+vpc a2@sint64 ymm12_2;
+vpc a3@sint64 ymm12_3;
 mov b0 ymm2_0;
 mov b1 ymm2_1;
 mov b2 ymm2_2;
 mov b3 ymm2_3;
-adds dontcare_0 ymm12_0 a0 ymm2_0;
-adds dontcare_1 ymm12_1 a1 ymm2_1;
-adds dontcare_2 ymm12_2 a2 ymm2_2;
-adds dontcare_3 ymm12_3 a3 ymm2_3;
+add ymm12_0 a0 ymm2_0;
+add ymm12_1 a1 ymm2_1;
+add ymm12_2 a2 ymm2_2;
+add ymm12_3 a3 ymm2_3;
 
 assert true && (sext ymm12o_0 1) + (sext b0 1) = (sext ymm12_0 1);
 assert true && (sext ymm12o_1 1) + (sext b1 1) = (sext ymm12_1 1);
@@ -3720,7 +3745,6 @@ assert r *
       + s7*(2**(30*7))
       + s8*(2**(30*8)))
        * (2**(60)) && true;
-
 
 
 (* Form Singular*)
