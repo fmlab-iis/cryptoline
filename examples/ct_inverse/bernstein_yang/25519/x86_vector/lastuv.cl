@@ -1,3 +1,27 @@
+(* popper: cv.exe -v -isafety -jobs 64 -slicing lastuv.cl
+Parsing CryptoLine file:                        [OK]            0.0005 seconds
+Checking well-formedness:                       [OK]            0.0001 seconds
+
+Procedure main
+==============
+Transforming to SSA form:                       [OK]            0.0000 seconds
+Normalizing specification:                      [OK]            0.0000 seconds
+Rewriting assignments:                          [OK]            0.0000 seconds
+Verifying program safety:                       [OK]            0.0067 seconds
+Verifying range assertions:                     [OK]            0.0713 seconds
+Verifying range specification:                  [OK]            1038.8777 seconds
+Rewriting value-preserved casting:              [OK]            0.0000 seconds
+Verifying algebraic assertions:                 [OK]            0.0311 seconds
+Verifying algebraic specification:              [OK]            0.0298 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                         [OK]            1039.0170 seconds
+
+Summary
+=======
+Verification result:                            [OK]            1039.0178 seconds
+*)
 proc main (uint64 f0, uint64 g0, uint64 f, uint64 g, sint64 u, sint64 v) =
 {
   and[

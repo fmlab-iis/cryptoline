@@ -1,3 +1,23 @@
+(* popper: cv.exe -jobs 64 -v -isafety -slicing lastloop.cl
+Parsing CryptoLine file:                        [OK]            0.0008 seconds
+Checking well-formedness:                       [OK]            0.0003 seconds
+
+Procedure main
+==============
+Transforming to SSA form:                       [OK]            0.0001 seconds
+Normalizing specification:                      [OK]            0.0001 seconds
+Rewriting assignments:                          [OK]            0.0001 seconds
+Verifying program safety:                       [OK]            0.0083 seconds
+Verifying range assertions:                     [OK]            571.0372 seconds
+Verifying range specification:                  [OK]            0.4058 seconds
+Rewriting value-preserved casting:              [OK]            0.0000 seconds
+Verifying algebraic assertions:                 [OK]            0.0002 seconds
+Verifying algebraic specification:              [OK]            0.0295 seconds
+Procedure Summary
+-----------------
+Procedure verification:                         [OK]            571.4816 secondsSummary
+=======
+Verification result:                            [OK]            571.4827 seconds*)
 (* quine: -v -jobs 10 -btor -slicing lastloop.cl
 Parsing Cryptoline file:                [OK]            0.002047 seconds
 Checking well-formedness:               [OK]            0.000695 seconds

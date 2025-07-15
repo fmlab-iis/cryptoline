@@ -1,3 +1,27 @@
+(* popper: cv.exe -v -isafety -jobs 64 -slicing updateuvrs.cl
+Parsing CryptoLine file:                        [OK]            0.0006 seconds
+Checking well-formedness:                       [OK]            0.0002 seconds
+
+Procedure main
+==============
+Transforming to SSA form:                       [OK]            0.0001 seconds
+Normalizing specification:                      [OK]            0.0001 seconds
+Rewriting assignments:                          [OK]            0.0001 seconds
+Verifying program safety:                       [OK]            0.0000 seconds
+Verifying range assertions:                     [OK]            1054.0656 seconds
+Verifying range specification:                  [OK]            0.0001 seconds
+Rewriting value-preserved casting:              [OK]            0.0000 seconds
+Verifying algebraic assertions:                 [OK]            0.0002 seconds
+Verifying algebraic specification:              [OK]            0.0334 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                         [OK]            1054.0998 seconds
+
+Summary
+=======
+Verification result:                            [OK]            1054.1008 seconds
+*)
 (* quine -v -jobs 10 updateuvrs.cl
 Parsing Cryptoline file:                [OK]            0.001087 seconds
 Checking well-formedness:               [OK]            0.000382 seconds
