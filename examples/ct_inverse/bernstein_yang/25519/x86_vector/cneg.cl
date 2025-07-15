@@ -1,4 +1,4 @@
-(* frege: cv.exe -v -isafety -abs_interp -slicing -jobs 20 cneg.cl
+(* quine: cv.exe -v -isafety -abs_interp -slicing -jobs 20 cneg.cl
 Parsing CryptoLine file:                [OK]            0.0073 seconds
 Checking well-formedness:               [OK]            0.0005 seconds
 
