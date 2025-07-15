@@ -1,3 +1,28 @@
+(* frege: cv.exe -v -isafety -abs_interp -slicing -jobs 20 cneg.cl
+Parsing CryptoLine file:                [OK]            0.0073 seconds
+Checking well-formedness:               [OK]            0.0005 seconds
+
+Procedure main
+==============
+Transforming to SSA form:               [OK]            0.0002 seconds
+Normalizing specification:              [OK]            0.0003 seconds
+Rewriting assignments:                  [OK]            0.0005 seconds
+Verifying program safety:               [OK]            1.6971 seconds
+Verifying range assertions:             [OK]            38.3314 seconds
+Verifying range specification:          [OK]            1.5930 seconds
+Rewriting value-preserved casting:      [OK]            0.0002 seconds
+Verifying algebraic assertions:         [OK]            0.0683 seconds
+Verifying algebraic specification:      [OK]            0.0611 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                 [OK]            41.7522 seconds
+
+Summary
+=======
+Verification result:                    [OK]            41.7602 seconds
+*)
+
 (* quine: -v -isafety -isafety_timeout 100000 -slicing -jobs 40 cneg.cl
 Parsing Cryptoline file:                [OK]            0.003853 seconds
 Checking well-formedness:               [OK]            0.002074 seconds
@@ -134,7 +159,7 @@ smull rdx rax r11 rax;
 (* add  %rax,%rsi *)
 adds carry rsi rax rsi;
 (* adc %rdx,%rdi *)
-adcs carry rdi rdx rdi carry;
+adc rdi rdx rdi carry;
 #assert limbs 64 [rsi, rdi] = V8 * u + S8 * v && true;
 
 mov high rdi;
@@ -161,7 +186,7 @@ mov rdx rsp_264;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (V6 + V7 * (2**30)@64);
 assume rax = V6 + V7 * (2**30) && true;
@@ -181,7 +206,7 @@ mov rdx rsp_280;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (S6 + S7 * (2**30)@64);
 assume rax = S6 + S7 * (2**30) && true;
@@ -192,7 +217,7 @@ smull rdx rax r11 rax;
 (* add  %rax,%r8 *)
 adds carry r8 rax r8;
 (* adc %rdx,%rcx *)
-adcs carry rcx rdx rcx carry;
+adc rcx rdx rcx carry;
 
 mov low r8;
 mov high rcx;
@@ -224,7 +249,7 @@ assume limbs 64 [a2, t1, t2] = limbs 64 [low, high] * (2**52) && true;
 (* add  %r8,%rsi *)
 adds carry rsi r8 rsi;
 (* adc %rcx,%rdi *)
-adcs carry rdi rcx rdi carry;
+adc rdi rcx rdi carry;
 
 #assert limbs 64 [r9, rsi, rdi] = (V8 * u + S8 * v) * (2**112) + ((V6 + V7 * (2**30)) * u + (S6 + S7 * (2**30)) * v) * (2**52) && true;
 
@@ -236,7 +261,7 @@ mov rdx rsp_200;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (V4 + V5 * (2**30)@64);
 assume rax = V4 + V5 * (2**30) && true;
@@ -256,7 +281,7 @@ mov rdx rsp_216;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (S4 + S5 * (2**30)@64);
 assume rax = S4 + S5 * (2**30) && true;
@@ -267,7 +292,7 @@ smull rdx rax r11 rax;
 (* add  %rax,%r8 *)
 adds carry r8 rax r8;
 (* adc %rdx,%rcx *)
-adcs carry rcx rdx rcx carry;
+adc rcx rdx rcx carry;
 
 mov low r8;
 mov high rcx;
@@ -298,7 +323,7 @@ adds carry r9 r8 r9;
 (* adc %rcx,%rsi *)
 adcs carry rsi rcx rsi carry;
 (* adc %rdx,%rdi *)
-adcs carry rdi rdx rdi carry;
+adc rdi rdx rdi carry;
 (* movq 104(%rsp),%rax *)
 mov rax rsp_104;
 (* movq 136(%rsp),%rdx *)
@@ -307,7 +332,7 @@ mov rdx rsp_136;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (V2 + V3 * (2**30)@64);
 assume rax = V2 + V3 * (2**30) && true;
@@ -327,7 +352,7 @@ mov rdx rsp_152;
 and rdx@uint64 rdx (2**(64-30)-1)@sint64;
 shl rdx rdx 30;
 (* add  %rdx,%rax *)
-adds carry rax rdx rax;
+add rax rdx rax;
 
 assert true && rax = (S2 + S3 * (2**30)@64);
 assume rax = S2 + S3 * (2**30) && true;
@@ -338,7 +363,7 @@ smull rdx rax r11 rax;
 (* add  %rax,%r8 *)
 adds carry r8 rax r8;
 (* adc %rdx,%rcx *)
-adcs carry rcx rdx rcx carry;
+adc rcx rdx rcx carry;
 
 mov low r8;
 mov high rcx;
@@ -372,7 +397,7 @@ adcs carry r9 rcx r9 carry;
 (* adc %rdx,%rsi *)
 adcs carry rsi tmp rsi carry;
 (* adc %rdx,%rdi *)
-adcs carry rdi rdx rdi carry;
+adc rdi rdx rdi carry;
 (* movq 40(%rsp),%rax *)
 mov rax rsp_40;
 (* movq 72(%rsp),%rdx *)
@@ -412,7 +437,7 @@ smull rdx rax r11 rax;
 (* add  %rax,%r8 *)
 adds carry r8 rax r8;
 (* adc %rdx,%rcx *)
-adcs carry rcx rdx rcx carry;
+adc rcx rdx rcx carry;
 
 mov low r8;
 mov high rcx;
@@ -436,7 +461,7 @@ adcs carry r9 tmp r9 carry;
 (* adc %rdx,%rsi *)
 adcs carry rsi tmp rsi carry;
 (* adc %rdx,%rdi *)
-adcs carry rdi rdx rdi carry;
+adc rdi rdx rdi carry;
 
 mov q0 r13;
 mov q1 r12;
@@ -509,7 +534,7 @@ adcs carry r9 tmp r9 carry;
 (* adc %rcx,%rsi *)
 adcs carry rsi tmp rsi carry;
 (* adc %rcx,%rdi *)
-adcs carry rdi rcx rdi carry;
+adc rdi rcx rdi carry;
 
 mov p0 r13;
 mov p1 r12;
@@ -525,7 +550,7 @@ assert eqmod (limbs 64 [p0, p1, p2, p3, p4])
 subb carry dontcare 0x7fffffffffffffff@uint64 rsi;
 and rsi@uint64 rsi 0x7fffffffffffffff@uint64;
 (* adc %rdi,%rdi *)
-adcs carry rdi rdi rdi carry;
+adc rdi rdi rdi carry;
 
 mov b3 rsi;
 mov b4 rdi;
@@ -570,7 +595,7 @@ adcs carry rsi tmp rsi carry;
 
 (* I think this is redundant *)
 (* adc %rcx,%rdi *)
-adcs carry rdi rcx rdi carry;
+adc rdi rcx rdi carry;
 
 mov g0 r13;
 mov g1 r12;
@@ -607,7 +632,7 @@ adcs carry r12 rcx r12 carry;
 (* adc %rcx,%r9 *)
 adcs carry r9 rcx r9 carry;
 (* adc %r8,%rsi *)
-adcs carry rsi r8 rsi carry;
+adc rsi r8 rsi carry;
 (* add  $19,%r13 *)
 adds carry r13 19@uint64 r13;
 (* adc $0,%r12 *)
@@ -615,7 +640,7 @@ adcs carry r12 0@uint64 r12 carry;
 (* adc $0,%r9 *)
 adcs carry r9 0@uint64 r9 carry;
 (* adc $0,%rsi *)
-adcs carry rsi 0@uint64 rsi carry;
+adc rsi 0@uint64 rsi carry;
 (* mov  %rsi,%rdi *)
 mov rdi rsi;
 (* sar  $63,%rdi *)
@@ -633,7 +658,7 @@ adcs carry r12 0@uint64 r12 carry;
 (* adc $0,%r9 *)
 adcs carry r9 0@uint64 r9 carry;
 (* adc $0,%rsi *)
-adcs carry rsi 0@uint64 rsi carry;
+adc rsi 0@uint64 rsi carry;
 (* sub  $19,%r13 *)
 subb carry r13 r13 19@uint64;
 (* sbb  $0,%r12 *)
