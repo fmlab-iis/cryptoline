@@ -335,7 +335,7 @@ def verify(cl, cpath=cryptoline_path, cargs=""):
     try:
         with os.fdopen(fd, 'w') as tmp:
             tmp.write(cl)
-        ret = os.system(cpath + " " + cargs + " " + path + " &> /dev/null")
+        ret = os.system(cpath + " " + cargs + " " + path + " 1>/dev/null 2>&1")
     finally:
         os.remove(path)
     return ret == 0
