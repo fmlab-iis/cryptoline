@@ -1,0 +1,2 @@
+1. use gcc -march=rv64gcv_zbb_zvkb_zvknha
+2. use LD_LIBRARY_PATH=/usr/riscv64-linux-gnu/lib/ qemu-riscv64 -cpu max -E LD_LIBRARY_PATH=/usr/riscv64-linux-gnu/lib/ -E OPENSSL_riscvcap=ZBA_ZBB_ZBC_ZBS_ZVKBZVKNHA_V

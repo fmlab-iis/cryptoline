@@ -1,0 +1,149 @@
+sha256_block_data_order_zvkb_zvknha_or_zvknhb:
+# x10 = 0x55555590ddf0
+# x11 = 0x55555590de18
+# x12 = 0x1
+# x13 = 0x0
+# x14 = 0x3
+# x15 = 0x7f
+# x16 = 0x0
+# x17 = 0x0
+	#! -> SP = 0x2aaaab2aad60
+	vsetivli	zero,4,e32,m1,ta,ma                    #! PC = 0x5555555eddbc
+	auipc	a3,0x31e                                  #! PC = 0x5555555eddc0
+	ld	a3,-1928(a3)                                 #! EA = L0x55555590b638; Value = 0x00005555555edfb8; PC = 0x5555555eddc4
+	vle32.v	v10,(a3)                                #! EA = L0x5555555edfb8; PC = 0x5555555eddc8
+	addi	a3,a3,16                                   #! PC = 0x5555555eddcc
+	vle32.v	v11,(a3)                                #! EA = L0x5555555edfc8; PC = 0x5555555eddce
+	addi	a3,a3,16                                   #! PC = 0x5555555eddd2
+	vle32.v	v12,(a3)                                #! EA = L0x5555555edfd8; PC = 0x5555555eddd4
+	addi	a3,a3,16                                   #! PC = 0x5555555eddd8
+	vle32.v	v13,(a3)                                #! EA = L0x5555555edfe8; PC = 0x5555555eddda
+	addi	a3,a3,16                                   #! PC = 0x5555555eddde
+	vle32.v	v14,(a3)                                #! EA = L0x5555555edff8; PC = 0x5555555edde0
+	addi	a3,a3,16                                   #! PC = 0x5555555edde4
+	vle32.v	v15,(a3)                                #! EA = L0x5555555ee008; PC = 0x5555555edde6
+	addi	a3,a3,16                                   #! PC = 0x5555555eddea
+	vle32.v	v16,(a3)                                #! EA = L0x5555555ee018; PC = 0x5555555eddec
+	addi	a3,a3,16                                   #! PC = 0x5555555eddf0
+	vle32.v	v17,(a3)                                #! EA = L0x5555555ee028; PC = 0x5555555eddf2
+	addi	a3,a3,16                                   #! PC = 0x5555555eddf6
+	vle32.v	v18,(a3)                                #! EA = L0x5555555ee038; PC = 0x5555555eddf8
+	addi	a3,a3,16                                   #! PC = 0x5555555eddfc
+	vle32.v	v19,(a3)                                #! EA = L0x5555555ee048; PC = 0x5555555eddfe
+	addi	a3,a3,16                                   #! PC = 0x5555555ede02
+	vle32.v	v20,(a3)                                #! EA = L0x5555555ee058; PC = 0x5555555ede04
+	addi	a3,a3,16                                   #! PC = 0x5555555ede08
+	vle32.v	v21,(a3)                                #! EA = L0x5555555ee068; PC = 0x5555555ede0a
+	addi	a3,a3,16                                   #! PC = 0x5555555ede0e
+	vle32.v	v22,(a3)                                #! EA = L0x5555555ee078; PC = 0x5555555ede10
+	addi	a3,a3,16                                   #! PC = 0x5555555ede14
+	vle32.v	v23,(a3)                                #! EA = L0x5555555ee088; PC = 0x5555555ede16
+	addi	a3,a3,16                                   #! PC = 0x5555555ede1a
+	vle32.v	v24,(a3)                                #! EA = L0x5555555ee098; PC = 0x5555555ede1c
+	addi	a3,a3,16                                   #! PC = 0x5555555ede20
+	vle32.v	v25,(a3)                                #! EA = L0x5555555ee0a8; PC = 0x5555555ede22
+	lui	t4,0x41                                     #! PC = 0x5555555ede26
+	addiw	t4,t4,20                                  #! PC = 0x5555555ede2a
+	vsetivli	zero,1,e32,m1,ta,ma                    #! PC = 0x5555555ede2c
+	vmv.v.x	v26,t4                                  #! PC = 0x5555555ede30
+	addi	t3,a0,8                                    #! PC = 0x5555555ede34
+	vsetivli	zero,4,e32,m1,ta,ma                    #! PC = 0x5555555ede38
+	vluxei8.v	v6,(a0),v26                           #! EA = L0x55555590ddf0; PC = 0x5555555ede3c
+	vluxei8.v	v7,(t3),v26                           #! EA = L0x55555590ddf8; PC = 0x5555555ede40
+	vsetivli	zero,1,e8,m1,ta,ma                     #! PC = 0x5555555ede44
+	vmv.v.i	v0,1                                    #! PC = 0x5555555ede48
+	vsetivli	zero,4,e32,m1,ta,ma                    #! PC = 0x5555555ede4c
+	addi	a2,a2,-1                                   #! PC = 0x5555555ede50
+	vmv.v.v	v30,v6                                  #! PC = 0x5555555ede52
+	vmv.v.v	v31,v7                                  #! PC = 0x5555555ede56
+	vle32.v	v1,(a1)                                 #! EA = L0x55555590de18; PC = 0x5555555ede5a
+	vrev8.v	v1,v1                                   #! PC = 0x5555555ede5e
+	addi	a1,a1,16                                   #! PC = 0x5555555ede62
+	vle32.v	v2,(a1)                                 #! EA = L0x55555590de28; PC = 0x5555555ede64
+	vrev8.v	v2,v2                                   #! PC = 0x5555555ede68
+	addi	a1,a1,16                                   #! PC = 0x5555555ede6c
+	vle32.v	v3,(a1)                                 #! EA = L0x55555590de38; PC = 0x5555555ede6e
+	vrev8.v	v3,v3                                   #! PC = 0x5555555ede72
+	addi	a1,a1,16                                   #! PC = 0x5555555ede76
+	vle32.v	v4,(a1)                                 #! EA = L0x55555590de48; PC = 0x5555555ede78
+	vrev8.v	v4,v4                                   #! PC = 0x5555555ede7c
+	addi	a1,a1,16                                   #! PC = 0x5555555ede80
+	vadd.vv	v5,v10,v1                               #! PC = 0x5555555ede82
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555ede86
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555ede8a
+	vmerge.vvm	v5,v3,v2,v0                          #! PC = 0x5555555ede8e
+	vsha2ms.vv	v1,v5,v4                             #! PC = 0x5555555ede92
+	vadd.vv	v5,v11,v2                               #! PC = 0x5555555ede96
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555ede9a
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555ede9e
+	vmerge.vvm	v5,v4,v3,v0                          #! PC = 0x5555555edea2
+	vsha2ms.vv	v2,v5,v1                             #! PC = 0x5555555edea6
+	vadd.vv	v5,v12,v3                               #! PC = 0x5555555edeaa
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edeae
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edeb2
+	vmerge.vvm	v5,v1,v4,v0                          #! PC = 0x5555555edeb6
+	vsha2ms.vv	v3,v5,v2                             #! PC = 0x5555555edeba
+	vadd.vv	v5,v13,v4                               #! PC = 0x5555555edebe
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edec2
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edec6
+	vmerge.vvm	v5,v2,v1,v0                          #! PC = 0x5555555edeca
+	vsha2ms.vv	v4,v5,v3                             #! PC = 0x5555555edece
+	vadd.vv	v5,v14,v1                               #! PC = 0x5555555eded2
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555eded6
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555ededa
+	vmerge.vvm	v5,v3,v2,v0                          #! PC = 0x5555555edede
+	vsha2ms.vv	v1,v5,v4                             #! PC = 0x5555555edee2
+	vadd.vv	v5,v15,v2                               #! PC = 0x5555555edee6
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edeea
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edeee
+	vmerge.vvm	v5,v4,v3,v0                          #! PC = 0x5555555edef2
+	vsha2ms.vv	v2,v5,v1                             #! PC = 0x5555555edef6
+	vadd.vv	v5,v16,v3                               #! PC = 0x5555555edefa
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edefe
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf02
+	vmerge.vvm	v5,v1,v4,v0                          #! PC = 0x5555555edf06
+	vsha2ms.vv	v3,v5,v2                             #! PC = 0x5555555edf0a
+	vadd.vv	v5,v17,v4                               #! PC = 0x5555555edf0e
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf12
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf16
+	vmerge.vvm	v5,v2,v1,v0                          #! PC = 0x5555555edf1a
+	vsha2ms.vv	v4,v5,v3                             #! PC = 0x5555555edf1e
+	vadd.vv	v5,v18,v1                               #! PC = 0x5555555edf22
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf26
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf2a
+	vmerge.vvm	v5,v3,v2,v0                          #! PC = 0x5555555edf2e
+	vsha2ms.vv	v1,v5,v4                             #! PC = 0x5555555edf32
+	vadd.vv	v5,v19,v2                               #! PC = 0x5555555edf36
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf3a
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf3e
+	vmerge.vvm	v5,v4,v3,v0                          #! PC = 0x5555555edf42
+	vsha2ms.vv	v2,v5,v1                             #! PC = 0x5555555edf46
+	vadd.vv	v5,v20,v3                               #! PC = 0x5555555edf4a
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf4e
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf52
+	vmerge.vvm	v5,v1,v4,v0                          #! PC = 0x5555555edf56
+	vsha2ms.vv	v3,v5,v2                             #! PC = 0x5555555edf5a
+	vadd.vv	v5,v21,v4                               #! PC = 0x5555555edf5e
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf62
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf66
+	vmerge.vvm	v5,v2,v1,v0                          #! PC = 0x5555555edf6a
+	vsha2ms.vv	v4,v5,v3                             #! PC = 0x5555555edf6e
+	vadd.vv	v5,v22,v1                               #! PC = 0x5555555edf72
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf76
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf7a
+	vadd.vv	v5,v23,v2                               #! PC = 0x5555555edf7e
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf82
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf86
+	vadd.vv	v5,v24,v3                               #! PC = 0x5555555edf8a
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf8e
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf92
+	vadd.vv	v5,v25,v4                               #! PC = 0x5555555edf96
+	vsha2cl.vv	v7,v6,v5                             #! PC = 0x5555555edf9a
+	vsha2ch.vv	v6,v7,v5                             #! PC = 0x5555555edf9e
+	vadd.vv	v6,v30,v6                               #! PC = 0x5555555edfa2
+	vadd.vv	v7,v31,v7                               #! PC = 0x5555555edfa6
+	#bnez	a2,0x5555555ede50 <sha256_block_data_order_zvkb_zvknha_or_zvknhb+148>#! PC = 0x5555555edfaa
+	vsuxei8.v	v6,(a0),v26                           #! EA = L0x55555590ddf0; PC = 0x5555555edfae
+	vsuxei8.v	v7,(t3),v26                           #! EA = L0x55555590ddf8; PC = 0x5555555edfb2
+	#! <- SP = 0x2aaaab2aad60
+	#ret                                            #! PC = 0x5555555edfb6
