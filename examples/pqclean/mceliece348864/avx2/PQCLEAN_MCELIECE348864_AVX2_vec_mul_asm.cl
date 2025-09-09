@@ -1,3 +1,26 @@
+(* quine: cv.exe -v -isafety -jobs 22 -no_carry_constraint -slicing -vo appearing PQCLEAN_MCELIECE348864_AVX2_vec_mul_asm.cl
+Parsing CryptoLine file:                [OK]            0.9265 seconds
+Checking well-formedness:               [OK]            0.0961 seconds
+
+Procedure main
+==============
+Transforming to SSA form:               [OK]            0.0526 seconds
+Normalizing specification:              [OK]            0.0581 seconds
+Rewriting assignments:                  [OK]            0.0560 seconds
+Verifying program safety:               [OK]            56.6796 seconds
+Verifying range specification:          [OK]            0.0058 seconds
+Rewriting value-preserved casting:      [OK]            0.0048 seconds
+Verifying algebraic specification:      [OK]            3.2486 seconds
+
+Procedure Summary
+-----------------
+Procedure verification:                 [OK]            60.1427 seconds
+
+Summary
+=======
+Verification result:                    [OK]            61.1667 seconds
+*)
+
 proc main (
 bit[64] %r11,bit[64] %r12,bit[64] %r13,bit[64] %r14,
 bit[64] %r15,bit[64] %rbx,
