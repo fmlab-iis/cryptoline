@@ -1,4 +1,19 @@
-PQCLEAN_MCELIECE348864_AVX2_vec256_mul_asm:
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! %ymm$1c = %%ymm$1c
+
+#! vmovupd $1ea, $2ymm -> mov %$2ymm %$1ea
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm
+#! vpand $1ea, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ea
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ymm
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %dc %$3ymm %$2ymm %$1ymm
+#! vmovapd $1ymm, $2ymm -> mov %$2ymm %$1ymm
+
+#PQCLEAN_MCELIECE348864_AVX2_vec256_mul_asm:
 # %rdi = 0x7ffffff4d6c0
 # %rsi = 0x7ffffff533e0
 # %rdx = 0x7ffffff4f1c0
@@ -6,10 +21,10 @@ PQCLEAN_MCELIECE348864_AVX2_vec256_mul_asm:
 # %r8  = 0x7ffffff53260
 # %r9  = 0x40
 	#! -> SP = 0x7ffffff4d4f8
-	mov    %rsp,%r11                                #! PC = 0x55555557be60
-	and    $0x1f,%r11                               #! PC = 0x55555557be63
-	add    $0x0,%r11                                #! PC = 0x55555557be67
-	sub    %r11,%rsp                                #! PC = 0x55555557be6b
+	#mov    %rsp,%r11                                #! PC = 0x55555557be60
+	#and    $0x1f,%r11                               #! PC = 0x55555557be63
+	#add    $0x0,%r11                                #! PC = 0x55555557be67
+	#sub    %r11,%rsp                                #! PC = 0x55555557be6b
 	vmovupd (%rdx),%ymm0                            #! EA = L0x7ffffff4f1c0; Value = 0xf00f0ff0f00f0ff0; PC = 0x55555557be6e
 	vmovupd 0x160(%rsi),%ymm1                       #! EA = L0x7ffffff53540; Value = 0xffffffffffffffff; PC = 0x55555557be72
 	vpand  %ymm1,%ymm0,%ymm2                        #! PC = 0x55555557be7a
@@ -333,6 +348,6 @@ PQCLEAN_MCELIECE348864_AVX2_vec256_mul_asm:
 	vmovupd %ymm5,0x40(%rdi)                        #! EA = L0x7ffffff4d700; PC = 0x55555557c5e3
 	vmovupd %ymm4,0x20(%rdi)                        #! EA = L0x7ffffff4d6e0; PC = 0x55555557c5e8
 	vmovupd %ymm3,(%rdi)                            #! EA = L0x7ffffff4d6c0; PC = 0x55555557c5ed
-	add    %r11,%rsp                                #! PC = 0x55555557c5f1
+	#add    %r11,%rsp                                #! PC = 0x55555557c5f1
 	#! <- SP = 0x7ffffff4d4f8
 	#ret                                            #! PC = 0x55555557c5f4
