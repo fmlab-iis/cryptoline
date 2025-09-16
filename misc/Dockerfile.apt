@@ -1,51 +1,57 @@
-FROM ubuntu:23.04
+FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-l", "-c"]
 
 # Install Ubuntu packages
-RUN apt update && apt upgrade -y
-RUN apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
+RUN apt update && \
+    apt upgrade -y && \
+    apt install -y build-essential curl git bc nano cmake gdb python3 sudo \
                    pkg-config ocaml ocaml-dune libzarith-ocaml-dev \
                    liblwt-ocaml-dev libppx-optcomp-ocaml-dev camlidl \
                    libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
                    libbigarray-compat-ocaml-dev libreadline-dev \
-                   python3-pip libmpc-dev
+                   python3-pip python3-venv libmpc-dev vim tmux z3
 
 # Download CryptoLine and some external tools
-WORKDIR /home
-RUN git clone https://github.com/berkeley-abc/abc.git abc
-RUN git clone https://github.com/nberth/mlgmpidl.git mlgmpidl
-RUN git clone https://github.com/antoinemine/apron.git apron
-RUN git clone https://github.com/fmlab-iis/cryptoline.git cryptoline
-
+WORKDIR /home/ubuntu
+RUN git clone https://github.com/berkeley-abc/abc.git abc \
+    && git clone https://github.com/nberth/mlgmpidl.git mlgmpidl \
+    && git clone https://github.com/antoinemine/apron.git apron \
+    && git clone https://github.com/fmlab-iis/cryptoline.git cryptoline \
 # Install abc
-WORKDIR /home/abc
-RUN make && install -m 755 -s abc /usr/bin/
-
+    && pushd abc \
+    && make && install -m 755 -s abc /usr/bin/ \
+    && popd \
 # Install mlgmpidl (for apron)
-WORKDIR /home/mlgmpidl
-RUN git checkout 1.3.0 && ./configure && make && make install
-
+    && pushd mlgmpidl \
+    && git checkout 1.3.0 && ./configure && make && make install \
+    && popd \
 # Install apron
-WORKDIR /home/apron
-RUN ./configure && make && make install
-
+    && pushd apron \
+    && ./configure && make && make install \
+    && popd \
 # Install CryptoLine
-WORKDIR /home/cryptoline
+    && pushd cryptoline \
 # Default installation of camlidl from apt is not compatible with dune
-RUN echo "export OCAMLPATH=`ocamlfind query apron`/.." >> ~/.bashrc \
+    && echo "export OCAMLPATH=`ocamlfind query apron`/.." >> ~/.bashrc \
     && export OCAMLPATH=`ocamlfind query apron`/.. \
     && mkdir -p $OCAMLPATH/camlidl/caml \
     && cp `ocamlc -where`/com.* $OCAMLPATH/camlidl/ \
     && cp `ocamlc -where`/libcamlidl.a $OCAMLPATH/camlidl/ \
     && cp `ocamlc -where`/caml/camlidlruntime.h $OCAMLPATH/camlidl/caml/ \
-    && cp `ocamlc -where`/METAS/META.camlidl $OCAMLPATH/camlidl/META
-RUN export OCAMLPATH=`ocamlfind query apron`/.. \
-    && dune build && dune install
-
+    && cp `ocamlc -where`/METAS/META.camlidl $OCAMLPATH/camlidl/META \
+    && export OCAMLPATH=`ocamlfind query apron`/.. \
+    && dune build && dune install \
 # Install Boolector and Singular
-RUN ./scripts/install-boolector.sh
-RUN ./scripts/install-singular.sh
-
+    && ./scripts/install-boolector.sh \
+    && ./scripts/install-singular.sh \
 # Install MIP solvers
-RUN pip3 install --break-system-packages islpy pplpy
+    && python3 -m venv /home/ubuntu/.local \
+    && export PATH=/home/ubuntu/.local/bin:$PATH \
+    && pip3 install islpy pplpy pyscipopt \
+# Set up user account
+    && passwd -d ubuntu \
+    && echo 'export PATH=$HOME/.local/bin:$PATH' >> .bashrc \
+    && chown -R ubuntu:ubuntu /home/ubuntu
+
+USER ubuntu
