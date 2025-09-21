@@ -1,4 +1,15 @@
 
+(** {1 Exceptions} *)
+
+exception IndexOutOfBound of int
+(** Raised when list index is out of bound *)
+
+exception UnsupportedException of string
+(** Raised when something is not supported *)
+
+exception EvaluationException of string
+(** Raised when there is an error in evaluation *)
+
 (** {1 Numbers} *)
 
 val logi : int -> int

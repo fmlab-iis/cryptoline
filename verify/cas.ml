@@ -531,6 +531,22 @@ type poly_spec =
     ppost : ebexp;
     pextra : eexp list }
 
+let poly_spec_deannot s =
+  { ppre = s.appre;
+    pprog = List.split s.approg |> snd |> tflatten;
+    ppost = s.appost;
+    pextra = s.apextra }
+
+let vars_poly_spec s =
+  List.fold_left VS.union VS.empty
+    [ vars_ebexp s.ppre;
+      vars_ebexps s.pprog;
+      vars_ebexp s.ppost;
+      vars_eexps s.pextra ]
+
+let _vars_poly_spec_annot s =
+  poly_spec_deannot s |> vars_poly_spec
+
 let bv2z_espec_annot vgen s =
   let (vgen, ies, ps) = bv2z_program_annot vgen s.esprog in
   (vgen, { appre = s.espre;

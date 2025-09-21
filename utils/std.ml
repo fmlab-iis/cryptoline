@@ -1,5 +1,12 @@
 
 
+(** Exceptions *)
+
+exception IndexOutOfBound of int
+exception UnsupportedException of string
+exception EvaluationException of string
+
+
 (** Numbers *)
 
 (** Returns the log base 2 of n as an integer. *)

@@ -10,7 +10,7 @@ open Utils.Std
 open Sim
 
 type action = Verify | Parse | Simulation | TestAbsdom
-              | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts
+              | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | SaveMix
               | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | PrintAbsdom
 
 let action = ref Verify
@@ -22,6 +22,8 @@ let save_bvcryptoline_filename = ref ""
 let save_rep_filename = ref ""
 
 let save_cuts_filename = ref ""
+
+let save_mix_filename = ref ""
 
 let initial_values_string_none = "none"
 
@@ -38,6 +40,8 @@ let interactive_simulation = ref false
 let output_vars = ref []
 
 let coq_filename_extension = ".v"
+
+let smtlib_filename_extension = ".smt2"
 
 let apply_move_assert = ref false
 
@@ -165,6 +169,8 @@ let args = [
      Common.mk_arg_desc(["FILENAME"; "Save the specification in the format acceptable by BvCryptoLine."]));
     ("-save-cuts", String (fun str -> let _ = save_cuts_filename := str in action := SaveCuts),
      Common.mk_arg_desc(["FILENAME"; "Cut the specification and save cuts separatedly. Multi-track cuts,"; "ecuts, and rcuts are not supported."]));
+    ("-save-mix", String (fun str -> let _ = save_mix_filename := str in action := SaveMix),
+     Common.mk_arg_desc(["FILENAME"; "Save SMTLIB files in mixed theories for cuts in the specified file."]));
     ("-vecuts", Tuple [
                  String (fun str -> tmp_arg1 := str);
                  String (fun str -> let tbl =
@@ -549,6 +555,31 @@ let anon file =
      let s = tagged_spec_untag s in
      let bvspecs = spec_to_bvcryptoline s in
      List.iteri output bvspecs
+  | SaveMix ->
+     let nth_name id = !save_mix_filename ^ "_" ^ string_of_int id in
+     let suggest_name sid =
+       let rec helper i =
+         let fn = nth_name sid ^ "_" ^ string_of_int i ^ smtlib_filename_extension in
+         if Sys.file_exists fn then helper (i + 1)
+         else fn in
+       let fn = nth_name sid ^ smtlib_filename_extension in
+       if Sys.file_exists fn then helper 0
+       else fn in
+     let output sid s =
+       let ch = open_out (suggest_name sid) in
+       let _ = output_string ch s in
+       let _ = close_out ch in
+       () in
+     let (_, s) = Common.parse_and_check file in
+     let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
+     let ss = Ast.Cryptoline.cut_spec (tagged_spec_untag s) in
+     let smtlibs_rev =
+       List.fold_left
+         (fun smtlibs s ->
+           let vgen = Verify.Common.vgen_of_spec s in
+           let (_, smtlib) = Verify.Mix.smtlib_spec ~expn:false vgen s in
+           smtlib::smtlibs) [] ss in
+     List.iteri output (List.rev smtlibs_rev)
   | Simulation ->
      let _ = Random.self_init () in
      let ((ivs, _), s) = Common.parse_and_check file in

@@ -3,8 +3,6 @@ open Set
 open NBits
 open Utils.Std
 
-exception IndexOutOfBound of int
-
 
 module StringElem : OrderedType with type t = string =
   struct
@@ -1500,12 +1498,20 @@ let rec vars_rbexp e =
   | Rand (e1, e2)
   | Ror (e1, e2) -> VS.union (vars_rbexp e1) (vars_rbexp e2)
 
+let vars_helper vars_f es =
+  List.fold_left (fun res e -> VS.union res (vars_f e)) VS.empty es
+
+let vars_eexps es = vars_helper vars_eexp es
+let vars_ebexps es = vars_helper vars_ebexp es
+let vars_rexps es = vars_helper vars_rexp es
+let vars_rbexps es = vars_helper vars_rbexp es
+
 let vars_bexp e =
   VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
 
-let vars_ebexp_prove_with es = List.split es |> fst |> List.map vars_ebexp |> List.fold_left VS.union VS.empty
+let vars_ebexp_prove_with es = List.split es |> fst |> vars_ebexps
 
-let vars_rbexp_prove_with rs = List.split rs |> fst |> List.map vars_rbexp |> List.fold_left VS.union VS.empty
+let vars_rbexp_prove_with rs = List.split rs |> fst |> vars_rbexps
 
 let vars_bexp_prove_with (es, rs) = VS.union (vars_ebexp_prove_with es) (vars_rbexp_prove_with rs)
 
@@ -1748,6 +1754,22 @@ let gvs_instr i =
 let gvs_program ?(upd=false) p =
   let unionv = if upd then vs_union_upd else VS.union in
   List.fold_left (fun res i -> unionv res (gvs_instr i)) VS.empty p
+
+let alg_gvs_program ?(upd=false) p =
+  (* variables that appear in range predicates => they are supposed to be bit-vector variables*)
+  let rng_annot_vars_instr i =
+    match i with
+    | Iassert (_, rpwss) | Icut (_, rpwss) ->
+       vars_rbexp_prove_with rpwss
+    | Iassume (_, r) | Ighost (_, (_, r)) ->
+       vars_rbexp r
+    | _ -> VS.empty in
+  let rng_annot_vars_program p =
+    List.fold_left (fun res i -> VS.union res (rng_annot_vars_instr i)) VS.empty p in
+  VS.diff (gvs_program ~upd:upd p) (rng_annot_vars_program p)
+
+let alg_gvs_spec ?(upd=false) s =
+  VS.diff (alg_gvs_program ~upd:upd s.sprog) (vars_rbexp_prove_with (snd s.spost))
 
 let vars_spec ?(upd=false) s =
   VS.union (vars_bexp s.spre) (VS.union (vars_program ~upd s.sprog) (vars_bexp_prove_with s.spost))
@@ -4474,9 +4496,6 @@ let spec_to_coqcryptoline s =
 
 
 (** Convert specifications to BvCryptoLine format. *)
-
-exception UnsupportedException of string
-exception EvaluationException of string
 
 let rec is_eexp_over_const e =
   match e with

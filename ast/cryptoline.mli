@@ -1,6 +1,7 @@
 
 open NBits
 
+
 (** Abstract syntax tree of CryptoLine *)
 
 
@@ -1218,6 +1219,18 @@ val vars_ebexp : ebexp -> VS.t
 val vars_rbexp : rbexp -> VS.t
 (** [vars_rbexp e] is the set of variables in the range predicate [e]. *)
 
+val vars_eexps : eexp list -> VS.t
+(** [vars_eexps es] is the set of variables in the algebraic expressions [es]. *)
+
+val vars_rexps : rexp list -> VS.t
+(** [vars_rexps es] is the set of variables in the range expressions [es]. *)
+
+val vars_ebexps : ebexp list -> VS.t
+(** [vars_ebexps es] is the set of variables in the algebraic predicates [es]. *)
+
+val vars_rbexps : rbexp list -> VS.t
+(** [vars_rbexps es] is the set of variables in the range predicates [es]. *)
+
 val vars_bexp : bexp -> VS.t
 (** [vars_bexp e] is the set of variables in the predicate [e]. *)
 
@@ -1322,6 +1335,12 @@ val gvs_program : ?upd:bool -> program -> VS.t
  * variable is added to the set. [b] is [false] by default. [b] is typically
  * used in parsing and can be ignored for a well-formed program.
  *)
+
+val alg_gvs_program : ?upd:bool -> program -> VS.t
+(** Return ghost variables that are not used in range predicates. *)
+
+val alg_gvs_spec : ?upd:bool -> spec -> VS.t
+(** Return ghost variables that are not used in range predicates. *)
 
 val vars_spec : ?upd:bool -> spec -> VS.t
 (**
@@ -2018,8 +2037,6 @@ val spec_to_coqcryptoline : spec -> spec list
 val spec_to_bvcryptoline : spec -> string list
 (** Convert a specification to a list of specification in BvCryptoLine format. *)
 
-exception EvaluationException of string
-
 val is_eexp_over_const : eexp -> bool
 (** [is_eexp_over_const e] is [true] if [e] is an expression over constants. *)
 
@@ -2028,11 +2045,11 @@ val is_rexp_over_const : rexp -> bool
 
 val eval_eexp_const : eexp -> Z.t
 (** [eval_eexp_const e] evaluates [e] if [is_eexp_over_const e] is [true], and
-    raises {!EvaluationException} otherwise. *)
+    raises {!Utils.Std.EvaluationException} otherwise. *)
 
 val eval_rexp_const : rexp -> bits
 (** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
-    raises {!EvaluationException} otherwise. *)
+    raises {!Utils.Std.EvaluationException} otherwise. *)
 
 val remove_cut_spec : spec -> spec
 (** Remove all cuts in a specification. *)

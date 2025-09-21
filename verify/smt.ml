@@ -828,28 +828,39 @@ let rec smtlib_eexp ?(expn=true) e =
      else
        String.concat "" ["("; smtlib_ebinop op; " "; smtlib_eexp ~expn:expn e1; " "; smtlib_eexp ~expn:expn e2; ")"]
 
-let smtlib_add e1 e2 = "(+ " ^ e1 ^ " " ^ e2 ^ ")"
-let rec smtlib_adds es =
+let smtlib_add e1 e2 = Printf.sprintf "(+ %s %s)" e1 e2
+let smtlib_adds es =
   match es with
   | [] -> ""
   | e::[] -> e
-  | hd::tl -> smtlib_add hd (smtlib_adds tl)
-let smtlib_mul e1 e2 = "(* " ^ e1 ^ " " ^ e2 ^ ")"
-let smtlib_not e = "(not " ^ e ^ ")"
-let smtlib_assert e = "(assert " ^ e ^ ")"
-let smtlib_declare_int v = "(declare-fun " ^ v ^ " () Int)"
-let smtlib_exists k e = "(exists ((" ^ k ^ " Int)) " ^ e ^ ")"
+  | _ -> Printf.sprintf "(+ %s)" (String.concat " " es)
+let smtlib_mul e1 e2 = Printf.sprintf "(* %s %s)" e1 e2
+let smtlib_not e = Printf.sprintf "(not %s)" e
+let smtlib_assert e = Printf.sprintf "(assert %s)" e
+let smtlib_declare_int v = Printf.sprintf "(declare-fun %s () Int)" v
+let smtlib_exists k e = Printf.sprintf "(exists ((%s Int)) %s)" k e
 let smtlib_define_expn () =
   match !native_smtlib_expn_operator with
   | Some op -> "(define-fun expn ((x Int) (n Int)) Int (" ^ op ^ " x n))"
   | _ -> "(define-fun-rec expn ((x Int) (n Int)) Int (ite (= n 0) 1 (* x (expn x (- n 1)))))"
 
-let smt_of_ecmpop op = match op with
+let smtlib_ecmpop op = match op with
   | Elt -> "<" | Ele -> "<=" | Egt -> ">" | Ege -> ">="
 
-let smtlib_eq e1 e2 = String.concat "" ["(= "; e1; " "; e2; ")"]
-let smtlib_and e1 e2 = String.concat "" ["(and "; e1; " "; e2; ")"]
-let smtlib_ecmpop op e1 e2 = String.concat "" ["("; smt_of_ecmpop op; " "; e1; " "; e2; ")"]
+let smtlib_eq e1 e2 = Printf.sprintf "(= %s %s)" e1 e2
+let smtlib_and e1 e2 = Printf.sprintf "(and %s %s)" e1 e2
+let smtlib_ands es =
+  match es with
+  | [] -> "true"
+  | e::[] -> e
+  | _ -> Printf.sprintf "(and %s)" (String.concat " " es)
+let smtlib_or e1 e2 = Printf.sprintf "(or %s %s)" e1 e2
+let smtlib_ors es =
+  match es with
+  | [] -> "false"
+  | e::[] -> e
+  | _ -> Printf.sprintf "(or %s)" (String.concat " " es)
+let smtlib_ecmpop_of op e1 e2 = Printf.sprintf "(%s %s %s)" (smtlib_ecmpop op) e1 e2
 
 let rec smtlib_ebexp_premise ?(expn=true) vgen e =
   match e with
@@ -859,7 +870,7 @@ let rec smtlib_ebexp_premise ?(expn=true) vgen e =
      let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ ->
         let (k, vgen) = Cas.gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
      (vgen, String.concat "" ["(= "; smtlib_eexp ~expn:expn (esub e1 e2); " "; smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp ~expn:expn m)) (List.rev ks_rev) ms); ")"])
-  | Ecmp (op, e1, e2) -> (vgen, smtlib_ecmpop op (smtlib_eexp ~expn:expn e1) (smtlib_eexp ~expn:expn e2))
+  | Ecmp (op, e1, e2) -> (vgen, smtlib_ecmpop_of op (smtlib_eexp ~expn:expn e1) (smtlib_eexp ~expn:expn e2))
   | Eand (e1, e2) ->
      let (vgen, e1) = smtlib_ebexp_premise ~expn:expn vgen e1 in
      let (vgen, e2) = smtlib_ebexp_premise ~expn:expn vgen e2 in
@@ -875,7 +886,7 @@ let rec smtlib_ebexp_consequence ?(expn=true) vgen e =
      let unquantified = smtlib_eq (smtlib_eexp ~expn:expn (esub e1 e2)) (smtlib_adds (List.map2 (fun k m -> smtlib_mul k (smtlib_eexp ~expn:expn m)) (List.rev ks_rev) ms)) in
      let quantified = List.fold_left (fun quantified k -> smtlib_exists k quantified) unquantified ks_rev in
      (vgen, ks_rev, quantified)
-  | Ecmp (op, e1, e2) -> (vgen, [], smtlib_ecmpop op (smtlib_eexp ~expn:expn e1) (smtlib_eexp ~expn:expn e2))
+  | Ecmp (op, e1, e2) -> (vgen, [], smtlib_ecmpop_of op (smtlib_eexp ~expn:expn e1) (smtlib_eexp ~expn:expn e2))
   | Eand (e1, e2) ->
      let (vgen, ks_rev1, e1) = smtlib_ebexp_consequence ~expn:expn vgen e1 in
      let (vgen, ks_rev2, e2) = smtlib_ebexp_consequence ~expn:expn vgen e2 in
@@ -898,14 +909,18 @@ let rec translate_eeqmod vgen e =
      (vgen, Eand (e1, e2))
   | _ -> (vgen, e)
 
+let smtlib_var_range ?(expn=true) vgen v =
+  let ty = typ_of_var v in
+  let min_Z = min_of_typ ty in
+  let max_Z = max_of_typ ty in
+  let (vgen, min_smtlib) = smtlib_ebexp_premise ~expn:expn vgen (Ecmp (Ele, Econst min_Z, Evar v)) in
+  let (vgen, max_smtlib) = smtlib_ebexp_premise ~expn:expn vgen (Ecmp (Ele, Evar v, Econst max_Z)) in
+  (vgen, smtlib_and min_smtlib max_smtlib)
+
 let smtlib_var_ranges ?(expn=true) vgen vs =
   let smtlib_var_range_acc (vgen, res) v =
-    let ty = typ_of_var v in
-    let min_Z = min_of_typ ty in
-    let max_Z = max_of_typ ty in
-    let (vgen, min_smtlib) = smtlib_ebexp_premise ~expn:expn vgen (Ecmp (Ele, Econst min_Z, Evar v)) in
-    let (vgen, max_smtlib) = smtlib_ebexp_premise ~expn:expn vgen (Ecmp (Ele, Evar v, Econst max_Z)) in
-    (vgen, (smtlib_and min_smtlib max_smtlib)::res) in
+    let (vgen, smtlib) = smtlib_var_range ~expn:expn vgen v in
+    (vgen, smtlib::res) in
   List.fold_left smtlib_var_range_acc (vgen, []) vs
 
 let smtlib_ebexps_lia ?(expn=true) vgen es =

@@ -147,6 +147,20 @@ class btor_manager :
   end
 (** a manager used to generate BTOR files *)
 
+
+val smtlib2_of_exp : exp -> string
+(** Convert an exp to an SMTLIB string. *)
+
+val smtlib2_of_bexp : bexp -> string
+(** Convert a bexp to an SMTLIB string. *)
+
+val smtlib2_declare_vars : VS.t -> string
+(** Declare bit-vector variables. *)
+
+val smtlib2_of_imp : bexp list -> string
+(** Convert the implication e1 -> e2 -> e3 -> ... -> en into an SMTLIB string.
+    The implication is given as a list [e1; e2; e3; ...; en]. *)
+
 val smtlib2_imp_check_sat : bexp list -> string
 (** [smtlib2_imp_check_sat [e1; e2; ...; en]] returns a query in SMTLIB format.
     If the result is unsat, e{_ n} is implied by the conjunction of
