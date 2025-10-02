@@ -699,10 +699,12 @@ let eands es =
   | LeftAssoc -> List.fold_left (fun res e -> eand res e) Etrue es
   | RightAssoc -> List.fold_left (fun res e -> eand e res) Etrue es
 
-let rec split_eand e =
-  match e with
-  | Eand (e1, e2) -> (split_eand e1)@(split_eand e2)
-  | _ -> [e]
+let split_eand e =
+  let rec helper acc e =
+    match e with
+    | Eand (e1, e2) -> helper (helper acc e1) e2
+    | _ -> e::acc in
+  helper [] e |> List.rev
 
 let rec eq_ebexp e1 e2 =
   match e1, e2 with
@@ -796,10 +798,12 @@ let rors es =
   | LeftAssoc -> List.fold_left (fun res e -> ror res e) (Rneg Rtrue) es
   | RightAssoc -> List.fold_left (fun res e -> ror e res) (Rneg Rtrue) es
 
-let rec split_rand e =
-  match e with
-  | Rand (e1, e2) -> (split_rand e1)@(split_rand e2)
-  | _ -> [e]
+let split_rand e =
+  let rec helper acc e =
+    match e with
+    | Rand (e1, e2) -> helper (helper acc e1) e2
+    | _ -> e::acc in
+  helper [] e |> List.rev
 
 let rec split_ror e =
   match e with
