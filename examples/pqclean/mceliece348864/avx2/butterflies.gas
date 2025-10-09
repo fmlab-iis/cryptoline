@@ -1,4 +1,174 @@
-butterflies:
+#! %r$1c = %%r$1c
+#! %rax = %%rax
+#! %eax = %%rax
+#! %ebx = %rbx
+#! %rbp = %%rbp
+#! %rbx = %%rbx
+#! %rcx = %%rcx
+#! %ecx = %%rcx
+#! %rdi = %%rdi
+#! %edi = %%rdi
+#! %rdx = %%rdx
+#! %edx = %%rdx
+#! %rsi = %%rsi
+#! %esi = %%rsi
+#! %rsp = %%rsp
+#! %ymm$1c = %%ymm$1c
+
+#! (%%r8,%rax,1) = %%EA
+#! (%%r8,%rcx,1) = %%EA
+#! (%%r14,%%r12,1) = %%EA
+#! (%rax,%rax,2) = %%EA
+#! (%rdi,%rax,8) = %%EA
+#! (%rdx,%rdx,2) = %%EA
+#! (%rcx,%rdx,1) = %%EA
+#! (%rsi,%rdx,1) = %%EA
+#! $1c(%r8) = %%EA
+#! $1c(%r10) = %%EA
+#! (%%r10) = %%EA
+#! $1c(%r12) = %%EA
+#! (%%r12) = %%EA
+#! $1c(%r13) = %%EA
+#! (%%r15) = %%EA
+#! $1c(%r15) = %%EA
+#! $1c(%r18) = %%EA
+#! $1c(%rax) = %%EA
+#! (%rax) = %%EA
+#! $1c(%rbp) = %%EA
+#! (%rbx) = %%EA
+#! $1c(%rbx) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rsi) = %%EA
+#! $1c(%rip) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rsp) = %%EA
+
+#! add $1c, $2v -> (* add $1c, $2v *)\nnop
+#! add $1v, $2v -> (* add $1v, $2v *)\nnop
+#! and $1c, $2v -> (* and $1v, $2v *)\nnop
+#! cltq -> (* cltq *)\nnop
+#! cmp $1v, $2v -> (* cmp $1v, $2v *)\nnop
+#! cmp $1c, $2v -> (* cmp $1c, $2v *)\nnop
+#! lea %%EA, $1v -> (* lea EA, $1v *)\nnop
+#! mov %fs:0x28, $1v -> (* mov %fs:0x28, $1v *)\nnop
+#! mov $1ea, $2v -> (* mov $1ea, $2v *)\nnop
+#! mov $1v, $2v -> (* mov $1v, $2v *)\nnop
+#! mov $1c, $2v -> (* mov $1c, $2v *)\nnop
+#! movslq $1v, $2v -> (* movslq $1v, $2v *)\nnop
+#! movslq $1ea, $2v -> (* movslq $1ea, $2v *)\nnop
+#! nopl .* -> (* nopl *)\nnop
+#! nopw .* -> (* nopw *)\nnop
+#! orq $1c, $2ea -> (* orq $1c, $2ea *)\nnop
+#! pop $1v -> (* pop $1v *)\nnop
+#! push $1v -> (* push $1v *)\nnop
+#! sar $1c, $2v -> (* sar $1c, $2v *)\nnop
+#! shl $1c, $2v -> (* shl $1c, $2v *)\nnop
+#! shl %cl, $1v -> (* shl cl, $1v *)\nnop
+#! sub %fs:0x28, $1v -> (* sub %fs:0x28, $1v *)\nnop
+#! sub $1v, $2v -> (* sub $1v, $2v *)\nnop
+#! sub $1c, $2v -> (* sub $1c, $2v *)\nnop
+#! xchg   %ax,%ax -> (* xchg ax, ax *)\nnop
+#! xor $1v, $2v -> (* xor $1v, $2v *)\nnop
+
+#! movabs \$0xf00f0ff0f00f0ff0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xf0f00f0f0f0ff0f0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xff00ff00ff00ff0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit]
+#! movabs \$0xaa5555aaaa5555aa, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit]
+#! movabs \$0x33cccc33cc3333cc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0xffff0000ffff0000, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xcc33cc3333cc33cc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0x33cc33cc33cc33cc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0x5a5a5a5a5a5a5a5a, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,\n     0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,\n     0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,\n     0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit]
+#! movabs \$0xff00ff00ff00ff00, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0x3c3c3c3c3c3c3c3c, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0xcc3333cccc3333cc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0xc33cc33cc33cc33c, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0x55555555aaaaaaaa, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit]
+#! movabs \$0x33333333cccccccc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0xffffffff0000, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! movabs \$0xa55a5aa55aa5a55a, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,\n     1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,\n     0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit]
+#! movabs \$0xcc3333cc33cccc33, %%rax -> mov %rax\n    [1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0x9669699696696996, %%rax -> mov %rax\n    [0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,\n     1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,\n     0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,\n     1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit]
+#! movabs \$0x6996699669966996, %%rax -> mov %rax\n    [0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,\n     0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,\n     0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,\n     0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit]
+#! movabs \$0xc33c3cc33cc3c33c, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0x3cc3c33c3cc3c33c, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0x9669966996699669, %%rax -> mov %rax\n    [1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,\n     1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,\n     1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit,\n     1@bit,0@bit,0@bit,1@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,1@bit,0@bit,0@bit,1@bit]
+#! movabs \$0xffffffff00000000, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xf0f0f0f0f0f0f0f0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xcccccccccccccccc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit]
+#! movabs \$0xaaaaaaaaaaaaaaaa, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit]
+#! movabs \$0xf0f0f0ff0f0f0f0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit]
+#! movabs \$0xf0f0f0f0f0f0f0f0, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xff00ff00ff00ff00, %%rax -> mov %rax\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0x3333cccc3333cccc, %%rax -> mov %rax\n    [0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit]
+#! movabs \$0xaaaaaaaaaaaaaaaa, %%rax -> mov %rax\n    [0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,\n     0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit]
+#! movabs \$0xf0f0f0f00f0f0f0f, %%rax -> mov %rax\n    [1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit]
+#! movabs \$0xf0f0f0f0f0f0f0f, %%rax -> mov %rax\n    [1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit]
+#! movabs \$0xff00ff00ff00ff, %%rax -> mov %rax\n    [1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! movabs \$0x5555555555555555, %%rax -> mov %rax\n    [1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,\n     1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit,1@bit,0@bit]
+#! movabs \$0xcccc3333cccc3333, %%rax -> mov %rax\n    [1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,\n     1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,\n     0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit,0@bit,0@bit,1@bit,1@bit]
+
+#! vmovd $1ea, %xmm0 -> mov %xmm0\n    [$1ea[0],$1ea[1],$1ea[2],$1ea[3]]
+#! vmovd 0x4\(%%r10\), %xmm1 -> mov %xmm1\n    [$1ea[4],$1ea[5],$1ea[6],$1ea[7]]
+#! vmovq %%rax, %xmm$1c -> mov %xmm$1c\n    [%rax[0],%rax[1],%rax[2],%rax[3],%rax[4],%rax[5],%rax[6],%rax[7],\n     %rax[8],%rax[9],%rax[10],%rax[11],%rax[12],%rax[13],%rax[14],%rax[15],\n     %rax[16],%rax[17],%rax[18],%rax[19],%rax[20],%rax[21],%rax[22],%rax[23],\n     %rax[24],%rax[25],%rax[26],%rax[27],%rax[28],%rax[29],%rax[30],%rax[31],\n     %rax[32],%rax[33],%rax[34],%rax[35],%rax[36],%rax[37],%rax[38],%rax[39],\n     %rax[40],%rax[41],%rax[42],%rax[43],%rax[44],%rax[45],%rax[46],%rax[47],\n     %rax[48],%rax[49],%rax[50],%rax[51],%rax[52],%rax[53],%rax[54],%rax[55],\n     %rax[56],%rax[57],%rax[58],%rax[59],%rax[60],%rax[61],%rax[62],%rax[63],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vmovapd $1ymm, $2ymm -> mov %$2ymm %$1ymm
+#! vmovdqa $1ea, $2ymm -> mov %$2ymm %$1ea
+#! vmovdqa $1ymm, $2ea -> mov %$2ea %$1ymm
+#! vmovdqa $1ymm, $2ymm -> mov %$2ymm %$1ymm
+#! vmovdqa $1ea, %xmm$2c -> mov %xmm$2c [%$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3]]
+#! vmovdqu $1ea, $2ymm -> mov %$2ymm %$1ea
+#! vmovdqu $1ymm, $2ea -> mov %$2ea %$1ymm
+#! vmovupd $1ea, $2ymm -> mov %$2ymm %$1ea
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm
+
+#! vpand %%ymm2, $1ymm, $1ymm -> mov %$1ymm\n    [$1ymm[0],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     $1ymm[64],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     $1ymm[128],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     $1ymm[192],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpand $1ea, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ea
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ymm
+#! vpbroadcastq $1ea, $2ymm -> mov %$2ymm [%$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63],\n     %$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63],\n     %$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63],\n     %$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63]]
+#! vpbroadcastq %xmm$1c, $2ymm -> mov %$2ymm\n    [%xmm$1c[0],%xmm$1c[1],%xmm$1c[2],%xmm$1c[3],%xmm$1c[4],%xmm$1c[5],%xmm$1c[6],%xmm$1c[7],\n     %xmm$1c[8],%xmm$1c[9],%xmm$1c[10],%xmm$1c[11],%xmm$1c[12],%xmm$1c[13],%xmm$1c[14],%xmm$1c[15],\n     %xmm$1c[16],%xmm$1c[17],%xmm$1c[18],%xmm$1c[19],%xmm$1c[20],%xmm$1c[21],%xmm$1c[22],%xmm$1c[23],\n     %xmm$1c[24],%xmm$1c[25],%xmm$1c[26],%xmm$1c[27],%xmm$1c[28],%xmm$1c[29],%xmm$1c[30],%xmm$1c[31],\n     %xmm$1c[32],%xmm$1c[33],%xmm$1c[34],%xmm$1c[35],%xmm$1c[36],%xmm$1c[37],%xmm$1c[38],%xmm$1c[39],\n     %xmm$1c[40],%xmm$1c[41],%xmm$1c[42],%xmm$1c[43],%xmm$1c[44],%xmm$1c[45],%xmm$1c[46],%xmm$1c[47],\n     %xmm$1c[48],%xmm$1c[49],%xmm$1c[50],%xmm$1c[51],%xmm$1c[52],%xmm$1c[53],%xmm$1c[54],%xmm$1c[55],\n     %xmm$1c[56],%xmm$1c[57],%xmm$1c[58],%xmm$1c[59],%xmm$1c[60],%xmm$1c[61],%xmm$1c[62],%xmm$1c[63],\n     %xmm$1c[0],%xmm$1c[1],%xmm$1c[2],%xmm$1c[3],%xmm$1c[4],%xmm$1c[5],%xmm$1c[6],%xmm$1c[7],\n     %xmm$1c[8],%xmm$1c[9],%xmm$1c[10],%xmm$1c[11],%xmm$1c[12],%xmm$1c[13],%xmm$1c[14],%xmm$1c[15],\n     %xmm$1c[16],%xmm$1c[17],%xmm$1c[18],%xmm$1c[19],%xmm$1c[20],%xmm$1c[21],%xmm$1c[22],%xmm$1c[23],\n     %xmm$1c[24],%xmm$1c[25],%xmm$1c[26],%xmm$1c[27],%xmm$1c[28],%xmm$1c[29],%xmm$1c[30],%xmm$1c[31],\n     %xmm$1c[32],%xmm$1c[33],%xmm$1c[34],%xmm$1c[35],%xmm$1c[36],%xmm$1c[37],%xmm$1c[38],%xmm$1c[39],\n     %xmm$1c[40],%xmm$1c[41],%xmm$1c[42],%xmm$1c[43],%xmm$1c[44],%xmm$1c[45],%xmm$1c[46],%xmm$1c[47],\n     %xmm$1c[48],%xmm$1c[49],%xmm$1c[50],%xmm$1c[51],%xmm$1c[52],%xmm$1c[53],%xmm$1c[54],%xmm$1c[55],\n     %xmm$1c[56],%xmm$1c[57],%xmm$1c[58],%xmm$1c[59],%xmm$1c[60],%xmm$1c[61],%xmm$1c[62],%xmm$1c[63],\n     %xmm$1c[0],%xmm$1c[1],%xmm$1c[2],%xmm$1c[3],%xmm$1c[4],%xmm$1c[5],%xmm$1c[6],%xmm$1c[7],\n     %xmm$1c[8],%xmm$1c[9],%xmm$1c[10],%xmm$1c[11],%xmm$1c[12],%xmm$1c[13],%xmm$1c[14],%xmm$1c[15],\n     %xmm$1c[16],%xmm$1c[17],%xmm$1c[18],%xmm$1c[19],%xmm$1c[20],%xmm$1c[21],%xmm$1c[22],%xmm$1c[23],\n     %xmm$1c[24],%xmm$1c[25],%xmm$1c[26],%xmm$1c[27],%xmm$1c[28],%xmm$1c[29],%xmm$1c[30],%xmm$1c[31],\n     %xmm$1c[32],%xmm$1c[33],%xmm$1c[34],%xmm$1c[35],%xmm$1c[36],%xmm$1c[37],%xmm$1c[38],%xmm$1c[39],\n     %xmm$1c[40],%xmm$1c[41],%xmm$1c[42],%xmm$1c[43],%xmm$1c[44],%xmm$1c[45],%xmm$1c[46],%xmm$1c[47],\n     %xmm$1c[48],%xmm$1c[49],%xmm$1c[50],%xmm$1c[51],%xmm$1c[52],%xmm$1c[53],%xmm$1c[54],%xmm$1c[55],\n     %xmm$1c[56],%xmm$1c[57],%xmm$1c[58],%xmm$1c[59],%xmm$1c[60],%xmm$1c[61],%xmm$1c[62],%xmm$1c[63],\n     %xmm$1c[0],%xmm$1c[1],%xmm$1c[2],%xmm$1c[3],%xmm$1c[4],%xmm$1c[5],%xmm$1c[6],%xmm$1c[7],\n     %xmm$1c[8],%xmm$1c[9],%xmm$1c[10],%xmm$1c[11],%xmm$1c[12],%xmm$1c[13],%xmm$1c[14],%xmm$1c[15],\n     %xmm$1c[16],%xmm$1c[17],%xmm$1c[18],%xmm$1c[19],%xmm$1c[20],%xmm$1c[21],%xmm$1c[22],%xmm$1c[23],\n     %xmm$1c[24],%xmm$1c[25],%xmm$1c[26],%xmm$1c[27],%xmm$1c[28],%xmm$1c[29],%xmm$1c[30],%xmm$1c[31],\n     %xmm$1c[32],%xmm$1c[33],%xmm$1c[34],%xmm$1c[35],%xmm$1c[36],%xmm$1c[37],%xmm$1c[38],%xmm$1c[39],\n     %xmm$1c[40],%xmm$1c[41],%xmm$1c[42],%xmm$1c[43],%xmm$1c[44],%xmm$1c[45],%xmm$1c[46],%xmm$1c[47],\n     %xmm$1c[48],%xmm$1c[49],%xmm$1c[50],%xmm$1c[51],%xmm$1c[52],%xmm$1c[53],%xmm$1c[54],%xmm$1c[55],\n     %xmm$1c[56],%xmm$1c[57],%xmm$1c[58],%xmm$1c[59],%xmm$1c[60],%xmm$1c[61],%xmm$1c[62],%xmm$1c[63]]
+#! vpcmpeqd %xmm$1c, %xmm$1c, %xmm$1c -> mov %ymm$1c\n    [1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpcmpeqd $1ymm, $1ymm, $1ymm -> mov %$1ymm\n    [1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,\n     1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit,1@bit]
+#! vperm2i128 \$0x20, $1ea, $2ymm, $3ymm -> mov %$3ymm [%$2ymm[0],%$2ymm[1],%$2ymm[2],%$2ymm[3],%$2ymm[4],%$2ymm[5],%$2ymm[6],%$2ymm[7],\n     %$2ymm[8],%$2ymm[9],%$2ymm[10],%$2ymm[11],%$2ymm[12],%$2ymm[13],%$2ymm[14],%$2ymm[15],\n     %$2ymm[16],%$2ymm[17],%$2ymm[18],%$2ymm[19],%$2ymm[20],%$2ymm[21],%$2ymm[22],%$2ymm[23],\n     %$2ymm[24],%$2ymm[25],%$2ymm[26],%$2ymm[27],%$2ymm[28],%$2ymm[29],%$2ymm[30],%$2ymm[31],\n     %$2ymm[32],%$2ymm[33],%$2ymm[34],%$2ymm[35],%$2ymm[36],%$2ymm[37],%$2ymm[38],%$2ymm[39],\n     %$2ymm[40],%$2ymm[41],%$2ymm[42],%$2ymm[43],%$2ymm[44],%$2ymm[45],%$2ymm[46],%$2ymm[47],\n     %$2ymm[48],%$2ymm[49],%$2ymm[50],%$2ymm[51],%$2ymm[52],%$2ymm[53],%$2ymm[54],%$2ymm[55],\n     %$2ymm[56],%$2ymm[57],%$2ymm[58],%$2ymm[59],%$2ymm[60],%$2ymm[61],%$2ymm[62],%$2ymm[63],\n     %$2ymm[64],%$2ymm[65],%$2ymm[66],%$2ymm[67],%$2ymm[68],%$2ymm[69],%$2ymm[70],%$2ymm[71],\n     %$2ymm[72],%$2ymm[73],%$2ymm[74],%$2ymm[75],%$2ymm[76],%$2ymm[77],%$2ymm[78],%$2ymm[79],\n     %$2ymm[80],%$2ymm[81],%$2ymm[82],%$2ymm[83],%$2ymm[84],%$2ymm[85],%$2ymm[86],%$2ymm[87],\n     %$2ymm[88],%$2ymm[89],%$2ymm[90],%$2ymm[91],%$2ymm[92],%$2ymm[93],%$2ymm[94],%$2ymm[95],\n     %$2ymm[96],%$2ymm[97],%$2ymm[98],%$2ymm[99],%$2ymm[100],%$2ymm[101],%$2ymm[102],%$2ymm[103],\n     %$2ymm[104],%$2ymm[105],%$2ymm[106],%$2ymm[107],%$2ymm[108],%$2ymm[109],%$2ymm[110],%$2ymm[111],\n     %$2ymm[112],%$2ymm[113],%$2ymm[114],%$2ymm[115],%$2ymm[116],%$2ymm[117],%$2ymm[118],%$2ymm[119],\n     %$2ymm[120],%$2ymm[121],%$2ymm[122],%$2ymm[123],%$2ymm[124],%$2ymm[125],%$2ymm[126],%$2ymm[127],\n     %$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63],\n     %$1ea[64],%$1ea[65],%$1ea[66],%$1ea[67],%$1ea[68],%$1ea[69],%$1ea[70],%$1ea[71],\n     %$1ea[72],%$1ea[73],%$1ea[74],%$1ea[75],%$1ea[76],%$1ea[77],%$1ea[78],%$1ea[79],\n     %$1ea[80],%$1ea[81],%$1ea[82],%$1ea[83],%$1ea[84],%$1ea[85],%$1ea[86],%$1ea[87],\n     %$1ea[88],%$1ea[89],%$1ea[90],%$1ea[91],%$1ea[92],%$1ea[93],%$1ea[94],%$1ea[95],\n     %$1ea[96],%$1ea[97],%$1ea[98],%$1ea[99],%$1ea[100],%$1ea[101],%$1ea[102],%$1ea[103],\n     %$1ea[104],%$1ea[105],%$1ea[106],%$1ea[107],%$1ea[108],%$1ea[109],%$1ea[110],%$1ea[111],\n     %$1ea[112],%$1ea[113],%$1ea[114],%$1ea[115],%$1ea[116],%$1ea[117],%$1ea[118],%$1ea[119],\n     %$1ea[120],%$1ea[121],%$1ea[122],%$1ea[123],%$1ea[124],%$1ea[125],%$1ea[126],%$1ea[127]]
+#! vperm2i128 \$0x20, $1ymm, $2ymm, $3ymm -> mov %$3ymm [%$2ymm[0],%$2ymm[1],%$2ymm[2],%$2ymm[3],%$2ymm[4],%$2ymm[5],%$2ymm[6],%$2ymm[7],\n     %$2ymm[8],%$2ymm[9],%$2ymm[10],%$2ymm[11],%$2ymm[12],%$2ymm[13],%$2ymm[14],%$2ymm[15],\n     %$2ymm[16],%$2ymm[17],%$2ymm[18],%$2ymm[19],%$2ymm[20],%$2ymm[21],%$2ymm[22],%$2ymm[23],\n     %$2ymm[24],%$2ymm[25],%$2ymm[26],%$2ymm[27],%$2ymm[28],%$2ymm[29],%$2ymm[30],%$2ymm[31],\n     %$2ymm[32],%$2ymm[33],%$2ymm[34],%$2ymm[35],%$2ymm[36],%$2ymm[37],%$2ymm[38],%$2ymm[39],\n     %$2ymm[40],%$2ymm[41],%$2ymm[42],%$2ymm[43],%$2ymm[44],%$2ymm[45],%$2ymm[46],%$2ymm[47],\n     %$2ymm[48],%$2ymm[49],%$2ymm[50],%$2ymm[51],%$2ymm[52],%$2ymm[53],%$2ymm[54],%$2ymm[55],\n     %$2ymm[56],%$2ymm[57],%$2ymm[58],%$2ymm[59],%$2ymm[60],%$2ymm[61],%$2ymm[62],%$2ymm[63],\n     %$2ymm[64],%$2ymm[65],%$2ymm[66],%$2ymm[67],%$2ymm[68],%$2ymm[69],%$2ymm[70],%$2ymm[71],\n     %$2ymm[72],%$2ymm[73],%$2ymm[74],%$2ymm[75],%$2ymm[76],%$2ymm[77],%$2ymm[78],%$2ymm[79],\n     %$2ymm[80],%$2ymm[81],%$2ymm[82],%$2ymm[83],%$2ymm[84],%$2ymm[85],%$2ymm[86],%$2ymm[87],\n     %$2ymm[88],%$2ymm[89],%$2ymm[90],%$2ymm[91],%$2ymm[92],%$2ymm[93],%$2ymm[94],%$2ymm[95],\n     %$2ymm[96],%$2ymm[97],%$2ymm[98],%$2ymm[99],%$2ymm[100],%$2ymm[101],%$2ymm[102],%$2ymm[103],\n     %$2ymm[104],%$2ymm[105],%$2ymm[106],%$2ymm[107],%$2ymm[108],%$2ymm[109],%$2ymm[110],%$2ymm[111],\n     %$2ymm[112],%$2ymm[113],%$2ymm[114],%$2ymm[115],%$2ymm[116],%$2ymm[117],%$2ymm[118],%$2ymm[119],\n     %$2ymm[120],%$2ymm[121],%$2ymm[122],%$2ymm[123],%$2ymm[124],%$2ymm[125],%$2ymm[126],%$2ymm[127],\n     %$1ymm[0],%$1ymm[1],%$1ymm[2],%$1ymm[3],%$1ymm[4],%$1ymm[5],%$1ymm[6],%$1ymm[7],\n     %$1ymm[8],%$1ymm[9],%$1ymm[10],%$1ymm[11],%$1ymm[12],%$1ymm[13],%$1ymm[14],%$1ymm[15],\n     %$1ymm[16],%$1ymm[17],%$1ymm[18],%$1ymm[19],%$1ymm[20],%$1ymm[21],%$1ymm[22],%$1ymm[23],\n     %$1ymm[24],%$1ymm[25],%$1ymm[26],%$1ymm[27],%$1ymm[28],%$1ymm[29],%$1ymm[30],%$1ymm[31],\n     %$1ymm[32],%$1ymm[33],%$1ymm[34],%$1ymm[35],%$1ymm[36],%$1ymm[37],%$1ymm[38],%$1ymm[39],\n     %$1ymm[40],%$1ymm[41],%$1ymm[42],%$1ymm[43],%$1ymm[44],%$1ymm[45],%$1ymm[46],%$1ymm[47],\n     %$1ymm[48],%$1ymm[49],%$1ymm[50],%$1ymm[51],%$1ymm[52],%$1ymm[53],%$1ymm[54],%$1ymm[55],\n     %$1ymm[56],%$1ymm[57],%$1ymm[58],%$1ymm[59],%$1ymm[60],%$1ymm[61],%$1ymm[62],%$1ymm[63],\n     %$1ymm[64],%$1ymm[65],%$1ymm[66],%$1ymm[67],%$1ymm[68],%$1ymm[69],%$1ymm[70],%$1ymm[71],\n     %$1ymm[72],%$1ymm[73],%$1ymm[74],%$1ymm[75],%$1ymm[76],%$1ymm[77],%$1ymm[78],%$1ymm[79],\n     %$1ymm[80],%$1ymm[81],%$1ymm[82],%$1ymm[83],%$1ymm[84],%$1ymm[85],%$1ymm[86],%$1ymm[87],\n     %$1ymm[88],%$1ymm[89],%$1ymm[90],%$1ymm[91],%$1ymm[92],%$1ymm[93],%$1ymm[94],%$1ymm[95],\n     %$1ymm[96],%$1ymm[97],%$1ymm[98],%$1ymm[99],%$1ymm[100],%$1ymm[101],%$1ymm[102],%$1ymm[103],\n     %$1ymm[104],%$1ymm[105],%$1ymm[106],%$1ymm[107],%$1ymm[108],%$1ymm[109],%$1ymm[110],%$1ymm[111],\n     %$1ymm[112],%$1ymm[113],%$1ymm[114],%$1ymm[115],%$1ymm[116],%$1ymm[117],%$1ymm[118],%$1ymm[119],\n     %$1ymm[120],%$1ymm[121],%$1ymm[122],%$1ymm[123],%$1ymm[124],%$1ymm[125],%$1ymm[126],%$1ymm[127]]
+#! vperm2i128 \$0x31, $1ea, $2ymm, $3ymm -> mov %$3ymm [%$2ymm[128],%$2ymm[129],%$2ymm[130],%$2ymm[131],%$2ymm[132],%$2ymm[133],%$2ymm[134],%$2ymm[135],\n     %$2ymm[136],%$2ymm[137],%$2ymm[138],%$2ymm[139],%$2ymm[140],%$2ymm[141],%$2ymm[142],%$2ymm[143],\n     %$2ymm[144],%$2ymm[145],%$2ymm[146],%$2ymm[147],%$2ymm[148],%$2ymm[149],%$2ymm[150],%$2ymm[151],\n     %$2ymm[152],%$2ymm[153],%$2ymm[154],%$2ymm[155],%$2ymm[156],%$2ymm[157],%$2ymm[158],%$2ymm[159],\n     %$2ymm[160],%$2ymm[161],%$2ymm[162],%$2ymm[163],%$2ymm[164],%$2ymm[165],%$2ymm[166],%$2ymm[167],\n     %$2ymm[168],%$2ymm[169],%$2ymm[170],%$2ymm[171],%$2ymm[172],%$2ymm[173],%$2ymm[174],%$2ymm[175],\n     %$2ymm[176],%$2ymm[177],%$2ymm[178],%$2ymm[179],%$2ymm[180],%$2ymm[181],%$2ymm[182],%$2ymm[183],\n     %$2ymm[184],%$2ymm[185],%$2ymm[186],%$2ymm[187],%$2ymm[188],%$2ymm[189],%$2ymm[190],%$2ymm[191],\n    %$2ymm[192],%$2ymm[193],%$2ymm[194],%$2ymm[195],%$2ymm[196],%$2ymm[197],%$2ymm[198],%$2ymm[199],\n     %$2ymm[200],%$2ymm[201],%$2ymm[202],%$2ymm[203],%$2ymm[204],%$2ymm[205],%$2ymm[206],%$2ymm[207],\n     %$2ymm[208],%$2ymm[209],%$2ymm[210],%$2ymm[211],%$2ymm[212],%$2ymm[213],%$2ymm[214],%$2ymm[215],\n     %$2ymm[216],%$2ymm[217],%$2ymm[218],%$2ymm[219],%$2ymm[220],%$2ymm[221],%$2ymm[222],%$2ymm[223],\n     %$2ymm[224],%$2ymm[225],%$2ymm[226],%$2ymm[227],%$2ymm[228],%$2ymm[229],%$2ymm[230],%$2ymm[231],\n     %$2ymm[232],%$2ymm[233],%$2ymm[234],%$2ymm[235],%$2ymm[236],%$2ymm[237],%$2ymm[238],%$2ymm[239],\n     %$2ymm[240],%$2ymm[241],%$2ymm[242],%$2ymm[243],%$2ymm[244],%$2ymm[245],%$2ymm[246],%$2ymm[247],\n     %$2ymm[248],%$2ymm[249],%$2ymm[250],%$2ymm[251],%$2ymm[252],%$2ymm[253],%$2ymm[254],%$2ymm[255],\n     %$1ea[128],%$1ea[129],%$1ea[130],%$1ea[131],%$1ea[132],%$1ea[133],%$1ea[134],%$1ea[135],\n     %$1ea[136],%$1ea[137],%$1ea[138],%$1ea[139],%$1ea[140],%$1ea[141],%$1ea[142],%$1ea[143],\n     %$1ea[144],%$1ea[145],%$1ea[146],%$1ea[147],%$1ea[148],%$1ea[149],%$1ea[150],%$1ea[151],\n     %$1ea[152],%$1ea[153],%$1ea[154],%$1ea[155],%$1ea[156],%$1ea[157],%$1ea[158],%$1ea[159],\n     %$1ea[160],%$1ea[161],%$1ea[162],%$1ea[163],%$1ea[164],%$1ea[165],%$1ea[166],%$1ea[167],\n     %$1ea[168],%$1ea[169],%$1ea[170],%$1ea[171],%$1ea[172],%$1ea[173],%$1ea[174],%$1ea[175],\n     %$1ea[176],%$1ea[177],%$1ea[178],%$1ea[179],%$1ea[180],%$1ea[181],%$1ea[182],%$1ea[183],\n     %$1ea[184],%$1ea[185],%$1ea[186],%$1ea[187],%$1ea[188],%$1ea[189],%$1ea[190],%$1ea[191],\n    %$1ea[192],%$1ea[193],%$1ea[194],%$1ea[195],%$1ea[196],%$1ea[197],%$1ea[198],%$1ea[199],\n     %$1ea[200],%$1ea[201],%$1ea[202],%$1ea[203],%$1ea[204],%$1ea[205],%$1ea[206],%$1ea[207],\n     %$1ea[208],%$1ea[209],%$1ea[210],%$1ea[211],%$1ea[212],%$1ea[213],%$1ea[214],%$1ea[215],\n     %$1ea[216],%$1ea[217],%$1ea[218],%$1ea[219],%$1ea[220],%$1ea[221],%$1ea[222],%$1ea[223],\n     %$1ea[224],%$1ea[225],%$1ea[226],%$1ea[227],%$1ea[228],%$1ea[229],%$1ea[230],%$1ea[231],\n     %$1ea[232],%$1ea[233],%$1ea[234],%$1ea[235],%$1ea[236],%$1ea[237],%$1ea[238],%$1ea[239],\n     %$1ea[240],%$1ea[241],%$1ea[242],%$1ea[243],%$1ea[244],%$1ea[245],%$1ea[246],%$1ea[247],\n     %$1ea[248],%$1ea[249],%$1ea[250],%$1ea[251],%$1ea[252],%$1ea[253],%$1ea[254],%$1ea[255]]
+#! vperm2i128 \$0x31, $1ymm, $2ymm, $3ymm -> mov %$3ymm [%$2ymm[128],%$2ymm[129],%$2ymm[130],%$2ymm[131],%$2ymm[132],%$2ymm[133],%$2ymm[134],%$2ymm[135],\n     %$2ymm[136],%$2ymm[137],%$2ymm[138],%$2ymm[139],%$2ymm[140],%$2ymm[141],%$2ymm[142],%$2ymm[143],\n     %$2ymm[144],%$2ymm[145],%$2ymm[146],%$2ymm[147],%$2ymm[148],%$2ymm[149],%$2ymm[150],%$2ymm[151],\n     %$2ymm[152],%$2ymm[153],%$2ymm[154],%$2ymm[155],%$2ymm[156],%$2ymm[157],%$2ymm[158],%$2ymm[159],\n     %$2ymm[160],%$2ymm[161],%$2ymm[162],%$2ymm[163],%$2ymm[164],%$2ymm[165],%$2ymm[166],%$2ymm[167],\n     %$2ymm[168],%$2ymm[169],%$2ymm[170],%$2ymm[171],%$2ymm[172],%$2ymm[173],%$2ymm[174],%$2ymm[175],\n     %$2ymm[176],%$2ymm[177],%$2ymm[178],%$2ymm[179],%$2ymm[180],%$2ymm[181],%$2ymm[182],%$2ymm[183],\n     %$2ymm[184],%$2ymm[185],%$2ymm[186],%$2ymm[187],%$2ymm[188],%$2ymm[189],%$2ymm[190],%$2ymm[191],\n    %$2ymm[192],%$2ymm[193],%$2ymm[194],%$2ymm[195],%$2ymm[196],%$2ymm[197],%$2ymm[198],%$2ymm[199],\n     %$2ymm[200],%$2ymm[201],%$2ymm[202],%$2ymm[203],%$2ymm[204],%$2ymm[205],%$2ymm[206],%$2ymm[207],\n     %$2ymm[208],%$2ymm[209],%$2ymm[210],%$2ymm[211],%$2ymm[212],%$2ymm[213],%$2ymm[214],%$2ymm[215],\n     %$2ymm[216],%$2ymm[217],%$2ymm[218],%$2ymm[219],%$2ymm[220],%$2ymm[221],%$2ymm[222],%$2ymm[223],\n     %$2ymm[224],%$2ymm[225],%$2ymm[226],%$2ymm[227],%$2ymm[228],%$2ymm[229],%$2ymm[230],%$2ymm[231],\n     %$2ymm[232],%$2ymm[233],%$2ymm[234],%$2ymm[235],%$2ymm[236],%$2ymm[237],%$2ymm[238],%$2ymm[239],\n     %$2ymm[240],%$2ymm[241],%$2ymm[242],%$2ymm[243],%$2ymm[244],%$2ymm[245],%$2ymm[246],%$2ymm[247],\n     %$2ymm[248],%$2ymm[249],%$2ymm[250],%$2ymm[251],%$2ymm[252],%$2ymm[253],%$2ymm[254],%$2ymm[255],\n     %$1ymm[128],%$1ymm[129],%$1ymm[130],%$1ymm[131],%$1ymm[132],%$1ymm[133],%$1ymm[134],%$1ymm[135],\n     %$1ymm[136],%$1ymm[137],%$1ymm[138],%$1ymm[139],%$1ymm[140],%$1ymm[141],%$1ymm[142],%$1ymm[143],\n     %$1ymm[144],%$1ymm[145],%$1ymm[146],%$1ymm[147],%$1ymm[148],%$1ymm[149],%$1ymm[150],%$1ymm[151],\n     %$1ymm[152],%$1ymm[153],%$1ymm[154],%$1ymm[155],%$1ymm[156],%$1ymm[157],%$1ymm[158],%$1ymm[159],\n     %$1ymm[160],%$1ymm[161],%$1ymm[162],%$1ymm[163],%$1ymm[164],%$1ymm[165],%$1ymm[166],%$1ymm[167],\n     %$1ymm[168],%$1ymm[169],%$1ymm[170],%$1ymm[171],%$1ymm[172],%$1ymm[173],%$1ymm[174],%$1ymm[175],\n     %$1ymm[176],%$1ymm[177],%$1ymm[178],%$1ymm[179],%$1ymm[180],%$1ymm[181],%$1ymm[182],%$1ymm[183],\n     %$1ymm[184],%$1ymm[185],%$1ymm[186],%$1ymm[187],%$1ymm[188],%$1ymm[189],%$1ymm[190],%$1ymm[191],\n    %$1ymm[192],%$1ymm[193],%$1ymm[194],%$1ymm[195],%$1ymm[196],%$1ymm[197],%$1ymm[198],%$1ymm[199],\n     %$1ymm[200],%$1ymm[201],%$1ymm[202],%$1ymm[203],%$1ymm[204],%$1ymm[205],%$1ymm[206],%$1ymm[207],\n     %$1ymm[208],%$1ymm[209],%$1ymm[210],%$1ymm[211],%$1ymm[212],%$1ymm[213],%$1ymm[214],%$1ymm[215],\n     %$1ymm[216],%$1ymm[217],%$1ymm[218],%$1ymm[219],%$1ymm[220],%$1ymm[221],%$1ymm[222],%$1ymm[223],\n     %$1ymm[224],%$1ymm[225],%$1ymm[226],%$1ymm[227],%$1ymm[228],%$1ymm[229],%$1ymm[230],%$1ymm[231],\n     %$1ymm[232],%$1ymm[233],%$1ymm[234],%$1ymm[235],%$1ymm[236],%$1ymm[237],%$1ymm[238],%$1ymm[239],\n     %$1ymm[240],%$1ymm[241],%$1ymm[242],%$1ymm[243],%$1ymm[244],%$1ymm[245],%$1ymm[246],%$1ymm[247],\n     %$1ymm[248],%$1ymm[249],%$1ymm[250],%$1ymm[251],%$1ymm[252],%$1ymm[253],%$1ymm[254],%$1ymm[255]]
+#! vpmovzxbq %xmm4, %%ymm4 -> cast %ymm4@uint64[4] [%xmm4[0],%xmm4[1],%xmm4[2],%xmm4[3]]
+#! vpmovzxbq %xmm5, %%ymm5 -> cast %ymm5@uint64[4] [%xmm5[0],%xmm5[1],%xmm5[2],%xmm5[3]]
+#! vpor %xmm1, %xmm4, %xmm4 -> mov %xmm4 [%xmm4[0],%xmm4[1],%xmm1[2],%xmm1[3]]
+#! vpor %xmm4, %xmm5, %xmm5 -> mov %xmm5 [%xmm5[0],%xmm5[1],%xmm4[2],%xmm4[3]]
+#! vpshufb %xmm6,%xmm1,%xmm1 -> mov %xmm1 [0@uint8,0@uint8,%xmm1[1],%xmm1[3]]
+#! vpshufb %xmm7,%xmm0,%xmm4 -> mov %xmm4 [%xmm0[1],%xmm0[3],0@uint8,0@uint8]
+#! vpshufb %xmm8,%xmm1,%xmm4 -> mov %xmm4 [0@uint8,0@uint8,%xmm1[0],%xmm1[2]]
+#! vpshufb %xmm9,%xmm0,%xmm5 -> mov %xmm5 [%xmm0[0],%xmm0[2],0@uint8,0@uint8]
+#! vpsrlvq0 %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [0,16,8,24] && true;\nmov %ymm1\n    [%ymm0[0],%ymm0[1],%ymm0[2],%ymm0[3],%ymm0[4],%ymm0[5],%ymm0[6],%ymm0[7],\n     %ymm0[8],%ymm0[9],%ymm0[10],%ymm0[11],%ymm0[12],%ymm0[13],%ymm0[14],%ymm0[15],\n     %ymm0[16],%ymm0[17],%ymm0[18],%ymm0[19],%ymm0[20],%ymm0[21],%ymm0[22],%ymm0[23],\n     %ymm0[24],%ymm0[25],%ymm0[26],%ymm0[27],%ymm0[28],%ymm0[29],%ymm0[30],%ymm0[31],\n     %ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],\n     %ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],\n     %ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],\n     %ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],\n     %ymm0[80],%ymm0[81],%ymm0[82],%ymm0[83],%ymm0[84],%ymm0[85],%ymm0[86],%ymm0[87],\n     %ymm0[88],%ymm0[89],%ymm0[90],%ymm0[91],%ymm0[92],%ymm0[93],%ymm0[94],%ymm0[95],\n     %ymm0[96],%ymm0[97],%ymm0[98],%ymm0[99],%ymm0[100],%ymm0[101],%ymm0[102],%ymm0[103],\n     %ymm0[104],%ymm0[105],%ymm0[106],%ymm0[107],%ymm0[108],%ymm0[109],%ymm0[110],%ymm0[111],\n     %ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],\n     %ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[136],%ymm0[137],%ymm0[138],%ymm0[139],%ymm0[140],%ymm0[141],%ymm0[142],%ymm0[143],\n     %ymm0[144],%ymm0[145],%ymm0[146],%ymm0[147],%ymm0[148],%ymm0[149],%ymm0[150],%ymm0[151],\n     %ymm0[152],%ymm0[153],%ymm0[154],%ymm0[155],%ymm0[156],%ymm0[157],%ymm0[158],%ymm0[159],\n     %ymm0[160],%ymm0[161],%ymm0[162],%ymm0[163],%ymm0[164],%ymm0[165],%ymm0[166],%ymm0[167],\n     %ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],\n     %ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],\n     %ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[216],%ymm0[217],%ymm0[218],%ymm0[219],%ymm0[220],%ymm0[221],%ymm0[222],%ymm0[223],\n     %ymm0[224],%ymm0[225],%ymm0[226],%ymm0[227],%ymm0[228],%ymm0[229],%ymm0[230],%ymm0[231],\n     %ymm0[232],%ymm0[233],%ymm0[234],%ymm0[235],%ymm0[236],%ymm0[237],%ymm0[238],%ymm0[239],\n     %ymm0[240],%ymm0[241],%ymm0[242],%ymm0[243],%ymm0[244],%ymm0[245],%ymm0[246],%ymm0[247],\n     %ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq1 %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [32,48,40,56] && true;\nmov %ymm0\n    [%ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],\n     %ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],\n     %ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],\n     %ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],\n     %ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],\n     %ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],\n     %ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq2 %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [4,20,12,28] && true;\nmov %ymm1\n    [%ymm0[4],%ymm0[5],%ymm0[6],%ymm0[7],%ymm0[8],%ymm0[9],%ymm0[10],%ymm0[11],\n     %ymm0[12],%ymm0[13],%ymm0[14],%ymm0[15],%ymm0[16],%ymm0[17],%ymm0[18],%ymm0[19],\n     %ymm0[20],%ymm0[21],%ymm0[22],%ymm0[23],%ymm0[24],%ymm0[25],%ymm0[26],%ymm0[27],\n     %ymm0[28],%ymm0[29],%ymm0[30],%ymm0[31],%ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],\n     %ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],\n     %ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],\n     %ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],\n     %ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,\n     %ymm0[84],%ymm0[85],%ymm0[86],%ymm0[87],%ymm0[88],%ymm0[89],%ymm0[90],%ymm0[91],\n     %ymm0[92],%ymm0[93],%ymm0[94],%ymm0[95],%ymm0[96],%ymm0[97],%ymm0[98],%ymm0[99],\n     %ymm0[100],%ymm0[101],%ymm0[102],%ymm0[103],%ymm0[104],%ymm0[105],%ymm0[106],%ymm0[107],\n     %ymm0[108],%ymm0[109],%ymm0[110],%ymm0[111],%ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],\n     %ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],\n     %ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[140],%ymm0[141],%ymm0[142],%ymm0[143],%ymm0[144],%ymm0[145],%ymm0[146],%ymm0[147],\n     %ymm0[148],%ymm0[149],%ymm0[150],%ymm0[151],%ymm0[152],%ymm0[153],%ymm0[154],%ymm0[155],\n     %ymm0[156],%ymm0[157],%ymm0[158],%ymm0[159],%ymm0[160],%ymm0[161],%ymm0[162],%ymm0[163],\n     %ymm0[164],%ymm0[165],%ymm0[166],%ymm0[167],%ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],\n     %ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],\n     %ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],\n     %ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[220],%ymm0[221],%ymm0[222],%ymm0[223],%ymm0[224],%ymm0[225],%ymm0[226],%ymm0[227],\n     %ymm0[228],%ymm0[229],%ymm0[230],%ymm0[231],%ymm0[232],%ymm0[233],%ymm0[234],%ymm0[235],\n     %ymm0[236],%ymm0[237],%ymm0[238],%ymm0[239],%ymm0[240],%ymm0[241],%ymm0[242],%ymm0[243],\n     %ymm0[244],%ymm0[245],%ymm0[246],%ymm0[247],%ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],\n     %ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq3 %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [36,52,44,60] && true;\nmov %ymm0\n    [%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],\n     %ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],\n     %ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],\n     %ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],\n     %ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],\n     %ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],\n     %ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq4 %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [2,18,10,26] && true;\nmov %ymm1\n    [%ymm0[2],%ymm0[3],%ymm0[4],%ymm0[5],%ymm0[6],%ymm0[7],%ymm0[8],%ymm0[9],\n     %ymm0[10],%ymm0[11],%ymm0[12],%ymm0[13],%ymm0[14],%ymm0[15],%ymm0[16],%ymm0[17],\n     %ymm0[18],%ymm0[19],%ymm0[20],%ymm0[21],%ymm0[22],%ymm0[23],%ymm0[24],%ymm0[25],\n     %ymm0[26],%ymm0[27],%ymm0[28],%ymm0[29],%ymm0[30],%ymm0[31],%ymm0[32],%ymm0[33],\n     %ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],\n     %ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],\n     %ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],\n     %ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,\n     %ymm0[82],%ymm0[83],%ymm0[84],%ymm0[85],%ymm0[86],%ymm0[87],%ymm0[88],%ymm0[89],\n     %ymm0[90],%ymm0[91],%ymm0[92],%ymm0[93],%ymm0[94],%ymm0[95],%ymm0[96],%ymm0[97],\n     %ymm0[98],%ymm0[99],%ymm0[100],%ymm0[101],%ymm0[102],%ymm0[103],%ymm0[104],%ymm0[105],\n     %ymm0[106],%ymm0[107],%ymm0[108],%ymm0[109],%ymm0[110],%ymm0[111],%ymm0[112],%ymm0[113],\n     %ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],\n     %ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[138],%ymm0[139],%ymm0[140],%ymm0[141],%ymm0[142],%ymm0[143],%ymm0[144],%ymm0[145],\n     %ymm0[146],%ymm0[147],%ymm0[148],%ymm0[149],%ymm0[150],%ymm0[151],%ymm0[152],%ymm0[153],\n     %ymm0[154],%ymm0[155],%ymm0[156],%ymm0[157],%ymm0[158],%ymm0[159],%ymm0[160],%ymm0[161],\n     %ymm0[162],%ymm0[163],%ymm0[164],%ymm0[165],%ymm0[166],%ymm0[167],%ymm0[168],%ymm0[169],\n     %ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],\n     %ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],\n     %ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[218],%ymm0[219],%ymm0[220],%ymm0[221],%ymm0[222],%ymm0[223],%ymm0[224],%ymm0[225],\n     %ymm0[226],%ymm0[227],%ymm0[228],%ymm0[229],%ymm0[230],%ymm0[231],%ymm0[232],%ymm0[233],\n     %ymm0[234],%ymm0[235],%ymm0[236],%ymm0[237],%ymm0[238],%ymm0[239],%ymm0[240],%ymm0[241],\n     %ymm0[242],%ymm0[243],%ymm0[244],%ymm0[245],%ymm0[246],%ymm0[247],%ymm0[248],%ymm0[249],\n     %ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq5 %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [34,50,42,58] && true;\nmov %ymm0\n    [%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],\n     %ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],\n     %ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],\n     %ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],\n     %ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],\n     %ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],\n     %ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq6 %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [6,22,14,30] && true;\nmov %ymm1\n    [%ymm0[6],%ymm0[7],%ymm0[8],%ymm0[9],%ymm0[10],%ymm0[11],%ymm0[12],%ymm0[13],\n     %ymm0[14],%ymm0[15],%ymm0[16],%ymm0[17],%ymm0[18],%ymm0[19],%ymm0[20],%ymm0[21],\n     %ymm0[22],%ymm0[23],%ymm0[24],%ymm0[25],%ymm0[26],%ymm0[27],%ymm0[28],%ymm0[29],\n     %ymm0[30],%ymm0[31],%ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],\n     %ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],\n     %ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],\n     %ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],\n     %ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[86],%ymm0[87],%ymm0[88],%ymm0[89],%ymm0[90],%ymm0[91],%ymm0[92],%ymm0[93],\n     %ymm0[94],%ymm0[95],%ymm0[96],%ymm0[97],%ymm0[98],%ymm0[99],%ymm0[100],%ymm0[101],\n     %ymm0[102],%ymm0[103],%ymm0[104],%ymm0[105],%ymm0[106],%ymm0[107],%ymm0[108],%ymm0[109],\n     %ymm0[110],%ymm0[111],%ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],\n     %ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],\n     %ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[142],%ymm0[143],%ymm0[144],%ymm0[145],%ymm0[146],%ymm0[147],%ymm0[148],%ymm0[149],\n     %ymm0[150],%ymm0[151],%ymm0[152],%ymm0[153],%ymm0[154],%ymm0[155],%ymm0[156],%ymm0[157],\n     %ymm0[158],%ymm0[159],%ymm0[160],%ymm0[161],%ymm0[162],%ymm0[163],%ymm0[164],%ymm0[165],\n     %ymm0[166],%ymm0[167],%ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],\n     %ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],\n     %ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],\n     %ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[222],%ymm0[223],%ymm0[224],%ymm0[225],%ymm0[226],%ymm0[227],%ymm0[228],%ymm0[229],\n     %ymm0[230],%ymm0[231],%ymm0[232],%ymm0[233],%ymm0[234],%ymm0[235],%ymm0[236],%ymm0[237],\n     %ymm0[238],%ymm0[239],%ymm0[240],%ymm0[241],%ymm0[242],%ymm0[243],%ymm0[244],%ymm0[245],\n     %ymm0[246],%ymm0[247],%ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],\n     %ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq7 %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [38,54,46,62] && true;\nmov %ymm0\n    [%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],\n     %ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],\n     %ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],\n     %ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],\n     %ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],\n     %ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],\n     %ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq8 %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [1,17,9,25] && true;\nmov %ymm1\n    [%ymm0[1],%ymm0[2],%ymm0[3],%ymm0[4],%ymm0[5],%ymm0[6],%ymm0[7],%ymm0[8],\n     %ymm0[9],%ymm0[10],%ymm0[11],%ymm0[12],%ymm0[13],%ymm0[14],%ymm0[15],%ymm0[16],\n     %ymm0[17],%ymm0[18],%ymm0[19],%ymm0[20],%ymm0[21],%ymm0[22],%ymm0[23],%ymm0[24],\n     %ymm0[25],%ymm0[26],%ymm0[27],%ymm0[28],%ymm0[29],%ymm0[30],%ymm0[31],%ymm0[32],\n     %ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],\n     %ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],\n     %ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],\n     %ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,\n     %ymm0[81],%ymm0[82],%ymm0[83],%ymm0[84],%ymm0[85],%ymm0[86],%ymm0[87],%ymm0[88],\n     %ymm0[89],%ymm0[90],%ymm0[91],%ymm0[92],%ymm0[93],%ymm0[94],%ymm0[95],%ymm0[96],\n     %ymm0[97],%ymm0[98],%ymm0[99],%ymm0[100],%ymm0[101],%ymm0[102],%ymm0[103],%ymm0[104],\n     %ymm0[105],%ymm0[106],%ymm0[107],%ymm0[108],%ymm0[109],%ymm0[110],%ymm0[111],%ymm0[112],\n     %ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],\n     %ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[137],%ymm0[138],%ymm0[139],%ymm0[140],%ymm0[141],%ymm0[142],%ymm0[143],%ymm0[144],\n     %ymm0[145],%ymm0[146],%ymm0[147],%ymm0[148],%ymm0[149],%ymm0[150],%ymm0[151],%ymm0[152],\n     %ymm0[153],%ymm0[154],%ymm0[155],%ymm0[156],%ymm0[157],%ymm0[158],%ymm0[159],%ymm0[160],\n     %ymm0[161],%ymm0[162],%ymm0[163],%ymm0[164],%ymm0[165],%ymm0[166],%ymm0[167],%ymm0[168],\n     %ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],\n     %ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],\n     %ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[217],%ymm0[218],%ymm0[219],%ymm0[220],%ymm0[221],%ymm0[222],%ymm0[223],%ymm0[224],\n     %ymm0[225],%ymm0[226],%ymm0[227],%ymm0[228],%ymm0[229],%ymm0[230],%ymm0[231],%ymm0[232],\n     %ymm0[233],%ymm0[234],%ymm0[235],%ymm0[236],%ymm0[237],%ymm0[238],%ymm0[239],%ymm0[240],\n     %ymm0[241],%ymm0[242],%ymm0[243],%ymm0[244],%ymm0[245],%ymm0[246],%ymm0[247],%ymm0[248],\n     %ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvq9 %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [33,49,41,57] && true;\nmov %ymm0\n    [%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],\n     %ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],\n     %ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],\n     %ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],\n     %ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],\n     %ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],\n     %ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqa %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [5,21,13,29] && true;\nmov %ymm1\n    [%ymm0[5],%ymm0[6],%ymm0[7],%ymm0[8],%ymm0[9],%ymm0[10],%ymm0[11],%ymm0[12],\n     %ymm0[13],%ymm0[14],%ymm0[15],%ymm0[16],%ymm0[17],%ymm0[18],%ymm0[19],%ymm0[20],\n     %ymm0[21],%ymm0[22],%ymm0[23],%ymm0[24],%ymm0[25],%ymm0[26],%ymm0[27],%ymm0[28],\n     %ymm0[29],%ymm0[30],%ymm0[31],%ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],\n     %ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],\n     %ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],\n     %ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],\n     %ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[85],%ymm0[86],%ymm0[87],%ymm0[88],%ymm0[89],%ymm0[90],%ymm0[91],%ymm0[92],\n     %ymm0[93],%ymm0[94],%ymm0[95],%ymm0[96],%ymm0[97],%ymm0[98],%ymm0[99],%ymm0[100],\n     %ymm0[101],%ymm0[102],%ymm0[103],%ymm0[104],%ymm0[105],%ymm0[106],%ymm0[107],%ymm0[108],\n     %ymm0[109],%ymm0[110],%ymm0[111],%ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],\n     %ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],\n     %ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[141],%ymm0[142],%ymm0[143],%ymm0[144],%ymm0[145],%ymm0[146],%ymm0[147],%ymm0[148],\n     %ymm0[149],%ymm0[150],%ymm0[151],%ymm0[152],%ymm0[153],%ymm0[154],%ymm0[155],%ymm0[156],\n     %ymm0[157],%ymm0[158],%ymm0[159],%ymm0[160],%ymm0[161],%ymm0[162],%ymm0[163],%ymm0[164],\n     %ymm0[165],%ymm0[166],%ymm0[167],%ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],\n     %ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],\n     %ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],\n     %ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[221],%ymm0[222],%ymm0[223],%ymm0[224],%ymm0[225],%ymm0[226],%ymm0[227],%ymm0[228],\n     %ymm0[229],%ymm0[230],%ymm0[231],%ymm0[232],%ymm0[233],%ymm0[234],%ymm0[235],%ymm0[236],\n     %ymm0[237],%ymm0[238],%ymm0[239],%ymm0[240],%ymm0[241],%ymm0[242],%ymm0[243],%ymm0[244],\n     %ymm0[245],%ymm0[246],%ymm0[247],%ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],\n     %ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqb %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [37,53,45,61] && true;\nmov %ymm0\n    [%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],\n     %ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],\n     %ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],\n     %ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],\n     %ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],\n     %ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],\n     %ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqc %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [3,19,11,27] && true;\nmov %ymm1\n    [%ymm0[3],%ymm0[4],%ymm0[5],%ymm0[6],%ymm0[7],%ymm0[8],%ymm0[9],%ymm0[10],\n     %ymm0[11],%ymm0[12],%ymm0[13],%ymm0[14],%ymm0[15],%ymm0[16],%ymm0[17],%ymm0[18],\n     %ymm0[19],%ymm0[20],%ymm0[21],%ymm0[22],%ymm0[23],%ymm0[24],%ymm0[25],%ymm0[26],\n     %ymm0[27],%ymm0[28],%ymm0[29],%ymm0[30],%ymm0[31],%ymm0[32],%ymm0[33],%ymm0[34],\n     %ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],\n     %ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],\n     %ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],\n     %ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,\n     %ymm0[83],%ymm0[84],%ymm0[85],%ymm0[86],%ymm0[87],%ymm0[88],%ymm0[89],%ymm0[90],\n     %ymm0[91],%ymm0[92],%ymm0[93],%ymm0[94],%ymm0[95],%ymm0[96],%ymm0[97],%ymm0[98],\n     %ymm0[99],%ymm0[100],%ymm0[101],%ymm0[102],%ymm0[103],%ymm0[104],%ymm0[105],%ymm0[106],\n     %ymm0[107],%ymm0[108],%ymm0[109],%ymm0[110],%ymm0[111],%ymm0[112],%ymm0[113],%ymm0[114],\n     %ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],\n     %ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[139],%ymm0[140],%ymm0[141],%ymm0[142],%ymm0[143],%ymm0[144],%ymm0[145],%ymm0[146],\n     %ymm0[147],%ymm0[148],%ymm0[149],%ymm0[150],%ymm0[151],%ymm0[152],%ymm0[153],%ymm0[154],\n     %ymm0[155],%ymm0[156],%ymm0[157],%ymm0[158],%ymm0[159],%ymm0[160],%ymm0[161],%ymm0[162],\n     %ymm0[163],%ymm0[164],%ymm0[165],%ymm0[166],%ymm0[167],%ymm0[168],%ymm0[169],%ymm0[170],\n     %ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],\n     %ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],\n     %ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[219],%ymm0[220],%ymm0[221],%ymm0[222],%ymm0[223],%ymm0[224],%ymm0[225],%ymm0[226],\n     %ymm0[227],%ymm0[228],%ymm0[229],%ymm0[230],%ymm0[231],%ymm0[232],%ymm0[233],%ymm0[234],\n     %ymm0[235],%ymm0[236],%ymm0[237],%ymm0[238],%ymm0[239],%ymm0[240],%ymm0[241],%ymm0[242],\n     %ymm0[243],%ymm0[244],%ymm0[245],%ymm0[246],%ymm0[247],%ymm0[248],%ymm0[249],%ymm0[250],\n     %ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqd %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [35,51,43,59] && true;\nmov %ymm0\n    [%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],\n     %ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],%ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],\n     %ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],%ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],\n     %ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],%ymm0[63],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],%ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],\n     %ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],%ymm0[127],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],%ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],\n     %ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],%ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],\n     %ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],%ymm0[191],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],%ymm0[255],0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqe %%ymm5, %%ymm0, %%ymm1 -> assert %ymm5 = [7,23,15,31] && true;\nmov %ymm1\n    [%ymm0[7],%ymm0[8],%ymm0[9],%ymm0[10],%ymm0[11],%ymm0[12],%ymm0[13],%ymm0[14],\n     %ymm0[15],%ymm0[16],%ymm0[17],%ymm0[18],%ymm0[19],%ymm0[20],%ymm0[21],%ymm0[22],\n     %ymm0[23],%ymm0[24],%ymm0[25],%ymm0[26],%ymm0[27],%ymm0[28],%ymm0[29],%ymm0[30],\n     %ymm0[31],%ymm0[32],%ymm0[33],%ymm0[34],%ymm0[35],%ymm0[36],%ymm0[37],%ymm0[38],\n     %ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],\n     %ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],\n     %ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],\n     %ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[87],%ymm0[88],%ymm0[89],%ymm0[90],%ymm0[91],%ymm0[92],%ymm0[93],%ymm0[94],\n     %ymm0[95],%ymm0[96],%ymm0[97],%ymm0[98],%ymm0[99],%ymm0[100],%ymm0[101],%ymm0[102],\n     %ymm0[103],%ymm0[104],%ymm0[105],%ymm0[106],%ymm0[107],%ymm0[108],%ymm0[109],%ymm0[110],\n     %ymm0[111],%ymm0[112],%ymm0[113],%ymm0[114],%ymm0[115],%ymm0[116],%ymm0[117],%ymm0[118],\n     %ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],\n     %ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[143],%ymm0[144],%ymm0[145],%ymm0[146],%ymm0[147],%ymm0[148],%ymm0[149],%ymm0[150],\n     %ymm0[151],%ymm0[152],%ymm0[153],%ymm0[154],%ymm0[155],%ymm0[156],%ymm0[157],%ymm0[158],\n     %ymm0[159],%ymm0[160],%ymm0[161],%ymm0[162],%ymm0[163],%ymm0[164],%ymm0[165],%ymm0[166],\n     %ymm0[167],%ymm0[168],%ymm0[169],%ymm0[170],%ymm0[171],%ymm0[172],%ymm0[173],%ymm0[174],\n     %ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],\n     %ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],\n     %ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[223],%ymm0[224],%ymm0[225],%ymm0[226],%ymm0[227],%ymm0[228],%ymm0[229],%ymm0[230],\n     %ymm0[231],%ymm0[232],%ymm0[233],%ymm0[234],%ymm0[235],%ymm0[236],%ymm0[237],%ymm0[238],\n     %ymm0[239],%ymm0[240],%ymm0[241],%ymm0[242],%ymm0[243],%ymm0[244],%ymm0[245],%ymm0[246],\n     %ymm0[247],%ymm0[248],%ymm0[249],%ymm0[250],%ymm0[251],%ymm0[252],%ymm0[253],%ymm0[254],\n     %ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsrlvqf %%ymm4, %%ymm0, %%ymm0 -> assert %ymm4 = [39,55,47,63] && true;\nmov %ymm0\n    [%ymm0[39],%ymm0[40],%ymm0[41],%ymm0[42],%ymm0[43],%ymm0[44],%ymm0[45],%ymm0[46],\n     %ymm0[47],%ymm0[48],%ymm0[49],%ymm0[50],%ymm0[51],%ymm0[52],%ymm0[53],%ymm0[54],\n     %ymm0[55],%ymm0[56],%ymm0[57],%ymm0[58],%ymm0[59],%ymm0[60],%ymm0[61],%ymm0[62],\n     %ymm0[63],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[119],%ymm0[120],%ymm0[121],%ymm0[122],%ymm0[123],%ymm0[124],%ymm0[125],%ymm0[126],\n     %ymm0[127],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[175],%ymm0[176],%ymm0[177],%ymm0[178],%ymm0[179],%ymm0[180],%ymm0[181],%ymm0[182],\n     %ymm0[183],%ymm0[184],%ymm0[185],%ymm0[186],%ymm0[187],%ymm0[188],%ymm0[189],%ymm0[190],\n     %ymm0[191],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     %ymm0[255],0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpsubq $1ymm, %%ymm3, $2ymm -> mov %$2ymm\n    [%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],%$1ymm[0],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],%$1ymm[64],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],%$1ymm[128],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],\n     %$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192],%$1ymm[192]] 
+#! vpunpckhqdq $1ea, $2ymm, $3ymm -> mov %$3ymm\n    [%$2ymm[64],%$2ymm[65],%$2ymm[66],%$2ymm[67],%$2ymm[68],%$2ymm[69],%$2ymm[70],%$2ymm[71],\n     %$2ymm[72],%$2ymm[73],%$2ymm[74],%$2ymm[75],%$2ymm[76],%$2ymm[77],%$2ymm[78],%$2ymm[79],\n     %$2ymm[80],%$2ymm[81],%$2ymm[82],%$2ymm[83],%$2ymm[84],%$2ymm[85],%$2ymm[86],%$2ymm[87],\n     %$2ymm[88],%$2ymm[89],%$2ymm[90],%$2ymm[91],%$2ymm[92],%$2ymm[93],%$2ymm[94],%$2ymm[95],\n     %$2ymm[96],%$2ymm[97],%$2ymm[98],%$2ymm[99],%$2ymm[100],%$2ymm[101],%$2ymm[102],%$2ymm[103],\n     %$2ymm[104],%$2ymm[105],%$2ymm[106],%$2ymm[107],%$2ymm[108],%$2ymm[109],%$2ymm[110],%$2ymm[111],\n     %$2ymm[112],%$2ymm[113],%$2ymm[114],%$2ymm[115],%$2ymm[116],%$2ymm[117],%$2ymm[118],%$2ymm[119],\n     %$2ymm[120],%$2ymm[121],%$2ymm[122],%$2ymm[123],%$2ymm[124],%$2ymm[125],%$2ymm[126],%$2ymm[127],\n     %$1ea[64],%$1ea[65],%$1ea[66],%$1ea[67],%$1ea[68],%$1ea[69],%$1ea[70],%$1ea[71],\n     %$1ea[72],%$1ea[73],%$1ea[74],%$1ea[75],%$1ea[76],%$1ea[77],%$1ea[78],%$1ea[79],\n     %$1ea[80],%$1ea[81],%$1ea[82],%$1ea[83],%$1ea[84],%$1ea[85],%$1ea[86],%$1ea[87],\n     %$1ea[88],%$1ea[89],%$1ea[90],%$1ea[91],%$1ea[92],%$1ea[93],%$1ea[94],%$1ea[95],\n     %$1ea[96],%$1ea[97],%$1ea[98],%$1ea[99],%$1ea[100],%$1ea[101],%$1ea[102],%$1ea[103],\n     %$1ea[104],%$1ea[105],%$1ea[106],%$1ea[107],%$1ea[108],%$1ea[109],%$1ea[110],%$1ea[111],\n     %$1ea[112],%$1ea[113],%$1ea[114],%$1ea[115],%$1ea[116],%$1ea[117],%$1ea[118],%$1ea[119],\n     %$1ea[120],%$1ea[121],%$1ea[122],%$1ea[123],%$1ea[124],%$1ea[125],%$1ea[126],%$1ea[127],\n     %$2ymm[192],%$2ymm[193],%$2ymm[194],%$2ymm[195],%$2ymm[196],%$2ymm[197],%$2ymm[198],%$2ymm[199],\n     %$2ymm[200],%$2ymm[201],%$2ymm[202],%$2ymm[203],%$2ymm[204],%$2ymm[205],%$2ymm[206],%$2ymm[207],\n     %$2ymm[208],%$2ymm[209],%$2ymm[210],%$2ymm[211],%$2ymm[212],%$2ymm[213],%$2ymm[214],%$2ymm[215],\n     %$2ymm[216],%$2ymm[217],%$2ymm[218],%$2ymm[219],%$2ymm[220],%$2ymm[221],%$2ymm[222],%$2ymm[223],\n     %$2ymm[224],%$2ymm[225],%$2ymm[226],%$2ymm[227],%$2ymm[228],%$2ymm[229],%$2ymm[230],%$2ymm[231],\n     %$2ymm[232],%$2ymm[233],%$2ymm[234],%$2ymm[235],%$2ymm[236],%$2ymm[237],%$2ymm[238],%$2ymm[239],\n     %$2ymm[240],%$2ymm[241],%$2ymm[242],%$2ymm[243],%$2ymm[244],%$2ymm[245],%$2ymm[246],%$2ymm[247],\n     %$2ymm[248],%$2ymm[249],%$2ymm[250],%$2ymm[251],%$2ymm[252],%$2ymm[253],%$2ymm[254],%$2ymm[255],\n     %$1ea[192],%$1ea[193],%$1ea[194],%$1ea[195],%$1ea[196],%$1ea[197],%$1ea[198],%$1ea[199],\n     %$1ea[200],%$1ea[201],%$1ea[202],%$1ea[203],%$1ea[204],%$1ea[205],%$1ea[206],%$1ea[207],\n     %$1ea[208],%$1ea[209],%$1ea[210],%$1ea[211],%$1ea[212],%$1ea[213],%$1ea[214],%$1ea[215],\n     %$1ea[216],%$1ea[217],%$1ea[218],%$1ea[219],%$1ea[220],%$1ea[221],%$1ea[222],%$1ea[223],\n     %$1ea[224],%$1ea[225],%$1ea[226],%$1ea[227],%$1ea[228],%$1ea[229],%$1ea[230],%$1ea[231],\n     %$1ea[232],%$1ea[233],%$1ea[234],%$1ea[235],%$1ea[236],%$1ea[237],%$1ea[238],%$1ea[239],\n     %$1ea[240],%$1ea[241],%$1ea[242],%$1ea[243],%$1ea[244],%$1ea[245],%$1ea[246],%$1ea[247],\n     %$1ea[248],%$1ea[249],%$1ea[250],%$1ea[251],%$1ea[252],%$1ea[253],%$1ea[254],%$1ea[255]]
+#! vpunpcklqdq $1ea, $2ymm, $3ymm -> mov %$3ymm\n    [%$2ymm[0],%$2ymm[1],%$2ymm[2],%$2ymm[3],%$2ymm[4],%$2ymm[5],%$2ymm[6],%$2ymm[7],\n     %$2ymm[8],%$2ymm[9],%$2ymm[10],%$2ymm[11],%$2ymm[12],%$2ymm[13],%$2ymm[14],%$2ymm[15],\n     %$2ymm[16],%$2ymm[17],%$2ymm[18],%$2ymm[19],%$2ymm[20],%$2ymm[21],%$2ymm[22],%$2ymm[23],\n     %$2ymm[24],%$2ymm[25],%$2ymm[26],%$2ymm[27],%$2ymm[28],%$2ymm[29],%$2ymm[30],%$2ymm[31],\n     %$2ymm[32],%$2ymm[33],%$2ymm[34],%$2ymm[35],%$2ymm[36],%$2ymm[37],%$2ymm[38],%$2ymm[39],\n     %$2ymm[40],%$2ymm[41],%$2ymm[42],%$2ymm[43],%$2ymm[44],%$2ymm[45],%$2ymm[46],%$2ymm[47],\n     %$2ymm[48],%$2ymm[49],%$2ymm[50],%$2ymm[51],%$2ymm[52],%$2ymm[53],%$2ymm[54],%$2ymm[55],\n     %$2ymm[56],%$2ymm[57],%$2ymm[58],%$2ymm[59],%$2ymm[60],%$2ymm[61],%$2ymm[62],%$2ymm[63],\n     %$1ea[0],%$1ea[1],%$1ea[2],%$1ea[3],%$1ea[4],%$1ea[5],%$1ea[6],%$1ea[7],\n     %$1ea[8],%$1ea[9],%$1ea[10],%$1ea[11],%$1ea[12],%$1ea[13],%$1ea[14],%$1ea[15],\n     %$1ea[16],%$1ea[17],%$1ea[18],%$1ea[19],%$1ea[20],%$1ea[21],%$1ea[22],%$1ea[23],\n     %$1ea[24],%$1ea[25],%$1ea[26],%$1ea[27],%$1ea[28],%$1ea[29],%$1ea[30],%$1ea[31],\n     %$1ea[32],%$1ea[33],%$1ea[34],%$1ea[35],%$1ea[36],%$1ea[37],%$1ea[38],%$1ea[39],\n     %$1ea[40],%$1ea[41],%$1ea[42],%$1ea[43],%$1ea[44],%$1ea[45],%$1ea[46],%$1ea[47],\n     %$1ea[48],%$1ea[49],%$1ea[50],%$1ea[51],%$1ea[52],%$1ea[53],%$1ea[54],%$1ea[55],\n     %$1ea[56],%$1ea[57],%$1ea[58],%$1ea[59],%$1ea[60],%$1ea[61],%$1ea[62],%$1ea[63],\n     %$2ymm[128],%$2ymm[129],%$2ymm[130],%$2ymm[131],%$2ymm[132],%$2ymm[133],%$2ymm[134],%$2ymm[135],\n     %$2ymm[136],%$2ymm[137],%$2ymm[138],%$2ymm[139],%$2ymm[140],%$2ymm[141],%$2ymm[142],%$2ymm[143],\n     %$2ymm[144],%$2ymm[145],%$2ymm[146],%$2ymm[147],%$2ymm[148],%$2ymm[149],%$2ymm[150],%$2ymm[151],\n     %$2ymm[152],%$2ymm[153],%$2ymm[154],%$2ymm[155],%$2ymm[156],%$2ymm[157],%$2ymm[158],%$2ymm[159],\n     %$2ymm[160],%$2ymm[161],%$2ymm[162],%$2ymm[163],%$2ymm[164],%$2ymm[165],%$2ymm[166],%$2ymm[167],\n     %$2ymm[168],%$2ymm[169],%$2ymm[170],%$2ymm[171],%$2ymm[172],%$2ymm[173],%$2ymm[174],%$2ymm[175],\n     %$2ymm[176],%$2ymm[177],%$2ymm[178],%$2ymm[179],%$2ymm[180],%$2ymm[181],%$2ymm[182],%$2ymm[183],\n     %$2ymm[184],%$2ymm[185],%$2ymm[186],%$2ymm[187],%$2ymm[188],%$2ymm[189],%$2ymm[190],%$2ymm[191],\n     %$1ea[128],%$1ea[129],%$1ea[130],%$1ea[131],%$1ea[132],%$1ea[133],%$1ea[134],%$1ea[135],\n     %$1ea[136],%$1ea[137],%$1ea[138],%$1ea[139],%$1ea[140],%$1ea[141],%$1ea[142],%$1ea[143],\n     %$1ea[144],%$1ea[145],%$1ea[146],%$1ea[147],%$1ea[148],%$1ea[149],%$1ea[150],%$1ea[151],\n     %$1ea[152],%$1ea[153],%$1ea[154],%$1ea[155],%$1ea[156],%$1ea[157],%$1ea[158],%$1ea[159],\n     %$1ea[160],%$1ea[161],%$1ea[162],%$1ea[163],%$1ea[164],%$1ea[165],%$1ea[166],%$1ea[167],\n     %$1ea[168],%$1ea[169],%$1ea[170],%$1ea[171],%$1ea[172],%$1ea[173],%$1ea[174],%$1ea[175],\n     %$1ea[176],%$1ea[177],%$1ea[178],%$1ea[179],%$1ea[180],%$1ea[181],%$1ea[182],%$1ea[183],\n     %$1ea[184],%$1ea[185],%$1ea[186],%$1ea[187],%$1ea[188],%$1ea[189],%$1ea[190],%$1ea[191]]
+#! vpxor %xmm$1c, %xmm$1c, %xmm$1c -> mov %ymm$1c\n    [0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,\n     0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit,0@bit]
+#! vpxor $1ea, $2ymm, $3ymm -> adds %dc %$3ymm %$2ymm %$1ea
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %dc %$3ymm %$2ymm %$1ymm
+#! vzeroupper -> (* vzeroupper *)\nnop
+
+#butterflies:
 # %rdi = 0x7ffffff532a0
 # %rsi = 0x7ffffff50cc0
 # %rdx = 0x305707f2b74f7190
@@ -353,6 +523,7 @@ butterflies:
 	vmovdqa %ymm0,%ymm3                             #! PC = 0x55555558388f
 	vmovdqa %ymm5,0x3600(%rsp)                      #! EA = L0x7ffffff50b40; PC = 0x555555583893
 	vmovdqu %ymm4,0x3650(%rsp)                      #! EA = L0x7ffffff50b90; PC = 0x55555558389c
+# NOTE: START
 	mov    %r9d,%eax                                #! PC = 0x5555555838a5
 	vmovd  (%r10),%xmm0                             #! EA = L0x7ffffff50b90; Value = 0x3818280830102000; PC = 0x5555555838a8
 	vmovd  0x4(%r10),%xmm1                          #! EA = L0x7ffffff50b94; Value = 0x3414240438182808; PC = 0x5555555838ad
@@ -380,8 +551,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -394,8 +565,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -408,8 +579,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -422,8 +593,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -436,8 +607,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -450,8 +621,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -464,8 +635,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -478,8 +649,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -492,8 +663,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -506,8 +677,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -520,8 +691,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -534,8 +705,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq0 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq1 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -575,8 +746,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -589,8 +760,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -603,8 +774,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -617,8 +788,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -631,8 +802,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -645,8 +816,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -659,8 +830,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -673,8 +844,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -687,8 +858,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -701,8 +872,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -715,8 +886,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -729,8 +900,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq2 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq3 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -770,8 +941,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -784,8 +955,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -798,8 +969,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -812,8 +983,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -826,8 +997,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -840,8 +1011,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -854,8 +1025,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -868,8 +1039,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -882,8 +1053,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -896,8 +1067,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -910,8 +1081,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -924,8 +1095,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq4 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq5 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -965,8 +1136,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -979,8 +1150,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -993,8 +1164,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1007,8 +1178,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1021,8 +1192,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1035,8 +1206,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1049,8 +1220,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1063,8 +1234,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1077,8 +1248,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1091,8 +1262,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1105,8 +1276,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1119,8 +1290,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq6 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq7 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1160,8 +1331,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1174,8 +1345,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1188,8 +1359,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1202,8 +1373,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1216,8 +1387,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1230,8 +1401,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1244,8 +1415,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1258,8 +1429,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1272,8 +1443,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1286,8 +1457,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1300,8 +1471,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1314,8 +1485,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvq8 %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvq9 %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1355,8 +1526,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1369,8 +1540,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1383,8 +1554,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1397,8 +1568,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1411,8 +1582,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1425,8 +1596,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1439,8 +1610,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1453,8 +1624,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1467,8 +1638,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1481,8 +1652,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1495,8 +1666,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1509,8 +1680,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqa %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqb %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1550,8 +1721,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1564,8 +1735,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1578,8 +1749,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1592,8 +1763,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1606,8 +1777,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1620,8 +1791,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1634,8 +1805,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1648,8 +1819,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1662,8 +1833,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1676,8 +1847,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1690,8 +1861,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1704,8 +1875,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqc %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqd %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1745,8 +1916,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1759,8 +1930,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1773,8 +1944,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1787,8 +1958,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1801,8 +1972,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1815,8 +1986,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1829,8 +2000,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1843,8 +2014,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1857,8 +2028,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1871,8 +2042,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1885,8 +2056,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
@@ -1899,8 +2070,8 @@ butterflies:
 	mov    %rax,%rdx                                #! PC = 0x555555583906
 	add    $0x1,%rax                                #! PC = 0x555555583909
 	shl    $0x5,%rdx                                #! PC = 0x55555558390d
-	vpsrlvq %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
-	vpsrlvq %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
+	vpsrlvqe %ymm5,%ymm0,%ymm1                       #! PC = 0x555555583911
+	vpsrlvqf %ymm4,%ymm0,%ymm0                       #! PC = 0x555555583916
 	vpand  %ymm2,%ymm1,%ymm1                        #! PC = 0x55555558391b
 	vpand  %ymm2,%ymm0,%ymm0                        #! PC = 0x55555558391f
 	vpsubq %ymm1,%ymm3,%ymm1                        #! PC = 0x555555583923
