@@ -100,6 +100,21 @@ type tagged_rspec =
 (** Tagged range specification *)
 
 
+val vars_tagged_program : tagged_program -> VS.t
+(** Variables in a tagged program *)
+
+val lvs_tagged_program : tagged_program -> VS.t
+(** Assigned variables in a tagged program *)
+
+val vars_tagged_bexp_prove_with : tagged_bexp_prove_with -> VS.t
+(** Variables in a tagged predicate *)
+
+val vars_lined_tagged_program : lined_tagged_program -> VS.t
+(** Variables in a lined tagged program *)
+
+val lvs_lined_tagged_program : lined_tagged_program -> VS.t
+(** Assigned variables in a lined tagged program *)
+
 val tagged_ebexp_empty : unit -> tagged_ebexp
 (** An empty tagged algebraic predicate *)
 
@@ -292,6 +307,8 @@ val tagged_espec_untag : tagged_espec -> espec
 val tagged_rspec_untag : tagged_rspec -> rspec
 (** Return an untagged version of a tagged range specification *)
 
+val lined_tagged_program_unlined : lined_tagged_program -> tagged_program
+(** Remove line information *)
 
 val tagged_ebexp_prove_with_of_tagged_ebexp : tagged_ebexp -> tagged_ebexp_prove_with
 (** Insert empty prove-with clauses *)

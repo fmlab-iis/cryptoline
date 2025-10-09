@@ -292,6 +292,19 @@ let tagged_rspec_untag trs = { rspre = tagged_rbexp_untag trs.trspre;
                                rsprog = tagged_program_untag trs.trsprog;
                                rspost = tagged_rbexp_prove_with_untag trs.trspost }
 
+let lined_tagged_program_unlined p = List.split p |> snd
+
+
+(* variables *)
+
+let vars_tagged_program p = tagged_program_untag p |> vars_program
+let lvs_tagged_program p = tagged_program_untag p |> lvs_program
+let vars_tagged_bexp_prove_with e = tagged_bexp_prove_with_untag e |> vars_bexp_prove_with
+
+let vars_lined_tagged_program p = lined_tagged_program_unlined p |> vars_tagged_program
+let lvs_lined_tagged_program p = lined_tagged_program_unlined p |> lvs_tagged_program
+
+
 (* Add default_track to instructions *)
 let tag_instr i =
   match i with

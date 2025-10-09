@@ -489,6 +489,7 @@ type instr_t =
   | `TRCUT of (tagged_rbexp_prove_with contextual)
   | `TGHOST of ((var list * vecvar list) contextual) * (tagged_bexp contextual)
   | `CALL of string * ((type_kind list * type_kind list -> atom list) contextual)
+  | `INLINESPEC of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `INLINE of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `NOP
   ]

@@ -2914,7 +2914,12 @@ let get_subst_maps_vpc p =
   (am, emap_of_amap am, rmap_of_amap am, p')
 
 let subst_maps_of_list vas =
-  List.fold_left (fun (am, em, rm) (v, a) -> (VM.add v a am, VM.add v (eexp_of_atom a) em, VM.add v (rexp_of_atom a) rm)) (VM.empty, VM.empty, VM.empty) vas
+  List.fold_left
+    (fun (am, em, rm) (v, a) ->
+      ( VM.add v a am,
+        VM.add v (eexp_of_atom a) em,
+        VM.add v (rexp_of_atom a) rm )
+    ) (VM.empty, VM.empty, VM.empty) vas
 
 let rec subst_eexp em e =
   match e with
@@ -2961,9 +2966,15 @@ let subst_rbexp_prove_with rm rs = map_fst (subst_rbexp rm) rs
 let subst_bexp_prove_with em rm (es, rs) = (subst_ebexp_prove_with em es, subst_rbexp_prove_with rm rs)
 
 let subst_lval am lv =
-  if VM.mem lv am then match VM.find lv am with
-                       | Avar v -> v
-                       | Aconst (_, n) -> raise (Failure ("Failed to replace a variable " ^ string_of_var lv ^ " with a constant " ^ Z.to_string n ^ ": a variable is required."))
+  if VM.mem lv am
+  then match VM.find lv am with
+       | Avar v -> v
+       | Aconst (_, n) ->
+          let err = Printf.sprintf
+                      "Failed to replace a variable %s with a constant %s: a variable is required."
+                      (string_of_var lv)
+                      (Z.to_string n) in
+          raise (Failure err)
   else lv
 
 let subst_atom am a =

@@ -555,6 +555,7 @@ type instr_t =
   | `TRCUT of (tagged_rbexp_prove_with contextual)
   | `TGHOST of ((var list * vecvar list) contextual) * (tagged_bexp contextual)
   | `CALL of string * ((type_kind list * type_kind list -> atom list) contextual)
+  | `INLINESPEC of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `INLINE of string * ((type_kind list * type_kind list -> atom list) contextual)
   | `NOP
   ]
@@ -1610,290 +1611,423 @@ let parse_tghost_at ctx lno gvars_token tbexp_token =
   else if List.length bad_rbexps > 0 then raise_at_line lno ("The range expression " ^ string_of_rbexp (List.hd bad_rbexps) ^ " is defined without using any ghost variable.")
   else [lno, TIghost (gvars, te)]
 
+(* Visitors that rename formal parameters to corresponding actual parameters.
+   The returned visitor can be used only once. *)
+let make_rename_formals_to_actuals_visitor formal_args actual_args =
+  let (am, em, rm) = subst_maps_of_list (List.combine formal_args actual_args) in
+  let rename_formals_visitor =
+    object(*(self)*)
+      inherit tnop_visitor
+      method! tvvar v = ChangeTo (subst_lval am v)
+      method! tvatom a = ChangeTo (subst_atom am a)
+      method! tvlval v = ChangeTo (subst_lval am v)
+      method! tvgvar v = ChangeTo (subst_lval am v)
+      method! tvbexp e = ChangeTo (subst_bexp em rm e)
+    end in
+  rename_formals_visitor
+
+(* Visitors that rename actual parameters to corresponding ghost variables.
+   The returned visitor can be used only once. *)
+let make_rename_actuals_to_ghosts_visitor actual_args ghost_vars =
+  let (am, _em, _rm) = subst_maps_of_list
+                         (List.combine
+                            (tmap var_of_atom actual_args)
+                            (tmap mkatom_var ghost_vars)) in
+  let rename_actuals_visitor =
+    object(*(self)*)
+      inherit tnop_visitor
+      method! tvatom a = ChangeTo (subst_atom am a)
+    end in
+  rename_actuals_visitor
+
+(* A visitor that adds f_name^"_local_" to variable names with types unchanged *)
+let make_rename_local_visitor f_name local_args =
+  let rename_var v =
+    if VS.mem v local_args
+    then mkvar (f_name ^ "_local_" ^ v.vname) v.vtyp
+    else v in
+  object (* (self) *)
+    inherit tnop_visitor
+    method! tvvar v = ChangeTo (rename_var v)
+    method! tvlval v = ChangeTo (rename_var v)
+    method! tvgvar v = ChangeTo (rename_var v)
+  end
+
+(* Check if the inlined procedure is the main procedure. *)
+let check_inlined_func_name lno f_name =
+  if f_name = Options.Std.main_proc_name
+  then raise_at_line lno
+         (Printf.sprintf
+            "Inlining the %s function is not allowed."
+            Options.Std.main_proc_name)
+
+(*
+  Check if
+  - the number of actual parameters and the number of formal parameters are equal, and
+  - actual parameters have types compatible with types of the corresponding formal parameters.
+  Parameters:
+  - lno: line number
+  - f_name: procedure name
+  - formals: all formal parameters (list)
+  - actuals: all actual parameters (list)
+ *)
+let check_formals_actuals_match lno f_name formals actuals =
+    let check_length () =
+      if List.length actuals <> List.length formals
+      then raise_at_line lno
+             (Printf.sprintf
+                "Failed to inline the function %s: numbers of arguments mismatch."
+                f_name) in
+    let check_types () =
+      List.iter2
+        (fun formal actual ->
+          if not (is_type_compatible formal actual)
+          then raise_at_line lno
+                 (Printf.sprintf
+                    "The type of the actual parameter %s is not compatible with the type of the formal parameter %s"
+                    (string_of_atom ~typ:true actual)
+                    (string_of_var ~typ:true formal))
+        ) formals actuals in
+    check_length (); check_types()
+
+(*
+  Check if all actual parameters are defined.
+  - formals: all formal parameters (list)
+  - actuals: all actual parameters (list)
+  - inputs: all formal input parameters (list, subset of formals)
+ *)
+let check_undefined_actuals ctx lno formals actuals inputs =
+  let undefined =
+    List.fold_left2
+      (fun undefined formal actual ->
+        match actual with
+        | Avar v -> if mem_var formal inputs && not (ctx_var_is_defined ctx v)
+                    then v::undefined
+                    else undefined
+        | _ -> undefined
+      ) [] formals actuals in
+  if List.length undefined > 0
+  then raise_at_line lno
+         (Printf.sprintf
+            "Undefined program variable(s): %s"
+            (String.concat ", " (tmap string_of_var undefined)))
+
+(* Actual output parameters must be distinct. *)
+let check_distinct_actual_outputs lno actual_outputs =
+  List.fold_left
+    (fun vs a ->
+      match a with
+      | Avar v -> if SS.mem v.vname vs
+                  then raise_at_line
+                         lno
+                         (Printf.sprintf
+                            "Output actual parameters must be distinct in a call or inlinespec: %s"
+                            v.vname)
+                  else SS.add v.vname vs
+      | Aconst _ -> vs
+    ) SS.empty actual_outputs
+
+(* Check if a formal input parameter that is assigned in the procedure body
+   appears in the postcondition. *)
+let check_updated_formal_inputs lno formal_inputs lvs_program vars_post =
+  let bad_vs = VS.inter (VS.inter (VS.of_list formal_inputs) lvs_program) vars_post in
+  if VS.cardinal bad_vs > 0
+  then raise_at_line lno
+         (Printf.sprintf "A formal input parameter used in the postcondition cannot be assigned: %s"
+            (VS.elements bad_vs |> tmap string_of_var |> String.concat ", "))
+
+(* Check if a formal input parameter that is assigned in the procedure body
+   corresponds to an actual parameter that is a variable *)
+let check_inline_assigned_formal_input_actual_variable lno assigned_vars formal_inputs actual_inputs =
+  List.iter (
+      fun (f, a) ->
+      if VS.mem f assigned_vars && not (atom_is_var a)
+      then raise_at_line lno
+             (Printf.sprintf
+                "An actual parameter must be a variable \
+                 if the corresponding formal parameter \
+                 is assigned in the procedure to be inlined:\
+                 formal: %s, actual: %s"
+                (string_of_var f)
+                (string_of_atom a))
+    ) (List.combine formal_inputs actual_inputs)
+
+(* Create a ghost variable for an actual parameter.
+   The function will not define the returned variable in the context. *)
+let mk_ghost_var_for_actual ctx a =
+  let rec ghost_name n =
+    let m = "ghost_" ^ n ^ "_" ^ Int.to_string (Random.int 100000) in
+    if ctx_name_is_var ctx m || ctx_name_is_ghost ctx m
+    then ghost_name n
+    else m in
+  let mk_ghostvar a =
+    match a with
+    | Avar v -> mkvar (ghost_name v.vname) (typ_of_var v)
+    | Aconst (typ, _) -> mkvar (ghost_name "const") typ in
+  mk_ghostvar a
+
+let mk_ghost_instr_for_actuals ctx actuals =
+  let mk_eeq a gvar =
+    match a with
+    | Avar avar -> eeq (evar avar) (evar gvar)
+    | Aconst (_, z) -> eeq (econst z) (evar gvar) in
+  let mk_req a gvar =
+    match a with
+    | Avar avar -> req (size_of_var avar) (rvar avar) (rvar gvar)
+    | Aconst (typ, z) ->
+       let sz = size_of_typ typ in
+       req sz (rconst sz z) (rvar gvar) in
+  let ghost_actuals = tmap (mk_ghost_var_for_actual ctx) actuals in
+  let ghost_bexp =
+    (List.rev_map2 (fun avar gvar -> mk_eeq avar gvar)
+       actuals ghost_actuals |> List.rev |> eands,
+     List.rev_map2 (fun avar gvar -> mk_req avar gvar)
+       actuals ghost_actuals |> List.rev |> rands) in
+  let ghost_instr =
+    TIghost (VS.of_list ghost_actuals, tagged_bexp_singleton Options.Std.all_track ghost_bexp) in
+  (ghost_actuals, ghost_instr)
 
 (**
- * Call is the same as inline in semantics.
- * For verification, we do not inline a called procedure but replace
- * a call statement with pre-/post-conditions.
+ * Call is a real function call.
+ * A call statement is replaced with pre-/post-conditions.
+ * Below is a list of requirements for a call.
+ * - main cannot be called
+ * - size of formal parameters = size of actual parameters
+ * - types of formal parameters are compatible with types of the
+ *   corresponding actual parameters
+ * - actual output parameters must be variables (checked in
+ *   actuals_token->parse_actual_atom->resolve_output_atom_with)
+ * - actual output parameters must be distinct
+ * - a formal input parameter cannot be assigned in the procedure
+ *   body if the parameter appears in the postcondition
+ * - only formal parameters can be used in the postcondition (checked
+ *   in parsing the procedure definition)
+ * - an actual parameter can be used as input and output, and in this
+ *   case, the input in the postcondition will be replaced by a
+ *   ghost variable, which captures the initial value of the actual
+ *   parameter (to allow this, the input parameter cannot be assigned
+ *   in the procedure)
+ * Renaming local variables has no effect.
  *)
 let parse_call_at ctx lno fname_token actuals_token =
-  (* The function name *)
-  let fname = fname_token in
-  (* Calling the main function is not allowed *)
-  let _ = if fname = Options.Std.main_proc_name then raise_at_line lno ("Calling the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
-  (* The function definition *)
-  let f =
-    try
-      SM.find fname ctx.cfuns
-    with Not_found ->
-      raise_at_line lno ("Call an undefined function '" ^ fname ^ "'.") in
-  (* The variables updated in the function body *)
-  let lvals = lined_tagged_program_untag f.fbody |> List.split |> snd |> lvs_program in
-  (* The actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-  (* What are checked in parsing actual parameters: length, type, non-ghost *)
-  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
-  let formals = f.fargs@f.fouts in
-  let _ =
-    (* The length and type are checked in parsing actual parameters. *)
-    assert (List.length actuals = List.length formals) in
-  let (actual_ins, actual_outs) =
-    Utils.Std.partition_at actuals (List.length f.fargs) in
-  (* Actual output parameters must be distinct. *)
-  let _ = List.fold_left (fun vs a ->
-              match a with
-              | Avar v -> if SS.mem v.vname vs then raise_at_line lno ("The actual parameter " ^ v.vname ^ " cannot be used as two outputs in a function call.")
-                          else SS.add v.vname vs
-              | Aconst _ -> vs
-            ) SS.empty actual_outs in
-  (*
-   * Create ghost variables for defined actual variables.
-   * It is allowed to have output parameters that are undefined before
-   * this function call.
-   *)
-  let defined_actuals =
-    List.rev_append (List.rev actual_ins) (List.filter (ctx_atom_is_defined ctx) actual_outs) in
-  let ghost_actuals =
-    let rec ghost_name n =
-      let m = "ghost_" ^ n ^ "_" ^ Int.to_string (Random.int 100000) in
-      if ctx_name_is_var ctx m || ctx_name_is_ghost ctx m
-      then ghost_name n
-      else m in
-    let mk_ghostvar a =
-      match a with
-      | Avar v -> mkvar (ghost_name v.vname) (typ_of_var v)
-      | Aconst (typ, _) -> mkvar (ghost_name "const") typ in
-    List.rev (List.rev_map mk_ghostvar defined_actuals) in
-  let ghost_instr =
-    let ghost_bexp =
-      let mk_eeq a gvar =
-        match a with
-        | Avar avar -> eeq (evar avar) (evar gvar)
-        | Aconst (_, z) -> eeq (econst z) (evar gvar) in
-      let mk_req a gvar =
-        match a with
-        | Avar avar -> req (size_of_var avar) (rvar avar) (rvar gvar)
-        | Aconst (typ, z) ->
-           let sz = size_of_typ typ in
-           req sz (rconst sz z) (rvar gvar) in
-      (List.rev_map2 (fun avar gvar -> mk_eeq avar gvar)
-         defined_actuals ghost_actuals |> List.rev |> eands,
-       List.rev_map2 (fun avar gvar -> mk_req avar gvar)
-         defined_actuals ghost_actuals |> List.rev |> rands) in
-    TIghost (VS.of_list ghost_actuals, tagged_bexp_singleton Options.Std.all_track ghost_bexp) in
-  let (ghost_ins, _) =
-    Utils.Std.partition_at ghost_actuals (List.length f.fargs) in
+  (* Parse the function name and find the function definition *)
+  let f_name, f_def =
+    let name = fname_token in
+    let def =
+      try SM.find name ctx.cfuns
+      with Not_found ->
+        raise_at_line lno (Printf.sprintf "Inline an undefined function '%s'." name) in
+    name, def in
+  let _ = check_inlined_func_name lno f_name in
+  (* Collect formal and actual parameters *)
+  let formal_inputs, formal_args = f_def.fargs, f_def.fargs@@f_def.fouts in
+  let actual_args = actuals_token ctx (tmap type_of_var_kind f_def.farg_kinds,
+                                       tmap type_of_var_kind f_def.fout_kinds) in
+  let _ = check_formals_actuals_match lno f_name formal_args actual_args in
+  let _ = check_undefined_actuals ctx lno formal_args actual_args formal_inputs in
+  let actual_inputs, actual_outputs = Utils.Std.partition_at actual_args (List.length formal_inputs) in
+  let _ = check_distinct_actual_outputs lno actual_outputs in
+  let _ = check_updated_formal_inputs
+            lno formal_inputs (lvs_lined_tagged_program f_def.fbody)
+            (vars_tagged_bexp_prove_with f_def.fpost) in
+  let actual_input_vars = List.filter atom_is_var actual_inputs in
+  let actual_output_vars = List.filter atom_is_var actual_outputs in
+  let actual_inouts =
+    let inset = VS.of_list (tmap var_of_atom actual_input_vars) in
+    List.filter (fun o -> VS.mem (var_of_atom o) inset) actual_output_vars in
+  (* Ghost variables *)
+  let (ghost_inouts, lined_ghost_instr) =
+    if List.length actual_inouts = 0
+    then ([], [])
+    else let (ghost_vars, ghost_instr) = mk_ghost_instr_for_actuals ctx actual_inouts in
+         (ghost_vars, [(lno, ghost_instr)]) in
   (* Assert precondition (involving only input parameters) *)
-  let invars_to_ghosts =
-    List.combine f.fargs
-      (List.rev (List.rev_map mkatom_var ghost_ins)) in
   let assert_instr =
-    let (_, em, rm) = subst_maps_of_list invars_to_ghosts in
-    let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te, tagged_rbexp_prove_with_of_tagged_rbexp tr) in
-    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f.fpre)) in
-  (* Make nondeterministic assignments to lvalues (including output parameters) *)
+    let (_, em, rm) = subst_maps_of_list (List.combine formal_inputs actual_inputs) in
+    let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te,
+                                   tagged_rbexp_prove_with_of_tagged_rbexp tr) in
+    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre)) in
+  (* Make nondeterministic assignments to actual outputs *)
   let nondet_instrs =
-    let actual_out_vars = List.rev_map var_of_atom actual_outs |> List.rev in
-    let vars_for_nondet = VS.elements (VS.union lvals (VS.of_list actual_out_vars)) in
-    List.fold_left (fun r ovar -> (lno, TInondet ovar)::r)
-      [] (List.rev vars_for_nondet) in
+    List.fold_left (fun res ovar -> (lno, TInondet ovar)::res)
+      [] (List.rev_map var_of_atom actual_outputs) in
   (* Assume postcondition (involving input and output parameters *)
   let assume_instr =
-    (*
-      An input variable in the postcondition may refer to
-      - its initial value (the corresponding ghost variable), or
-      - its final value (the variable itself)
-      depending on whether its value is updated in the procedure body
-     *)
-    let invars_at_the_end_rev =
-      List.rev_map
-        (fun (invar, actual_atom) ->
-          if VS.mem invar lvals
-          then mkatom_var invar
-          else actual_atom
-        )
-        invars_to_ghosts in
-    let assume_pats =
-      List.combine formals
-        (List.rev_append invars_at_the_end_rev
-           actual_outs) in
-    let (_, em, rm) = subst_maps_of_list assume_pats in
-    let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss, tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
-    TIassume (subst_tagged_bexp em rm (from_prove_with f.fpost)) in
+    (* change actual_inputs in actual_inouts to ghost_inouts *)
+    let actual_args' =
+      let actual_inputs' =
+        if List.length actual_inouts = 0
+        then actual_inputs
+        else let rename_visitor = make_rename_actuals_to_ghosts_visitor actual_inouts ghost_inouts in
+             tmap (tvisit_atom rename_visitor) actual_inputs in
+      actual_inputs' @@ actual_outputs in
+    let (_, em, rm) = subst_maps_of_list (List.combine formal_args actual_args') in
+    let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss,
+                                             tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
+    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost)) in
   (* Add actual output parameters to the parsing context *)
-  let _ =
-    let actual_vars = List.rev (List.rev_map (fun a ->
-                                    match a with
-                                    | Avar v -> v
-                                    | Aconst _ -> raise_at_line lno ("Actual output parameters must be variables.")
-                                  ) actual_outs) in
-    List.iter (ctx_define_var ctx) actual_vars in
-  (* Define ghost variables *)
-  let _ = List.iter (ctx_define_ghost ctx) ghost_actuals in
-  [(lno, ghost_instr); (lno, assert_instr)] @ nondet_instrs @
-    [(lno, assume_instr)]
+  let _ = List.iter (ctx_define_var ctx) (tmap var_of_atom actual_outputs) in
+  let _ = List.iter (ctx_define_ghost ctx) ghost_inouts in
+  (* Final result *)
+  lined_ghost_instr @@ [(lno, assert_instr)] @@ nondet_instrs @@ [(lno, assume_instr)]
 
 (**
-   true:
-   inline a procedure and rename every occurrence of a formal parameter
-   (even if it is assigned again) with its actual parameter
+ * Inlinespec is semantically identical to inline but is replaced
+ * with pre-/post-conditions rather than procedure body.
+ * Below is a list of requirements for an inlinespec.
+ * - main cannot be inlined
+ * - size of formal parameters = size of actual parameters
+ * - types of formal parameters are compatible with types of the
+ *   corresponding actual parameters
+ * - if a formal parameter is assigned in the procedure, the corresponding
+ *   actual parameter must be a variable
+ * - actual output parameters must be variables (checked in
+ *   actuals_token->parse_actual_atom->resolve_output_atom_with)
+ * - only formal parameters can be used in the postcondition (checked
+ *   in parsing the procedure definition)
+ * - an actual parameter can be used as input and output, and in this
+ *   case, the input in the postcondition will be replaced by a
+ *   ghost variable, which captures the initial value of the actual
+ *   parameter (to allow this, such input parameter cannot be assigned
+ *   in the procedure)
+ * Notes:
+ * - nondet is applied to the union of
+ *   + actual output parameters, and
+ *   + variables assigned in the procedure body
+ *)
+let parse_inlinespec_at ctx lno fname_token actuals_token =
+  (* Parse the function name and find the function definition *)
+  let f_name, f_def =
+    let name = fname_token in
+    let def =
+      try SM.find name ctx.cfuns
+      with Not_found ->
+        raise_at_line lno (Printf.sprintf "Inline an undefined function '%s'." name) in
+    name, def in
+  let _ = check_inlined_func_name lno f_name in
+  (* Collect formal and actual parameters *)
+  let formal_inputs, formal_args = f_def.fargs, f_def.fargs@@f_def.fouts in
+  let actual_args = actuals_token ctx (tmap type_of_var_kind f_def.farg_kinds,
+                                       tmap type_of_var_kind f_def.fout_kinds) in
+  let _ = check_formals_actuals_match lno f_name formal_args actual_args in
+  let _ = check_undefined_actuals ctx lno formal_args actual_args formal_inputs in
+  let actual_inputs, actual_outputs = Utils.Std.partition_at actual_args (List.length formal_inputs) in
+  let _ = check_distinct_actual_outputs lno actual_outputs in
+  let actual_input_vars = List.filter atom_is_var actual_inputs in
+  let actual_output_vars = List.filter atom_is_var actual_outputs in
+  let actual_inouts =
+    let inset = VS.of_list (tmap var_of_atom actual_input_vars) in
+    List.filter (fun o -> VS.mem (var_of_atom o) inset) actual_output_vars in
+  let formal_inputs_also_outputs =
+    List.combine formal_inputs actual_inputs
+    |> List.filter (fun (_, a) -> List.mem a actual_inouts)
+    |> List.split
+    |> fst in
+  let _ = check_updated_formal_inputs
+            lno formal_inputs_also_outputs (lvs_lined_tagged_program f_def.fbody)
+            (vars_tagged_bexp_prove_with f_def.fpost) in
+  (* Ghost variables *)
+  let (ghost_inouts, lined_ghost_instr) =
+    if List.length actual_inouts = 0
+    then ([], [])
+    else let (ghost_vars, ghost_instr) = mk_ghost_instr_for_actuals ctx actual_inouts in
+         (ghost_vars, [(lno, ghost_instr)]) in
+  (* Collect variables assigned in the procedure body, with formal variables substituted with actual variables *)
+  let assigned_vars =
+    let lvs = lvs_lined_tagged_program f_def.fbody in
+    let _ = check_inline_assigned_formal_input_actual_variable lno lvs formal_inputs actual_inputs in
+    let rename_local_vars vars =
+      if !Options.Std.rename_local
+      then let local_vars = VS.diff vars (VS.of_list formal_args) in
+           let rename_local_visitor = make_rename_local_visitor f_name local_vars in
+           VS.map (tvisit_var rename_local_visitor) vars
+      else vars in
+    let rename_formals vars =
+      let rename_formals_visitor = make_rename_formals_to_actuals_visitor formal_args actual_args in
+      VS.map (tvisit_var rename_formals_visitor) vars in
+    lvs |> rename_local_vars |> rename_formals in
+  (* Assert precondition (involving only input parameters) *)
+  let assert_instr =
+    let (_, em, rm) = subst_maps_of_list (List.combine formal_inputs actual_inputs) in
+    let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te,
+                                   tagged_rbexp_prove_with_of_tagged_rbexp tr) in
+    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre)) in
+  (* Make nondeterministic assignments to the union of actual outputs and assigned variables *)
+  let nondet_instrs =
+    let actual_output_vars_rev = List.rev_map var_of_atom actual_outputs in
+    let assigned_but_not_output = VS.elements (VS.diff assigned_vars (VS.of_list actual_output_vars_rev)) in
+    List.fold_left (fun res ovar -> (lno, TInondet ovar)::res)
+      [] (List.rev_append assigned_but_not_output actual_output_vars_rev) in
+  (* Assume postcondition (involving input and output parameters *)
+  let assume_instr =
+    let actual_args' =
+      let actual_inputs' =
+        if List.length actual_inouts = 0
+        then actual_inputs
+        else let rename_visitor = make_rename_actuals_to_ghosts_visitor actual_inouts ghost_inouts in
+             tmap (tvisit_atom rename_visitor) actual_inputs in
+      actual_inputs' @@ actual_outputs in
+    let (_, em, rm) = subst_maps_of_list (List.combine formal_args actual_args') in
+    let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss,
+                                             tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
+    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost)) in
+  (* Add actual output parameters to the parsing context *)
+  let _ = List.iter (ctx_define_var ctx) (tmap var_of_atom actual_outputs) in
+  (* Final result *)
+  lined_ghost_instr @@ [(lno, assert_instr)] @@ nondet_instrs @@ [(lno, assume_instr)]
 
-   false:
-   inline a procedure and view the formal parameters as function parameters
-   like the call statement
+(**
+ * Inline procedure body by replacing formal parameters with actual parameters.
+ * Ignore the pre- and post-conditions of the inlined procedure.
+ * Below is a list of requirements for an inline.
+ * - main cannot be inlined
+ * - size of formal parameters = size of actual parameters
+ * - types of formal parameters are compatible with types of the corresponding
+ *   actual parameters
+ * - actual output parameters must be variables (checked in
+ *   actuals_token->parse_actual_atom->resolve_output_atom_with)
+ * - only formal parameters can be used in the postcondition (checked
+ *   in parsing the procedure definition)
 *)
-let rename_style_inline = ref true
-
 let parse_inline_at ctx lno fname_token actuals_token =
   (* Parse the function name and find the function definition *)
-  let fname = fname_token in
-  let f = try SM.find fname ctx.cfuns
-          with Not_found ->
-            raise_at_line lno ("Inline an undefined function '" ^ fname ^ "'.") in
-  (* Check: inlining the main function is not allowed *)
-  let check_inlined_func_name fname =
-    if fname = Options.Std.main_proc_name
-    then raise_at_line lno ("Inlining the " ^ Options.Std.main_proc_name ^ " function is not allowed.") in
-  (* Check:
-     - the number of actual parameters should match the number of formal parameters
-     - actual parameters should have types compatible with types of formal parameters *)
-  let check_formal_actuals formals actuals =
-    let check_length () =
-      if List.length actuals <> List.length formals then
-        raise_at_line lno ("Failed to inline the function " ^ fname ^ ": numbers of arguments mismatch.") in
-    let check_types () =
-      List.iter2 (fun formal actual ->
-          if not (is_type_compatible formal actual) then
-            raise_at_line lno ("The type of the actual parameter " ^ string_of_atom ~typ:true actual
-                             ^ " is not compatible with the type of the formal parameter " ^ string_of_var ~typ:true formal))
-        formals actuals in
-    check_length (); check_types() in
-  (* Check: actual inputs should be defined *)
-  let check_undefined formals actuals inputs =
-    let undefined =
-      List.fold_left2 (fun undefined formal actual ->
-          match actual with
-          | Avar v -> if mem_var formal inputs && not (ctx_var_is_defined ctx v) then v::undefined else undefined
-          | _ -> undefined
-        ) [] formals actuals in
-    if List.length undefined > 0 then
-      raise_at_line lno ("Undefined variable: " ^ string_of_var (List.hd undefined)) in
-  (* A visitor that adds fname^"_local_" to variable names with types unchanged *)
-  let make_rename_local_visitor fname =
-    let rename_var v = mkvar (fname ^ "_local_" ^ v.vname) v.vtyp in
-    object (* (self) *)
-      inherit tnop_visitor
-      method! tvvar v = ChangeTo (rename_var v)
-      method! tvlval v = ChangeTo (rename_var v)
-      method! tvgvar v = ChangeTo (rename_var v)
-    end in
-  (* Visitors that rename formal parameters to corresponding actual parameters.
-     Every returned visitor can be used only once. *)
-  let make_rename_formals_visitor formals actuals inputs outputs =
-    (* replto: "rename" a formal parameter v to its corresponding actual parameter *)
-    let replto ?(lval=false) v pats =
-      let act = VM.find v pats in
-      match act with
-      | Avar v' -> Avar {v with vname = v'.vname}
-      | Aconst _ -> if lval then raise_at_line lno ("Cannot use " ^ string_of_atom act ^ " as an lval")
-                    else act in
-    let pats = List.fold_left2 (
-                   fun m formal actual ->
-                   VM.add formal actual m
-                 ) VM.empty formals actuals in
-    let fvars = VS.of_list formals in
-    let ivars = ref (VS.of_list inputs) in
-    let ovars = ref (VS.of_list outputs) in
-    let rename_formals_visitor =
-      object(*(self)*)
-        inherit tnop_visitor
-        method! tvatom a =
-          match a with
-          | Avar v -> if VS.mem v fvars
-                      then ChangeTo (replto v pats)
-                      else SkipChildren
-          | Aconst _ -> SkipChildren
-        method! tvlval v =
-          if VS.mem v fvars
-          then ChangeTo (var_of_atom (replto v pats))
-          else SkipChildren
-        method! tvgvar v =
-          if VS.mem v fvars
-          then ChangeTo (var_of_atom (replto v pats))
-          else SkipChildren
-      end in
-    let rename_inputs_visitor =
-      object(*(self)*)
-        inherit tnop_visitor
-        (* Replace read of an input parameter with its corresponding actual parameter
-           until the input parameter is assigned in the procedure *)
-        method! tvatom a =
-          match a with
-          | Avar v -> if VS.mem v !ivars
-                      then ChangeTo (replto v pats)
-                      else SkipChildren
-          | Aconst _ -> SkipChildren
-        method! tvlval v =
-          let _ = ivars := VS.remove v !ivars in
-          SkipChildren
-      end in
-    let rename_outputs_visitor =
-      object(*(self)*)
-        inherit tnop_visitor
-        (* Replace read of an output parameter with its corresponding actual parameter
-           until the output parameter is assigned in the procedure. The first assignment
-           of the output parameter is replaced as well. This visitor must be used
-           on a reversed program. *)
-        method! tvatom a =
-          match a with
-          | Avar v -> if VS.mem v !ovars
-                      then ChangeTo (replto v pats)
-                      else SkipChildren
-          | Aconst _ -> SkipChildren
-        method! tvlval v =
-          let res = if VS.mem v !ovars
-                    then ChangeTo (var_of_atom (replto ~lval:true v pats))
-                    else SkipChildren in
-          let _ = ovars := VS.remove v !ovars in
-          res
-      end in
-    (rename_formals_visitor, rename_inputs_visitor, rename_outputs_visitor) in
-  (* *)
-  let _ = check_inlined_func_name fname in
-  (* Rename local variables *)
-  let (fbody, fargs, fouts) =
-    if !Options.Std.rename_local then
-      let rename_local_visitor = make_rename_local_visitor fname in
-      let fargs = List.map (tvisit_var rename_local_visitor) f.fargs in
-      let fouts = List.map (tvisit_var rename_local_visitor) f.fouts in
-      let fbody = tvisit_lined_program rename_local_visitor f.fbody in
-      (fbody, fargs, fouts)
-    else
-      (f.fbody, f.fargs, f.fouts) in
-  (* Formal parameters after renaming *)
-  let inputs = fargs in
-  let outputs = fouts in
-  let formals = inputs@outputs in
-  (* Parse the actual paramaters, the types of formal arguments are requried to parse actual parameters *)
-  let actuals = actuals_token ctx (tmap type_of_var_kind f.farg_kinds, tmap type_of_var_kind f.fout_kinds) in
-  let _ = check_formal_actuals formals actuals in
-  let _ = check_undefined formals actuals inputs in
-  (* Check: undefined variables *)
-  let (rename_formals_visitor, rename_inputs_visitor, rename_outputs_visitor) = make_rename_formals_visitor formals actuals inputs outputs in
-  let p = if !rename_style_inline
-          then tvisit_lined_program rename_formals_visitor fbody
-          else tvisit_lined_program rename_inputs_visitor fbody
-               |> tvisit_lined_program ~reverse:true rename_outputs_visitor
-  in
-  (* Make inlined variables defined *)
-  (* Since local variables are renamed but output variables are unchanged,
-     collect variables again from the function body *)
+  let f_name, f_def =
+    let name = fname_token in
+    let def =
+      try SM.find name ctx.cfuns
+      with Not_found ->
+        raise_at_line lno (Printf.sprintf "Inline an undefined function '%s'." name) in
+    name, def in
+  let _ = check_inlined_func_name lno f_name in
+  (* Collect formal and actual parameters *)
+  let formal_inputs, formal_args = f_def.fargs, f_def.fargs@@f_def.fouts in
+  let actual_args = actuals_token ctx (tmap type_of_var_kind f_def.farg_kinds,
+                                       tmap type_of_var_kind f_def.fout_kinds) in
+  let _ = check_formals_actuals_match lno f_name formal_args actual_args in
+  let _ = check_undefined_actuals ctx lno formal_args actual_args formal_inputs in
+  let actual_inputs, _ = Utils.Std.partition_at actual_args (List.length formal_inputs) in
+  let lvs = lvs_lined_tagged_program f_def.fbody in
+  let _ = check_inline_assigned_formal_input_actual_variable lno lvs formal_inputs actual_inputs in
+  (* Rename formal parameters and local parameters. *)
+  let f_body =
+    let renamed_local_vars body =
+      if !Options.Std.rename_local
+      then let local_vars = VS.diff (vars_lined_tagged_program body) (VS.of_list formal_args) in
+           let rename_local_visitor = make_rename_local_visitor f_name local_vars in
+           tvisit_lined_program rename_local_visitor body
+      else body in
+    let rename_formals body =
+      let rename_formals_visitor = make_rename_formals_to_actuals_visitor formal_args actual_args in
+      tvisit_lined_program rename_formals_visitor body in
+    f_def.fbody |> renamed_local_vars |> rename_formals in
+  (* Make inlined variables defined. Collect variables again from the function body. *)
   let _ =
-    let p = tagged_program_untag (List.split p |> snd) in
+    let p = tagged_program_untag (lined_tagged_program_unlined f_body) in
     let _ = VS.iter (ctx_define_var ctx) (lvs_program ~upd:true p) in
     let _ = VS.iter (ctx_define_carry ctx) (lcarries_program ~upd:true p) in
     let _ = VS.iter (ctx_define_ghost ctx) (gvs_program ~upd:true p) in
     () in
-  p
+  f_body
 
 (* Given a list of (writes, read), make a series of aliasing movs on colliding names.
      Bsesides instructions, it also returns some context after rewriting *)
@@ -2822,6 +2956,8 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_tghost_at ctx lno gvars bexp
   | `CALL (id, actuals) ->
      parse_call_at ctx lno id actuals
+  | `INLINESPEC (id, actuals) ->
+     parse_inlinespec_at ctx lno id actuals
   | `INLINE (id, actuals) ->
      parse_inline_at ctx lno id actuals
   | `NOP -> []
@@ -3482,8 +3618,14 @@ let parse_proc lno fname (arg_kinds, out_kinds) pre_tok instrs post_tok =
         (* => this is checked in parsing the pre-condition *)
         (* 2. post-condition can access only input and output variables *)
         let undefined_post = VS.diff (vars_bexp_prove_with (tagged_bexp_prove_with_untag g)) (VS.union fins fouts) in
-        let _ = if not (VS.is_empty undefined_post) then raise_at_line lno ("Variable " ^ string_of_var (VS.min_elt undefined_post) ^ " is not a formal parameter of procedure " ^ fname ^ ". "^
-                                                                              "Variables in post-conditions for procedures other than " ^ Options.Std.main_proc_name ^ " must be formal input or output variables.") in
+        let _ = if not (VS.is_empty undefined_post)
+                then raise_at_line lno ("Variable "
+                                        ^ string_of_var (VS.min_elt undefined_post)
+                                        ^ " is not a formal parameter of procedure "
+                                        ^ fname ^ ". "
+                                        ^ "Variables in post-conditions for procedures other than "
+                                        ^ Options.Std.main_proc_name
+                                        ^ " must be formal input or output variables.") in
         () in
     let _ = ctx.cfuns <- SM.add fname { fname = fname;
                                         farg_kinds = arg_kinds;

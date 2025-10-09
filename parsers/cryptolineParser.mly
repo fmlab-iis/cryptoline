@@ -32,7 +32,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
-%token AT PROC INLINE CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
+%token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -402,6 +402,7 @@ instr:
   | GHOST gvars COLON tagged_bexp                 { (get_line_start(), `TGHOST ($2, $4)) }
   /* Extensions */
   | CALL ID LPAR actuals RPAR                     { (get_line_start(), `CALL ($2, $4)) }
+  | INLINESPEC ID LPAR actuals RPAR               { (get_line_start(), `INLINESPEC ($2, $4)) }
   | INLINE ID LPAR actuals RPAR                   { (get_line_start(), `INLINE ($2, $4)) }
   | NOP                                           { (get_line_start(), `NOP) }
   /* Errors */
