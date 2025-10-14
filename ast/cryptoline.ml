@@ -885,7 +885,7 @@ let simplify_prove_with_specs pwss =
     match pws with
     | Cuts ids -> ids
     | _ -> [] in
-  let cut_idxs = List.map cut_ids_of_pws pwss |> List.map IS.of_list |> union_iss |> IS.elements in
+  let cut_idxs = tmap cut_ids_of_pws pwss |> tmap IS.of_list |> union_iss |> IS.elements in
   let has_all_cuts = List.mem AllCuts pwss in
   let has_precondition = List.mem Precondition pwss in
   let has_all_assumes = List.mem AllAssumes pwss in
@@ -931,9 +931,9 @@ let merge_rbexp_prove_with rs =
 let merge_bexp_prove_with (es, rs) =
   (merge_ebexp_prove_with es, merge_rbexp_prove_with rs)
 
-let split_epwss (e, pwss) = split_eand e |> List.map (fun e -> (e, pwss))
+let split_epwss (e, pwss) = split_eand e |> tmap (fun e -> (e, pwss))
 
-let split_rpwss (r, pwss) = split_rand r |> List.map (fun r -> (r, pwss))
+let split_rpwss (r, pwss) = split_rand r |> tmap (fun r -> (r, pwss))
 
 (* [split_eand_prove_with es] splits the conjunctions in [es].
    For exmaple [split_eand_prove_with [(Eand e1 e2, pwss)]] is [(e1, pwss); (e2, pwss)]
@@ -1195,7 +1195,8 @@ let string_of_var ?typ:(typ=false) v =
   if typ then str ^ typ_delim ^ string_of_typ v.vtyp
   else str
 
-let string_of_vs ?typ:(typ=false) vs = String.concat ", " (List.map (fun v -> string_of_var ~typ:typ v) (VS.elements vs))
+let string_of_vs ?typ:(typ=false) vs =
+  String.concat ", " (tmap (fun v -> string_of_var ~typ:typ v) (VS.elements vs))
 
 let string_of_eunop op =
   match op with
@@ -1295,7 +1296,7 @@ let rec string_of_ebexp ?typ:(typ=false) e =
      ^ (match ms with
         | [] -> ""
         | [m] -> " (mod " ^ (string_of_eexp ~typ:typ m) ^ ")"
-        | _ -> " (mod [" ^ (String.concat ", " (List.map (string_of_eexp ~typ:typ) ms)) ^ "])")
+        | _ -> " (mod [" ^ (String.concat ", " (tmap (string_of_eexp ~typ:typ) ms)) ^ "])")
   | Ecmp (op, e1, e2) ->
      let string_of_op op =
        match op with
@@ -1305,7 +1306,7 @@ let rec string_of_ebexp ?typ:(typ=false) e =
      let es = split_eand e in
      match es with
      | _::_::[] -> string_of_ebexp ~typ:typ e1 ^ " /\\ " ^ string_of_ebexp ~typ:typ e2
-     | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_ebexp ~typ:typ e) es) ^ "]"
+     | _ -> "and [" ^ String.concat ", " (tmap (fun e -> string_of_ebexp ~typ:typ e) es) ^ "]"
 
 let rec string_of_rbexp ?typ:(typ=false) e =
   match e with
@@ -1319,12 +1320,12 @@ let rec string_of_rbexp ?typ:(typ=false) e =
       | _::_::[] -> (if rbexp_is_ror e1 then "(" ^ string_of_rbexp ~typ:typ e1 ^ ")" else string_of_rbexp ~typ:typ e1)
                     ^ " /\\ "
                     ^ (if rbexp_is_ror e2 then "(" ^ string_of_rbexp ~typ:typ e2 ^ ")" else string_of_rbexp ~typ:typ e2)
-      | _ -> "and [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]")
+      | _ -> "and [" ^ String.concat ", " (tmap (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]")
   | Ror (e1, e2) ->
      let es = split_ror e in
      match es with
      | _::_::[] -> string_of_rbexp ~typ:typ e1 ^ " \\/ " ^ string_of_rbexp ~typ:typ e2
-     | _ -> "or [" ^ String.concat ", " (List.map (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
+     | _ -> "or [" ^ String.concat ", " (tmap (fun e -> string_of_rbexp ~typ:typ e) es) ^ "]"
 
 let string_of_bexp ?typ:(typ=false) (e, r) =
   string_of_ebexp ~typ:typ e ^ " " ^ bexp_separator ^ " " ^ string_of_rbexp ~typ:typ r
@@ -1343,7 +1344,7 @@ let string_of_prove_with_spec ps =
   | RangeSolver s -> "qfbv solver " ^ s
 
 let string_of_prove_with_specs pss =
-  String.concat ", " (List.map string_of_prove_with_spec pss)
+  String.concat ", " (tmap string_of_prove_with_spec pss)
 
 let string_of_epwss ?typ:(typ=false) (e, pwss) =
   string_of_ebexp ~typ:typ e ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]"))
@@ -1437,7 +1438,7 @@ let string_of_instr_no_semicolon ?typ:(typ=false) i =
       | [], _ -> "rcut " ^ string_of_rbexp_prove_with rcuts
       | _, [] -> "ecut " ^ string_of_ebexp_prove_with ecuts
       | _, _ -> "cut " ^ string_of_bexp_prove_with (ecuts, rcuts))
-  | Ighost (vs, e) -> "ghost " ^ String.concat ", " (List.map (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
+  | Ighost (vs, e) -> "ghost " ^ String.concat ", " (tmap (fun v -> string_of_var ~typ:true v) (VS.elements vs)) ^ ": " ^ string_of_bexp ~typ:typ e
 
 let string_of_instr ?semicolon:(semicolon=true) ?typ:(typ=false) i = string_of_instr_no_semicolon ~typ:typ i ^ (if semicolon then ";" else "")
 
@@ -1799,7 +1800,7 @@ let rec vids_ebexp e =
   | Etrue -> IS.empty
   | Ecmp (_, e1, e2)
   | Eeq (e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
-  | Eeqmod (e1, e2, ps) -> List.fold_left IS.union (IS.union (vids_eexp e1) (vids_eexp e2)) (List.map vids_eexp ps)
+  | Eeqmod (e1, e2, ps) -> List.fold_left IS.union (IS.union (vids_eexp e1) (vids_eexp e2)) (tmap vids_eexp ps)
   | Eand (e1, e2) -> IS.union (vids_ebexp e1) (vids_ebexp e2)
 
 let rec vids_rexp e =
@@ -1823,9 +1824,9 @@ let rec vids_rbexp e =
 
 let vids_bexp e = IS.union (vids_ebexp (eqn_bexp e)) (vids_rbexp (rng_bexp e))
 
-let vids_ebexp_prove_with es = List.split es |> fst |> List.map vids_ebexp |> List.fold_left IS.union IS.empty
+let vids_ebexp_prove_with es = List.split es |> fst |> tmap vids_ebexp |> List.fold_left IS.union IS.empty
 
-let vids_rbexp_prove_with rs = List.split rs |> fst |> List.map vids_rbexp |> List.fold_left IS.union IS.empty
+let vids_rbexp_prove_with rs = List.split rs |> fst |> tmap vids_rbexp |> List.fold_left IS.union IS.empty
 
 let vids_bexp_prove_with (es, rs) = IS.union (vids_ebexp_prove_with es) (vids_rbexp_prove_with rs)
 
@@ -2355,7 +2356,7 @@ let ssa_instr m i =
   | Iassert e -> (m, Iassert (ssa_bexp_prove_with m e))
   | Iassume e -> (m, Iassume (ssa_bexp m e))
   | Icut e -> (m, Icut (ssa_bexp_prove_with m e))
-  | Ighost (vs, e) -> (m, Ighost (VS.of_list (List.map (ssa_var m) (VS.elements vs)), ssa_bexp m e))
+  | Ighost (vs, e) -> (m, Ighost (VS.of_list (tmap (ssa_var m) (VS.elements vs)), ssa_bexp m e))
 
 let ssa_program m p =
   let rec helper (m, ssa_p_rev) p =
@@ -2389,7 +2390,7 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
       | Iassume e -> [eqn_bexp e]
       | Ighost (_, e) -> [eqn_bexp e]
       | _ -> [] in
-    List.flatten (List.map extractor instrs) in
+    tflatten (tmap extractor instrs) in
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
@@ -2400,7 +2401,7 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AlgebraSolver _ -> (fun _ -> false)
     | RangeSolver _ -> (fun _ -> false) in
   let filter =
-    let filters = List.map filter_of_pws pwss in
+    let filters = tmap filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
   let ebexps = extract_ebexps (List.filter filter instrs) in
   let cut_idxs =
@@ -2426,7 +2427,7 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
       | Iassume e -> [rng_bexp e]
       | Ighost (_, e) -> [rng_bexp e]
       | _ -> [] in
-    List.flatten (List.map extractor instrs) in
+    tflatten (tmap extractor instrs) in
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
@@ -2437,7 +2438,7 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AlgebraSolver _ -> (fun _ -> false)
     | RangeSolver _ -> (fun _ -> false) in
   let filter =
-    let filters = List.map filter_of_pws pwss in
+    let filters = tmap filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
   let rbexps = extract_rbexps (List.filter filter instrs) in
   let cut_idxs =
@@ -2468,7 +2469,7 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
  * @param pwss the prove-with clauses
  *)
 let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (pre, visited) (e, pwss) =
-  let prove_with = List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
+  let prove_with = tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
     else let is_algebra_solver pws =
@@ -2493,7 +2494,7 @@ let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
  * @param pwss the prove-with clauses
  *)
 let rspec_of_rbexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (pre, visited) (r, pwss) =
-  let prove_with = List.map (fun r -> Iassume (Etrue, r)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
+  let prove_with = tmap (fun r -> Iassume (Etrue, r)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
     else let is_range_solver pws =
@@ -3030,7 +3031,7 @@ let subst_instr am em rm i =
   | Iassert e -> Iassert (subst_bexp_prove_with em rm e)
   | Iassume e -> Iassume (subst_bexp em rm e)
   | Icut e -> Icut (subst_bexp_prove_with em rm e)
-  | Ighost (vs, e) -> Ighost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
+  | Ighost (vs, e) -> Ighost (VS.of_list (tmap (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
 
 let subst_program am em rm p = List.rev_map (subst_instr am em rm) p |> List.rev
 
@@ -4169,7 +4170,7 @@ let visit_program visitor p =
        | DoChildren -> (p, Fun.id)
        | ChangeDoChildrenPost (p', f) -> (p', f)
        | _ -> failwith ("Never happen") in
-     f (List.map (visit_instr visitor) p)
+     f (tmap (visit_instr visitor) p)
 
 let visit_lined_program visitor p =
   let act = visitor#vlined_program p in
@@ -4290,8 +4291,8 @@ let cut_spec s =
        let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with g in
        let (eprove_with, rprove_with) =
          let before = List.rev before_rev in
-         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
+         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
+          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
        let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
        spec::res
     )
@@ -4301,8 +4302,8 @@ let cut_spec s =
          let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with cuts in
          let (eprove_with, rprove_with) =
            let before = List.rev before_rev in
-           (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-            List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
+           (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
+            tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
          let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
          spec::res
       | _ -> res
@@ -4315,8 +4316,8 @@ let cut_spec s =
        let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with s.spost in
        let (eprove_with, rprove_with) =
          let before = List.rev before_rev in
-         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
+         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
+          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
        let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
        spec::res
     | (Icut ([], _))::_
@@ -4327,8 +4328,8 @@ let cut_spec s =
        let cut_post = (tmap (fun e -> (e, [])) eposts, tmap (fun e -> (e, [])) rposts) in
        let (eprove_with, rprove_with) =
          let before = List.rev before_rev in
-         (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (tflatten epwsss) (eqn_bexp precond, cuts_rev, before)),
-          List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter (tflatten rpwsss) (rng_bexp precond, cuts_rev, before))) in
+         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (tflatten epwsss) (eqn_bexp precond, cuts_rev, before)),
+          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter (tflatten rpwsss) (rng_bexp precond, cuts_rev, before))) in
        let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = cut_post } in
        helper (spec::res) (precond, tappend after_rev before_rev, [hd], hd::cuts_rev) ((eands eposts, rands rposts), [], tl)
     | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
@@ -4354,8 +4355,8 @@ let assertion_specs s =
          let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with bs in
          let (eprove_with, rprove_with) =
            let before = List.rev before_rev in
-           (List.map (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-            List.map (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
+           (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
+            tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
          let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
          spec::res
       | _ -> res
@@ -4662,12 +4663,12 @@ let rec bvcryptoline_of_rbexp e =
   | Ror (e1, e2) -> Printf.sprintf "(bvror %s %s)" (bvcryptoline_of_rbexp e1) (bvcryptoline_of_rbexp e2)
 let bvcryptoline_of_bexp (e, r) =
   Printf.sprintf "bvands2 [:: %s ] [:: %s ]"
-    (e |> split_eand |> List.map bvcryptoline_of_ebexp |> String.concat "; ")
-    (r |> split_rand |> List.map bvcryptoline_of_rbexp |> String.concat "; ")
+    (e |> split_eand |> tmap bvcryptoline_of_ebexp |> String.concat "; ")
+    (r |> split_rand |> tmap bvcryptoline_of_rbexp |> String.concat "; ")
 let bvcryptoline_of_bexp_prove_with (es, rs) =
   Printf.sprintf "bvands2 [:: %s ] [:: %s ]"
-    (List.split es |> fst |> List.map bvcryptoline_of_ebexp |> String.concat "; ")
-    (List.split rs |> fst |> List.map bvcryptoline_of_rbexp |> String.concat "; ")
+    (List.split es |> fst |> tmap bvcryptoline_of_ebexp |> String.concat "; ")
+    (List.split rs |> fst |> tmap bvcryptoline_of_rbexp |> String.concat "; ")
 let bvcryptoline_of_atom a =
   match a with
   | Avar v -> Printf.sprintf "(bvVar %s)" (bvcryptoline_of_var v)
@@ -4728,7 +4729,7 @@ let bvcryptoline_of_instr i =
   | Iassume _ -> raise (UnsupportedException "Instruction assume is not supported by BvCryptoLine.")
   | Icut _ -> raise (UnsupportedException "Instruction cut is not supported by BvCryptoLine.")
   | Ighost _ -> raise (UnsupportedException "Instruction ghost is not supported by BvCryptoLine.")
-let bvcryptoline_of_program p = Printf.sprintf "[::\n%s\n]" (List.map bvcryptoline_of_instr p |> String.concat ";\n")
+let bvcryptoline_of_program p = Printf.sprintf "[::\n%s\n]" (tmap bvcryptoline_of_instr p |> String.concat ";\n")
 let spec_to_bvcryptoline s =
   let let_var_in i v = Printf.sprintf "let %s := %d in" (bvcryptoline_of_var v) i in
   let preamble =
@@ -4745,7 +4746,7 @@ let spec_to_bvcryptoline s =
     "Definition input_variables :=\n"
     ^ String.concat "\n" (List.mapi let_var_in vs)
     ^ "\n"
-    ^ "VSLemmas.OP.P.of_list [:: " ^ String.concat "; " (List.map bvcryptoline_of_var vs) ^ " ]." in
+    ^ "VSLemmas.OP.P.of_list [:: " ^ String.concat "; " (tmap bvcryptoline_of_var vs) ^ " ]." in
   let define_spec vs s =
     let define_vars vs = String.concat "\n" (List.mapi let_var_in vs) in
     let define_precondition e = Printf.sprintf "let precondition := \n%s in" (bvcryptoline_of_bexp e) in
@@ -4938,11 +4939,11 @@ let normalize_index num id =
 
 let normalize_pws num_cuts pws =
   match pws with
-  | Cuts ids -> Cuts (List.map (normalize_index num_cuts) ids)
+  | Cuts ids -> Cuts (tmap (normalize_index num_cuts) ids)
   | _ -> pws
 
-let normalize_epwss num_ecuts (e, pwss) = (e, List.map (normalize_pws num_ecuts) pwss)
-let normalize_rpwss num_rcuts (r, pwss) = (r, List.map (normalize_pws num_rcuts) pwss)
+let normalize_epwss num_ecuts (e, pwss) = (e, tmap (normalize_pws num_ecuts) pwss)
+let normalize_rpwss num_rcuts (r, pwss) = (r, tmap (normalize_pws num_rcuts) pwss)
 
 let normalize_ebexp_prove_with num_ecuts es = List.rev_map (normalize_epwss num_ecuts) (List.rev es)
 let normalize_rbexp_prove_with num_rcuts rs = List.rev_map (normalize_rpwss num_rcuts) (List.rev rs)

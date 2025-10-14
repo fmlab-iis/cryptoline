@@ -1333,8 +1333,8 @@ let verify_espec options vgen s hashopt =
     if res then verify_ands
                   ~comments:[ "Verify: algebraic specifications";
                               Printf.sprintf "Track: %s" options.st_tag;
-                              "Cut: #" ^ string_of_int cid;
-                              "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ]
+                              Printf.sprintf "Cut: #%d" cid;
+                              Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ]
                   headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_ecuts verify (&&) true [] (cut_espec s)
@@ -1557,27 +1557,15 @@ let verify_safety_conditions_cli options ?comments sid f p =
  * verify_ids: an [(int Hashset.t) option] specifying the indices of specifications to be verified
  *)
 let verify_spec_cli s run_cli_verify comments_gen header_gen flatten_spec cut_spec verify_cuts verify_ids =
-  let delivered_helper res r = res && r in
+  let delivered_helper = (&&) in
   let verify_ands cid cut_headers (res, pending) (sid, s) =
     let header = header_gen cid (sid, s) (String.concat "" cut_headers) in
-    let rec verify_ands_helper (res, pending) ss =
-      if res then
-        if List.length pending < !jobs then
-          match ss with
-          | [] -> (res, pending)
-          | hd::tl ->
-             let comments = comments_gen cid (sid, s) in
-             let promise = run_cli_verify ?comments header hd in
-             verify_ands_helper (res, promise::pending) tl
-        else
-          let (res', pending') = work_on_pending delivered_helper res pending in
-          verify_ands_helper (res', pending') ss
-      else
-        (res, pending) in
+    let comments = comments_gen cid (sid, s) in
+    let mk_task atom_s = fun () -> run_cli_verify ?comments header atom_s in
     (* Check previous result *)
     if res && Options.Std.mem_hashset_opt verify_ids sid then
-      let ss = flatten_spec s in
-      verify_ands_helper (res, pending) ss
+      let tasks = tmap mk_task (flatten_spec s) in
+      add_to_pending Fun.id delivered_helper res pending tasks
     else
       (res, pending) in
   apply_to_cuts_lwt verify_cuts verify_ands delivered_helper true [] (cut_spec s)
@@ -1647,6 +1635,7 @@ let run_cli_vespec ?comments header s =
   (* Write to the log file *)
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace header in
+  let%lwt _ = Options.WithLwt.trace (Printf.sprintf "Algebraic condition: %s" (string_of_ebexp_prove_with s.espost)) in
   let%lwt _ = Options.WithLwt.trace_file lfile in
   let _ =
     (* Log abnormal outputs *)
@@ -1680,10 +1669,11 @@ let verify_espec_cli options s =
   verify_spec_cli
     s
     run_cli_vespec
-    (fun cid (sid, s) -> Some [ "Verify: algebraic specifications";
-                                Printf.sprintf "Track: %s" options.st_tag;
-                                "Cut: #" ^ string_of_int cid;
-                                "Algebraic specification #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
+    (fun cid (sid, s) ->
+      Some [ "Verify: algebraic specifications";
+             Printf.sprintf "Track: %s" options.st_tag;
+             Printf.sprintf "Cut: #%d" cid;
+             Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ])
     (fun _ _ cut_header -> cut_header)
     split_espec_post cut_espec options.st_verify_ecuts None
 
