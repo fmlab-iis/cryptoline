@@ -1670,7 +1670,7 @@ let run_cli_vespec ?comments header s =
 let run_cli_vespec ?comments header s =
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
-    if is_espec_trivial s then Lwt.return_true
+    if is_espec_trivial s || Deduce.espec_prover s then Lwt.return_true
     else run_cli_vespec ?comments header s in
   Lwt.return res
 
