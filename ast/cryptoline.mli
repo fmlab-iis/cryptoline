@@ -96,6 +96,7 @@ type var =
     vtyp  : typ;           (** type of the variable *)
     vsidx : int;           (** SSA index of the variable *)
     mutable vid : int;     (** variable ID, which is set after {!normalize_spec}, {!normalize_espec}, or {!normalize_rspec} *) (* *)
+    vhash : int;           (** hash value of vname *)
   }
 (** variables *)
 

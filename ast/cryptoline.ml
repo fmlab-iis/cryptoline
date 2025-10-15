@@ -159,6 +159,7 @@ type var =
     vtyp  : typ;        (** type of the variable *)
     vsidx : int;        (** SSA index of the variable *)
     mutable vid : int;  (** variable ID *)
+    vhash : int;        (** hash value of vname *)
   }
 
 let uninitialized_vid = -1
@@ -183,15 +184,18 @@ let typ_of_var v = v.vtyp
 let eq_var v1 v2 = v1.vname = v2.vname && v1.vsidx = v2.vsidx
 
 let cmp_var v1 v2 =
-  let c = Stdlib.compare v1.vname v2.vname in
-  if c = 0 then Stdlib.compare v1.vsidx v2.vsidx
-  else c
+  let ch = Stdlib.compare v1.vhash v2.vhash in
+  if ch = 0
+  then let cn = Stdlib.compare v1.vname v2.vname in
+       if cn = 0 then Stdlib.compare v1.vsidx v2.vsidx
+       else cn
+  else ch
 let mem_var v vs = List.exists (fun u -> eq_var u v) vs
 
 let mkvar ?(newvid=false) vn vt =
   let i = if newvid then incr_global_next_vid ()
           else uninitialized_vid in
-  { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx; vid = i }
+  { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx; vid = i; vhash = Hashtbl.hash vn }
 
 let var_is_bit v = v.vtyp = bit_t
 let var_is_unsigned v = typ_is_unsigned v.vtyp
@@ -2078,7 +2082,7 @@ let upd_sidx v m =
 let mksvar ?(newvid=false) vn vt vi =
   let i = if newvid then incr_global_next_vid ()
           else uninitialized_vid in
-  { vname = vn; vtyp = vt; vsidx = vi; vid = i }
+  { vname = vn; vtyp = vt; vsidx = vi; vid = i; vhash = Hashtbl.hash vn }
 
 let ssa_var m v = mksvar v.vname v.vtyp (get_sidx v m)
 

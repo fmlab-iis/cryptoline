@@ -492,10 +492,12 @@ let anon file =
          Ast.Cryptoline.sprog = [Inop];
          Ast.Cryptoline.spost = ([(ps.Verify.Cas.ppost, [])], [])
        } in
-     let vs_of_os os = let uniform_vtyp v = { vname = v.vname;
-                                              vtyp = Tuint 64;
-                                              vsidx = v.vsidx;
-                                              vid = v.vid } in
+     let vs_of_os os = let uniform_vtyp v =
+                         { vname = v.vname;
+                           vtyp = Tuint 64;
+                           vsidx = v.vsidx;
+                           vid = v.vid;
+                           vhash = v.vhash } in
                        vars_spec os |> (if !save_rep_uniform_types then VS.map uniform_vtyp else Fun.id) |> VS.elements in
      let str_of_spec os =
        let vs = vs_of_os os in
