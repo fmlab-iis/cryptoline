@@ -322,14 +322,20 @@ There are numerous \emph{instructions} supported by \cryptoline.
   in specifications such as $\iassert$, $\iassume$, $\icut$, $\iecut$,
   $\ircut$, and postconditions.
   The predicate in a $\ighost$ instruction is always assumed.
-\item $\iinline\ p\ (a_1, a_2, \ldots, a_n)$ inlines a defined
-  procedure $p$ with arguments $a_1, a_2, \ldots, a_n$.
-\item $\icall\ p\ (a_1, a_2, \ldots, a_n)$ executes a defined
-  procedure $p$ with arguments $a_1, a_2, \ldots, a_n$.
-  The call will be replaced by the pre-/post-conditions of $p$ for
+\item $\icall\ p(a_1, a_2, \ldots, a_n)$ invokes a defined
+  procedure $p$ with the actual parameters $a_1, a_2, \ldots, a_n$
+  (call be value for input parameters).
+  The call is replaced by the pre-/post-conditions of $p$ for
   verification.
   Thus $\icall$ is currently incompatible with equivalence checking
   and simulation.
+\item $\iinline\ p(a_1, a_2, \ldots, a_n)$ inlines a defined
+  procedure $p$ with the actual parameters $a_1, a_2, \ldots, a_n$,
+  which replace every occurrence of the corresponding formal
+  parameters in the procedureal body.
+\item $\iinlinespec\ p(a_1, a_2, \ldots, a_n)$ is semantically the
+  same as $\iinline$ but $\iinlinespec$ is replaced by the
+  pre-/post-conditions of $p$ for verification.
 \end{itemize}
 
 \[
@@ -381,9 +387,10 @@ There are numerous \emph{instructions} supported by \cryptoline.
          & \mid & \pmb\iecut\ \epredclause \\
          & \mid & \pmb\ircut\ \rpredclause
          & \mid & \pmb\ighost\ \tvar_{\pmb,}^+\ \pmb{:}\ \pred \\
-         & \mid & \pmb\icall\ \id\ \pmb{(}\ \atom_{\pmb,}^*\
-           \pmb{)}
-  & \mid & \pmb\inop
+         & \mid & \pmb\icall\ \id\ \pmb{(}\ \atom_{\pmb,}^*\ \pmb{)}
+         & \mid & \pmb\iinline\ \id\ \pmb{(}\ \atom_{\pmb,}^*\ \pmb{)} \\
+         & \mid & \pmb\iinlinespec\ \id\ \pmb{(}\ \atom_{\pmb,}^*\ \pmb{)}
+         & \mid & \pmb\inop \\
 \end{array}
 \]
 Instructions $\iadd$, $\iadds$, $\iadc$, $\iadcs$, $\isub$, $\isubc$,
