@@ -1832,9 +1832,9 @@ let parse_call_at ctx lno fname_token actuals_token =
             (vars_tagged_bexp_prove_with f_def.fpost) in
   let actual_input_vars = List.filter atom_is_var actual_inputs in
   let actual_output_vars = List.filter atom_is_var actual_outputs in
-  let actual_inouts =
-    let inset = VS.of_list (tmap var_of_atom actual_input_vars) in
-    List.filter (fun o -> VS.mem (var_of_atom o) inset) actual_output_vars in
+  let actual_inouts = (* with types from inputs *)
+    let outset = VS.of_list (tmap var_of_atom actual_output_vars) in
+    List.filter (fun o -> VS.mem (var_of_atom o) outset) actual_input_vars in
   (* Ghost variables *)
   let (ghost_inouts, lined_ghost_instr) =
     if List.length actual_inouts = 0
@@ -1915,9 +1915,9 @@ let parse_inlinespec_at ctx lno fname_token actuals_token =
   let _ = check_distinct_actual_outputs lno actual_outputs in
   let actual_input_vars = List.filter atom_is_var actual_inputs in
   let actual_output_vars = List.filter atom_is_var actual_outputs in
-  let actual_inouts =
-    let inset = VS.of_list (tmap var_of_atom actual_input_vars) in
-    List.filter (fun o -> VS.mem (var_of_atom o) inset) actual_output_vars in
+  let actual_inouts = (* with types from inputs *)
+    let outset = VS.of_list (tmap var_of_atom actual_output_vars) in
+    List.filter (fun o -> VS.mem (var_of_atom o) outset) actual_input_vars in
   let formal_inputs_also_outputs =
     List.combine formal_inputs actual_inputs
     |> List.filter (fun (_, a) -> List.mem a actual_inouts)
