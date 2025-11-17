@@ -114,7 +114,10 @@ let args_verifier =
                         variable_ordering := parse_variable_ordering str
                       with Not_found ->
                         failwith ("Unknown variable ordering: " ^ str))),
-     mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]))
+     mk_arg_desc([""; "Set variable ordering in algebra solver (default is " ^ string_of_variable_ordering !variable_ordering ^ ")."]));
+    ("-check-eq-first",
+     Set Options.Std.check_eq_first,
+     mk_arg_desc([""; "Check polynomial equality first before checking modular equality."]))
   ]
 
 let parse_and_check_all file =

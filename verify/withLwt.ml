@@ -1128,10 +1128,13 @@ let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
 
 let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in
-  let%lwt r = is_in_ideal
-                ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
-                                                             "Try: #0 (pure equality)" ])
-                ~solver:solver headers vars [] p in
+  let%lwt r =
+    if !Options.Std.check_eq_first
+    then is_in_ideal
+           ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
+                                                        "Try: #0 (pure equality)" ])
+           ~solver:solver headers vars [] p
+    else Lwt.return_false in
   if r then Lwt.return_true
   else let%lwt r = is_in_ideal
                      ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;

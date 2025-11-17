@@ -285,6 +285,7 @@ let track_split = ref false
 
 let expand_poly = ref false
 
+let check_eq_first = ref false
 
 (** Range-Specific Options *)
 

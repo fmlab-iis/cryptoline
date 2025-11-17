@@ -252,6 +252,8 @@ val mip_safety_solver : algebra_solver ref
 val safety_by_mip : bool ref
 (** [true] to use MIP for safety checking *)
 
+val check_eq_first : bool ref
+(** [true] to check if two polynomials are equal first before checking modular equality *)
 
 (** {1 Range-Specific Options} *)
 

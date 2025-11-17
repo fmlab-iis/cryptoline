@@ -1018,7 +1018,7 @@ let verify_entailments ?comments ?(solver=(!algebra_solver)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
-        if is_in_ideal
+        if !Options.Std.check_eq_first && is_in_ideal
              ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
                                                           "Try: #0 (pure equality)" ])
              ~solver:solver vars [] p then true
