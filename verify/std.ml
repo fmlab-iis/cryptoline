@@ -111,16 +111,19 @@ let write_magma_input ?comments ifile vars gen p =
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
     let poly = magma_of_eexp p in
     let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    (* Test if polynomial g is in the ideal J: `g in J` *)
+    (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
     comment
     ^ "Z := IntegerRing();\n"
-    ^ "R<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
+    ^ "F<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
     ^ "G := [" ^ generator ^ "];\n"
     ^ "p := " ^ poly ^ ";\n"
     ^ "if p in G then\n"
-    ^ "  true;\n"
+    ^ "  0;\n"
     ^ "else\n"
-    ^ "  I := ideal<R|G>;\n"
-    ^ "  p in I;\n"
+    ^ "  I := ideal<F|G>;\n"
+    ^ "  J := GroebnerBasis(I);\n"
+    ^ "  NormalForm(p, J);\n"
     ^ "end if;\n"
     ^ "exit;\n" in
   let ch = open_out ifile in
@@ -507,7 +510,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let _ = write_magma_input ~comments ifile vars ideal p in
        let _ = run_magma ifile ofile in
        let res = read_magma_output ofile in
-       res = "true"
+       res = "0"
     | Mathematica ->
        let _ = write_mathematica_input ~comments ifile vars ideal p in
        let _ = run_mathematica ifile ofile in

@@ -122,25 +122,19 @@ let write_magma_input ?comments ifile vars gen p =
     let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.rev_map magma_of_eexp gen |> List.rev)) in
     let poly = magma_of_eexp p in
     let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
+    (* Test if polynomial g is in the ideal J: `g in J` *)
+    (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
     comment
-    ^ "function is_generator(p, I)\n"
-    ^ "  for q in I do\n"
-    ^ "    if p eq q then\n"
-    ^ "      return true;\n"
-    ^ "    end if;\n"
-    ^ "  end for;\n"
-    ^ "  return false;\n"
-    ^ "end function;\n\n"
-    ^ "R := IntegerRing();\n"
-    ^ "S<" ^ varseq ^ "> := PolynomialRing(R, " ^ string_of_int varlen ^ ");\n"
-    ^ "B := [" ^ generator ^ "];\n"
-    ^ "I := ideal<S|B>;\n"
-    ^ "g := " ^ poly ^ ";\n"
-    ^ "if is_generator(g, B) or g in I then\n"
-    ^ "  true;\n"
+    ^ "Z := IntegerRing();\n"
+    ^ "F<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
+    ^ "G := [" ^ generator ^ "];\n"
+    ^ "p := " ^ poly ^ ";\n"
+    ^ "if p in G then\n"
+    ^ "  0;\n"
     ^ "else\n"
+    ^ "  I := ideal<F|G>;\n"
     ^ "  J := GroebnerBasis(I);\n"
-    ^ "  g in J;\n"
+    ^ "  NormalForm(p, J);\n"
     ^ "end if;\n"
     ^ "exit;\n" in
   let%lwt ifd = Lwt_unix.openfile ifile
@@ -614,7 +608,7 @@ let is_in_ideal ?comments ?(expand=(!Options.Std.expand_poly)) ?(solver=(!Option
        let%lwt _ = run_magma header ifile ofile in
        let%lwt res = read_magma_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "true")
+       Lwt.return (res = "0")
     | Mathematica ->
        let%lwt _ = write_mathematica_input ~comments ifile vars ideal p in
        let%lwt _ = run_mathematica header ifile ofile in
