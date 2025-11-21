@@ -93,3 +93,79 @@ val polys_of_espec_two_phase :
            the list of ordered variables in [esi] and [ei], and [pi] is valid if
            [ei] is in the ideal of [esi]
  *)
+
+
+val algebra_symbol_of_ebinop : Ast.Cryptoline.ebinop -> string
+(** return the symbol for a binary operator *)
+
+val singular_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Singular. *)
+
+val sage_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Sage. *)
+
+val magma_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Magma. *)
+
+val mathematica_of_var : Ast.Cryptoline.var -> string
+(** Convert a variable to a variable in Mathematica. *)
+
+val mathematica_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Mathematica. *)
+
+val macaulay2_of_var : Ast.Cryptoline.var -> string
+(** Convert a variable to a variable in Macaulay2. *)
+
+val macaulay2_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Macaulay2. *)
+
+val maple_of_eexp : Ast.Cryptoline.eexp -> string
+(** Convert an algebraic expression to an expression in Maple. *)
+
+val generate_singular_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to Singular for ideal membership query *)
+
+val generate_sage_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to Sage for ideal membership query *)
+
+val generate_magma_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to magma for ideal membership query *)
+
+val generate_mathematica_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to mathematica for ideal membership query *)
+
+val generate_macaulay2_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to macaulay2 for ideal membership query *)
+
+val generate_maple_input :
+  ?comments:(string list)
+  -> Ast.Cryptoline.var list
+  -> Ast.Cryptoline.eexp list
+  -> Ast.Cryptoline.eexp
+  -> string
+(** generate input to maple for ideal membership query *)

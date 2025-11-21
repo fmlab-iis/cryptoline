@@ -804,3 +804,317 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
     let entailments = second_phase_rewriting ideal_aps post_p_ms_list in
     entailments in
   (vgen, convert ideal_aps apspec.appost)
+
+
+
+(* Prepare output to computer algebra systems *)
+
+let algebra_symbol_of_ebinop op =
+  match op with
+  | Epow -> "^"
+  | _ -> symbol_of_ebinop op
+
+let rec singular_of_eexp e =
+  match e with
+  | Evar v -> string_of_var v
+  | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
+  | Eunop (op, e) ->
+     symbol_of_eunop op ^ (if is_eexp_atom e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
+  | Ebinop (Epow, e, Econst z) ->
+     (if eexp_ebinop_open e Epow then singular_of_eexp e
+      else "(" ^ singular_of_eexp e ^ ")") ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op then singular_of_eexp e1 else "(" ^ singular_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2 then singular_of_eexp e2 else "(" ^ singular_of_eexp e2 ^ ")")
+
+let rec sage_of_eexp e =
+  match e with
+  | Evar v -> string_of_var v
+  | Econst n -> string_of_const n
+  | Eunop (op, e) ->
+     symbol_of_eunop op ^ (if is_eexp_atom e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op then sage_of_eexp e1 else "(" ^ sage_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2 then sage_of_eexp e2 else "(" ^ sage_of_eexp e2 ^ ")")
+
+let rec magma_of_eexp e =
+  match e with
+  | Evar v -> string_of_var v
+  | Econst n -> string_of_const n
+  | Eunop (op, e) ->
+     symbol_of_eunop op ^ (if is_eexp_atom e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
+  | Ebinop (op, e1, e2) ->
+     (if is_eexp_atom e1 then magma_of_eexp e1 else "(" ^ magma_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if is_eexp_atom e2 then magma_of_eexp e2 else "(" ^ magma_of_eexp e2 ^ ")")
+
+let maple_of_eexp e = magma_of_eexp e
+
+(* Underscore is not allowed in variable names in Mathematica. *)
+let mathematica_of_var v =
+  "v[\"" ^ string_of_var v ^ "\"]"
+let rec mathematica_of_eexp e =
+  match e with
+  | Evar v -> mathematica_of_var v
+  | Econst n -> string_of_const n
+  | Eunop (op, e) ->
+     symbol_of_eunop op
+     ^ (if is_eexp_atom e
+        then mathematica_of_eexp e
+        else " (" ^ mathematica_of_eexp e ^ ")")
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op
+      then mathematica_of_eexp e1
+      else "(" ^ mathematica_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2
+        then mathematica_of_eexp e2
+        else "(" ^ mathematica_of_eexp e2 ^ ")")
+
+let macaulay2_of_var v =
+  String.map (fun c -> if c = '_'
+                       then '\''
+                       else c) (string_of_var v)
+let rec macaulay2_of_eexp e =
+  match e with
+  | Evar v -> macaulay2_of_var v
+  | Econst n -> string_of_const n
+  | Eunop (op, e) ->
+     symbol_of_eunop op
+     ^ (if is_eexp_atom e
+        then macaulay2_of_eexp e
+        else " (" ^ macaulay2_of_eexp e ^ ")")
+  | Ebinop (op, e1, e2) ->
+     (if eexp_ebinop_open e1 op
+      then macaulay2_of_eexp e1
+      else "(" ^ macaulay2_of_eexp e1 ^ ")")
+     ^ " " ^ algebra_symbol_of_ebinop op ^ " "
+     ^ (if ebinop_eexp_open op e2
+        then macaulay2_of_eexp e2
+        else "(" ^ macaulay2_of_eexp e2 ^ ")")
+
+let get_mon_ord order solver =
+  match code_of_monomial_order_for_solver order solver with
+  | None ->
+     let msg = Printf.sprintf
+                 "Monomial order %s in %s is not supported."
+                 (name_of_monomial_order order)
+                 (string_of_algebra_solver solver) in
+     raise (Failure msg)
+  | Some ord -> ord
+
+let generate_singular_input ?comments vars gen p =
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (tmap string_of_var vars) in
+  let generator =
+    if List.length gen = 0
+    then "0"
+    else (String.concat ",\n  " (tmap singular_of_eexp gen)) in
+  let poly = singular_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_line_comments "//") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Singular in
+  String.concat "\n" [
+      comment;
+      "proc is_generator(poly p, ideal I) {";
+      "  int idx;";
+      "  for (idx=1; idx<=size(I); idx++) {";
+      "    if (p == I[idx]) { return (0==0); }";
+      "  }";
+      "  return (0==1);";
+      "}";
+      "";
+      Printf.sprintf "ring r = integer, (%s), %s;" varseq mon_ord;
+      Printf.sprintf "ideal gs = %s;" generator;
+      Printf.sprintf "poly p = %s;" poly;
+      "if (is_generator(p, gs) || reduce(p, gs) == 0) {";
+      "  0;";
+      "} else {";
+      "  ideal I = groebner(gs);";
+      "  reduce(p, I);";
+      "}";
+      "exit;" ]
+
+let generate_sage_input ?comments vars gen p =
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (tmap string_of_var vars) in
+  let generator =
+    if List.length gen = 0
+    then "0"
+    else (String.concat ",\n  " (tmap sage_of_eexp gen)) in
+  let poly = sage_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_line_comments "#") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Sage in
+  String.concat "\n" [
+      comment;
+      Printf.sprintf
+        "R.<%s> = PolynomialRing(ZZ, %d, order='%s')"
+        varseq
+        (max 1 (List.length vars))
+        mon_ord;
+      Printf.sprintf "I = (%s) * R" generator;
+      Printf.sprintf "P = %s" poly;
+      "assert P in I" ]
+
+let generate_magma_input ?comments vars gen p =
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (tmap string_of_var vars) in
+  let varlen = max 1 (List.length vars) in
+  let generator =
+    if List.length gen = 0
+    then "0"
+    else (String.concat ",\n" (tmap magma_of_eexp gen)) in
+  let poly = magma_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_line_comments "//") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Magma in
+  (* Test if polynomial g is in the ideal J: `g in J` *)
+  (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
+  String.concat "\n" [
+      comment;
+      "Z := IntegerRing();";
+      Printf.sprintf
+        "F<%s> := PolynomialRing(Z, %d, %s);"
+        varseq varlen mon_ord;
+      Printf.sprintf "G := [%s];" generator;
+      Printf.sprintf "p := %s;" poly;
+      "if p in G then";
+      "  0;";
+      "else";
+      "  I := ideal<F|G>;";
+      "  J := GroebnerBasis(I);";
+      "  NormalForm(p, J);";
+      "end if;";
+      "exit;" ]
+
+let generate_mathematica_input ?comments vars gen p =
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (tmap mathematica_of_var vars) in
+  let generator =
+    if List.length gen = 0
+    then "0"
+    else (String.concat ",\n" (tmap mathematica_of_eexp gen)) in
+  let poly = mathematica_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_block_comments "(*" "*)") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Mathematica in
+  String.concat "\n" [
+      comment;
+      Printf.sprintf "vars = {%s};" varseq;
+      Printf.sprintf "gs = {%s};" generator;
+      Printf.sprintf "p = %s;" poly;
+      Printf.sprintf
+        "gb = GroebnerBasis[gs, vars, %s %s];"
+        "CoefficientDomain -> Integers"
+        (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+      Printf.sprintf
+        "{q, r} = PolynomialReduce[p, gb, vars, %s%s];"
+        "CoefficientDomain -> Integers"
+        (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+      "Print[r];" ]
+
+let generate_macaulay2_input ?comments vars gen p =
+  let (vars, gen, p, default_generator) =
+    let dummy_var =
+      mkvar
+        ~newvid:true
+        "cryptoline'dummy'variable"
+        (Tuint 0) (* The variable type does not matter *) in
+    let no_var_in_generator =
+      VS.is_empty
+        (List.fold_left
+           (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
+    if no_var_in_generator then
+      (dummy_var::vars,
+       List.map (fun e -> emul (evar dummy_var) e) gen,
+       emul (evar dummy_var) p,
+       string_of_var dummy_var ^ "*0")
+    else
+      (vars, gen, p, "0") in
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (List.map macaulay2_of_var vars) in
+  let generator =
+    if List.length gen = 0
+    then default_generator
+    else (String.concat ",\n  " (tmap macaulay2_of_eexp gen)) in
+  let poly = macaulay2_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_line_comments "--") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Macaulay2 in
+  String.concat "\n" [
+      comment;
+      Printf.sprintf
+        "myRing = ZZ[%s,MonomialOrder=>%s]"
+        varseq
+        mon_ord;
+      Printf.sprintf "myIdeal = ideal(%s)" generator;
+      Printf.sprintf "myPoly = %s" poly;
+      "myBasis = groebnerBasis myIdeal";
+      "myRes = toString (myPoly % myBasis)";
+      "print myRes" ]
+
+let generate_maple_input ?comments vars gen p =
+  let const_gen =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ =
+      if List.length poly_gen > 0
+      then failwith ("Only prime modulus is supported when using maple.") in
+    match const_gen with
+    | [] -> Econst Z.zero
+    | c::[] -> c
+    | _ -> failwith("Multi-moduli is not supported when using maple.") in
+  let varseq =
+    match vars with
+    | [] -> "x"
+    | _ -> String.concat "," (tmap string_of_var vars) in
+  let poly = magma_of_eexp p in
+  let comment =
+    if !debug
+    then Option.value (Option.map (make_line_comments "#") comments)
+           ~default:""
+    else "" in
+  let mon_ord = get_mon_ord !monomial_order Maple in
+  String.concat "\n" [
+      comment;
+      "interface(prettyprint=0):";
+      "with(PolynomialIdeals):";
+      "with(Groebner):";
+      Printf.sprintf
+        "Ord := %s(%s):"
+        mon_ord
+        varseq;
+      Printf.sprintf "g := %s:" poly;
+      Printf.sprintf
+        "J := PolynomialIdeal([], characteristic=%s):"
+        (magma_of_eexp const_gen);
+      "res := IdealMembership(g, J):";
+      "res;";
+      "quit:" ]

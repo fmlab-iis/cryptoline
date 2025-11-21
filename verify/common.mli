@@ -58,30 +58,6 @@ val rewrite_assignments_ebexp :
   Ast.Cryptoline.eexp list * Ast.Cryptoline.ebexp
 (** [rewrite_assignments_ebexp es e] rewrites [es] and [e] based on assignments found in [es]. *)
 
-val singular_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Singular. *)
-
-val sage_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Sage. *)
-
-val magma_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Magma. *)
-
-val mathematica_of_var : Ast.Cryptoline.var -> string
-(** Convert a variable to a variable in Mathematica. *)
-
-val mathematica_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Mathematica. *)
-
-val macaulay2_of_var : Ast.Cryptoline.var -> string
-(** Convert a variable to a variable in Macaulay2. *)
-
-val macaulay2_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Macaulay2. *)
-
-val maple_of_eexp : Ast.Cryptoline.eexp -> string
-(** Convert an algebraic expression to an expression in Maple. *)
-
 val redlog_of_espec : espec -> string
 (** [redlog_of_espec s] returns the input to redlog for the verification of [s] in SSA. *)
 

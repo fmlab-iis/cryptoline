@@ -43,32 +43,7 @@ let apply_to_cuts ids f res ss =
  * reduce: https://www.singular.uni-kl.de/Manual/4-3-2/sing_337.htm#SEC377
  *)
 let write_singular_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map singular_of_eexp gen)) in
-    let poly = singular_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
-    comment
-    ^ "proc is_generator(poly p, ideal I) {\n"
-    ^ "  int idx;\n"
-    ^ "  for (idx=1; idx<=size(I); idx++) {\n"
-    ^ "    if (p == I[idx]) { return (0==0); }\n"
-    ^ "  }\n"
-    ^ "  return (0==1);\n"
-    ^ "}\n\n"
-    ^ "ring r = integer, (" ^ varseq ^ "), lp;\n"
-    ^ "ideal gs = " ^ generator ^ ";\n"
-    ^ "poly p = " ^ poly ^ ";\n"
-    ^ "if (is_generator(p, gs) || reduce(p, gs) == 0) {\n"
-    ^ "  0;\n"
-    ^ "} else {\n"
-    ^ "  ideal I = groebner(gs);\n"
-    ^ "  reduce(p, I);\n"
-    ^ "}\n"
-    ^ "exit;\n" in
+  let input_text = Cas.generate_singular_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO SINGULAR:";
@@ -79,19 +54,7 @@ let write_singular_input ?comments ifile vars gen p =
  * ideals: https://doc.sagemath.org/html/en/reference/rings/sage/rings/ideal.html
  *)
 let write_sage_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map sage_of_eexp gen)) in
-    let poly = sage_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "R.<" ^ varseq ^ "> = PolynomialRing(ZZ," ^ string_of_int (List.length vars) ^ ")\n"
-    ^ "I = (" ^ generator ^ ") * R\n"
-    ^ "P = " ^ poly ^ "\n"
-    ^ "assert P in I\n" in
+  let input_text = Cas.generate_sage_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO SAGE:";
@@ -102,30 +65,7 @@ let write_sage_input ?comments ifile vars gen p =
  * ideals: https://magma.maths.usyd.edu.au/magma/handbook/text/413
  *)
 let write_magma_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let varlen = max 1 (List.length vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n" (List.map magma_of_eexp gen)) in
-    let poly = magma_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "//") comments) ~default:"" else "" in
-    (* Test if polynomial g is in the ideal J: `g in J` *)
-    (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
-    comment
-    ^ "Z := IntegerRing();\n"
-    ^ "F<" ^ varseq ^ "> := PolynomialRing(Z, " ^ string_of_int varlen ^ ");\n"
-    ^ "G := [" ^ generator ^ "];\n"
-    ^ "p := " ^ poly ^ ";\n"
-    ^ "if p in G then\n"
-    ^ "  0;\n"
-    ^ "else\n"
-    ^ "  I := ideal<F|G>;\n"
-    ^ "  J := GroebnerBasis(I);\n"
-    ^ "  NormalForm(p, J);\n"
-    ^ "end if;\n"
-    ^ "exit;\n" in
+  let input_text = Cas.generate_magma_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO MAGMA:";
@@ -133,21 +73,7 @@ let write_magma_input ?comments ifile vars gen p =
   Options.Std.trace ""
 
 let write_mathematica_input ?comments ifile vars gen p =
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map mathematica_of_var vars) in
-    let generator = if List.length gen = 0 then "0" else (String.concat ",\n  " (List.map mathematica_of_eexp gen)) in
-    let poly = mathematica_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_block_comments "(*" "*)") comments) ~default:"" else "" in
-    comment
-    ^ "vars = {" ^ varseq ^ "};\n"
-    ^ "gs = {" ^ generator ^ "};\n"
-    ^ "p = " ^ poly ^ ";\n"
-    ^ "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers];\n"
-    ^ "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers];\n"
-    ^ "Print[r];\n" in
+  let input_text = Cas.generate_mathematica_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO MATHEMATICA:";
@@ -155,31 +81,7 @@ let write_mathematica_input ?comments ifile vars gen p =
   Options.Std.trace ""
 
 let write_macaulay2_input ?comments ifile vars gen p =
-  let input_text =
-    let (vars, gen, p, default_generator) =
-      let dummy_var = mkvar ~newvid:true "cryptoline'dummy'variable" (Tuint 0) (* The variable type does not matter *) in
-      let no_var_in_generator = VS.is_empty (List.fold_left (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
-      if no_var_in_generator then
-        (dummy_var::vars,
-         List.map (fun e -> emul (evar dummy_var) e) gen,
-         emul (evar dummy_var) p,
-         string_of_var dummy_var ^ "*0")
-      else
-        (vars, gen, p, "0") in
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map macaulay2_of_var vars) in
-    let generator = if List.length gen = 0 then default_generator else (String.concat ",\n  " (List.map macaulay2_of_eexp gen)) in
-    let poly = macaulay2_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "--") comments) ~default:"" else "" in
-    comment
-    ^ "myRing = ZZ[" ^ varseq ^ ",MonomialOrder=>Lex]\n"
-    ^ "myIdeal = ideal(" ^ generator ^ ")\n"
-    ^ "myPoly = " ^ poly ^ "\n"
-    ^ "myBasis = groebnerBasis myIdeal\n"
-    ^ "myRes = toString (myPoly % myBasis)\n"
-    ^ "print myRes\n" in
+  let input_text = Cas.generate_macaulay2_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO MACAULAY2:";
@@ -187,30 +89,7 @@ let write_macaulay2_input ?comments ifile vars gen p =
   Options.Std.trace ""
 
 let write_maple_input ?comments ifile vars gen p =
-  let const_gen =
-    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
-    let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
-    match const_gen with
-    | [] -> Econst Z.zero
-    | c::[] -> c
-    | _ -> failwith("Multi-moduli is not supported when using maple.") in
-  let input_text =
-    let varseq =
-      match vars with
-      | [] -> "x"
-      | _ -> String.concat "," (List.map string_of_var vars) in
-    let poly = magma_of_eexp p in
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
-    comment
-    ^ "interface(prettyprint=0):\n"
-    ^ "with(PolynomialIdeals):\n"
-    ^ "with(Groebner):\n"
-    ^ "Ord := plex(" ^ varseq ^ "):\n"
-    ^ "g := " ^ poly ^ ":\n"
-    ^ "J := PolynomialIdeal([], characteristic=" ^ magma_of_eexp const_gen ^ "):\n"
-    ^ "res := IdealMembership(g, J):\n"
-    ^ "res;\n"
-    ^ "quit:\n" in
+  let input_text = Cas.generate_maple_input ?comments vars gen p in
   let ch = open_out ifile in
   let _ = output_string ch input_text; close_out ch in
   Options.Std.trace "INPUT TO MAPLE:";

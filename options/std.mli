@@ -163,8 +163,21 @@ type variable_order =
   | AppearingOrder
   | RevLexOrder
   | RevAppearingOrder
-(** variable order in computing Groebner basis *)
+(** variable order in defining polynomial ring *)
 
+type monomial_order =
+  | Lexicographic
+  | ReverseLexicographic
+  | DegreeLexicographic
+  | DegreeReverseLexicographic
+  | NegativeLexicographic
+  | NegativeReverseLexicographical
+  | NegativeDegreeLexicographic
+  | NegativeDegreeReverseLexicographic
+(* monomial order in computing Groebner basis **)
+
+val get_monomial_orders : unit -> string list
+(** return the names of all monomial orders *)
 val default_algebra_solver : algebra_solver
 (** the default algebra solver *)
 
@@ -240,11 +253,26 @@ val string_of_variable_ordering : variable_order -> string
 val parse_variable_ordering : string -> variable_order
 (** parse a variable order from its string representation *)
 
+val monomial_order : monomial_order ref
+(** the current monomial order *)
+
+val name_of_monomial_order : monomial_order -> string
+(** return the name of the monomial order *)
+
+val code_of_monomial_order_for_solver :
+  monomial_order -> algebra_solver -> string option
+(** return the code of this order for a specified solver *)
+
+val parse_monomial_order : string -> monomial_order
+(** parse a string as a monomial order; raise Not_found if
+    the string does not represent a monomial order *)
+
 val track_split : bool ref
 (** [true] to track splits of atoms *)
 
 val expand_poly : bool ref
-(** [true] to expand polynomials before sending them to computer algebra systems *)
+(** [true] to expand polynomials before sending them to
+    computer algebra systems *)
 
 val mip_safety_solver : algebra_solver ref
 (** the MIP-based solver for checking safety conditions *)
@@ -253,7 +281,8 @@ val safety_by_mip : bool ref
 (** [true] to use MIP for safety checking *)
 
 val check_eq_first : bool ref
-(** [true] to check if two polynomials are equal first before checking modular equality *)
+(** [true] to check if two polynomials are equal first before
+    checking modular equality *)
 
 (** {1 Range-Specific Options} *)
 

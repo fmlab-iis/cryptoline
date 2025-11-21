@@ -170,6 +170,16 @@ type variable_order =
   | RevLexOrder
   | RevAppearingOrder
 
+type monomial_order =
+  | Lexicographic
+  | ReverseLexicographic
+  | DegreeLexicographic
+  | DegreeReverseLexicographic
+  | NegativeLexicographic
+  | NegativeReverseLexicographical
+  | NegativeDegreeLexicographic
+  | NegativeDegreeReverseLexicographic
+
 let default_algebra_solver = Singular
 
 let algebra_solver = ref default_algebra_solver
@@ -280,6 +290,105 @@ let parse_variable_ordering str =
   else if str = "rev_lex" then RevLexOrder
   else if str = "rev_appearing" then RevAppearingOrder
   else raise Not_found
+
+let monomial_order = ref Lexicographic
+
+let name_of_monomial_order mo =
+  match mo with
+  | Lexicographic -> "lex"
+  | ReverseLexicographic -> "revlex"
+  | DegreeLexicographic -> "glex"
+  | DegreeReverseLexicographic -> "grevlex"
+  | NegativeLexicographic -> "neglex"
+  | NegativeReverseLexicographical -> "negrevlex"
+  | NegativeDegreeLexicographic -> "negdeglex"
+  | NegativeDegreeReverseLexicographic -> "negdegrevlex"
+
+let get_monomial_orders () =
+  [ name_of_monomial_order Lexicographic;
+    name_of_monomial_order ReverseLexicographic;
+    name_of_monomial_order DegreeLexicographic;
+    name_of_monomial_order DegreeReverseLexicographic;
+    name_of_monomial_order NegativeLexicographic;
+    name_of_monomial_order NegativeReverseLexicographical;
+    name_of_monomial_order NegativeDegreeLexicographic;
+    name_of_monomial_order NegativeDegreeReverseLexicographic ]
+
+let code_of_monomial_order_for_solver mo so =
+  match so with
+  | Singular ->
+     (match mo with
+      | Lexicographic -> Some "lp"
+      | ReverseLexicographic -> Some "rp"
+      | DegreeLexicographic -> Some "Dp"
+      | DegreeReverseLexicographic -> Some "dp"
+      | NegativeLexicographic -> Some "ls"
+      | NegativeReverseLexicographical -> Some "rs"
+      | NegativeDegreeLexicographic -> Some "Ds"
+      | NegativeDegreeReverseLexicographic -> Some "ds")
+  | Sage ->
+     (match mo with
+      | Lexicographic -> Some "lex"
+      | ReverseLexicographic -> Some "invlex"
+      | DegreeLexicographic -> Some "deglex"
+      | DegreeReverseLexicographic -> Some "degrevlex"
+      | NegativeLexicographic -> Some "neglex"
+      | NegativeReverseLexicographical -> None
+      | NegativeDegreeLexicographic -> Some "negdeglex"
+      | NegativeDegreeReverseLexicographic -> Some "negdegrevlex")
+  | Magma ->
+     (match mo with
+      | Lexicographic -> Some "lex"
+      | ReverseLexicographic -> None
+      | DegreeLexicographic -> Some "glex"
+      | DegreeReverseLexicographic -> Some "grevlex"
+      | NegativeLexicographic
+        | NegativeReverseLexicographical
+        | NegativeDegreeLexicographic
+        | NegativeDegreeReverseLexicographic -> None)
+  | Mathematica ->
+     (match mo with
+      | Lexicographic -> Some ""
+      | ReverseLexicographic -> None
+      | DegreeLexicographic -> None
+      | DegreeReverseLexicographic -> Some "DegreeReverseLexicographic"
+      | NegativeLexicographic
+        | NegativeReverseLexicographical
+        | NegativeDegreeLexicographic
+        | NegativeDegreeReverseLexicographic -> None)
+  | Macaulay2 ->
+     (match mo with
+      | Lexicographic -> Some "Lex"
+      | ReverseLexicographic -> Some "RevLex"
+      | DegreeLexicographic -> Some "GLex"
+      | DegreeReverseLexicographic -> Some "GRevLex"
+      | NegativeLexicographic
+        | NegativeReverseLexicographical
+        | NegativeDegreeLexicographic
+        | NegativeDegreeReverseLexicographic -> None)
+  | Maple ->
+     (match mo with
+      | Lexicographic -> Some "plex"
+      | ReverseLexicographic -> Some "plex_min"
+      | DegreeLexicographic -> Some "grlex"
+      | DegreeReverseLexicographic -> Some "tdeg"
+      | NegativeLexicographic
+        | NegativeReverseLexicographical
+        | NegativeDegreeLexicographic
+        | NegativeDegreeReverseLexicographic -> None)
+  | _ -> None
+
+let parse_monomial_order str =
+  match str with
+  | "lex" -> Lexicographic
+  | "revlex" -> ReverseLexicographic
+  | "glex" -> DegreeLexicographic
+  | "grevlex" -> DegreeReverseLexicographic
+  | "neglex" -> NegativeLexicographic
+  | "negrevlex" -> NegativeReverseLexicographical
+  | "negdeglex" -> NegativeDegreeLexicographic
+  | "negdegrevlex" -> NegativeDegreeReverseLexicographic
+  | _ -> raise Not_found
 
 let track_split = ref false
 
