@@ -333,6 +333,7 @@ and atom_vec_t =
   | `AVECT of vec_prim_t          (** vector variable *)
   | `AVECSEL of vec_sel_prim_t    (** selection of a vector *)
   | `AVECCAT of atom_vec_t list   (** concatenation of vectors *)
+  | `AVECDUP of atom_vec_t * Z.t contextual (** duplication of vectors *)
   ]
 (** a vector atom *)
 

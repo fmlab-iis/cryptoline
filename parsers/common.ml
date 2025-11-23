@@ -400,6 +400,7 @@ and atom_vec_t =
   | `AVECT of vec_prim_t
   | `AVECSEL of vec_sel_prim_t
   | `AVECCAT of atom_vec_t list
+  | `AVECDUP of atom_vec_t * Z.t contextual
   ]
 
 
@@ -781,6 +782,14 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
        let (typ, atoms) = resolve_vec_with ctx lno vecselatm in
        let sel_atoms = List.rev_map (resolve_selection ctx lno atoms) vecselrng |> List.rev |> List.flatten in
        (typ, sel_atoms)
+    | `AVECDUP (vecatm, num) ->
+       let (typ, atoms) = resolve_vec_with ctx lno vecatm in
+       let ret = 
+         let rec helper n rev_ret =
+           if Z.equal n Z.zero then List.rev rev_ret
+           else helper (Z.pred n) (List.rev_append atoms rev_ret) in
+         helper (num ctx) [] in
+       (typ, ret)
     | `AVECCAT avecs ->
        let (typs, atomss) = List.rev_map (resolve_vec_with ctx lno) (List.rev avecs) |> List.split in
        let rec select_typ typs =
@@ -839,6 +848,7 @@ let rec resolve_output_atom_with ctx lno ty (a: atom_t) =
                                                             (List.length rvs) vec_size) in
            tmap (resolve_output_atom_with ctx lno atom_t) rvs)
     | `AVECSEL _ -> raise_at_line lno ("A selection of vector elements cannot be used as an output.")
+    | `AVECDUP _ -> raise_at_line lno ("A vector duplication cannot be used as an output.")
     | `AVECCAT _ -> raise_at_line lno ("A vector concatenation cannot be used as an output.")
 
 

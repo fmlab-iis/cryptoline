@@ -1005,6 +1005,7 @@ atom_v:
     atom_v_primary                                { $1 }
   | atom_v_primary LSQUARE ranges RSQUARE         { `AVECSEL { vecselatm = $1; vecselrng = $3 } }
   | atom_v ADDADDOP atom_v                        { `AVECCAT [$1; $3] }
+  | atom_v ADDADDOP const_exp_primary             { `AVECDUP ($1, $3) }
 ;
 
 atom_v_primary:
