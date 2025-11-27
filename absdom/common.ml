@@ -4,7 +4,7 @@ open Apron
 open Utils.Std
 
 type 'a manager_t = 'a Manager.t * Environment.t
-
+(* this assignment is only for convenience*)
 type 'a abs_t = 'a Abstract1.t
 
 type domain =
@@ -60,18 +60,21 @@ let _string_of_dom (_mgr, _env) dom =
 
 let mpq_of_z z = Mpq.of_string (Z.to_string z)
 let _scalar_of_z z = Scalar.of_mpq (mpq_of_z z)
+(*of_mpq take something in type Mpq and return somthing in type t, where t = Mpq.f here (defined in API)*)
 let _coeff_of_z z = Coeff.Scalar (_scalar_of_z z)
 let _interval_of_z inf sup = Interval.of_mpq (mpq_of_z inf) (mpq_of_z sup)
 let z_of_scalar s = Z.of_string (Scalar.to_string s)
 let z_of_interval iv = (z_of_scalar iv.Interval.inf, z_of_scalar iv.Interval.sup)
 
 let top (mgr, env) = Abstract1.top mgr env
+(*Create an universe value with the given numerical domain*)
 let bottom (mgr, env) = Abstract1.bottom mgr env
-
+(*Create an empty value with the given numerical domain*)
 let is_top (mgr, _) dom = Abstract1.is_top mgr dom
 let is_bottom (mgr, _) dom = Abstract1.is_bottom mgr dom
 
 let apvar v = Var.of_string (string_of_var v)
+(*Var.of_string input is in type of string and output is in the type of t, t is Apron variable here*)
 
 let interval_union i0 i1 =
   let inf0 = i0.Interval.inf in
@@ -117,6 +120,7 @@ let zinterval_of_var (mgr, _) dom v =
 
 let texpr_var env v =
   Texpr1.var env (apvar v)
+(*Texpr1 contains Texpr0 (expression tree of level 0, which has leaves = coefficient or variable indices) and environment)*)
 let texpr_cst env z =
   Texpr1.cst env (Coeff.s_of_mpq (mpq_of_z z))
 let texpr_neg te =
@@ -189,6 +193,7 @@ let texpr_of_atom env a =
   match a with
   | Avar v -> texpr_var env v
   | Aconst (_, z) -> texpr_cst env z
+(*define the function texpr_of_atom be that a can be either constant of variable*)
 
 let meet (mgr, _env) dom0 dom1 = Abstract1.meet mgr dom0 dom1
 
@@ -197,6 +202,7 @@ let create_manager ?(domain=(!domain)) vs =
   let vars = List.rev_map apvar
                (VS.elements vs) in
   let ret = Environment.make (Array.of_list vars) [| |] in
+  (*Making an environment from a set of integer and real variables, map those variables to incices*)
   match domain with
   | `Box -> (Box.manager_of_box (Box.manager_alloc ()), ret)
   | `Oct -> (Oct.manager_of_oct (Oct.manager_alloc ()), ret)
