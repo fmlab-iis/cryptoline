@@ -57,6 +57,9 @@ let _string_of_dom (_mgr, _env) dom =
   let _ = Abstract1.print buf_fmtter dom in
   let _ = Format.pp_print_flush buf_fmtter () in
   Buffer.contents buf
+(*The let name A = variable B in
+scope C
+structure in OCaml means that this assignment of variable names A works in scope C*)
 
 let mpq_of_z z = Mpq.of_string (Z.to_string z)
 let _scalar_of_z z = Scalar.of_mpq (mpq_of_z z)
@@ -94,11 +97,13 @@ let interval_of_typ typ =
   | Tuint sz ->
      let upper = Mpq.init () in
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) sz in
+     (*Mpq.of_int converts integer to rational number  Mpq.to_int converts rational number to integer*)
      let _ = Mpq.sub upper upper (Mpq.of_int 1) in
      Interval.of_mpq (Mpq.of_int 0) upper
   | Tsint sz ->
      let lower = Mpq.init () in
      let _ = Mpq.mul_2exp lower (Mpq.of_int 1) (pred sz) in
+     (*let _ ... means we don't care the return value, we only want the side effect*)
      let _ = Mpq.neg lower lower in
      let upper = Mpq.init () in
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
@@ -108,11 +113,13 @@ let interval_of_typ typ =
 let interval_of_atom mgr dom a =
   match a with
   | Avar v -> Abstract1.bound_variable mgr dom (apvar v)
+  (*return the possible range of (apvar v) under dom*)
   | Aconst (_, z) -> Interval.of_mpq (mpq_of_z z)
                        (mpq_of_z z)
+  (*match a with... is like the if-else structure in OCaml. If a matches the condition/format, then it runs -> code*)
 
 let _interval_of_texpr mgr abs e = Abstract1.bound_texpr mgr abs e
-
+(*adding _ in front doesn't change the meaning, and it denotes that the function is used locally.*)
 let interval_of_var mgr dom v =
   Abstract1.bound_variable mgr dom (apvar v)
 let zinterval_of_var (mgr, _) dom v =
@@ -133,10 +140,12 @@ let texpr_pow te' te'' =
   Texpr1.binop Texpr1.Pow te' te'' Texpr1.Int Texpr1.Down
 let texpr_pow2e env i =
   texpr_pow (texpr_cst env (Z.of_int 2)) i
+  (*return the (tree) expression of 2^i *)
 let texpr_pow2i env i =
   let ret = Mpq.init () in
   let _ = Mpq.mul_2exp ret (Mpq.of_int 1) i in
   Texpr1.cst env (Coeff.s_of_mpq ret)
+  (*calculate directly 2^i*)
 let texpr_mul te' te'' =
   Texpr1.binop Texpr1.Mul te' te'' Texpr1.Int Texpr1.Near
 let texpr_mul2i env e i =
