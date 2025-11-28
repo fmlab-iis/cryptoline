@@ -62,6 +62,7 @@ scope C
 structure in OCaml means that this assignment of variable names A works in scope C*)
 
 let mpq_of_z z = Mpq.of_string (Z.to_string z)
+(*Z is a integer package of OCaml*)
 let _scalar_of_z z = Scalar.of_mpq (mpq_of_z z)
 (*of_mpq take something in type Mpq and return somthing in type t, where t = Mpq.f here (defined in API)*)
 let _coeff_of_z z = Coeff.Scalar (_scalar_of_z z)
