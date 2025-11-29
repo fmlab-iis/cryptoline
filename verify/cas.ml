@@ -992,7 +992,7 @@ let generate_magma_input ?comments vars gen p =
       comment;
       "Z := IntegerRing();";
       Printf.sprintf
-        "F<%s> := PolynomialRing(Z, %d, %s);"
+        "F<%s> := PolynomialRing(Z, %d, \"%s\");"
         varseq varlen mon_ord;
       Printf.sprintf "G := [%s];" generator;
       Printf.sprintf "p := %s;" poly;
