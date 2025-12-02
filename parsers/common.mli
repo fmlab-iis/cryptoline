@@ -887,6 +887,9 @@ val parse_ebexp_veqmod1 : lno -> eexp list contextual -> eexp list contextual ->
 val parse_ebexp_veqmodN : lno -> eexp list contextual -> eexp list contextual -> eexp list list contextual -> ebexp contextual
 (** [parse_ebexp_veqmodN lno ve1_tok ve2_tok vms_tok] parses modular equality of vector eexps *)
 
+val parse_ebexp_veqmodN_duplicate : lno -> eexp list contextual -> eexp list contextual -> eexp list list contextual -> Z.t contextual -> ebexp contextual
+(** [parse_ebexp_veqmodN lno ve1_tok ve2_tok vms_tok i_tok] parses duplicate modular equality of vector eexps with multiple moduli *)
+
 val parse_ebexp_vcmp : lno -> ecmpop -> eexp list contextual -> eexp list contextual -> ebexp contextual
 (** [parse_ebexp_vcmp lno e0_tok e1_tok] parses algebraic range predicates of vector eexps *)
 
@@ -929,6 +932,9 @@ val parse_veexp_muls : lno -> eexp list list contextual -> eexp list contextual
 
 val parse_veexp_append : lno -> eexp list contextual -> eexp list contextual -> eexp list contextual
 (** [parse_veexp_append lno ve1_tok ve2_tok] parses concatenation of vector eexps *)
+
+val parse_veexp_duplicate : lno -> eexp list contextual -> Z.t contextual -> eexp list contextual
+(** [parse_veexp_append lno ve1_tok ve2_tok i_tok] parses duplicate vector eexps *)
 
 val parse_veexp_pow : lno -> eexp list contextual -> Z.t contextual -> eexp list contextual
 (** [parse_veexp_pow lno ve_tok i_tok] parses power of vector eexps *)

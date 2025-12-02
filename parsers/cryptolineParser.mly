@@ -631,6 +631,8 @@ ebexp:
                                                   { parse_ebexp_veqmod1 (get_line_start()) $2 $3 $4 }
   | EQMOD veexp_primary veexp_primary LSQUARE veexps RSQUARE
                                                   { parse_ebexp_veqmodN (get_line_start()) $2 $3 $5 }
+  | EQMOD veexp_primary veexp_primary LSQUARE veexps RSQUARE ADDADDOP eexp_primary_as_const
+                                                  { parse_ebexp_veqmodN_duplicate (get_line_start()) $2 $3 $5 $8 }
   | veexp EQOP veexp veq_suffix                   { parse_ebexp_veq_modopt (get_line_start()) $1 $3 $4 }
   | veexp ULTOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Elt $1 $3 }
   | veexp ULEOP veexp                             { parse_ebexp_vcmp (get_line_start ()) Ele $1 $3 }
@@ -734,6 +736,7 @@ veexp:
   | MULS LSQUARE veexps RSQUARE                   { parse_veexp_muls (get_line_start()) $3 }
   | SUBOP veexp %prec UMINUS                      { parse_veexp_neg (get_line_start()) $2 }
   | veexp ADDADDOP veexp                          { parse_veexp_append (get_line_start()) $1 $3 }
+  | veexp ADDADDOP eexp_primary_as_const          { parse_veexp_duplicate (get_line_start()) $1 $3 }
   | veexp ADDOP veexp                             { parse_veexp_add (get_line_start()) $1 $3 }
   | veexp SUBOP veexp                             { parse_veexp_sub (get_line_start()) $1 $3 }
   | veexp MULOP veexp                             { parse_veexp_mul (get_line_start()) $1 $3 }
