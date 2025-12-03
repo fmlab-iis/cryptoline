@@ -48,7 +48,7 @@ RUN git clone https://github.com/berkeley-abc/abc.git abc \
 # Install MIP solvers
     && python3 -m venv /home/ubuntu/.local \
     && export PATH=/home/ubuntu/.local/bin:$PATH \
-    && pip3 install islpy pplpy pyscipopt \
+    && pip3 install islpy pplpy pyscipopt pyparsing \
 # Set up user account
     && passwd -d ubuntu \
     && echo 'export PATH=$HOME/.local/bin:$PATH' >> .bashrc \

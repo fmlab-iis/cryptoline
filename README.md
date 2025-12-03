@@ -18,7 +18,7 @@ To compile and run CryptoLine, the following packages need to be installed.
 
 - [OCaml compiler](https://ocaml.org) (version 4.11 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: `dune, ocamlfind, lwt, lwt_ppx, num, zarith, ppx_optcomp`
+- OCaml packages: `dune`, `ocamlfind`, `lwt`, `lwt_ppx`, `num`, `zarith`, `ppx_optcomp`
 - [apron](https://antoinemine.github.io/Apron/doc/)
 - One of the following computer algebra systems:
   + [Singular](https://www.singular.uni-kl.de) (recommended, the default to
@@ -35,6 +35,9 @@ To compile and run CryptoLine, the following packages need to be installed.
   + [Mathsat](http://mathsat.fbk.eu)
 - [abc](http://people.eecs.berkeley.edu/~alanmi/abc/abc.htm) for equivalence
   checking
+
+To translate assembly code to CryptoLine programs with `to_zdsl.py`, the Python
+package `pyparsing` is required.
 
 
 Installation

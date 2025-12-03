@@ -5,6 +5,7 @@
 # * __counter_C__ is replaced by the value of the counter named C
 # * __incr_C__ is replaced by the value of the counter C plus 1 and the counter C is incremented by 1.
 # * __C_incr__ is replaced by the value of the counter C and the counter C is incremented by 1.
+# * v[[i:j:k]] will be expanded into v[i], v[i+k], ..., v[j].
 
 import sys
 import re
@@ -79,10 +80,34 @@ def split_address(addr):
   else:
     raise ("Unknown address: {}".format(addr))
 
+def expand_list_notation(lhs, rhs, i):
+  def helper(s):
+    m = re.search(f"(\\${str(i)}(\\w+))\\[\\[(\\d+):(\\d+):(\\d+)\\]\\]", s)
+    if m and m.group(2) in ["c", "v", "ea", "xmm", "ymm", "zmm"]:
+      v = m.group(1)
+      start = int(m.group(3))
+      stop = int(m.group(4))
+      skip = int(m.group(5))
+      expanded = []
+      for j in range(start, stop, skip):
+        expanded.append(f"{v}[{j}]")
+      s = s.replace(m.group(0), f"{', '.join(expanded)}")
+    return s
+  lhs = helper(lhs)
+  rhs = helper(rhs)
+  return (lhs, rhs)
+
 # Process builtin variables such as $1c, $2c, $3v, etc
 def process_builtin_variables(pat, rep, indices):
   pairs = [(pat, rep)]
   tmp = []
+  # expand [[i:j:k]] notation first
+  for i in indices:
+    for lhs, rhs in pairs:
+      tmp.append(expand_list_notation(lhs, rhs, i))
+    pairs = tmp
+    tmp = []
+  # change builtin variables to regular expressions
   for i in indices:
     for lhs, rhs in pairs:
       if lhs.find("$" + str(i) + "c") != -1:

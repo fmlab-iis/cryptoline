@@ -1,9 +1,11 @@
 
+
 import re
 import random
 import string
 import os
 import tempfile
+import clparse
 
 cryptoline_path = "cv"
 
@@ -131,6 +133,7 @@ reserved_words = set(instr_names).union(reserved_logics)
 var_pattern = r"(?:\b|%)[a-zA-Z_][a-zA-Z0-9_]*(?:\s*@\s*[su]int[0-9]+)?\b"
 typ_pattern = r"[su]int[0-9]+(?:\s*\[\s*[0-9]+\s*\])?"
 atom_pattern = r"(?:\b|%)(?:[a-zA-Z_][a-zA-Z0-9_]*|0x[a-fA-F0-9]+|0b[01]+|[0-9]+)(?:\s*@\s*" + typ_pattern + r")?|[(][^@]*[)](?:\s*@\s*" + typ_pattern + r")\b"
+atom_pattern = r"\s*" + atom_pattern + r"\s*\+\+\s*" + atom_pattern + r"\s*"
 vector_pattern = r"\[\s*[^,\[\]]*(?:\s*,\s*[^,\[\]]*)+\s*\]"
 atom_vector_pattern = r"(" + vector_pattern + r")|(" + atom_pattern + r")"
 
@@ -258,7 +261,9 @@ def inputs_of_program(instrs):
     inputs = set()
     defined = set()
     for instr in instrs:
-        vars = vars_of_instr(instr)
+        vars = clparse.pp_vars_of_instr(instr)
+        if vars == None:
+            continue
         inputs |= (vars['rvs'] - defined)
         defined |= (vars['lvs'] | vars['gvs'])
     inputs = sorted(list(inputs))
@@ -359,10 +364,9 @@ def assert_unused_carries(instrs, annot=False, newline=False, check=False, cpath
     instrs.reverse()
     for i in range(len(instrs)):
         instr = instrs[i]
-        m = is_instr(instr)
-        if m:
-            vars = get_vars(m['instr'], m['rest'])
-            is_annot = instr_specs[m['instr']]['is-annot']
+        vars = clparse.pp_vars_of_instr(instr)
+        if vars != None:
+            is_annot = vars["is-annot"]
             if not is_annot:
                 unused = [c for c in vars['cvs'] if not (c in used) and c != dontcare_variable]
                 if len(unused) > 0:
@@ -402,10 +406,9 @@ def find_unused_variables(instrs, annot=False, newline=False):
     used = set()
     instrs.reverse()
     for instr in instrs:
-        m = is_instr(instr)
-        if m:
-            vars = get_vars(m['instr'], m['rest'])
-            is_annot = instr_specs[m['instr']]['is-annot']
+        vars = clparse.pp_vars_of_instr(instr)
+        if vars != None:
+            is_annot = vars["is-annot"]
             if not is_annot:
                 unused = [v for v in vars['lvs'] if not (v in used) and v != dontcare_variable]
                 if len(unused) > 0:

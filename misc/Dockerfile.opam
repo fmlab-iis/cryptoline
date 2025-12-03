@@ -21,7 +21,7 @@ RUN opam init -a --disable-sandboxing --root=/home/ubuntu/.opam && \
 # Install islpy, pplpy and pyscipopt
     python3 -m venv /home/ubuntu/.local && \
     export PATH=/home/ubuntu/.local/bin:$PATH && \
-    pip3 install islpy pplpy pyscipopt && \
+    pip3 install islpy pplpy pyscipopt pyparsing && \
 # Set up user account
     passwd -d ubuntu && mkdir -p /home/ubuntu/.local/bin && \
     echo 'export PATH=$HOME/.local/bin:$HOME/abc:$PATH' >> .bashrc && \
