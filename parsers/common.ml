@@ -3100,8 +3100,8 @@ let parse_veexp_duplicate _lno ve1_tok i_tok =
   let rec copy n rev_item ret =
     if n > 0 then copy (pred n) rev_item (List.rev_append rev_item ret)
     else ret in
-  let ve1 = List.rev (ve1_tok ctx) in
-  copy (Z.to_int (i_tok ctx)) (List.rev ve1) []
+  let rev_ve1 = List.rev (ve1_tok ctx) in
+  copy (Z.to_int (i_tok ctx)) rev_ve1 []
 
 let parse_veexp_pow _lno ve_tok i_tok =
   fun ctx ->
