@@ -784,7 +784,7 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
        (typ, sel_atoms)
     | `AVECDUP (vecatm, num) ->
        let (typ, atoms) = resolve_vec_with ctx lno vecatm in
-       let ret = 
+       let ret =
          let rec helper n rev_ret =
            if Z.equal n Z.zero then List.rev rev_ret
            else helper (Z.pred n) (List.rev_append atoms rev_ret) in

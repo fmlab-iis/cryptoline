@@ -47,7 +47,10 @@ class Instr:
     for (lhs, rhs) in self.substs:
       self.dsl = re.sub(lhs, rhs, self.dsl)
   def to_string(self, pasm=True):
-    return '(* ' + self.asm + ' *)\n' + self.dsl if pasm else self.dsl
+    if self.dsl == nop_instr:
+      return '(* ' + self.asm + ' *)' if pasm else ""
+    else:
+      return ('(* ' + self.asm + ' *)\n' + self.dsl if pasm else self.dsl) + ";"
 
 # Flatten a list of lists
 def flatten(vs):
@@ -352,7 +355,7 @@ def translate_instrs(tspec, instrs):
         # Do some computation
         compute(instr)
         break
-  return [instr for instr in instrs if instr.asm != "" and instr.dsl != nop_instr]
+  return [instr for instr in instrs if instr.asm != ""]
 
 # Parse a gas file
 def parse_gas(fn):
@@ -485,7 +488,7 @@ def main():
     if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
     print ("proc main (%s) =" % ", ".join([string_of_typed_arg(i, vtypes, args.type) for i in inputs]))
   if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
-  instr_strs = list(map((lambda i: i.to_string(print_asm) + ";"), instrs))
+  instr_strs = list(map((lambda i: i.to_string(print_asm)), instrs))
   instr_strs = flatten([str.split("\n") for str in instr_strs])
   if auto_carries:
     instr_strs = cryptoline.assert_unused_carries(instr_strs, annot=True)
