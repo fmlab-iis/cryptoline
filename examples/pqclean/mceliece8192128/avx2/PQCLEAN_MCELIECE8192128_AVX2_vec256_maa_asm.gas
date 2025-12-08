@@ -1,3 +1,40 @@
+#! %rax = %%rax
+#! %rcx = %%rcx
+#! %rbp = %%rbp
+#! %rbx = %%rbx
+#! %rdi = %%rdi
+#! %rdx = %%rdx
+#! %rsi = %%rsi
+#! %rsp = %%rsp
+#! %r$1c = %%r$1c
+#! %ymm$1c = %%ymm$1c
+#! %xmm$1c = %%xmm$1c
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%r$1c) = %%EA
+#! $1c(%r$2c) = %%EA
+
+#! PQCLEAN_MCELIECE8192128_AVX2_vec256_maa_asm: -> nop
+#! add .* -> nop
+#! and .* -> nop
+#! sub .* -> nop
+#! mov $1v, $2v -> nop
+#! vmovupd $1ea, $2ymm -> mov %$2ymm %$1ea
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm
+#! vmovapd $1ymm, $2ymm -> mov %$2ymm %$1ymm
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ymm
+#! vpand $1ea, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ea
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %_ %$3ymm %$2ymm %$1ymm
+#! vpxor $1ea, $2ymm, $3ymm -> adds %_ %$3ymm %$2ymm %$1ea
+
 PQCLEAN_MCELIECE8192128_AVX2_vec256_maa_asm:
 # %rdi = 0x7fffffc2ac80
 # %rsi = 0x7fffffc2ae20
