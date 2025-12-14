@@ -380,7 +380,10 @@ val rror : size -> rexp -> rexp -> rexp
 (** [rror w e1 e2] is [Rbinop (w, Rror, e1, e2)]. *)
 
 val rconcat : size -> size -> rexp -> rexp -> rexp
-(** [rconcat w e1 e2] is [Rbinop (w, Rconcat, e1, e2)]. *)
+(** [rconcat w1 w2 e1 e2] is [Rconcat (w1, w2, e1, e2)]. *)
+
+val rconcats : (size * rexp) list -> rexp
+(** [rconcats wes] concatenates a list of range expressions. *)
 
 val rsq : size -> rexp -> rexp
 (** [rsq w e] is [Rbinop (w, Rmul, e, e)]. *)

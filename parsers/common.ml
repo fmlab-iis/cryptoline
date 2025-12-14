@@ -3359,6 +3359,15 @@ let parse_rexp_slimbs =
         ) es
     )
 
+let parse_rexp_join_vexpr lno ve_tok =
+  fun ctx ->
+  let ve = ve_tok ctx in
+  let wve = tmap (fun e -> (size_of_rexp e, e)) ve in
+  try
+    Ast.Cryptoline.rconcats wve
+  with UnsupportedException e ->
+    raise_at_line lno e
+
 let lift_runop_vec op _lno ve_tok =
   fun ctx ->
   (ve_tok ctx) |> List.rev_map (fun e -> op (size_of_rexp e) e) |> List.rev

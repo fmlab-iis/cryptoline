@@ -864,6 +864,8 @@ rexp:
                                                   { parse_rexp_ulimbs (get_line_start()) $2 $4 }
   | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
                                                   { parse_rexp_slimbs (get_line_start()) $2 $4 }
+  // Concatenate all elements (from low to high) in a vector as one bit-vector
+  | JOIN vrexp_primary                            { parse_rexp_join_vexpr (get_line_start()) $2 }
   | rexp ADDOP rexp                               { parse_rexp_add (get_line_start()) $1 $3 }
   | rexp SUBOP rexp                               { parse_rexp_sub (get_line_start()) $1 $3 }
   | rexp MULOP rexp                               { parse_rexp_mul (get_line_start()) $1 $3 }
@@ -916,6 +918,7 @@ vrexp:
   | SAR vrexp_primary vrexp_primary               { parse_vrexp_sar (get_line_start()) $2 $3 }
   | ROL vrexp_primary vrexp_primary               { parse_vrexp_rol (get_line_start()) $2 $3 }
   | ROR vrexp_primary vrexp_primary               { parse_vrexp_ror (get_line_start()) $2 $3 }
+  // Element-wise bit-vector concatenation of two vectors
   | CONCAT vrexp_primary vrexp_primary            { parse_vrexp_concat (get_line_start()) $2 $3 }
   | ADDS LSQUARE vrexps RSQUARE                   { parse_vrexp_adds (get_line_start()) $3 }
   | MULS LSQUARE vrexps RSQUARE                   { parse_vrexp_muls (get_line_start()) $3 }

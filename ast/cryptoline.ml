@@ -630,6 +630,14 @@ let rashr w e1 e2 = Rbinop (w, Rashr, e1, e2)
 let rrol w e1 e2 = Rbinop (w, Rrol, e1, e2)
 let rror w e1 e2 = Rbinop (w, Rror, e1, e2)
 let rconcat w1 w2 e1 e2 = Rconcat (w1, w2, e1, e2)
+let rconcats wes =
+  let rec helper (w1, e1) wes =
+    match wes with
+    | [] -> e1
+    | (w2, e2)::wes' -> helper (w1 + w2, rconcat w1 w2 e1 e2) wes' in
+  match wes with
+  | [] -> raise (UnsupportedException "At least one expression is required for concatenation")
+  | (w, e)::wes' -> helper (w, e) wes'
 let rsq w e = Rbinop (w, Rmul, e, e)
 (*let radds w es = List.fold_left (fun res e -> radd w e res) (rconst w Z.zero) es
 let rmuls w es = List.fold_left (fun res e -> rmul w e res) (rconst w Z.one) es*)

@@ -1085,6 +1085,9 @@ val parse_rexp_ulimbs : lno -> Z.t contextual -> rexp list contextual -> rexp co
 val parse_rexp_slimbs : lno -> Z.t contextual -> rexp list contextual -> rexp contextual
 (** [parse_rexp_slimbs lno w_tok es_tok] parses signed limbs *)
 
+val parse_rexp_join_vexpr : lno -> rexp list contextual -> rexp contextual
+(** join a vector range expression as a single range expression *)
+
 val parse_vrexp_slices : lno -> rexp list contextual -> selection list -> rexp list contextual
 (** [parse_vrexp_slices lno ve_tok sels] parses slices of a vector rexp *)
 
