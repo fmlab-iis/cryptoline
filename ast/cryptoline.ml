@@ -1044,6 +1044,18 @@ let const_of_atom a =
 
 let atom_is_signed a = typ_is_signed (typ_of_atom a)
 
+let split_const c w n =
+  let rec helper res_rev c n i w =
+    if i >= n
+    then List.rev res_rev
+    else let (hi, lo) = Z.div_rem c (Z.pow z_two w) in
+         helper (lo::res_rev) hi n (i + 1) w in
+  helper [] c n 0 w
+
+let split_const_as_atoms c ty n =
+  split_const c (size_of_typ ty) n
+  |> tmap (fun c -> Aconst (ty, c))
+
 let eq_atom a1 a2 =
   match a1, a2 with
   | Avar v1, Avar v2 -> eq_var v1 v2

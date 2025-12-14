@@ -1003,6 +1003,17 @@ val var_of_atom : atom -> var
 val const_of_atom : atom -> Z.t
 (** [var_of_atom (Aconst (t, n))] is the [n]. The input must be an atom formed by a constant. *)
 
+val split_const : Z.t -> int -> int -> Z.t list
+(** [split_const c w n] splits the constant value [c] into a
+    list of constants (c1, c2, ..., cn). Each ci (1 <= i <= n - 1)
+    has value between 0 (inclusive) and 2^w (exclusive). The value
+    [c] equals c1 + c2 * 2^w + ... + cn*2^(w*(n-1)). *)
+
+val split_const_as_atoms : Z.t -> typ -> int -> atom list
+(** [split_const_as_atoms c ty n] splits the constant value [c] into a
+    list of atoms (a1, a2, ..., an). Each atom has type [ty]. If
+    [size_of_typ ty] is w, then [c] equals a1 + a2 * 2^w + ... + an*2^(w*(n-1)). *)
+
 val atom_is_var : atom -> bool
 (** [atom_is_var a] is [true] if [a] is formed by a variable. *)
 

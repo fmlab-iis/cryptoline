@@ -389,6 +389,13 @@ type selection =
 | SelMultiple of (int list) contextual                           (** select multiple indices *)
 | SelRange of (int option * int option * int option) contextual  (** select a slice *)
 
+(* Split a constant value into a vector of constants *)
+type vec_const_t =
+  {
+    csttype: vectyp;
+    cstvalue: Z.t contextual
+  }
+
 type vec_sel_prim_t =
   {
     vecselatm: atom_vec_t;
@@ -401,6 +408,7 @@ and atom_vec_t =
   | `AVECSEL of vec_sel_prim_t
   | `AVECCAT of atom_vec_t list
   | `AVECDUP of atom_vec_t * Z.t contextual
+  | `AVCONST of vec_const_t
   ]
 
 
@@ -799,9 +807,20 @@ let rec resolve_atom_with ctx lno ?typ (a: atom_t) =
                       | None -> Some t
                       | Some t' -> if t = t' then Some t
                                    else raise_at_line lno (Printf.sprintf "Types of vector elements are incompatible. One is %s while the other is %s." (string_of_typ t) (string_of_typ t'))) in
-       match select_typ typs with
-       | None -> raise_at_line lno (Printf.sprintf "Cannot determine the type of vector elements in vector concatenation.")
-       | Some t -> (t, List.flatten atomss)
+       (match select_typ typs with
+        | None -> raise_at_line lno (Printf.sprintf "Cannot determine the type of vector elements in vector concatenation.")
+        | Some t -> (t, List.flatten atomss))
+    | `AVCONST {csttype; cstvalue} ->
+       let (ty, num) = csttype in
+       let v = cstvalue ctx in
+       let vs = Ast.Cryptoline.split_const v (size_of_typ ty) num in
+       let acsts = tmap (fun v ->
+                       `ACONST {
+                           atmtyphint = Some ty;
+                           atmvalue = fun _ -> v
+                         }
+                     ) vs in
+       (ty, acsts)
 
 
 let resolve_output_var_with ctx lno ty (`AVAR {atmtyphint; atmname}) =
@@ -850,6 +869,7 @@ let rec resolve_output_atom_with ctx lno ty (a: atom_t) =
     | `AVECSEL _ -> raise_at_line lno ("A selection of vector elements cannot be used as an output.")
     | `AVECDUP _ -> raise_at_line lno ("A vector duplication cannot be used as an output.")
     | `AVECCAT _ -> raise_at_line lno ("A vector concatenation cannot be used as an output.")
+    | `AVCONST _ -> raise_at_line lno ("A constant vector cannot be used as an output.")
 
 
 let parse_imov_at ctx lno dest src =

@@ -1016,6 +1016,7 @@ atom_v_primary:
     VEC_ID                                        { `AVECT { vecname = $1; vectyphint = None; } }
   | VEC_ID AT vectyp                              { `AVECT { vecname = $1; vectyphint = Some $3; } }
   | LSQUARE atom_scalars RSQUARE                  { `AVLIT $2 }
+  | const_exp_primary AT vectyp                   { `AVCONST { csttype = $3; cstvalue = $1 } }
   | LPAR atom_v RPAR                              { $2 }
 ;
 

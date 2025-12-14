@@ -320,6 +320,13 @@ type selection =
 | SelRange of (int option * int option * int option) contextual  (** select a slice *)
 (** selection of vector elements *)
 
+type vec_const_t =
+  {
+    csttype: vectyp;
+    cstvalue: Z.t contextual
+  }
+(* split a constant value into a vector of constants *)
+
 type vec_sel_prim_t =
   {
     vecselatm: atom_vec_t;      (** a vector atom *)
@@ -334,6 +341,7 @@ and atom_vec_t =
   | `AVECSEL of vec_sel_prim_t    (** selection of a vector *)
   | `AVECCAT of atom_vec_t list   (** concatenation of vectors *)
   | `AVECDUP of atom_vec_t * Z.t contextual (** duplication of vectors *)
+  | `AVCONST of vec_const_t       (** spliting a constant into a vector of constants *)
   ]
 (** a vector atom *)
 
