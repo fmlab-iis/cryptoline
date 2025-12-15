@@ -889,6 +889,13 @@ vrexp_primary:
                                                     es
                                                   }
   | LSQUARE rexps RSQUARE                         { fun ctx -> $2 ctx }
+  | const_exp_primary AT vectyp                   { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                    let vec = `AVCONST { csttype = $3; cstvalue = $1 } in
+                                                    let (_, atoms) = (resolve_vec_with ~with_ghost:true ctx lno vec) in
+                                                    let es = List.rev_map rexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
+                                                    es
+                                                  }
   | LPAR vrexp RPAR                               { fun ctx -> $2 ctx }
 ;
 
