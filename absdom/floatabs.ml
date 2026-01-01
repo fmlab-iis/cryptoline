@@ -78,7 +78,7 @@ module FloatAbsDomain = struct
         Some (combine first rest)
     | _ -> None
 
-  (*Addition of intervals*)
+  (*Addition of intervals doesn't use the correct rounding mode*)
   let interval_add i1 i2 =
     match i1, i2 with
     | Some iv1, Some iv2 ->
@@ -92,7 +92,6 @@ module FloatAbsDomain = struct
         let () = Mpq.add hi b d in
         Some (Interval.of_mpq lo hi)
     | _ -> None
-
   (*Negation of intervals*)
   let interval_neg iv =
     match iv with
