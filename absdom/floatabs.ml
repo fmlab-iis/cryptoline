@@ -116,8 +116,6 @@ module FloatAbsDomain = struct
         (Scalar.cmp i.inf (Scalar.neg scalar_min) > 0 && 
          Scalar.cmp i.sup (Scalar.of_int 0) < 0)
     | None -> false
-
-  (* 完整的檢查函數 *)
   let check_float_result (pos_interval: Interval.t option) 
                          (neg_interval: Interval.t option) 
                          (zero_possible: bool) : fp_abs =
