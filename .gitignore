@@ -16,3 +16,5 @@ _build
 doc/*.aux
 doc/*.dvi
 cryptoline.opam
+_build/
+_opam/

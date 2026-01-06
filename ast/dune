@@ -2,7 +2,7 @@
   (name        ast)
   (preprocess  (pps ppx_optcomp))
   (preprocessor_deps config.mlh)
-  (libraries   options zarith utils nBits)
+  (libraries   options zarith utils nBits apron)
   (flags       (:standard -w -3))
   (public_name cryptoline.ast)
 )

@@ -992,11 +992,11 @@ let parse_ror_at ctx lno dest src num =
 
 let parse_set_at ctx lno dest =
   let c = resolve_lcarry_with ctx lno dest in
-  [lno, TImov (c, Aconst (bit_t, Z.one)) ]
+  [lno, TImov (c, Aconst (bit_t, Cint Z.one)) ]
 
 let parse_clear_at ctx lno dest =
   let c = resolve_lcarry_with ctx lno dest in
-  [lno, TImov (c, Aconst (bit_t, Z.zero))]
+  [lno, TImov (c, Aconst (bit_t, Cint Z.zero))]
 
 let parse_nondet_at ctx lno dest =
   let v = resolve_lv_with ctx lno dest None in

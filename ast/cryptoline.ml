@@ -2,6 +2,7 @@
 open Set
 open NBits
 open Utils.Std
+open Apron
 
 
 module StringElem : OrderedType with type t = string =
@@ -62,6 +63,24 @@ let map_snd f pairs =
   List.map (fun (e1, e2) -> (e1, f e2)) pairs
 
 
+(** Constants *)
+type const =
+  | Cint    of Z.t
+  | Cfloat of Mpfrf.t
+
+let const_of_int n = Cint n
+let const_of_double f = Cfloat f
+let const_to_string c =
+  match c with
+  | Cint n -> Z.to_string n
+  | Cfloat f -> Mpfr.to_string f
+
+let float_of_z n prec rnd =
+  let x = (Mpfr.init2 prec : Mpfr.t) in
+  let _ = Mpfr.set_str x (Z.to_string n) ~base:10 rnd in
+  Mpfrf.of_mpfr x
+
+
 (** Types *)
 
 type size = int
@@ -69,86 +88,216 @@ type size = int
 type typ =
   Tuint of size
 | Tsint of size
+| Tdouble
+| Tsingle
 
 let uint_t w = Tuint w
 let int_t w = Tsint w
 let bit_t = Tuint 1
+let double_t = Tdouble
 
 let size_of_typ ty =
   match ty with
   | Tuint w -> w
   | Tsint w -> w
+  | Tdouble -> 64
+  | Tsingle -> 32
 
 let min_of_typ ty =
   match ty with
-  | Tuint _w -> Z.zero
-  | Tsint w -> Z.neg (Z.pow z_two (w - 1))
+  | Tuint _w -> Cint Z.zero
+  | Tsint w -> Cint (Z.neg (Z.pow z_two (w - 1)))
+  | Tdouble -> 
+      let rnd = Mpfr.Near in
+      let x = Mpfr.init2 53 in
+      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
+      let _ = Mpfr.mul_2exp x x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
+      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^53-1 *)
+      let _ = Mpfr.mul_2exp x x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
+      let _ = Mpfr.neg x x rnd in (* x := -x == - (2-2^52) * 2^1023 *)
+      Cfloat (Mpfrf.of_mpfr x)
+  | Tsingle ->
+      let rnd = Mpfr.Near in
+      let x = Mpfr.init2 23 in
+      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
+      let _ = Mpfr.mul_2exp x x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
+      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^24-1 *)
+      let _ = Mpfr.mul_2exp x x 104 rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
+      let _ = Mpfr.neg x x rnd in (* x := -x == - (2-2^23) * 2^127 *)
+      Cfloat (Mpfrf.of_mpfr x)
 
 let max_of_typ ty =
   match ty with
-  | Tuint w -> Z.sub (Z.pow z_two w) Z.one
-  | Tsint w -> Z.sub (Z.pow z_two (w - 1)) Z.one
+  | Tuint w -> Cint (Z.sub (Z.pow z_two w) Z.one)
+  | Tsint w -> Cint (Z.sub (Z.pow z_two (w - 1)) Z.one)
+  | Tdouble -> 
+      let rnd = Mpfr.Near in
+      let x = Mpfr.init2 53 in
+      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
+      let _ = Mpfr.mul_2exp x x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
+      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^53-1 *)
+      let _ = Mpfr.mul_2exp x x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
+      Cfloat (Mpfrf.of_mpfr x)
+  | Tsingle ->
+      let rnd = Mpfr.Near in
+      let x = Mpfr.init2 23 in
+      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
+      let _ = Mpfr.mul_2exp x x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
+      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^24-1 *)
+      let _ = Mpfr.mul_2exp x x 104 rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
+      Cfloat (Mpfrf.of_mpfr x)
 
 let typ_is_unsigned ty =
   match ty with
   | Tsint _ -> false
   | Tuint _ -> true
+  | Tdouble -> false
+  | Tsingle -> false
 
 let typ_is_signed ty =
   match ty with
   | Tsint _ -> true
   | Tuint _ -> false
+  | Tdouble -> true
+  | Tsingle -> true
 
 let typ_to_signed ty =
   match ty with
   | Tuint w -> Tsint w
   | Tsint _ -> ty
+  | Tdouble -> ty
+  | Tsingle -> ty
 
 let typ_to_unsigned ty =
   match ty with
   | Tuint _ -> ty
   | Tsint w -> Tuint w
+  | Tdouble -> raise (UnsupportedException "typ_to_size: not defined for Tdouble")
+  | Tsingle -> raise (UnsupportedException "typ_to_size: not defined for Tsingle")
 
 let typ_to_size ty w =
-  match ty with
-  | Tuint _ -> Tuint w
-  | Tsint _ -> Tsint w
+  match ty, w with
+  | Tuint _, _ -> Tuint w
+  | Tsint _, _ -> Tsint w
+  | Tdouble, 64 -> Tdouble
+  | Tdouble, _ -> raise (UnsupportedException "typ_to_size: not defined for Tdouble")
+  | Tsingle, 32 -> Tsingle
+  | Tsingle, _ -> raise (UnsupportedException "typ_to_size: not defined for Tsingle")
 
 let typ_to_double_size ty =
   match ty with
   | Tuint w -> Tuint (w * 2)
   | Tsint w -> Tsint (w * 2)
+  | Tsingle -> Tdouble
+  | Tdouble -> raise (UnsupportedException "typ_to_double_size: not defined for Tdouble")
 
+(* Tdouble > Tsingle > Tsint > Tuint *)
 let cmp_typ t1 t2 =
   match t1, t2 with
   | Tuint w1, Tuint w2 -> compare w1 w2
   | Tuint _, Tsint _ -> -1
   | Tsint _, Tuint _ -> 1
   | Tsint w1, Tsint w2 -> compare w1 w2
+  | Tdouble, Tdouble -> 0
+  | Tdouble, _ -> 1
+  | _, Tdouble -> -1
+  | Tsingle, Tsingle -> 0
+  | Tsingle, _ -> 1
+  | _, Tsingle -> -1 
 
 let typ_map f ty =
   match ty with
   | Tuint w -> Tuint (f w)
   | Tsint w -> Tsint (f w)
+  | Tdouble -> raise (UnsupportedException "typ_map: not defined for Tdouble")
+  | Tsingle -> raise (UnsupportedException "typ_map: not defined for Tsingle")
+
+let random_double_const () : 'a Mpfr.tt =
+  let bits = Random.bits64 () in
+  let f = Int64.float_of_bits bits in
+  Mpfr.of_float f Mpfr.Near
+
+let random_single_const () : 'a Mpfr.tt =
+  let bits = Random.bits32 () in
+  let f = Int32.float_of_bits bits in
+  Mpfr.of_float f Mpfr.Near
+
 
 [%%import "config.mlh"]
 [%%if Z_version <= (1, 12)]
-let random_value ty =
-  let size = let s = size_of_typ ty in
-             if typ_is_unsigned ty then s else s - 1 in
-  let sign = Random.bool () in
-  let bits = List.init size (fun _ -> if Random.bool () then "1" else "0") in
-  let bits = if sign && List.for_all (fun s -> s = "0") bits then ("1"::bits) else bits in
-  Z.of_string_base 2 (if sign then "-" else "" ^ String.concat "" bits)
+let random_int_const (ty: typ): Z.t =
+  match ty with
+  | Tuint _ | Tsint _ ->
+    let size = let s = size_of_typ ty in
+               if typ_is_unsigned ty then s else s - 1 in
+    let sign = Random.bool () in
+    let bits = List.init size (fun _ -> if Random.bool () then "1" else "0") in
+    let bits = if sign && List.for_all (fun s -> s = "0") bits then ("1"::bits) else bits in
+    let z = Z.of_string_base 2 (if sign then "-" else "" ^ String.concat "" bits) in
+    z
+  | Tdouble | Tsingle ->
+    raise (UnsupportedException "random_int_const: not defined for Tsingle/Tdouble")
+
 [%%else]
-let random_value ty =
-  let min = min_of_typ ty in
-  let max = max_of_typ ty in
-  Z.add min (Z.random_int (Z.add (Z.sub max min) Z.one))
+let random_int_const (ty: typ): Z.t =
+  match min_of_typ ty, max_of_typ ty with
+  | Cint min, Cint max ->
+    Z.add min (Z.random_int (Z.add (Z.sub max min) Z.one))
+  | _ ->
+    raise (UnsupportedException "random_int_const: min/max not integer")
+  
 [%%endif]
 
+let random_value ty =
+  match ty with
+  | Tuint _ | Tsint _ -> Cint (random_int_const ty)
+  | Tdouble -> Cfloat (random_double_const ())
+  | Tsingle -> Cfloat (random_single_const ())
+
+
+let float_is_representable (prec:int) (emin:int) (emax:int) (f: 'a Mpfr.tt) : bool =
+  if Mpfr.nan_p f || Mpfr.inf_p f then
+    true
+  else if not (Mpfr.number_p f) then
+    false
+  else (
+    let old_emin = Mpfr.get_emin () in
+    let old_emax = Mpfr.get_emax () in
+    let _ = Mpfr.set_emin emin in
+    let _ = Mpfr.set_emax emax in
+    try
+      let x = Mpfr.init2 prec in
+      let ternary = Mpfr.set x f Mpfr.Near in
+      let _ = Mpfr.subnormalize x ternary Mpfr.Near in
+      let ok = (Mpfr.cmp x f = 0) in
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      ok
+    with e ->
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      raise e
+  )
+
+
 let is_representable ty v =
-  not (Z.lt v (min_of_typ ty) || Z.gt v (max_of_typ ty))
+  match ty, v with
+  | (Tuint _ | Tsint _), Cint z -> (
+    match min_of_typ ty, max_of_typ ty with
+    | Cint min, Cint max ->
+      not (Z.lt z min || Z.gt z max)
+    | _ ->
+      false
+    )
+  | Tdouble, Cfloat f ->
+      float_is_representable 53 (-1073) 1024 f
+  | Tsingle, Cfloat f ->
+      float_is_representable 24 (-148) 128 f
+  | (Tdouble | Tsingle), Cint _ -> false
+  | (Tuint _ | Tsint _), Cfloat _ -> false
+
+
+
 
 
 (** Variables *)
@@ -266,7 +415,7 @@ type rcmpop =
 
 type eexp =
   | Evar of var
-  | Econst of Z.t
+  | Econst of const
   | Eunop of eunop * eexp
   | Ebinop of ebinop * eexp * eexp
 
@@ -280,29 +429,53 @@ let eneg' e =
 let eadd e1 e2 = Ebinop (Eadd, e1, e2)
 let eadd' e1 e2 =
   match e1, e2 with
-  | Econst n, _ when Z.equal n Z.zero -> e2
-  | _, Econst n when Z.equal n Z.zero -> e1
-  | Econst n, Econst m -> Econst (Z.add n m)
+  | Econst (Cint n), _ when Z.equal n Z.zero -> e2
+  | _, Econst (Cint n) when Z.equal n Z.zero -> e1
+  | Econst (Cfloat f), _ when Mpfr.zero_p f -> e2
+  | _, Econst (Cfloat f) when Mpfr.zero_p f -> e1
+  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.add n m))
+  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (Mpfrf.add f1 f2 Mpfr.Near))
+  | Econst (Cfloat f), Econst (Cint n) | Econst (Cint n), Econst (Cfloat f) ->
+    let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+    Econst (Cfloat (Mpfrf.add f n_as_f Mpfr.Near))
   | _, _ -> eadd e1 e2
 let esub e1 e2 = Ebinop (Esub, e1, e2)
 let esub' e1 e2 =
   match e1, e2 with
-  | Econst n, _ when Z.equal n Z.zero -> eneg' e2
-  | _, Econst n when Z.equal n Z.zero -> e1
-  | Econst n, Econst m -> Econst (Z.sub n m)
+  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.sub n m))
+  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (Mpfrf.sub f1 f2 Mpfr.Near))
+  | Econst (Cfloat f), Econst (Cint n)  ->
+    let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+    Econst (Cfloat (Mpfrf.sub f n_as_f Mpfr.Near))
+  | Econst (Cint n), Econst (Cfloat f) ->
+    let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+    Econst (Cfloat (Mpfrf.sub n_as_f f Mpfr.Near))
+  | Econst (Cint n), _ when Z.equal n Z.zero -> eneg' e2
+  | _, Econst (Cint n) when Z.equal n Z.zero -> e1
+  | Econst (Cfloat f), _ when Mpfr.zero_p f -> eneg' e2
+  | _, Econst (Cfloat f) when Mpfr.zero_p f -> e1
   | _, _ -> esub e1 e2
 let emul e1 e2 = Ebinop (Emul, e1, e2)
 let emul' e1 e2 =
   match e1, e2 with
-  | Econst n, _ when Z.equal n Z.zero -> Econst Z.zero
-  | _, Econst n when Z.equal n Z.zero -> Econst Z.zero
-  | Econst n, _ when Z.equal n Z.one -> e2
-  | _, Econst n when Z.equal n Z.one -> e1
-  | Econst n, Econst m -> Econst (Z.mul n m)
+  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.mul n m))
+  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (Mpfrf.mul f1 f2 Mpfr.Near))
+  | Econst (Cfloat f), Econst (Cint n)  ->
+    let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+    Econst (Cfloat (Mpfrf.mul f n_as_f Mpfr.Near))
+  | Econst (Cint n), Econst (Cfloat f) ->
+    let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+    Econst (Cfloat (Mpfrf.mul n_as_f f Mpfr.Near))
+  | Econst (Cint n), _ when Z.equal n Z.zero -> Econst (Cint Z.zero)
+  | _, Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.zero)
+  | Econst (Cint n), _ when Z.equal n Z.one -> e2
+  | _, Econst (Cint n) when Z.equal n Z.one -> e1
+  | Econst (Cfloat f), _ when Mpfrf.cmp_int f 1 = 0 -> e2
+  | _, Econst (Cfloat f) when Mpfrf.cmp_int f 1 = 0 -> e1
   | _, _ -> emul e1 e2
 let epow e1 e2 =
   match e2 with
-  | Econst _ -> Ebinop (Epow, e1, e2)
+  | Econst (Cint _) -> Ebinop (Epow, e1, e2)
   | _ -> failwith "Epow must have integer exponentials"
 let epow' e1 e2 =
   match e1, e2 with
@@ -606,7 +779,7 @@ let size_of_rexp e =
   | Runop (w, _, _) -> w
   | Rbinop (w, _, _, _) -> w
   | Ruext (w, _, i)
-    | Rsext (w, _, i) -> w + i
+  | Rsext (w, _, i) -> w + i
   | Rconcat (w1, w2, _, _) -> w1 + w2
 
 let rvar v = Rvar v
@@ -952,7 +1125,7 @@ let split_rand_prove_with rs = tmap split_rpwss rs |> tflatten
 
 type atom =
   | Avar of var
-  | Aconst of typ * Z.t
+  | Aconst of typ * const
 
 type instr =
   | Imov of var * atom                                      (** Assignment *)
@@ -1137,12 +1310,12 @@ let new_name ?prefix:prefix names =
 
 let e2pow n = Z.pow z_two n
 
-let ezero = econst Z.zero
-let eone = econst Z.one
-let etwo = econst z_two
+let ezero = econst (Cint Z.zero)
+let eone = econst (Cint Z.one)
+let etwo = econst (Cint z_two)
 let epow2e e = epow etwo e
 let epow2z z = epow2e (econst z)
-let epow2i i = epow2z (Z.of_int i)
+let epow2i i = epow2z (Cint (Z.of_int i))
 let epow2a a = epow2e (eexp_of_atom a)
 let emulpow2e e n = emul e (epow2e n)
 let emulpow2z e n = emul e (epow2z n)
@@ -3559,9 +3732,9 @@ object
   method veexp : eexp -> eexp vaction
   method vrexp : rexp -> rexp vaction
   method vatom : atom -> atom vaction
-  method vaconst : (typ * Z.t) -> (typ * Z.t) vaction
-  method veconst : Z.t -> Z.t vaction
-  method vrconst : (size * Z.t) -> (size * Z.t) vaction
+  method vaconst : (typ * const) -> (typ * const) vaction
+  method veconst : const -> const vaction
+  method vrconst : (size * const) -> (size * const) vaction
   method vvar : var -> var vaction  (* variable read, including read of program variables and ghost variables *)
   method vlval : var -> var vaction (* variable defined, including program variables only *)
   method vgvar : var -> var vaction (* variable defined, including ghost variables only *)

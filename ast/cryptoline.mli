@@ -1,7 +1,6 @@
 
 open NBits
 
-
 (** Abstract syntax tree of CryptoLine *)
 
 
@@ -29,6 +28,18 @@ module SM : Map.S with type key = string
 (** map with strings as its keys *)
 
 
+(** {1 Constants} *)
+
+type const =
+  | Cint    of Z.t
+  | Cfloat of Mpfrf.t
+
+
+val const_of_int : Z.t -> const
+val const_of_double : Mpfrf.t -> const
+val const_to_string : const -> string
+val float_of_z : Z.t -> int -> Mpfr.round -> Mpfrf.t
+
 (** {1 Types} *)
 
 type size = int
@@ -37,6 +48,8 @@ type size = int
 type typ =
   Tuint of size   (** usigned integers *)
 | Tsint of size   (** signed integers *) (* *)
+| Tdouble         (** double-precision floating-point numbers *)
+| Tsingle         (** single-precision floating-point numbers *)
 (** types of variables, either unsigned [Tuint w] or signed [Tsint w] where [w] is the size of the type *)
 
 val uint_t : size -> typ
@@ -45,16 +58,19 @@ val uint_t : size -> typ
 val int_t : size -> typ
 (** [int_t w] is [Tsint w]. *)
 
+val double_t : typ
+(** [double_t] is [Tdouble]. *)
+
 val bit_t : typ
 (** [bit_t] is [Tuint 1]. *)
 
 val size_of_typ : typ -> size
 (** [size_of_typ t] is the size of a type [t]. *)
 
-val min_of_typ : typ -> Z.t
+val min_of_typ : typ -> const
 (** [min_of_typ t] is the minimal number representable by a type [t]. *)
 
-val max_of_typ : typ -> Z.t
+val max_of_typ : typ -> const
 (** [max_of_typ t] is the maximal number representable by a type [t]. *)
 
 val typ_is_unsigned : typ -> bool
@@ -81,11 +97,13 @@ val cmp_typ : typ -> typ -> int
 val typ_map : (int -> int) -> typ -> typ
 (** [typ_map f t] applies [f] to the size of [t] *)
 
-val random_value : typ -> Z.t
+val random_value : typ -> const
 (** return a random value representable by the specified type *)
 
-val is_representable : typ -> Z.t -> bool
+val is_representable : typ -> const -> bool
 (** check if a value is representable by a type *)
+
+
 
 
 (** {1 Variables} *)
@@ -308,7 +326,7 @@ type rbinop =
 
 type rexp =
   | Rvar of var                              (** variable *)
-  | Rconst of size * Z.t                     (** constant of a specified bit-width*)
+  | Rconst of size * const                   (** constant of a specified bit-width*)
   | Runop of size * runop * rexp             (** unary operation on an expression of a specified bit-width *)
   | Rbinop of size * rbinop * rexp * rexp    (** binary operation on expressions of a specified bit-width *)
   | Ruext of size * rexp * int               (** [Ruext (w, e, i)] extends an unsigned expression [e] of width [w] by size [i] *)
@@ -322,7 +340,7 @@ val size_of_rexp : rexp -> size
 val rvar : var -> rexp
 (** [rvar v] is [Rvar v]. *)
 
-val rconst : size -> Z.t -> rexp
+val rconst : size -> const -> rexp
 (** [rconst w n] is [Rconst (w, n)]. *)
 
 val rnegb : size -> rexp -> rexp
@@ -648,7 +666,7 @@ val remove_prove_with_cuts : ('a * prove_with_spec list) list -> ('a * prove_wit
 
 type atom =
   | Avar of var                                             (** variable *)
-  | Aconst of typ * Z.t                                     (** constant of a specified type *)
+  | Aconst of typ * const                                   (** constant of a specified type *)
 (** atoms *)
 
 type instr =
@@ -988,7 +1006,7 @@ type lined_program = (int * instr) list
 val mkatom_var : var -> atom
 (** Creates an atom from a variable. *)
 
-val mkatom_const : typ -> Z.t -> atom
+val mkatom_const : typ -> const -> atom
 (** Creates an atom from a constant. *)
 
 val size_of_atom : atom -> size
@@ -1000,7 +1018,7 @@ val typ_of_atom : atom -> typ
 val var_of_atom : atom -> var
 (** [var_of_atom (Avar v)] is the [v]. The input must be an atom formed by a variable. *)
 
-val const_of_atom : atom -> Z.t
+val const_of_atom : atom -> const
 (** [var_of_atom (Aconst (t, n))] is the [n]. The input must be an atom formed by a constant. *)
 
 val atom_is_var : atom -> bool
@@ -1121,7 +1139,7 @@ val rspec_of_spec : spec -> rspec
 
 (** {1 String Outputs} *)
 
-val string_of_const : Z.t -> string
+val string_of_const : const -> string
 (** [string_of_const n] returns the string representation of a constant [n]. Negative numbers are enclosed in parentheses. *)
 
 val string_of_typ : typ -> string
@@ -1793,13 +1811,13 @@ object
   method vatom : atom -> atom vaction
   (** visit an atom *)
 
-  method vaconst : (typ * Z.t) -> (typ * Z.t) vaction
+  method vaconst : (typ * const) -> (typ * const) vaction
   (** visit a constant in an atom *)
 
-  method veconst : Z.t -> Z.t vaction
+  method veconst : const -> const vaction
   (** visit a constant in an algebraic expression *)
 
-  method vrconst : (size * Z.t) -> (size * Z.t) vaction
+  method vrconst : (size * const) -> (size * const) vaction
   (** visit a constant in a range expression *)
 
   method vvar : var -> var vaction
@@ -1825,13 +1843,13 @@ val visit_lval : visitor -> var -> var
 val visit_gvar : visitor -> var -> var
 (** Visit a declaration of a ghost variable by a visitor. *)
 
-val visit_aconst : visitor -> (typ * Z.t) -> (typ * Z.t)
+val visit_aconst : visitor -> (typ * const) -> (typ * const)
 (** Visit a constant in an atom by a visitor. *)
 
-val visit_econst : visitor -> Z.t -> Z.t
+val visit_econst : visitor -> const -> const
 (** Visit a constant in an algebraic expression by a visitor. *)
 
-val visit_rconst : visitor -> (size * Z.t) -> (size * Z.t)
+val visit_rconst : visitor -> (size * const) -> (size * const)
 (** Visit a constant in a range expression by a visitor. *)
 
 val visit_atom : visitor -> atom -> atom
@@ -2044,7 +2062,7 @@ val is_eexp_over_const : eexp -> bool
 val is_rexp_over_const : rexp -> bool
 (** [is_rexp_over_const e] is [true] if [e] is an expression over constants. *)
 
-val eval_eexp_const : eexp -> Z.t
+val eval_eexp_const : eexp -> const
 (** [eval_eexp_const e] evaluates [e] if [is_eexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
 
