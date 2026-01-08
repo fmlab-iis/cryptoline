@@ -162,6 +162,94 @@
               "smt"                        , SMT;
               "nia"                        , NIA;
               "lia"                        , LIA
+              (********** Floating point related, or the ones don't appear **********)
+              (* main problem: is there something similar to someone on the list? can I directly add instruction like above?
+addl
+addq
+
+bnd
+cltq
+cmp
+cmpl
+cmpq
+cwtl
+endbr64
+imul
+lea
+leave
+
+movabs
+movl
+movq
+movsbl
+movslq
+movzbl
+movzwl
+
+
+
+
+orq
+pop
+push
+
+
+sar
+seta
+shl
+
+
+subl
+subq
+test
+vaddpd
+vaddsd
+vbroadcastsd
+vcomisd
+vcvtsi2sdq
+vcvttsd2si
+vdivpd
+vextractf128
+vextracti128
+vhaddpd
+vhsubpd
+vinsertf128
+vmovapd
+vmovd
+vmovdqa
+vmovdqu
+vmovq
+vmovsd
+vmovupd
+vmulpd
+vmulsd
+vpaddd
+vpaddq
+vpand
+vpbroadcastd
+vpbroadcastq
+vpbroadcastw
+vpcmpeqw
+vpcmpgtq
+vpcmpgtw
+vpermpd
+vpermq
+vphaddw
+vpinsrd
+vpinsrq
+vpmovsxwq
+vpor
+vpslld
+vpsrld
+vpsrldq
+vpsrlw
+vpunpcklqdq
+vpxor
+vshufpd
+vsubpd
+vsubsd
+vunpcklpd
+vxorpd*)
             ]
 }
 
@@ -169,6 +257,7 @@ let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
 let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
+(* let float...? don't know the format of floating point?*)
 let identity = letter (letter | number)*
 let identity_vec = '%' identity
 let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
