@@ -126,7 +126,6 @@
               "sle"                        , SLE;
               "sgt"                        , SGT;
               "sge"                        , SGE;
-              "shr"                        , SHR;
               "lsr"                        , SHR;
               "sar"                        , SAR;
               "asr"                        , SAR;
@@ -163,7 +162,6 @@
               "nia"                        , NIA;
               "lia"                        , LIA;
               (********** Floating point related, or the ones don't appear **********)
-              (* main problem: is there something similar to someone on the list? can I directly add instruction like above?
               "addl"                       , ADD;
               "addq"                       , ADD;
               "bnd"                        , BND; (*MPX bounds check / manipulation*)
