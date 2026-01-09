@@ -1,3 +1,95 @@
+#! %rax = %%rax
+#! %rcx = %%rcx
+#! %rbp = %%rbp
+#! %rbx = %%rbx
+#! %rdi = %%rdi
+#! %rdx = %%rdx
+#! %rsi = %%rsi
+#! %rsp = %%rsp
+#! %r$1c = %%r$1c
+#! %ymm$1c = %%ymm$1c
+#! %xmm$1c = %%xmm$1c
+#! $1c(%rax) = %%EA
+#! (%rax) = %%EA
+#! $1c(%rcx) = %%EA
+#! (%rcx) = %%EA
+#! $1c(%rdx) = %%EA
+#! (%rdx) = %%EA
+#! $1c(%rdi) = %%EA
+#! (%rdi) = %%EA
+#! $1c(%rip) = %%EA
+#! $1c(%rsi) = %%EA
+#! (%rsi) = %%EA
+#! $1c(%rsp) = %%EA
+#! (%rsp) = %%EA
+#! $1c(%rbp) = %%EA
+#! (%rbp) = %%EA
+#! (%r$1c) = %%EA
+#! $1c(%r$2c) = %%EA
+
+
+#! radix_conversions: -> nop
+#! push .* -> nop
+#! pop .* -> nop
+#! mov %fs:.* -> nop
+#! cmp .* -> nop
+#! nopl .* -> nop
+#! test .* -> nop
+
+#! xor %eax, %eax -> mov %rax 0@bit[64]
+#! xor %ebx, %ebx -> mov %rbx 0@bit[64]
+#! xor $1v, $2v -> adds %dc %$2v %$2v %$1v
+#! vmovdqa $1ea, $2xmm -> mov %$2xmm %$1ea
+#! vmovdqa $1xmm, $2ea -> mov %$2ea %$1xmm[0:64];\nmov %$2ea[+8] %$1xmm[64:128]
+#! movabs $1c, $2v -> mov %$2v $1c@bit[64]
+#! vmovq $1v, $2xmm -> mov %$2xmm (%$1v ++ %$2xmm[64:128])
+#! vpunpcklqdq $1xmm, $2xmm, $3xmm -> mov %$3xmm (%$1xmm[0:64] ++ %$2xmm[0:64])
+#! vpunpckhqdq $1xmm, $2xmm, $3xmm -> mov %$3xmm (%$1xmm[64:128] ++ %$2xmm[64:128])
+#! mov $1c, %ecx -> mov %rcx $1c@bit[64]
+#! mov $1v, $2v -> mov %$2v %$1v
+#! shr \$0x20, $1v -> mov %$1v (%$1v[32:64] ++ 0@bit[32])
+#! shl \$0x20, $1v -> mov %$1v (0@bit[32] ++ %$1v[0:32])
+#! vpinsrq \$0x1, $1v, $2xmm, $3xmm -> mov %$3xmm (%$2xmm[0:64] ++ %$1v)
+#! vmovddup $1ea, $2xmm -> mov %$2xmm (%$1ea[0:64] ++ %$1ea[0:64])
+#! vpand $1ea, $2xmm, $3xmm -> mul %$3xmm %$2xmm (%$1ea ++ %$1ea[+8])
+#! vpand $1xmm, $2xmm, $3xmm -> mul %$3xmm %$2xmm %$1xmm
+#! vpxor $1xmm, $1xmm, $1xmm -> mov %$1xmm 0@bit[128]
+
+#! vpsrlq \$0x10, $1xmm, $2xmm -> mov %$2xmm (%$1xmm[16:64] ++ ([0@bit]++16) ++ %$1xmm[80:128] ++ ([0@bit]++16))
+#! vpsrlq \$0x1, $1xmm, $2xmm -> mov %$2xmm (%$1xmm[1:64] ++ [0@bit] ++ %$1xmm[65:128] ++ [0@bit])
+#! vpsrlq \$0x2, $1xmm, $2xmm -> mov %$2xmm (%$1xmm[2:64] ++ ([0@bit]++2) ++ %$1xmm[66:128] ++ ([0@bit]++2))
+#! vpsrlq \$0x4, $1xmm, $2xmm -> mov %$2xmm (%$1xmm[4:64] ++ ([0@bit]++4) ++ %$1xmm[68:128] ++ ([0@bit]++4))
+#! vpsrlq \$0x8, $1xmm, $2xmm -> mov %$2xmm (%$1xmm[8:64] ++ ([0@bit]++8) ++ %$1xmm[72:128] ++ ([0@bit]++8))
+
+
+# ---------- Adapted From vec128_mul_asm ----------
+
+#! add .* -> nop
+#! and .* -> nop
+#! sub .* -> nop
+#! lea .* -> nop
+#! imul .* -> nop
+#! vbroadcasti128 $1ea, $2ymm -> mov %$2ymm (%$1ea ++ %$1ea[+8] ++ %$1ea ++ %$1ea[+8])
+#! vinsertf128 \$0x0, $1ea, $2ymm, $3ymm -> mov %$3ymm (%$1ea ++ %$1ea[+8] ++ %$2ymm[128:256])
+#! vinsertf128 \$0x1, $1ea, $2ymm, $3ymm -> mov %$3ymm (%$2ymm[0:128] ++ %$1ea ++ %$1ea[+8])
+#! vmovupd $1ymm, $2ea -> mov %$2ea %$1ymm[0:64];\nmov %$2ea[+8] %$1ymm[64:128];\nmov %$2ea[+16] %$1ymm[128:192];\nmov %$2ea[+24] %$1ymm[192:256]
+#! vpand $1ymm, $2ymm, $3ymm -> mul %$3ymm %$2ymm %$1ymm
+#! vpxor $1ymm, $1ymm, $1ymm -> mov %$1ymm ([0@bit] ++ 256)
+#! vpxor $1ymm, $2ymm, $3ymm -> adds %_ %$3ymm %$2ymm %$1ymm
+#! vpxor $1xmm, $2xmm, $3xmm -> adds %_ %$3xmm %$2xmm %$1xmm
+#! vpxor $1ea, $2xmm, $3xmm -> adds %dc %$3xmm %$2xmm (%$1ea ++ %$1ea[+8])
+
+# `vzeroupper` zeroes the bits in positions 128 and higher in YMM0-YMM15.
+# Since the lower 128 bits of YMM's are XMM's and all the following
+# operations are applied on XMM's, we move the lower 128 bits of YMM's
+# to XMM's (YMM15 is omitted because it is not used).
+#! vzeroupper -> mov %xmm0 %ymm0[0:128];\nmov %xmm1 %ymm1[0:128];\nmov %xmm2 %ymm2[0:128];\nmov %xmm3 %ymm3[0:128];\nmov %xmm4 %ymm4[0:128];\nmov %xmm5 %ymm5[0:128];\nmov %xmm6 %ymm6[0:128];\nmov %xmm7 %ymm7[0:128];\nmov %xmm8 %ymm8[0:128];\nmov %xmm9 %ymm9[0:128];\nmov %xmm10 %ymm10[0:128];\nmov %xmm11 %ymm11[0:128];\nmov %xmm12 %ymm12[0:128];\nmov %xmm13 %ymm13[0:128];\nmov %xmm14 %ymm14[0:128]
+
+#! movdqa $1xmm, $2xmm -> mov %$2xmm %$1xmm
+#! movdqu $1ea, $2xmm -> mov %$2xmm (%$1ea ++ %$1ea[+8])
+#! movdqu $1xmm, $2ea -> mov %$2ea %$1xmm[0:64];\nmov %$2ea[+8] %$1xmm[64:128]
+
+
 radix_conversions:
 # %rdi = 0x7fffffc32bf0
 # %rsi = 0x7fffffc32bf0
