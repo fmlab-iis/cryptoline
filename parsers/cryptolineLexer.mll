@@ -166,80 +166,80 @@
               (* main problem: is there something similar to someone on the list? can I directly add instruction like above?
               "addl"                       , ADD;
               "addq"                       , ADD;
-              "bnd"
-              "cltq"
+              "bnd"                        , BND; (*MPX bounds check / manipulation*)
+              "cltq"                       , CLTQ; (*EAX → RAX sign-extension（32 -> 64）*)
               "cmp"                        , CMP;
               "cmpl"                       , CMP;
               "cmpq"                       , CMP;
-              "cwtl"
-              "endbr64"
-              "imul"
-              "lea"
-              "leave"
-              "movabs"
+              "cwtl"                       , CWTL; (*AX → EAX sign-extension (16 -> 32) *)
+              "endbr64"                    , ENDBR64; (*Control-flow enforcement*)
+              "imul"                       , IMUL;
+              "lea"                        , LEA;
+              "leave"                      , LEAVE;
+              "movabs"                     , MOV
               "movl"                       , MOV;
               "movq"                       , MOV;
-              "movsbl"
-              "movslq"
-              "movzbl"
-              "movzwl"
+              "movsbl"                     , MOVS;
+              "movslq"                     , MOVS;
+              "movzbl"                     , MOVZ;
+              "movzwl"                     , MOVZ;
               "orq"                        , OR;
-              "pop"
-              "push"
-              "sar"
-              "seta"
-              "shl"
+              "pop"                        , POP;
+              "push"                       , PUSH;
+              "sar"                        , SAR;
+              "seta"                       , SETA;
+              "shl"                        , SHL;
               "subl"                       , SUB;
               "subq"                       , SUB;
-              "test"
-              "vaddpd"
-              "vaddsd"
-              "vbroadcastsd"
-              "vcomisd"
-              "vcvtsi2sdq"
-              "vcvttsd2si"
-              "vdivpd"
-              "vextractf128"
-              "vextracti128"
-              "vhaddpd"
-              "vhsubpd"
-              "vinsertf128"
-              "vmovapd"
-              "vmovd"
-              "vmovdqa"
-              "vmovdqu"
-              "vmovq"
-              "vmovsd"
-              "vmovupd"
-              "vmulpd"
-              "vmulsd"
-vpaddd
-vpaddq
-vpand
-vpbroadcastd
-vpbroadcastq
-vpbroadcastw
-vpcmpeqw
-vpcmpgtq
-vpcmpgtw
-vpermpd
-vpermq
-vphaddw
-vpinsrd
-vpinsrq
-vpmovsxwq
-vpor
-vpslld
-vpsrld
-vpsrldq
-vpsrlw
-vpunpcklqdq
-vpxor
-vshufpd
-vsubpd
-vsubsd
-vunpcklpd
-vxorpd*)
+              "test"                       , TEST;
+              "vaddpd"                     , ADD;
+              "vaddsd"                     , ADD;
+              "vbroadcastsd"               , VBROADCASTSD;
+              "vcomisd"                    , VCOMISD;
+              "vcvtsi2sdq"                 , VCVTSI2SDQ;
+              "vcvttsd2si"                 , VCVTTSD2SI;
+              "vdivpd"                     , VDIV;
+              "vextractf128"               , VEXTRACTF128;
+              "vextracti128"               , VEXTRACTI128;
+              "vhaddpd"                    , VHADD;
+              "vhsubpd"                    , VHSUB;
+              "vinsertf128"                , VINSERTF128;
+              "vmovapd"                    , MOV;
+              "vmovd"                      , MOV;
+              "vmovdqa"                    , MOV;
+              "vmovdqu"                    , MOV;
+              "vmovq"                      , MOV;
+              "vmovsd"                     , VMOVSD;
+              "vmovupd"                    , MOV;
+              "vmulpd"                     , MUL;
+              "vmulsd"                     , MUL;
+              "vpaddd"                     , ADD;
+              "vpaddq"                     , ADD;
+              "vpand"                      , AND;
+              "vpbroadcastd"               , BROADCAST;
+              "vpbroadcastq"               , BROADCAST;
+              "vpbroadcastw"               , BROADCAST;
+              "vpcmpeqw"                   , CMP;
+              "vpcmpgtq"                   , CMP;
+              "vpcmpgtw"                   , CMP;
+              "vpermpd"                    , VPER;
+              "vpermq"                     , VPER;
+              "vphaddw"                    , VPHADDW;
+              "vpinsrd"                    , VPINS;
+              "vpinsrq"                    , VPINS;
+              "vpmovsxwq"                  , VPMOVSXWQ;
+              "vpor"                       , OR;
+              "vpslld"                     , VSL; (* left *)
+              "vpsrld"                     , VSR; (* right *)
+              "vpsrldq"                    , VPSRLDQ;
+              "vpsrlw"                     , VSR;
+              "vpunpcklqdq"                , VPUNPCKLQDQ;
+              "vpxor"                      , XOR;
+              "vshufpd"                    , VSHUFPD;
+              "vsubpd"                     , SUB;
+              "vsubsd"                     , SUB;
+              "vunpcklpd"                  , VUNPCKLPD;
+              "vxorpd"                     , XOR*)
             ]
 }
 
