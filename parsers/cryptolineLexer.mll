@@ -174,7 +174,7 @@
               "imul"                       , IMUL;
               "lea"                        , LEA;
               "leave"                      , LEAVE;
-              "movabs"                     , MOV
+              "movabs"                     , MOV;
               "movl"                       , MOV;
               "movq"                       , MOV;
               "movsbl"                     , MOVS;
