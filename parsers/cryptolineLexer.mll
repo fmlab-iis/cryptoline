@@ -245,7 +245,10 @@ let letter = ['a'-'z' 'A'-'Z' '_']
 let number = ['0'-'9']
 let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
-(* let float...? don't know the format of floating point?*)
+let float =
+  ['0'-'9']+ '.' ['0'-'9']* (['e''E']['+''-']?['0'-'9']+)?
+| '.' ['0'-'9']+ (['e''E']['+''-']?['0'-'9']+)?
+
 let identity = letter (letter | number)*
 let identity_vec = '%' identity
 let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
@@ -335,12 +338,13 @@ token = parse
   | "0b" ((bin+) as bin)           { NUM (Z.of_string_base 2 bin) }
   | "0x" ((hex+) as hex)           { NUM (Z.of_string_base 16 hex) }
   | (number+) as num               { NUM (Z.of_string num) }
+  | float as f                     { FLOAT (float_of_string f) }
+  | identity_vec as id             { VEC_ID id }
   | identity as id                 { try
                                        Hashtbl.find keywords id
                                      with Not_found ->
                                        ID id
                                    }
-  | identity_vec as id             { VEC_ID id }
   | path as p                      { (* Need `Hashtbl.find keywords p` if not all keywords are recognized as identities. *)
                                      PATH p }
   | eof                            { EOF }
