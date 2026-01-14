@@ -36,6 +36,9 @@
 %token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
 %token BOGUS
+/* Floating point related or something else*/
+% token BND CLTQ CMP CWTL ENDBR64 IMUL LEA LEAVE MOVS MOVZ POP PUSH SAR SETA VBROADCASTSD VCOMISD VCVTSI2SDQ VCVTTSD2SI VDIV VEXTRACTF128 VEXTRACTI128
+% token VHADD VHSUB VINSERTF128 VMOVSD VPER VPHADDW VPINS VPMOVSXWQ VSL VSR VPSRLDQ VPUNPCKLQDQ VSHUFPD VUNPCKLPD
 
 %left LOROP
 %left LANDOP
@@ -1115,6 +1118,7 @@ const_exp_v_primary:
 
 const:
     NUM                                           { fun _ -> $1 }
+  | FLOAT                                         { fun _ -> Cfloat $1}
   | DEREFOP ID                                    { parse_named_constant (get_line_start()) $2 }
 ;
 
