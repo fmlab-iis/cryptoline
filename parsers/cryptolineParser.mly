@@ -13,6 +13,7 @@
 
 %token <string> COMMENT
 %token <Z.t> NUM
+%token <float> FLOAT
 %token <string> ID VEC_ID PATH
 %token <int> UINT SINT
 %token BIT
