@@ -126,9 +126,10 @@ class X86_64(Extractor):
 
 class ARM64(Extractor):
     branchpattern = re.compile(r'^(b\.\w+|bl?r?|cbn?z|ret)\b')
-    # e.g. [x20,#40], [x20],#8, [x20,x21]
+    # e.g. [x20,#40], [x20],#8, [x20,x21], [x20, w2, uxtw #3]
     eapattern = re.compile(r'\[(x[0-9]+|sp)'
-                            '(?:\\s*,\\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\\]'
+#                            '(?:\\s*,\\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\\]'
+                            '(?:\\s*,\\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+|w[0-9]+,\\s*[su]xtw(\\s*#[0-9]+)))?''\\]'
                             '(?:\\s*,\\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
 
     def printHeader(self, function):
@@ -160,7 +161,12 @@ class ARM64(Extractor):
         addr = int(base, 0) & 0xffffffffffffffff
         if offset:
             if offset.startswith("#"): offset = offset[1:]
-            else: offset = "%s" % frame.read_register(offset)
+            else:
+                reg = re.findall(r'[wx][0-9]+', offset)[0]
+                size = re.findall(r'#[0-9]+', offset)
+                size = 2**(0 if size == [] else int(size[0][1:], 0))
+                off = "%s" % frame.read_register(reg)
+                offset = "%s" % (int(off, 0)*size)
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += int(offset, 0)
         if insn["asm"].startswith("ld") :
