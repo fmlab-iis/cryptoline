@@ -1,5 +1,6 @@
 
 open NBits
+open Utils
 
 (** Abstract syntax tree of CryptoLine *)
 
@@ -30,9 +31,11 @@ module SM : Map.S with type key = string
 
 (** {1 Constants} *)
 
+module FloatConst: Float.S
+
 type const =
   | Cint    of Z.t
-  | Cfloat of Mpfrf.t
+  | Cfloat of FloatConst.t
 
 
 val const_of_int : Z.t -> const

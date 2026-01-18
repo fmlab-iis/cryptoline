@@ -2,6 +2,7 @@
 open Set
 open NBits
 open Utils.Std
+open Utils
 open Apron
 
 
@@ -64,9 +65,11 @@ let map_snd f pairs =
 
 
 (** Constants *)
+module FloatConst = Float.Make(Float.Fnumber)
+
 type const =
-  | Cint    of Z.t
-  | Cfloat of Mpfrf.t
+  | Cint   of Z.t
+  | Cfloat of FloatConst.t
 
 let const_of_int n = Cint n
 let const_of_double f = Cfloat f

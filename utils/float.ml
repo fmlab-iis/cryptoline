@@ -66,6 +66,8 @@ module Make (FloatNum: FloatType): S with type t := FloatNum.t = struct
 end
 
 module Fnumber: FloatType with type t:= Mpfrf.t = struct
+  type t = Mpfrf.t
+
   let of_string s ~rnd =
     let x = (Mpfr.init2 53: Mpfr.t) in
     let _ = Mpfr.set_str x s ~base:10 rnd in
@@ -127,6 +129,8 @@ module Fnumber: FloatType with type t:= Mpfrf.t = struct
 end
 
 module Qnumber: FloatType with type t := Mpqf.t = struct
+  type t = Mpqf.t
+
   let of_string s ~rnd = Mpqf.of_string s
   let of_int n ~rnd = Mpqf.of_int n
   let of_z n ~rnd = Mpqf.of_string (Z.to_string n)
