@@ -5,6 +5,7 @@
 # * __counter_C__ is replaced by the value of the counter named C
 # * __incr_C__ is replaced by the value of the counter C plus 1 and the counter C is incremented by 1.
 # * __C_incr__ is replaced by the value of the counter C and the counter C is incremented by 1.
+# * v[[i:j:k]] will be expanded into v[i], v[i+k], ..., v[j].
 
 import sys
 import re
@@ -46,9 +47,10 @@ class Instr:
     for (lhs, rhs) in self.substs:
       self.dsl = re.sub(lhs, rhs, self.dsl)
   def to_string(self, pasm=True):
-    return (('(* ' + self.asm + ' *)' if pasm else '') +
-            ('\n' if pasm and self.dsl != nop_instr else '') +
-            (self.dsl + ';' if self.dsl != nop_instr else ''))
+    if self.dsl == nop_instr:
+      return '(* ' + self.asm + ' *)' if pasm else ""
+    else:
+      return ('(* ' + self.asm + ' *)\n' + self.dsl if pasm else self.dsl) + ";"
 
 # Flatten a list of lists
 def flatten(vs):
@@ -81,10 +83,34 @@ def split_address(addr):
   else:
     raise ("Unknown address: {}".format(addr))
 
+def expand_list_notation(lhs, rhs, i):
+  def helper(s):
+    m = re.search(f"(\\${str(i)}(\\w+))\\[\\[(\\d+):(\\d+):(\\d+)\\]\\]", s)
+    if m and m.group(2) in ["c", "v", "ea", "xmm", "ymm", "zmm"]:
+      v = m.group(1)
+      start = int(m.group(3))
+      stop = int(m.group(4))
+      skip = int(m.group(5))
+      expanded = []
+      for j in range(start, stop, skip):
+        expanded.append(f"{v}[{j}]")
+      s = s.replace(m.group(0), f"{', '.join(expanded)}")
+    return s
+  lhs = helper(lhs)
+  rhs = helper(rhs)
+  return (lhs, rhs)
+
 # Process builtin variables such as $1c, $2c, $3v, etc
 def process_builtin_variables(pat, rep, indices):
   pairs = [(pat, rep)]
   tmp = []
+  # expand [[i:j:k]] notation first
+  for i in indices:
+    for lhs, rhs in pairs:
+      tmp.append(expand_list_notation(lhs, rhs, i))
+    pairs = tmp
+    tmp = []
+  # change builtin variables to regular expressions
   for i in indices:
     for lhs, rhs in pairs:
       if lhs.find("$" + str(i) + "c") != -1:
@@ -462,8 +488,7 @@ def main():
     if verbose: sys.stderr.write("Time in calculating program inputs: {}\n".format(t2 - t1))
     print ("proc main (%s) =" % ", ".join([string_of_typed_arg(i, vtypes, args.type) for i in inputs]))
   if not args.nopre: print ("{\n  true\n  &&\n  true\n}\n")
-  instr_strs = list(filter (lambda s: s != '',
-                      map((lambda i: i.to_string(print_asm)), instrs)))
+  instr_strs = list(map((lambda i: i.to_string(print_asm)), instrs))
   instr_strs = flatten([str.split("\n") for str in instr_strs])
   if auto_carries:
     instr_strs = cryptoline.assert_unused_carries(instr_strs, annot=True)
