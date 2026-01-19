@@ -61,11 +61,14 @@ val uint_t : size -> typ
 val int_t : size -> typ
 (** [int_t w] is [Tsint w]. *)
 
+val bit_t : typ
+(** [bit_t] is [Tuint 1]. *)
+
 val double_t : typ
 (** [double_t] is [Tdouble]. *)
 
-val bit_t : typ
-(** [bit_t] is [Tuint 1]. *)
+val single_t : typ
+(** [single_t] is [Tsingle]. *)
 
 val size_of_typ : typ -> size
 (** [size_of_typ t] is the size of a type [t]. *)

@@ -15,6 +15,7 @@ module type FloatType = sig
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val sub: t -> t ->rnd:Mpfr.round -> t
+  val sub_ui: t -> int ->rnd:Mpfr.round -> t
   val mul: t -> t ->rnd:Mpfr.round -> t
   val mul_2exp: t -> int -> rnd:Mpfr.round -> t
   val div: t -> t ->rnd:Mpfr.round -> t
@@ -31,10 +32,12 @@ module type S = sig
 
   val of_string: string -> rnd:Mpfr.round -> t
   val of_z: Z.t -> rnd:Mpfr.round -> t
+  val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val sub: t -> t ->rnd:Mpfr.round -> t
+  val sub_ui: t -> int ->rnd:Mpfr.round -> t
   val mul: t -> t ->rnd:Mpfr.round -> t
   val mul_2exp: t -> int -> rnd:Mpfr.round -> t
   val div: t -> t ->rnd:Mpfr.round -> t
@@ -44,6 +47,8 @@ module type S = sig
 
   val cmp: t -> t -> int
   val is_representable: prec -> t -> bool
+  val min_val: prec -> t
+  val max_val: prec -> t 
 end
 
 module Make (FloatNum: FloatType): S with type t := FloatNum.t = struct
@@ -54,6 +59,7 @@ module Make (FloatNum: FloatType): S with type t := FloatNum.t = struct
 
   let add = FloatNum.add
   let sub = FloatNum.sub
+  let sub_ui = FloatNum.sub_ui
   let mul = FloatNum.mul
   let mul_2exp = FloatNum.mul_2exp
   let div = FloatNum.div
@@ -63,7 +69,42 @@ module Make (FloatNum: FloatType): S with type t := FloatNum.t = struct
 
   let cmp = FloatNum.cmp
   let is_representable = FloatNum.is_representable
+  let min_val p =
+    match p with
+    | Double -> 
+        let rnd = Mpfr.Near in
+        let x = FloatNum.of_int 1 rnd in (* x := 1 *)
+        let x = FloatNum.mul_2exp x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
+        let x = FloatNum.sub_ui x 1 rnd in (* x := x-1 == 2^53-1 *)
+        let x = FloatNum.mul_2exp x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
+        FloatNum.neg x rnd (* x := -x == - (2-2^52) * 2^1023 *)
+    | Single ->
+        let rnd = Mpfr.Near in
+        let x = FloatNum.of_int 1 rnd in (* x := 1 *)
+        let x = FloatNum.mul_2exp x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
+        let x = FloatNum.sub_ui x 1 rnd in (* x := x-1 == 2^24-1 *)
+        let x = FloatNum.mul_2exp x 104 rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
+        FloatNum.neg x rnd (* x := -x == - (2-2^23) * 2^127 *)
+  let max_val p =
+    match p with
+    | Double ->
+        let rnd = Mpfr.Near in
+        let x = FloatNum.of_int 1 rnd in (* x := 1 *)
+        let x = FloatNum.mul_2exp x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
+        let x = FloatNum.sub_ui x 1 rnd in (* x := x-1 == 2^53-1 *)
+        Mpfr.mul_2exp x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
+    | Single ->
+        let rnd = Mpfr.Near in
+        let x = FloatNum.of_int 1 rnd in (* x := 1 *)
+        let x = FloatNum.mul_2exp x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
+        let x = FloatNum.sub_ui x 1 rnd in (* x := x-1 == 2^24-1 *)
+        FloatNum.mul_2exp x 104 rnd (* x := x * 2^104 == (2-2^23) * 2^127 *)
 end
+
+
+
+
+
 
 module Fnumber: FloatType with type t:= Mpfrf.t = struct
   type t = Mpfrf.t
@@ -87,6 +128,7 @@ module Fnumber: FloatType with type t:= Mpfrf.t = struct
 
   let add x y ~rnd = Mpfrf.add x y rnd
   let sub x y ~rnd = Mpfrf.sub x y rnd
+  let sub_ui x y ~rnd = Mpfrf.sub_ui x y rnd
   let mul x y ~rnd = Mpfrf.mul x y rnd
   let mul_2exp x k ~rnd =
     let r = (Mpfr.init2 (Mpfr.get_prec x): Mpfr.t) in
@@ -138,6 +180,7 @@ module Qnumber: FloatType with type t := Mpqf.t = struct
 
   let add x y ~rnd = Mpqf.add x y
   let sub x y ~rnd = Mpqf.sub x y
+  let sub_ui x y ~rnd = Mpqf.sub_ui x y
   let mul x y ~rnd = Mpqf.mul x y
   let div x y ~rnd = Mpqf.div x y
   let neg x ~rnd = Mpqf.neg x

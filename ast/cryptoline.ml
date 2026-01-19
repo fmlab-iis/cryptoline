@@ -76,13 +76,7 @@ let const_of_double f = Cfloat f
 let const_to_string c =
   match c with
   | Cint n -> Z.to_string n
-  | Cfloat f -> Mpfr.to_string f
-
-let float_of_z n prec rnd =
-  let x = (Mpfr.init2 prec : Mpfr.t) in
-  let _ = Mpfr.set_str x (Z.to_string n) ~base:10 rnd in
-  Mpfrf.of_mpfr x
-
+  | Cfloat f -> FloatConst.to_string f
 
 (** Types *)
 
@@ -98,6 +92,7 @@ let uint_t w = Tuint w
 let int_t w = Tsint w
 let bit_t = Tuint 1
 let double_t = Tdouble
+let single_t = Tsingle
 
 let size_of_typ ty =
   match ty with
@@ -110,45 +105,16 @@ let min_of_typ ty =
   match ty with
   | Tuint _w -> Cint Z.zero
   | Tsint w -> Cint (Z.neg (Z.pow z_two (w - 1)))
-  | Tdouble -> 
-      let rnd = Mpfr.Near in
-      let x = Mpfr.init2 53 in
-      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
-      let _ = Mpfr.mul_2exp x x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
-      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^53-1 *)
-      let _ = Mpfr.mul_2exp x x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
-      let _ = Mpfr.neg x x rnd in (* x := -x == - (2-2^52) * 2^1023 *)
-      Cfloat (Mpfrf.of_mpfr x)
-  | Tsingle ->
-      let rnd = Mpfr.Near in
-      let x = Mpfr.init2 23 in
-      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
-      let _ = Mpfr.mul_2exp x x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
-      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^24-1 *)
-      let _ = Mpfr.mul_2exp x x 104 rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
-      let _ = Mpfr.neg x x rnd in (* x := -x == - (2-2^23) * 2^127 *)
-      Cfloat (Mpfrf.of_mpfr x)
+  | Tdouble -> Cfloat (FloatConst.min_val Float.Double)
+  | Tsingle -> Cfloat (FloatConst.min_val Float.Single)
+
 
 let max_of_typ ty =
   match ty with
   | Tuint w -> Cint (Z.sub (Z.pow z_two w) Z.one)
   | Tsint w -> Cint (Z.sub (Z.pow z_two (w - 1)) Z.one)
-  | Tdouble -> 
-      let rnd = Mpfr.Near in
-      let x = Mpfr.init2 53 in
-      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
-      let _ = Mpfr.mul_2exp x x 53 rnd in (* x := x * 2^53 == 2^ 53 *)
-      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^53-1 *)
-      let _ = Mpfr.mul_2exp x x 971 rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
-      Cfloat (Mpfrf.of_mpfr x)
-  | Tsingle ->
-      let rnd = Mpfr.Near in
-      let x = Mpfr.init2 23 in
-      let _ = Mpfr.set_si x 1 rnd in (* x := 1 *)
-      let _ = Mpfr.mul_2exp x x 24 rnd in (* x := x * 2^24 == 2^ 24 *)
-      let _ = Mpfr.sub_ui x x 1 rnd in (* x := x-1 == 2^24-1 *)
-      let _ = Mpfr.mul_2exp x x 104 rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
-      Cfloat (Mpfrf.of_mpfr x)
+  | Tdouble -> Cfloat (FloatConst.max_val Float.Double)
+  | Tsingle -> Cfloat (FloatConst.max_val Float.Single)
 
 let typ_is_unsigned ty =
   match ty with
@@ -215,15 +181,15 @@ let typ_map f ty =
   | Tdouble -> raise (UnsupportedException "typ_map: not defined for Tdouble")
   | Tsingle -> raise (UnsupportedException "typ_map: not defined for Tsingle")
 
-let random_double_const () : 'a Mpfr.tt =
+let random_double_const () : FloatConst.t =
   let bits = Random.bits64 () in
   let f = Int64.float_of_bits bits in
-  Mpfr.of_float f Mpfr.Near
+  FloatConst.of_float f Mpfr.Near
 
-let random_single_const () : 'a Mpfr.tt =
+let random_single_const () : FloatConst.t =
   let bits = Random.bits32 () in
   let f = Int32.float_of_bits bits in
-  Mpfr.of_float f Mpfr.Near
+  FloatConst.of_float f Mpfr.Near
 
 
 [%%import "config.mlh"]
@@ -258,31 +224,6 @@ let random_value ty =
   | Tsingle -> Cfloat (random_single_const ())
 
 
-let float_is_representable (prec:int) (emin:int) (emax:int) (f: 'a Mpfr.tt) : bool =
-  if Mpfr.nan_p f || Mpfr.inf_p f then
-    true
-  else if not (Mpfr.number_p f) then
-    false
-  else (
-    let old_emin = Mpfr.get_emin () in
-    let old_emax = Mpfr.get_emax () in
-    let _ = Mpfr.set_emin emin in
-    let _ = Mpfr.set_emax emax in
-    try
-      let x = Mpfr.init2 prec in
-      let ternary = Mpfr.set x f Mpfr.Near in
-      let _ = Mpfr.subnormalize x ternary Mpfr.Near in
-      let ok = (Mpfr.cmp x f = 0) in
-      let _ = Mpfr.set_emin old_emin in
-      let _ = Mpfr.set_emax old_emax in
-      ok
-    with e ->
-      let _ = Mpfr.set_emin old_emin in
-      let _ = Mpfr.set_emax old_emax in
-      raise e
-  )
-
-
 let is_representable ty v =
   match ty, v with
   | (Tuint _ | Tsint _), Cint z -> (
@@ -292,10 +233,8 @@ let is_representable ty v =
     | _ ->
       false
     )
-  | Tdouble, Cfloat f ->
-      float_is_representable 53 (-1073) 1024 f
-  | Tsingle, Cfloat f ->
-      float_is_representable 24 (-148) 128 f
+  | Tdouble, Cfloat f -> FloatConst.is_representable Float.Double f
+  | Tsingle, Cfloat f -> FloatConst.is_representable Float.Single f
   | (Tdouble | Tsingle), Cint _ -> false
   | (Tuint _ | Tsint _), Cfloat _ -> false
 
