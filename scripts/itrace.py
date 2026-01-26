@@ -79,6 +79,15 @@ class Extractor:
         raise NotImplementedError("Subclasses must override isFunctionReturn")
     def getEA(self, insn, frame):
         raise NotImplementedError("Subclasses must override getEA")
+    # 2x: 128-bit on 64-bit architecture
+    def has2xVector(self, insn):
+        raise NotImplementedError("Subclasses must override has2xVector")
+    # 4x: 256-bit on 64-bit architecture
+    def	has4xVector(self, insn):
+        raise NotImplementedError("Subclasses must override has4xVector")
+    # 8x: 512-bit on 64-bit architecture
+    def	has8xVector(self, insn):
+        raise NotImplementedError("Subclasses must override has8xVector")
 
 class X86_64(Extractor):
     branchpattern = re.compile(r'^(?:repz\s+)?(j\w*|call|ret)q?')
@@ -123,6 +132,15 @@ class X86_64(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
+
+    def has2xVector(self, insn):
+        return re.search(r'%xmm\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has4xVector(self, insn):
+        return re.search(r'%ymm\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has8xVector(self, insn):
+        return re.search(r'%zmm\d+\b', insn, flags=re.IGNORECASE) != None
 
 class ARM64(Extractor):
     branchpattern = re.compile(r'^(b\.\w+|bl?r?|cbn?z|ret)\b')
@@ -174,6 +192,15 @@ class ARM64(Extractor):
         else :
             return {'addr':addr}
 
+    def has2xVector(self, insn):
+        return re.search(r'\bv\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has4xVector(self, insn):
+        return re.search(r'\bz\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has8xVector(self, insn):
+        return False
+
 class ARM32(Extractor):
     branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
     eapattern = re.compile(r'(?:\[([a-z]+[0-9]*)'
@@ -222,6 +249,15 @@ class ARM32(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
+
+    def has2xVector(self, insn):
+        return re.search(r'\bd\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has4xVector(self, insn):
+        return re.search(r'\bq\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has8xVector(self, insn):
+        return False
  
 
 class MIPS(Extractor):
@@ -277,6 +313,21 @@ class MIPS(Extractor):
         else :
             return {'addr':addr}
  
+    def has2xVector(self, insn):
+        if wordsize == 64:
+            return re.search(r'\$w\d+\b', insn, flags=re.IGNORECASE) != None
+        else:
+            return False
+
+    def has4xVector(self, insn):
+        if wordsize == 64:
+            return False
+        else:
+            return re.search(r'\$w\d+\b', insn, flags=re.IGNORECASE) != None
+
+    def has8xVector(self, insn):
+        return False
+
 class RISCV(Extractor):
     branchpattern = re.compile(r'^(b|j\w*|ret)\s*(.*)')
     # e.g. 20($2)
@@ -317,7 +368,16 @@ class RISCV(Extractor):
             return {'addr':addr, 'load':True}
         else :
             return {'addr':addr}
- 
+
+    def has2xVector(self, insn):
+        return False
+
+    def has4xVector(self, insn):
+        return False
+
+    def has8xVector(self, insn):
+        return False
+
 # figure out if platform is 32- or 64-bit and instantiate extractor,
 # all based on 'info target'...
 
@@ -384,13 +444,24 @@ def trace():
                           .format(mnemonic, ea["addr"], ea["value"], insns[0]["addr"]))
                 elif ea.get("load") :
                     unit = 'g' if wordsize == 64 else 'w'
+                    values = []
+                    factors = []
+                    if extr.has2xVector(mnemonic):
+                        factors.append(2)
+                    if extr.has4xVector(mnemonic):
+                        factors.append(4)
+                    if extr.has8xVector(mnemonic):
+                        factors.append(8)
+                    if len(factors) == 0:
+                        factors.append(1)
                     try :
-                        value = gdb.execute("x/1x{0} 0x{1:x}".format(unit, ea["addr"]), False, True)
-                        value = re.match('0x[0-9a-fA-F]+\\s*<?.*>?\\s*:\\s+(0x[0-9a-fA-F]+)', value).group(1)
+                        for factor in factors:
+                            value = gdb.execute("x/{0}x{1} 0x{2:x}".format(factor, unit, ea["addr"]), False, True)
+                            values.extend(re.findall(r'(0[xX][0-9a-fA-F]+)(?![:0-9a-fA-F])', value))
                     except gdb.MemoryError :
-                        value = "'?'"
+                        values.append("'?'")
                     print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
-                          .format(mnemonic, ea["addr"], value, insns[0]["addr"]))
+                          .format(mnemonic, ea["addr"], " ".join(values), insns[0]["addr"]))
                 else :
                     print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}"
                           .format(mnemonic, ea["addr"], insns[0]["addr"]))
