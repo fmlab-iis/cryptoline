@@ -27,6 +27,7 @@
               "muls"                       , MULS;
               "mull"                       , MULL;
               "mulj"                       , MULJ;
+              "div"                        , DIV;
               "udiv"                       , UDIV;
               "spl"                        , SPL;
               "split"                      , SPLIT;
@@ -161,83 +162,6 @@
               "smt"                        , SMT;
               "nia"                        , NIA;
               "lia"                        , LIA;
-              (********** Floating point related, or the ones don't appear **********)
-              "addl"                       , ADD;
-              "addq"                       , ADD;
-              "bnd"                        , BND; (*MPX bounds check / manipulation*)
-              "cltq"                       , CLTQ; (*EAX → RAX sign-extension（32 -> 64）*)
-              "cmp"                        , CMP;
-              "cmpl"                       , CMP;
-              "cmpq"                       , CMP;
-              "cwtl"                       , CWTL; (*AX → EAX sign-extension (16 -> 32) *)
-              "endbr64"                    , ENDBR64; (*Control-flow enforcement*)
-              "imul"                       , IMUL;
-              "lea"                        , LEA;
-              "leave"                      , LEAVE;
-              "movabs"                     , MOV;
-              "movl"                       , MOV;
-              "movq"                       , MOV;
-              "movsbl"                     , MOVS;
-              "movslq"                     , MOVS;
-              "movzbl"                     , MOVZ;
-              "movzwl"                     , MOVZ;
-              "orq"                        , OR;
-              "pop"                        , POP;
-              "push"                       , PUSH;
-              "sar"                        , SAR;
-              "seta"                       , SETA;
-              "shl"                        , SHL;
-              "subl"                       , SUB;
-              "subq"                       , SUB;
-              "test"                       , TEST;
-              "vaddpd"                     , ADD;
-              "vaddsd"                     , ADD;
-              "vbroadcastsd"               , VBROADCASTSD;
-              "vcomisd"                    , VCOMISD;
-              "vcvtsi2sdq"                 , VCVTSI2SDQ;
-              "vcvttsd2si"                 , VCVTTSD2SI;
-              "vdivpd"                     , VDIV;
-              "vextractf128"               , VEXTRACTF128;
-              "vextracti128"               , VEXTRACTI128;
-              "vhaddpd"                    , VHADD;
-              "vhsubpd"                    , VHSUB;
-              "vinsertf128"                , VINSERTF128;
-              "vmovapd"                    , MOV;
-              "vmovd"                      , MOV;
-              "vmovdqa"                    , MOV;
-              "vmovdqu"                    , MOV;
-              "vmovq"                      , MOV;
-              "vmovsd"                     , VMOVSD;
-              "vmovupd"                    , MOV;
-              "vmulpd"                     , MUL;
-              "vmulsd"                     , MUL;
-              "vpaddd"                     , ADD;
-              "vpaddq"                     , ADD;
-              "vpand"                      , AND;
-              "vpbroadcastd"               , BROADCAST;
-              "vpbroadcastq"               , BROADCAST;
-              "vpbroadcastw"               , BROADCAST;
-              "vpcmpeqw"                   , CMP;
-              "vpcmpgtq"                   , CMP;
-              "vpcmpgtw"                   , CMP;
-              "vpermpd"                    , VPER;
-              "vpermq"                     , VPER;
-              "vphaddw"                    , VPHADDW;
-              "vpinsrd"                    , VPINS;
-              "vpinsrq"                    , VPINS;
-              "vpmovsxwq"                  , VPMOVSXWQ;
-              "vpor"                       , OR;
-              "vpslld"                     , VSL; (* left *)
-              "vpsrld"                     , VSR; (* right *)
-              "vpsrldq"                    , VPSRLDQ;
-              "vpsrlw"                     , VSR;
-              "vpunpcklqdq"                , VPUNPCKLQDQ;
-              "vpxor"                      , XOR;
-              "vshufpd"                    , VSHUFPD;
-              "vsubpd"                     , SUB;
-              "vsubsd"                     , SUB;
-              "vunpcklpd"                  , VUNPCKLPD;
-              "vxorpd"                     , XOR*)
             ]
 }
 
