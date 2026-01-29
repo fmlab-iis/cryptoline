@@ -49,7 +49,7 @@
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
-%nonassoc VAR CONST NEG ADD SUB MUL SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS ROL ROR CONCAT
+%nonassoc VAR CONST NEG ADD SUB MUL DIV SQ UMOD SREM SMOD NOT AND OR XOR ULT ULE UGT UGE SLT SLE SGT SGE SHL SHLS SHR SHRS SAR SARS ROL ROR CONCAT
 %nonassoc SETEQ SETNE EQ EQMOD
 %nonassoc UMINUS DOLPHIN
 
@@ -246,6 +246,8 @@ instr:
   | MULJ lval atom atom                           { (get_line_start(), `MULJ ($2, $3, $4)) }
   | MULJ lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VMULJ ($2, $3, $4)) }
   | lval EQOP MULJ atom atom                      { (get_line_start(), `MULJ ($1, $4, $5)) }
+  | DIV lval atom atom                            { (get_line_start(), `DIV ($2, $3, $4)) }
+  | lval EQOP DIV atom atom                       { (get_line_start(), `DIV ($1, $4, $5)) }
   | SPLIT lval lval atom const_exp_primary        { (get_line_start(), `SPLIT ($2, $3, $4, $5)) }
   | SPLIT lval_v lval_v atom_v_primary const_exp_primary
                                                   { (get_line_start(), `VSPLIT ($2, $3, $4, $5)) }
@@ -422,6 +424,7 @@ instr:
   | SBBS error                                    { raise_at_line (get_line_start()) ("Bad sbbs instruction") }
   | MUL error                                     { raise_at_line (get_line_start()) ("Bad mul instruction") }
   | MULL error                                    { raise_at_line (get_line_start()) ("Bad mull instruction") }
+  | DIV error                                     { raise_at_line (get_line_start()) ("Bad div instruction") }
   | SPLIT error                                   { raise_at_line (get_line_start()) ("Bad split instruction") }
   | SPL error                                     { raise_at_line (get_line_start()) ("Bad spl instruction") }
   | UADD error                                    { raise_at_line (get_line_start()) ("Bad uadd instruction") }
