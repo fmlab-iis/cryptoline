@@ -846,7 +846,7 @@ rexp:
   | ADD rexp_primary rexp_primary                 { parse_rexp_add (get_line_start()) $2 $3 }
   | SUB rexp_primary rexp_primary                 { parse_rexp_sub (get_line_start()) $2 $3 }
   | MUL rexp_primary rexp_primary                 { parse_rexp_mul (get_line_start()) $2 $3 }
-  | UDIV rexp_primary rexp_primary                 { parse_rexp_udiv (get_line_start()) $2 $3 }
+  | UDIV rexp_primary rexp_primary                { parse_rexp_udiv (get_line_start()) $2 $3 }
   | SQ rexp_primary                               { parse_rexp_sq (get_line_start()) $2 }
   | UMOD rexp_primary rexp_primary                { parse_rexp_umod (get_line_start()) $2 $3 }
   | SDIV rexp_primary rexp_primary                { parse_rexp_sdiv (get_line_start()) $2 $3 }
