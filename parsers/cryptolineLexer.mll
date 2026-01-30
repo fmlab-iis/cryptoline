@@ -228,6 +228,7 @@ token = parse
   | '-'                            { SUBOP }
   | "**"                           { POWOP }
   | '*'                            { MULOP }
+  | '/'                            { DIVOP }
   | '^'                            { XOROP }
   | "<=u"                          { ULEOP }
   | ">=u"                          { UGEOP }
