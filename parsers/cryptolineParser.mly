@@ -31,7 +31,7 @@
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
+%token ADDOP SUBOP MULOP DIVOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
 %token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
@@ -45,7 +45,7 @@
 %left ANDOP
 %left SHLOP SHROP SAROP
 %left ADDOP SUBOP ADDADDOP
-%left MULOP
+%left MULOP DIVOP
 %left POWOP
 %right NEGOP NOTOP
 %left MODOP
@@ -692,6 +692,7 @@ eexp:
   | ADD eexp_primary eexp_primary                 { fun ctx -> eadd ($2 ctx) ($3 ctx) }
   | SUB eexp_primary eexp_primary                 { fun ctx -> esub ($2 ctx) ($3 ctx) }
   | MUL eexp_primary eexp_primary                 { fun ctx -> emul ($2 ctx) ($3 ctx) }
+  | DIV eexp_primary eexp_primary                 { fun ctx -> ediv ($2 ctx) ($3 ctx) }
   | SQ eexp_primary                               { fun ctx -> esq ($2 ctx) }
   | ADDS LSQUARE eexps RSQUARE                    { fun ctx -> eadds ($3 ctx) }
   | MULS LSQUARE eexps RSQUARE                    { fun ctx -> emuls ($3 ctx) }
@@ -699,6 +700,7 @@ eexp:
   | eexp ADDOP eexp                               { fun ctx -> eadd ($1 ctx) ($3 ctx) }
   | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
+  | eexp DIVOP eexp                               { fun ctx -> ediv ($1 ctx) ($3 ctx) }
   | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 $3 }
   | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
                                                   { fun ctx -> limbs (Z.to_int ($2 ctx)) ($4 ctx) }
