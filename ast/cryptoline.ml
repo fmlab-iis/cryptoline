@@ -26,6 +26,7 @@ let _eq_symbol = "="
 let add_symbol = "+"
 let sub_symbol = "-"
 let mul_symbol = "*"
+let div_symbol = "/"
 let pow_symbol = "**"
 let ult_symbol = "<u"
 let ule_symbol = "<=u"
@@ -43,6 +44,7 @@ type associativity = LeftAssoc | RightAssoc
 (* RightAssoc: add [n0, n1, ..., nm] = nm + (...(n2 + (n1 + n0))...) *)
 let add_assoc = LeftAssoc
 let mul_assoc = LeftAssoc
+let div_assoc = LeftAssoc
 let conj_assoc = LeftAssoc
 let disj_assoc = LeftAssoc
 let _unused_assoc = RightAssoc
@@ -318,6 +320,7 @@ type ebinop =
   | Eadd
   | Esub
   | Emul
+  | Ediv
   | Epow
 
 type runop =
@@ -415,6 +418,24 @@ let emul' e1 e2 =
   | Econst (Cfloat f), _ when Mpfrf.cmp_int f 1 = 0 -> e2
   | _, Econst (Cfloat f) when Mpfrf.cmp_int f 1 = 0 -> e1
   | _, _ -> emul e1 e2
+let ediv e1 e2 = Ebinop (Ediv, e1, e2)
+let ediv' e1 e2 = match e1, e2 with
+  | Econst (Cint n), Econst (Cint m) when not (Z.equal m Z.zero) ->
+      Econst (Cint (Z.div n m))
+  | Econst (Cfloat f1), Econst (Cfloat f2)
+      when not (Mpfrf.zero_p f2) ->
+      Econst (Cfloat (Mpfrf.div f1 f2 Mpfr.Near))
+  | Econst (Cfloat f), Econst (Cint n)
+      when not (Z.equal n Z.zero) ->
+      let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+      Econst (Cfloat (Mpfrf.div f n_as_f Mpfr.Near))
+  | Econst (Cint n), Econst (Cfloat f)
+      when not (Mpfrf.zero_p f) ->
+      let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
+      Econst (Cfloat (Mpfrf.div n_as_f f Mpfr.Near))
+  | e, Econst (Cint n) when Z.equal n Z.one -> e
+  | e, Econst (Cfloat f) when Mpfrf.cmp_int f 1 = 0 -> e
+  | _, _ -> ediv e1 e2
 let epow e1 e2 =
   match e2 with
   | Econst (Cint _) -> Ebinop (Epow, e1, e2)
@@ -1330,6 +1351,7 @@ let string_of_ebinop op =
   | Eadd -> "add"
   | Esub -> "sub"
   | Emul -> "mul"
+  | Ediv -> "div"
   | Epow -> "pow"
 
 let symbol_of_ebinop op =
@@ -1337,6 +1359,7 @@ let symbol_of_ebinop op =
   | Eadd -> add_symbol
   | Esub -> sub_symbol
   | Emul -> mul_symbol
+  | Ediv -> div_symbol
   | Epow -> pow_symbol
 
 let string_of_rcmpop op =
@@ -4704,6 +4727,7 @@ let bvcryptoline_of_ebinop op =
   | Eadd -> "bveadd"
   | Esub -> "bvesub"
   | Emul -> "bvemul"
+  | Ediv -> raise (UnsupportedException "Division operator is not supported by BvCryptoLine.")
   | Epow -> raise (UnsupportedException "Exponential operator is not supported by BvCryptoLine.")
 let rec bvcryptoline_of_eexp e =
   match e with
