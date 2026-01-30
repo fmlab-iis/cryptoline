@@ -3243,6 +3243,7 @@ let parse_rlistop op lno es_tok =
 let parse_rexp_add = parse_rbinop radd
 let parse_rexp_sub = parse_rbinop rsub
 let parse_rexp_mul = parse_rbinop rmul
+let parse_rexp_div = parse_rbinop rdiv
 let parse_rexp_udiv = parse_rbinop rudiv
 let parse_rexp_sdiv = parse_rbinop rsdiv
 
