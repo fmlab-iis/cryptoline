@@ -1013,6 +1013,9 @@ val parse_rexp_sub : lno -> rexp contextual -> rexp contextual -> rexp contextua
 val parse_rexp_mul : lno -> rexp contextual -> rexp contextual -> rexp contextual
 (** [parse_rexp_mul lno e1_tok e2_tok] parses a multiplication of rexps *)
 
+val parse_rexp_div : lno -> rexp contextual -> rexp contextual -> rexp contextual
+(** [parse_rexp_div lno e1_tok e2_tok] parses a division of rexps *)
+
 val parse_rexp_udiv : lno -> rexp contextual -> rexp contextual -> rexp contextual
 (** [parse_rexp_udiv lno e1_tok e2_tok] parses an unsigned division of rexps *)
 
