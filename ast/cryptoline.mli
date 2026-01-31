@@ -322,7 +322,8 @@ type rbinop =
   | Radd     (** addition *)
   | Rsub     (** subtraction *)
   | Rmul     (** multiplication *)
-  | Rudiv     (** division *)
+  | Rdiv     (** division *)
+  | Rudiv    (** unsigned division *)
   | Rumod    (** unsigned mod *)
   | Rsdiv    (** 2's complement signed division *)
   | Rsrem    (** 2's complement signed remainder (sign follows dividend) *)
@@ -370,6 +371,9 @@ val rsub : size -> rexp -> rexp -> rexp
 
 val rmul : size -> rexp -> rexp -> rexp
 (** [rmul w e1 e2] is [Rbinop (w, Rmul, e1, e2)]. *)
+
+val rdiv : size -> rexp -> rexp -> rexp
+(** [rdiv w e1 e2] is [Rbinop (w, Rdiv, e1, e2)]. *)
 
 val rudiv : size -> rexp -> rexp -> rexp
 (** [rudiv w e1 e2] is [Rbinop (w, Rudiv, e1, e2)]. *)
