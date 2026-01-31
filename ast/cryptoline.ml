@@ -331,6 +331,7 @@ type rbinop =
   | Radd
   | Rsub
   | Rmul
+  | Rdiv
   | Rudiv
   | Rumod
   | Rsdiv (* 2's complement signed division *)
@@ -752,6 +753,7 @@ let rnotb w e = Runop (w, Rnotb, e)
 let radd w e1 e2 = Rbinop (w, Radd, e1, e2)
 let rsub w e1 e2 = Rbinop (w, Rsub, e1, e2)
 let rmul w e1 e2 = Rbinop (w, Rmul, e1, e2)
+let rdiv w e1 e2 = Rbinop (w, Rdiv, e1, e2)
 let rudiv w e1 e2 = Rbinop (w, Rudiv, e1, e2)
 let rumod w e1 e2 = Rbinop (w, Rumod, e1, e2)
 let rsdiv w e1 e2 = Rbinop (w, Rsdiv, e1, e2)
@@ -1394,6 +1396,7 @@ let string_of_rbinop op =
   | Radd -> "add"
   | Rsub -> "sub"
   | Rmul -> "mul"
+  | Rdiv -> "div"
   | Rudiv -> "udiv"
   | Rumod -> "umod"
   | Rsdiv -> "sdiv"
@@ -4698,6 +4701,7 @@ let rec eval_rexp_const e =
                                | Radd -> addB v1 v2
                                | Rsub -> subB v1 v2
                                | Rmul -> mulB v1 v2
+                               | Rdiv -> divB v1 v2
                                | Rudiv -> udivB v1 v2
                                | Rumod -> uremB v1 v2
                                | Rsdiv -> sdivB v1 v2
