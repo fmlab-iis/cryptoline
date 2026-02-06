@@ -27,6 +27,7 @@
               "muls"                       , MULS;
               "mull"                       , MULL;
               "mulj"                       , MULJ;
+              "div"                        , DIV;
               "udiv"                       , UDIV;
               "spl"                        , SPL;
               "split"                      , SPLIT;
