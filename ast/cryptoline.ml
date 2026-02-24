@@ -2408,6 +2408,14 @@ let ssa_spec s = snd (ssa_spec_full s)
 let eprove_with_filter pwss (pre, cuts_rev, instrs) =
   let pwss = simplify_prove_with_specs pwss in
   let extract_ebexps instrs =
+    let extractor ret i =
+      match i with
+        Icut (ecuts, _) -> List.rev_append (fst (List.split ecuts)) ret
+      | Iassume e -> (eqn_bexp e)::ret
+      | Ighost (_, e) -> (eqn_bexp e)::ret
+      | _ -> ret in
+    List.rev (List.fold_left extractor [] instrs) in
+    (*
     let extractor i =
       match i with
         Icut (ecuts, _) -> fst (List.split ecuts)
@@ -2415,6 +2423,7 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
       | Ighost (_, e) -> [eqn_bexp e]
       | _ -> [] in
     tflatten (tmap extractor instrs) in
+    *)  
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
@@ -2445,6 +2454,14 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
 let rprove_with_filter pwss (pre, cuts_rev, instrs) =
   let pwss = simplify_prove_with_specs pwss in
   let extract_rbexps instrs =
+    let extractor ret i =
+      match i with
+        Icut (_, rcuts) -> List.rev_append (fst (List.split rcuts)) ret
+      | Iassume e -> (rng_bexp e)::ret
+      | Ighost (_, e) -> (rng_bexp e)::ret
+      | _ -> ret in
+  List.rev (List.fold_left extractor [] instrs) in
+  (*
     let extractor i =
       match i with
         Icut (_, rcuts) -> fst (List.split rcuts)
@@ -2452,6 +2469,7 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
       | Ighost (_, e) -> [rng_bexp e]
       | _ -> [] in
     tflatten (tmap extractor instrs) in
+  *)
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
@@ -2742,8 +2760,8 @@ let cut_eassert es =
          let before = List.rev before_rev in
          (* add the prove-with clauses from the next cut *)
          let es_extended_pwss = insert_pwss_exclude_solver es (first_ecut_pwss prog) in
-         let assert_as_specs = tmap (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) es_extended_pwss in
-         (res_rev, tappend assert_as_specs easserts_rev)
+         let assert_as_specs = List.rev_map (espec_of_ebexp_prove_with (precond, before, cuts_rev) (pre, visited)) es_extended_pwss in
+         (res_rev, List.rev_append assert_as_specs easserts_rev)
       | Icut _ -> ((List.rev easserts_rev)::res_rev, [])
       | _ -> (res_rev, easserts_rev)
     )

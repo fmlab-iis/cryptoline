@@ -730,6 +730,9 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
                                                     | Ighost (_, e) -> let vids = vids_ebexp (eqn_bexp e) in
                                                                        (vids, vids)
                                                   | _ -> (lvids_instr i, vids_instr i) in
+						(*						  
+						(vgen', List.fold_left (fun p -> (p, (i, vids_to_check, vids_to_add))::ret) res_aps_rev ps) in
+						*)
                                                 let aps = List.rev_map (fun p -> (p, (i, vids_to_check, vids_to_add))) (List.rev ps) in
                                                 (vgen', List.rev_append aps res_aps_rev) in
   (* Convert polynomial equations to polynomials. *)
