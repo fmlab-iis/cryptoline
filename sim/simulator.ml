@@ -27,6 +27,8 @@ let print_hexadecimal = ref false
 
 let slice_size = ref 20
 
+let vec_scalar_prefix = "VEC_"
+
 type option_spec =
   OInt of (int -> unit)
 | OBool of (bool -> unit)
@@ -130,13 +132,57 @@ let parse_options args =
 
 (** Auxiliary Functions *)
 
+type vec_elm =
+  {
+    ename: string;  (** Variable name without and index *)
+    eidx : int;     (** index in the vector *)
+    evar : var;     (** Variable of this element *)
+  }
+
+type vec_var =
+  {
+    vecname: string;          (** Vector name with SSA index *)
+    velmtyp: typ;             (** Type of vector elements *)
+    velmnum: int;             (** Number of vector elements *)
+    velms  : vec_elm list     (** Ordered elements *)
+  }
+
+type vec_value = bits list     (** Value of a vector *)
+
+let format_bits v =
+  if !print_hexadecimal
+  then
+    Printf.sprintf "0x%s"
+      (String.concat "" (List.map Char.escaped (to_hex v)))
+  else
+    Printf.sprintf "0b%s" (string_of_bits v)
+
+let format_as_int is_signed v =
+  Z.to_string ((if is_signed then signed else unsigned) v)
+
 let string_of_var_with_value x v =
   let is_signed = var_is_signed x in
-  let bits_value = if !print_hexadecimal then "0x" ^ String.concat "" (List.map Char.escaped (to_hex v))
-                   else "0b" ^ string_of_bits v in
-  let int_value = Z.to_string ((if is_signed then signed else unsigned) v) in
+  let bits_value = format_bits v in
+  let int_value = format_as_int is_signed v in
   string_of_var x ^ ": " ^ bits_value
   ^ " (" ^ (if is_signed then "signed " else "unsigned ") ^ int_value ^ ")"
+
+let string_of_vec_var x =
+  Printf.sprintf "%s@%s[%d]"
+    x.vecname (string_of_typ x.velmtyp) x.velmnum
+
+(* print from the value of x[0], i.e. vs[0] *)
+let string_of_vec_var_with_value x vs =
+  let is_signed = typ_is_signed x.velmtyp in
+  let bits_values = tmap format_bits vs in
+  let int_values = tmap (format_as_int is_signed) vs in
+  Printf.sprintf "%s@%s[%d]: %s (%s %s)"
+    x.vecname
+    (string_of_typ x.velmtyp)
+    x.velmnum
+    (String.concat " " bits_values)
+    (if is_signed then "signed" else "unsigned")
+    (String.concat " " int_values)
 
 let dump_map m =
   VM.iter (fun x v -> print_endline (string_of_var_with_value x v)) m
@@ -158,6 +204,106 @@ let to_bit bs =
 let of_bit b = from_bool 1 b
 
 let in_ranges n rs = List.exists (in_range n) rs
+
+let split_at_last_underscore str =
+  let len = String.length str in
+  let pos =
+    try String.rindex str '_'
+    with Not_found -> raise (Invalid_argument str) in
+  let _ =
+    if pos = len - 1
+    then raise (Invalid_argument str) in
+  (String.sub str 0 pos,
+   String.sub str (pos + 1) (len - pos - 1))
+
+
+let is_vec_vname vn = String.starts_with ~prefix:"%" vn
+
+(*
+ * A vector variable name should start with "%".
+ * If the name ends with "_[D]" where [D] is a number, then [D] is
+ * potentially an SSA index.
+ *)
+let validate_vecvname vn =
+  let raise_invalid_name () =
+    raise (InvalidArgument (
+        Printf.sprintf "%s is not a valid vector name." vn
+      )) in
+  let _ =
+    if not (is_vec_vname vn)
+    then raise_invalid_name() in
+  let (sn, si) =
+    let vn = String.sub vn 1 (String.length vn - 1) in
+    try
+      let (pre, suf) = split_at_last_underscore vn in
+      let _ = int_of_string suf in
+      (pre, Some suf)
+    with _ ->
+      (vn, None) in
+  (sn, si)
+
+(* Check if the input list of variables form a vector
+   and return the vector. *)
+let validate_vecvars vars =
+  let raise_invalid_vecelms () =
+    raise (InvalidArgument (
+        "The scalar variables found do not seem to form a vector."
+      )) in
+  let split v =
+    let (vn, vi) = split_at_last_underscore v.vname in
+    { ename = vn;
+      eidx  = int_of_string vi;
+      evar  = v } in
+  let check_var_name vecelms =
+    let n = (List.hd vecelms).ename in
+    let _ =
+      if not (String.starts_with ~prefix:vec_scalar_prefix n)
+      then raise_invalid_vecelms() in
+    let same_name =
+      List.for_all
+        (fun vecelm -> vecelm.ename = n)
+        vecelms in
+    if same_name then
+      let size_prefix = String.length vec_scalar_prefix in
+      let size_name = String.length n in
+      String.sub n size_prefix (size_name - size_prefix)
+    else raise_invalid_vecelms() in
+  let check_ssa_index vecelms =
+    let index = (List.hd vecelms).evar.vsidx in
+    let same_index =
+      List.for_all
+        (fun vecelm -> vecelm.evar.vsidx = index)
+        vecelms in
+    if not same_index
+    then raise_invalid_vecelms() in
+  let check_vec_index vecelms =
+    List.iteri
+      (fun i vecelm ->
+         if i <> vecelm.eidx
+         then raise_invalid_vecelms())
+      vecelms in
+  let check_elm_type vecelms =
+    let t = (List.hd vecelms).evar.vtyp in
+    let same_type =
+      List.for_all
+        (fun vecelm -> vecelm.evar.vtyp = t)
+        vecelms in
+    if same_type
+    then t
+    else raise_invalid_vecelms() in
+  let size = List.length vars in
+  let _ =
+    if size = 0
+    then raise (InvalidArgument "No variable found") in
+  let vecelms = tmap split vars in
+  let vname = check_var_name vecelms in
+  let _ = check_ssa_index vecelms in
+  let _ = check_vec_index vecelms in
+  let elmtyp = check_elm_type vecelms in
+  { vecname = vname;
+    velmtyp = elmtyp;
+    velmnum = size;
+    velms   = vecelms }
 
 
 (** Simulation of an Instruction *)
@@ -461,6 +607,31 @@ class shellManager = fun m p ->
           else res
         ) t VS.empty
 
+    method get_vec_var_by_name n =
+      try
+        let (vn, siopt) = validate_vecvname n in
+        let elms =
+          let try1 =
+            match siopt with
+            | None -> VS.empty
+            | Some si -> self#get_vars_by_pattern (vec_scalar_prefix ^ vn ^ "_[^_]*_" ^ si) in
+          if VS.is_empty try1
+          then self#get_vars_by_pattern (vec_scalar_prefix ^ vn ^ "_[^_]*")
+          else try1 in
+        let sorted_elms =
+          VS.elements elms
+          |> List.sort
+            (fun v1 v2 ->
+               let (_, si1) = split_at_last_underscore v1.vname in
+               let (_, si2) = split_at_last_underscore v2.vname in
+               Stdlib.compare (int_of_string si1) (int_of_string si2)) in
+        validate_vecvars sorted_elms
+      with Not_found ->
+        raise VarNotFound
+
+    method get_vec_vars_by_pattern (_p : string) : vec_var list =
+      failwith "Not implemented: get_vec_vars_by_pattern"
+
     method get_history = stack
 
     method get_map =
@@ -479,6 +650,12 @@ class shellManager = fun m p ->
         VM.find v m
       with Not_found ->
         raise ValueNotFound
+
+    (* from v[0] *)
+    method get_vec_value v =
+      let scalars = tmap (fun e -> e.evar) v.velms in
+      let values = tmap self#get_value scalars in
+      values
 
     method get_next_instr =
       match stack with
@@ -629,22 +806,53 @@ let exec_help ?cmd () =
     | None -> get_commands() in
   List.iter print_command_help cmds
 
+let print_var m regexp xn =
+  try
+    let xs =
+      if regexp then m#get_vars_by_pattern xn
+      else VS.singleton (m#get_var_by_name xn) in
+    VSN.iter (fun x ->
+        try
+          let v = m#get_value x in
+          print_endline (string_of_var_with_value x v)
+        with ValueNotFound -> print_endline ("Value of " ^ string_of_var x ^ " is not found.")
+      ) (VS.elements xs |> VSN.of_list)
+  with VarNotFound -> print_endline (xn ^ ": Uninitialized")
+
+let print_vecvar m regexp xn =
+  try
+    (* xs = a list of (elmtype, vecsize, annotated_elms) *)
+    (* an annotated element is (var_name, vec_index, ssa_index) *)
+    let xs =
+      if regexp then m#get_vec_vars_by_pattern xn
+      else [ m#get_vec_var_by_name xn ] in
+    List.iter (fun x ->
+        try
+          let v = m#get_vec_value x in
+          print_endline (string_of_vec_var_with_value x v)
+        with ValueNotFound ->
+          print_endline ("Value of " ^ string_of_vec_var x ^ " is not found.")
+      ) xs
+  with VarNotFound -> print_endline (xn ^ ": Uninitialized")
+
 let exec_print m regexp args =
-  let print_var xn =
-    try
-      let xs =
-        if regexp then m#get_vars_by_pattern xn
-        else VS.singleton (m#get_var_by_name xn) in
-      VS.iter (fun x ->
-          try
-            let v = m#get_value x in
-            print_endline (string_of_var_with_value x v)
-          with ValueNotFound -> print_endline ("Value of " ^ string_of_var x ^ " is not found.")
-        ) xs
-    with VarNotFound -> print_endline (xn ^ ": Uninitialized") in
+  let rec print_vars vars =
+    match vars with
+    | [] -> ()
+    | v::vs ->
+      let _ =
+        if is_vec_vname v
+        then print_vecvar m regexp v
+        else print_var m regexp v in
+      print_vars vs in
   (match args with
    | [] -> m#print_program
-   | _ -> List.iter print_var args)
+   | _ -> print_vars args)
+
+let exec_vprint m regexp args =
+  (match args with
+   | [] -> m#print_program
+   | _ -> List.iter (print_vecvar m regexp) args)
 
 let exec_watch m regexp args =
   let watch_var xn =
@@ -741,7 +949,12 @@ let command_exit = {
     cname = "exit";
     calias = ["quit"; "q"];
     cdesc = "Quit interactive mode.";
-    chelp = String.concat "\n" [highlight("exit/quit/q"); "\t\t\tQuit interactive mode.";];
+    chelp =
+      String.concat "\n"
+        [
+          highlight("exit/quit/q");
+          "\t\t\tQuit interactive mode."
+        ];
     cexec = fun _ _ -> exec_exit()
   }
 
@@ -749,198 +962,365 @@ let command_run = {
     cname = "run";
     calias = ["r"];
     cdesc = "Run until the end of the program.";
-    chelp = String.concat "\n" [highlight("run/r"); "\t\t\tRun the program."];
-    cexec = fun m _ -> let _ = exec_run m in
-                       m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("run/r");
+          "\t\t\tRun the program."
+        ];
+    cexec =
+      fun m _ ->
+        let _ = exec_run m in
+        m
   }
 
 let command_next = {
     cname = "next";
     calias = ["n"];
     cdesc = "Run the next N instruction(s).";
-    chelp = String.concat "\n" [highlight("next/n [N]"); "\t\t\tRun the next N instructions."];
-    cexec = fun m args -> let _ =
-                            try
-                              let n = parse_args_int1 ~default:1 args in
-                              exec_next m n
-                            with
-                              InvalidArgument msg -> print_endline msg
-                            | TooManyArguments -> print_endline("This command accepts at most one integer argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("next/n [N]");
+          "\t\t\tRun the next N instructions."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let n = parse_args_int1 ~default:1 args in
+            exec_next m n
+          with
+            InvalidArgument msg -> print_endline msg
+          | TooManyArguments ->
+            print_endline("This command accepts at most one integer argument.") in
+        m
   }
 
 let command_previous = {
     cname = "previous";
     calias = ["prev"; "v"];
     cdesc = "Undo the previous N instruction(s).";
-    chelp = String.concat "\n" [highlight("previous/prev/v [N]"); "\t\t\tUndo the previous N instructions."];
-    cexec = fun m args -> let _ =
-                            try
-                              let n = parse_args_int1 ~default:1 args in
-                              exec_previous m n
-                            with
-                              InvalidArgument msg -> print_endline msg
-                            | TooManyArguments -> print_endline("This command accepts at most one integer argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("previous/prev/v [N]");
+          "\t\t\tUndo the previous N instructions."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let n = parse_args_int1 ~default:1 args in
+            exec_previous m n
+          with
+            InvalidArgument msg -> print_endline msg
+          | TooManyArguments ->
+            print_endline("This command accepts at most one integer argument.")
+        in
+        m
   }
 
 let command_goto = {
     cname = "goto";
     calias = ["g"];
     cdesc = "Run until the N-th instruction is reached.";
-    chelp = String.concat "\n" [highlight("goto/g N"); "\t\t\tRun until the N-th instruction is reached."];
-    cexec = fun m args -> let _ =
-                            try
-                              let n = parse_args_int1 args in
-                              exec_goto m n
-                            with InvalidArgument msg -> print_endline msg
-                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one integer argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("goto/g N");
+          "\t\t\tRun until the N-th instruction is reached."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let n = parse_args_int1 args in
+            exec_goto m n
+          with InvalidArgument msg -> print_endline msg
+             | ArgumentRequired | TooManyArguments ->
+               print_endline("This command accepts exactly one integer argument.")
+        in
+        m
   }
 
 let command_find = {
     cname = "find";
     calias = ["f"];
     cdesc = "Search for instructions.";
-    chelp = String.concat "\n" [highlight("find/f STR"); "\t\t\tSearch for instructions."];
-    cexec = fun m args -> let _ =
-                            try
-                              let pattern = parse_args_string1 args in
-                              exec_find m pattern
-                            with ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one double-quoted string argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("find/f STR");
+          "\t\t\tSearch for instructions."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let pattern = parse_args_string1 args in
+            exec_find m pattern
+          with ArgumentRequired | TooManyArguments ->
+            print_endline("This command accepts exactly one double-quoted string argument.")
+        in
+        m
   }
 
-let command_print = {
+let command_print =
+  {
     cname = "print";
     calias = ["p"];
-    cdesc = "Print the instructions near the current program location or print values of specified variables.";
-    chelp = String.concat "\n" [highlight("print/p [VAR VAR ...]"); "\t\t\tPrint the instructions near the current program"; "\t\t\tlocation or print values of specified variables."];
-    cexec = fun m args -> let _ = exec_print m false args in
-                          m
+    cdesc =
+      "Print the instructions near the current program location "
+      ^ "or print values of specified variables.";
+    chelp =
+      String.concat "\n"
+        [
+          highlight("print/p [VAR VAR ...]");
+          "\t\t\tPrint the instructions near the current program";
+          "\t\t\tlocation or print values of specified variables."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_print m false args in
+        m
   }
 
 let command_rprint = {
     cname = "rprint";
     calias = ["rp"];
-    cdesc = "Print the instructions near the current program location or print values of variables that match one of the specified patterns.";
-    chelp = String.concat "\n" [highlight("rprint/rp [PATTERN PATTERN ...]"); "\t\t\tPrint the instructions near the current program"; "\t\t\tlocation or print values of variables that match one"; "\t\t\tof the specified patterns."];
-    cexec = fun m args -> let _ = exec_print m true args in
-                          m
+    cdesc =
+      "Print the instructions near the current program location "
+      ^ "or print values of variables that match one of the specified patterns.";
+    chelp =
+      String.concat "\n"
+        [
+          highlight("rprint/rp [PATTERN PATTERN ...]");
+          "\t\t\tPrint the instructions near the current program";
+          "\t\t\tlocation or print values of variables that match one";
+          "\t\t\tof the specified patterns."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_print m true args in
+        m
+  }
+
+let command_vprint =
+  {
+    cname = "vprint";
+    calias = ["vp"];
+    cdesc =
+      "Print values of specified vector variables.";
+    chelp =
+      String.concat "\n"
+        [
+          highlight("vprint/vp [VAR VAR ...]");
+          "\t\t\tPrint values of specified vector variables."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_vprint m false args in
+        m
   }
 
 let command_watch = {
     cname = "watch";
     calias = ["w"];
-    cdesc = "Print values of variables in the watch list or add variables to the watch list.";
-    chelp = String.concat "\n" [highlight("watch/w [VAR VAR ...]"); "\t\t\tPrint values of variables in the watch list or add"; "\t\t\tvariables to the watch list."];
-    cexec = fun m args -> let _ = exec_watch m false args in
-                          m
+    cdesc =
+      "Print values of variables in the watch list " ^
+      "or add variables to the watch list.";
+    chelp =
+      String.concat "\n"
+        [
+          highlight("watch/w [VAR VAR ...]");
+          "\t\t\tPrint values of variables in the watch list or add";
+          "\t\t\tvariables to the watch list."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_watch m false args in
+        m
   }
 
 let command_rwatch = {
     cname = "rwatch";
     calias = ["rw"];
-    cdesc = "Print values of variables in the watch list or add variables matching one of the specified patterns to the watch list.";
-    chelp = String.concat "\n" [highlight("rwatch/rw [PATTERN PATTERN ...]"); "\t\t\tPrint values of variables in the watch list or add"; "\t\t\tvariables matching one of the specified patterns to"; "\t\t\tthe watch list."];
-    cexec = fun m args -> let _ = exec_watch m true args in
-                          m
+    cdesc =
+      "Print values of variables in the watch list or "
+      ^ "add variables matching one of the specified patterns to the watch list.";
+    chelp =
+      String.concat "\n" [
+        highlight("rwatch/rw [PATTERN PATTERN ...]");
+        "\t\t\tPrint values of variables in the watch list or add";
+        "\t\t\tvariables matching one of the specified patterns to";
+        "\t\t\tthe watch list."
+      ];
+    cexec =
+      fun m args ->
+        let _ = exec_watch m true args in
+        m
   }
 
 let command_unwatch = {
     cname = "unwatch";
     calias = ["uw"];
     cdesc = "Remove variables from the watch list.";
-    chelp = String.concat "\n" [highlight("unwatch/uw [VAR VAR ...]"); "\t\t\tRemove variables from the watch list."];
-    cexec = fun m args -> let _ = exec_unwatch m false args in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("unwatch/uw [VAR VAR ...]");
+          "\t\t\tRemove variables from the watch list."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_unwatch m false args in
+        m
   }
 
 let command_runwatch = {
     cname = "runwatch";
     calias = ["ruw"];
-    cdesc = "Remove variables matching one of the specified patterns from the watch list.";
-    chelp = String.concat "\n" [highlight("runwatch/ruw [PATTERN PATTERN ...]"); "\t\t\tRemove variables matching one of the specified patterns"; "\t\t\tfrom the watch list."];
-    cexec = fun m args -> let _ = exec_unwatch m true args in
-                          m
+    cdesc =
+      "Remove variables matching one of the specified "
+      ^ "patterns from the watch list.";
+    chelp =
+      String.concat "\n"
+        [
+          highlight("runwatch/ruw [PATTERN PATTERN ...]");
+          "\t\t\tRemove variables matching one of the specified patterns";
+          "\t\t\tfrom the watch list."
+        ];
+    cexec =
+      fun m args ->
+        let _ = exec_unwatch m true args in
+        m
   }
 
 let command_dump = {
     cname = "dump";
     calias = ["d"];
     cdesc = "Print values of all variables.";
-    chelp = String.concat "\n" [highlight("dump/d"); "\t\t\tPrint values of all variables."];
-    cexec = fun m _ -> let _ = exec_dump m in
-                       m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("dump/d");
+          "\t\t\tPrint values of all variables."
+        ];
+    cexec =
+      fun m _ ->
+        let _ = exec_dump m in
+        m
   }
 
 let command_set = {
     cname = "set";
     calias = ["s"];
     cdesc = "Set an option.";
-    chelp = String.concat "\n" [highlight("set/s [NAME [VALUE VALUE ...]]"); "\t\t\tSet an option or print options."];
-    cexec = fun m args -> let _ =
-                            try parse_options args
-                            with InvalidArgument msg -> print_endline msg in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("set/s [NAME [VALUE VALUE ...]]");
+          "\t\t\tSet an option or print options."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try parse_options args
+          with InvalidArgument msg -> print_endline msg in
+        m
   }
 
 let command_depend = {
     cname = "depend";
     calias = [];
     cdesc = "Print dependency of a variable.";
-    chelp = String.concat "\n" [highlight("depend VAR [N]"); "\t\t\tPrint dependent variables right before the N-th"; "\t\t\t(default is 0-th) instruction together with their"; "\t\t\tvalues."];
-    cexec = fun m args -> let _ =
-                            try
-                              let (vname, n) = parse_args_string1_int1 ~idef:0 args in
-                              let _ =
-                                try
-                                  let var = m#get_var_by_name vname in
-                                  exec_depend m var n
-                                with VarNotFound -> print_endline ("Variable " ^ vname ^ " is not found.") in
-                              ()
-                            with InvalidArgument msg -> print_endline msg
-                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one string argument followed by one integer argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("depend VAR [N]");
+          "\t\t\tPrint dependent variables right before the N-th";
+          "\t\t\t(default is 0-th) instruction together with their";
+          "\t\t\tvalues."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let (vname, n) = parse_args_string1_int1 ~idef:0 args in
+            let _ =
+              try
+                let var = m#get_var_by_name vname in
+                exec_depend m var n
+              with VarNotFound ->
+                print_endline ("Variable " ^ vname ^ " is not found.") in
+            ()
+          with InvalidArgument msg -> print_endline msg
+             | ArgumentRequired | TooManyArguments ->
+               print_endline("This command accepts exactly one string argument followed by one integer argument.")
+        in
+        m
   }
 
 let command_slice = {
     cname = "slice";
     calias = [];
     cdesc = "Print a sliced program that computes the value of a variable.";
-    chelp = String.concat "\n" [highlight("slice VAR [N]"); "\t\t\tPrint a sliced program after the N-th (default is 0-th)"; "\t\t\tinstruction. The program computes the value of a"; "\t\t\tspecified variable at the current program location."];
-    cexec = fun m args -> let _ =
-                            try
-                              let (vname, n) = parse_args_string1_int1 ~idef:0 args in
-                              let _ =
-                                try
-                                  let var = m#get_var_by_name vname in
-                                  exec_slice m var n
-                                with VarNotFound -> print_endline ("Variable " ^ vname ^ " is not found.") in
-                              ()
-                            with InvalidArgument msg -> print_endline msg
-                               | ArgumentRequired | TooManyArguments -> print_endline("This command accepts exactly one string argument followed by one integer argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("slice VAR [N]");
+          "\t\t\tPrint a sliced program after the N-th (default is 0-th)";
+          "\t\t\tinstruction. The program computes the value of a";
+          "\t\t\tspecified variable at the current program location."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let (vname, n) = parse_args_string1_int1 ~idef:0 args in
+            let _ =
+              try
+                let var = m#get_var_by_name vname in
+                exec_slice m var n
+              with VarNotFound ->
+                print_endline ("Variable " ^ vname ^ " is not found.") in
+            ()
+          with InvalidArgument msg -> print_endline msg
+             | ArgumentRequired | TooManyArguments ->
+               print_endline("This command accepts exactly one string argument followed by one integer argument.")
+        in
+        m
   }
 
 let command_help = {
     cname = "help";
     calias = ["h"; "?"];
     cdesc = "Print the help message.";
-    chelp = String.concat "\n" [highlight("help/h/? [COMMAND]"); "\t\t\tPrint the help message for all commands or the"; "\t\t\tspecified command."];
-    cexec = fun m args -> let _ =
-                            try
-                              let cmd = parse_args_command1 args in
-                              exec_help ~cmd:cmd ()
-                            with ArgumentRequired -> exec_help ()
-                               | InvalidArgument msg -> print_endline msg
-                               | TooManyArguments -> print_endline("This command accepts at most one string argument.") in
-                          m
+    chelp =
+      String.concat "\n"
+        [
+          highlight("help/h/? [COMMAND]");
+          "\t\t\tPrint the help message for all commands or the";
+          "\t\t\tspecified command."
+        ];
+    cexec =
+      fun m args ->
+        let _ =
+          try
+            let cmd = parse_args_command1 args in
+            exec_help ~cmd:cmd ()
+          with ArgumentRequired -> exec_help ()
+             | InvalidArgument msg -> print_endline msg
+             | TooManyArguments -> print_endline("This command accepts at most one string argument.")
+        in
+        m
   }
 
 let _ = List.iter register_command [
             command_exit; command_run; command_next; command_previous; command_goto;
-            command_find; command_print; command_rprint; command_watch; command_rwatch;
+            command_find; command_print; command_rprint; command_vprint;
+            command_watch; command_rwatch;
             command_unwatch; command_runwatch; command_dump; command_set; command_depend;
             command_slice; command_help
           ]
@@ -995,5 +1375,6 @@ let shell m p =
         let cmd = find_command name in
         ignore(cmd.cexec manager args)
       with Not_found -> print_endline ("Command " ^ name ^ " is not found.")
+         | InvalidArgument msg -> print_endline msg
   in
   Seq.iter process_command (prompt())

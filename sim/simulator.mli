@@ -13,6 +13,23 @@ val print_hexadecimal : bool ref
 
 (** {1 Interactive Commands} *)
 
+type vec_elm =
+  {
+    ename: string;  (** Variable name without and index *)
+    eidx : int;     (** index in the vector *)
+    evar : var;     (** Variable of this element *)
+  }
+
+type vec_var =
+  {
+    vecname: string;          (** Vector name with SSA index *)
+    velmtyp: typ;             (** Type of vector elements *)
+    velmnum: int;             (** Number of vector elements *)
+    velms  : vec_elm list     (** Ordered elements *)
+  }
+
+type vec_value = bits list     (** Value of a vector *)
+
 exception NoMoreInstr
 (** raised when there is no more instruction available *)
 
@@ -59,10 +76,14 @@ class shellManager :
           (**
              [get_var_by_name n] is the variable of name [n].
              @raise VarNotFound if there is no variable of name [n]
-           *)
+          *)
 
           method get_vars_by_pattern : string -> VS.t
           (** Return variables with names that match a specified pattern. *)
+
+          method get_vec_var_by_name : string -> vec_var
+
+          method get_vec_vars_by_pattern : string -> vec_var list
 
           method get_map : bits VM.t
           (** Return the map from variables to values. *)
@@ -74,7 +95,9 @@ class shellManager :
           (**
              [get_value v] returns the current value of the variable [v]
              @raise ValueNotFound if the variable is uninitialized
-           *)
+          *)
+
+          method get_vec_value : vec_var -> bits list
 
           method get_next_instr : (int * instr) option
           (** Return the next instruction of the current program counter. *)

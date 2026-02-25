@@ -112,8 +112,11 @@ val typ_of_var : var -> typ
 val eq_var : var -> var -> bool
 (** [eq_var v1 v2] if [v1.vname = v2.vname] and [v1.vsidx = v2.vsidx]. *)
 
+val cmp_var_name_sidx : var -> var -> int
+(** [cmp_var_name_sidx v1 v2] compares two variables according to their names and SSA indices. *)
+
 val cmp_var : var -> var -> int
-(** [cmp_var v1 v2] compares two variables according to their names and SSA indices. *)
+(** [cmp_var v1 v2] compares two variables. *)
 
 val mem_var : var -> var list -> bool
 (** [mem_var v vs] tests if a variable [v] is in a list [vs] using the comparison function {!eq_var}. *)
@@ -141,6 +144,15 @@ module VS : Set.S with type elt = var
 
 module VM : Map.S with type key = var
 (** variable maps with comparator {!cmp_var} *)
+
+module VSN : Set.S with type elt = var
+(**
+ * Variable sets with comparator {!cmp_var_name_sidx}.
+ * Note that [VSN.mem v varset] is different from [List.mem v varlist].
+ *)
+
+module VMN : Map.S with type key = var
+(** variable maps with comparator {!cmp_var_name_sidx} *)
 
 module IS : Set.S with type elt = int
 (** Sets of variable IDs *)

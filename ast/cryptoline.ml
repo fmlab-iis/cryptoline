@@ -183,12 +183,15 @@ let typ_of_var v = v.vtyp
  *)
 let eq_var v1 v2 = v1.vname = v2.vname && v1.vsidx = v2.vsidx
 
+let cmp_var_name_sidx v1 v2 =
+  let cn = Stdlib.compare v1.vname v2.vname in
+  if cn = 0 then Stdlib.compare v1.vsidx v2.vsidx
+  else cn
+
 let cmp_var v1 v2 =
   let ch = Stdlib.compare v1.vhash v2.vhash in
   if ch = 0
-  then let cn = Stdlib.compare v1.vname v2.vname in
-       if cn = 0 then Stdlib.compare v1.vsidx v2.vsidx
-       else cn
+  then cmp_var_name_sidx v1 v2
   else ch
 let mem_var v vs = List.exists (fun u -> eq_var u v) vs
 
@@ -209,6 +212,15 @@ module VarElem : OrderedType with type t = var =
 (* Note: `VS.mem v varset` is different from `List.mem v varlist` *)
 module VS = Set.Make(VarElem)
 module VM = Map.Make(VarElem)
+
+module VarNameElem : OrderedType with type t = var =
+  struct
+    type t = var
+    let compare = cmp_var_name_sidx
+  end
+(* Note: `VS.mem v varset` is different from `List.mem v varlist` *)
+module VSN = Set.Make(VarNameElem)
+module VMN = Map.Make(VarNameElem)
 
 (* Add a variable to a variable set. Update its type if the variable
    is already in the set. *)
