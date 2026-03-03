@@ -720,6 +720,13 @@ veexp_primary:
                                                     let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
                                                     es
                                                   }
+  | const AT vectyp                               { let lno = get_line_start() in
+                                                    fun ctx ->
+                                                    let vec = `AVCONST { csttype = $3; cstvalue = $1 } in
+                                                    let (_, atoms) = (resolve_vec_with ~with_ghost:true ctx lno vec) in
+                                                    let es = List.rev_map eexp_of_atom (List.rev_map (resolve_atom_with ctx lno) atoms) in
+                                                    es
+                                                  }
   | LSQUARE eexps RSQUARE                         { fun ctx -> $2 ctx }
   | LPAR veexp RPAR                               { fun ctx -> $2 ctx }
 ;
