@@ -174,15 +174,22 @@ let string_of_vec_var x =
 (* print from the value of x[0], i.e. vs[0] *)
 let string_of_vec_var_with_value x vs =
   let is_signed = typ_is_signed x.velmtyp in
-  let bits_values = tmap format_bits vs in
-  let int_values = tmap (format_as_int is_signed) vs in
-  Printf.sprintf "%s@%s[%d]: %s (%s %s)"
+  let signed_str = if is_signed then "signed" else "unsigned" in
+  let elm_bits_values = tmap format_bits vs in
+  let elm_int_values = tmap (format_as_int is_signed) vs in
+  let all_bits = tflatten vs in
+  let vec_bits_value = format_bits all_bits in
+  let vec_int_value = format_as_int is_signed all_bits in
+  Printf.sprintf "%s@%s[%d]:\n  - vec : %s (%s %s)\n  - elms: %s (%s %s)"
     x.vecname
     (string_of_typ x.velmtyp)
     x.velmnum
-    (String.concat " " bits_values)
-    (if is_signed then "signed" else "unsigned")
-    (String.concat " " int_values)
+    vec_bits_value
+    signed_str
+    vec_int_value
+    (String.concat " " elm_bits_values)
+    signed_str
+    (String.concat " " elm_int_values)
 
 let dump_map m =
   VM.iter (fun x v -> print_endline (string_of_var_with_value x v)) m
