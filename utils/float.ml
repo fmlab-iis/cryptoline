@@ -33,6 +33,9 @@ end
 module type S = sig
   type t
 
+  val zero: t
+  val one: t
+
   val of_string: string -> rnd:Mpfr.round -> t
   val to_string: t -> string
   val of_z: Z.t -> rnd:Mpfr.round -> t
@@ -69,6 +72,9 @@ end
 
 module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   type t = FloatNum.t
+
+  let zero = FloatNum.of_int 0 ~rnd:Mpfr.Near
+  let one = FloatNum.of_int 0 ~rnd:Mpfr.Near
 
   let of_string = FloatNum.of_string
   let to_string = FloatNum.to_string

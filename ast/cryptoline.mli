@@ -34,14 +34,23 @@ module SM : Map.S with type key = string
 module FloatConst: Float.S
 
 type const =
-  | Cint    of Z.t
+  | Cint of Z.t
   | Cfloat of FloatConst.t
 
 
-val const_of_int : Z.t -> const
+val const_of_z : Z.t -> const
 val const_of_double : Mpfrf.t -> const
 val const_to_string : const -> string
 val float_of_z : Z.t -> int -> Mpfr.round -> Mpfrf.t
+
+val cadd: const -> const -> const
+val csub: const -> const -> const
+val cmul: const -> const -> const
+val cdiv: const -> const -> const
+val cpow: const -> const -> const
+
+
+
 
 (** {1 Types} *)
 
@@ -193,7 +202,7 @@ type ebinop =
 
 type eexp =
   | Evar of var                         (** variable *)
-  | Econst of Z.t                       (** constant *)
+  | Econst of const                     (** constant *)
   | Eunop of eunop * eexp               (** unary expression *)
   | Ebinop of ebinop * eexp * eexp      (** binary expression *)
 (** Algebraic expressions. Use {!eq_eexp} instead of [=] to check the equality of two [eexp]. *)
@@ -201,7 +210,7 @@ type eexp =
 val evar : var -> eexp
 (** [evar v] is [Evar v]. *)
 
-val econst : Z.t -> eexp
+val econst : const -> eexp
 (** [econst n] is [Econst n]. *)
 
 val eneg : eexp -> eexp

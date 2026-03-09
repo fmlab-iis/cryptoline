@@ -72,12 +72,54 @@ type const =
   | Cint   of Z.t
   | Cfloat of FloatConst.t
 
-let const_of_int n = Cint n
+let const_of_z n = Cint n
 let const_of_double f = Cfloat f
 let const_to_string c =
   match c with
   | Cint n -> Z.to_string n
   | Cfloat f -> FloatConst.to_string f
+
+let cadd c1 c2 =
+  match c1, c2 with
+  | Cint n, Cint m -> Cint(Z.add n m)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.add f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n | Cint n, Cfloat f ->
+    Cfloat (FloatConst.add f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+let csub c1 c2 =
+  match c1, c2 with
+  | Cint n, Cint m -> Cint (Z.sub n m)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.sub f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n  ->
+    Cfloat (FloatConst.sub f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+  | Cint n, Cfloat f ->
+    Cfloat (FloatConst.sub (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+let cmul c1 c2 =
+  match c1, c2 with
+  | Cint n, Cint m -> Cint (Z.mul n m)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.mul f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n ->
+    Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+  | Cint n, Cfloat f ->
+    Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+let cdiv c1 c2 =
+  match c1, c2 with
+  | Cint n, Cint m when not (Z.equal m Z.zero) -> Cint (Z.div n m)
+  | Cfloat f1, Cfloat f2 when not (FloatConst.eq f2 FloatConst.zero) -> 
+      Cfloat (FloatConst.div f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n when not (Z.equal n Z.zero) ->
+      Cfloat (FloatConst.div f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+  | Cint n, Cfloat f when not (FloatConst.eq f FloatConst.zero) ->
+      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+  | _, _ -> failwith "Denominator must not be zero."
+let cpow c1 c2 =
+  match c1, c2 with
+  | Cint n, Cint m -> Cint (Z.pow n (Z.to_int m))
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.pow f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n -> Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:Mpfr.Near)
+  | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+
+
+
 
 (** Types *)
 
@@ -376,27 +418,19 @@ let eadd' e1 e2 =
   match e1, e2 with
   | Econst (Cint n), _ when Z.equal n Z.zero -> e2
   | _, Econst (Cint n) when Z.equal n Z.zero -> e1
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 0 -> e2
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 0 -> e1
-  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.add n m))
-  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (FloatConst.add f1 f2 ~rnd:Mpfr.Near))
-  | Econst (Cfloat f), Econst (Cint n) | Econst (Cint n), Econst (Cfloat f) ->
-    Econst (Cfloat (FloatConst.add f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near))
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.zero -> e2
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> e1
+  | Econst c1, Econst c2 -> Econst (cadd c1 c2)
   | _, _ -> eadd e1 e2
 let esub e1 e2 = Ebinop (Esub, e1, e2)
 let esub' e1 e2 =
   match e1, e2 with
   | Econst (Cint n), _ when Z.equal n Z.zero -> eneg' e2
   | _, Econst (Cint n) when Z.equal n Z.zero -> e1
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 0 -> eneg' e2
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 0 -> e1
-  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.sub n m))
-  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (FloatConst.sub f1 f2 ~rnd:Mpfr.Near))
-  | Econst (Cfloat f), Econst (Cint n)  ->
-    Econst (Cfloat (FloatConst.sub f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near))
-  | Econst (Cint n), Econst (Cfloat f) ->
-    Econst (Cfloat (FloatConst.sub (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near))
-    | _, _ -> esub e1 e2
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.zero -> eneg' e2
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> e1
+  | Econst c1, Econst c2 -> Econst (csub c1 c2)
+  | _, _ -> esub e1 e2
 let emul e1 e2 = Ebinop (Emul, e1, e2)
 let emul' e1 e2 =
   match e1, e2 with
@@ -404,34 +438,17 @@ let emul' e1 e2 =
   | _, Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.zero)
   | Econst (Cint n), _ when Z.equal n Z.one -> e2
   | _, Econst (Cint n) when Z.equal n Z.one -> e1
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 0 -> Econst (Cfloat (FloatConst.of_int 0 ~rnd:Mpfr.Near))
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 0 -> Econst (Cfloat (FloatConst.of_int 0 ~rnd:Mpfr.Near))
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 1 -> e2
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 1 -> e1
-  | Econst (Cint n), Econst (Cint m) -> Econst (Cint(Z.mul n m))
-  | Econst (Cfloat f1), Econst (Cfloat f2) -> Econst (Cfloat (FloatConst.mul f1 f2 ~rnd:Mpfr.Near))
-  | Econst (Cfloat f), Econst (Cint n)  ->
-    Econst (Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near))
-  | Econst (Cint n), Econst (Cfloat f) ->
-    Econst (Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near))
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.one -> e2
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.one -> e1
+  | Econst c1, Econst c2 -> Econst (cmul c1 c2)
   | _, _ -> emul e1 e2
 let ediv e1 e2 = Ebinop (Ediv, e1, e2)
 let ediv' e1 e2 = match e1, e2 with
-  | Econst (Cint n), Econst (Cint m) when not (Z.equal m Z.zero) ->
-      Econst (Cint (Z.div n m))
-  | Econst (Cfloat f1), Econst (Cfloat f2)
-      when not (Mpfrf.zero_p f2) ->
-      Econst (Cfloat (Mpfrf.div f1 f2 Mpfr.Near))
-  | Econst (Cfloat f), Econst (Cint n)
-      when not (Z.equal n Z.zero) ->
-      let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
-      Econst (Cfloat (Mpfrf.div f n_as_f Mpfr.Near))
-  | Econst (Cint n), Econst (Cfloat f)
-      when not (Mpfrf.zero_p f) ->
-      let n_as_f = float_of_z n (Mpfr.get_prec f) Mpfr.Near in
-      Econst (Cfloat (Mpfrf.div n_as_f f Mpfr.Near))
   | e, Econst (Cint n) when Z.equal n Z.one -> e
-  | e, Econst (Cfloat f) when Mpfrf.cmp_int f 1 = 0 -> e
+  | e, Econst (Cfloat f) when FloatConst.eq f FloatConst.one -> e
+  | Econst c1, Econst c2 -> Econst (cdiv c1 c2)
   | _, _ -> ediv e1 e2
 let epow e1 e2 =
   match e2 with
@@ -440,43 +457,42 @@ let epow e1 e2 =
 let epow' e1 e2 =
   match e1, e2 with
   | _, Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.one)
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 0 -> Econst (Cint Z.one)
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> Econst (Cint Z.one)
   | _, Econst (Cint n) when Z.equal n Z.one -> e1
-  | _, Econst (Cfloat f) when FloatConst.eq_int f 1 -> e1
+  | _, Econst (Cfloat f) when FloatConst.eq f FloatConst.one -> e1
   | Econst (Cint n), _ when Z.equal n Z.zero -> Econst (Cint Z.zero)
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 0 -> Econst (Cfloat (FloatConst.of_int 0 ~rnd:Mpfr.Near))
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
   | Econst (Cint n), _ when Z.equal n Z.one -> Econst (Cint Z.one)
-  | Econst (Cfloat f), _ when FloatConst.eq_int f 1 -> Econst (Cfloat (FloatConst.of_int 1 ~rnd:Mpfr.Near))
-  | Econst (Cint n), Econst (Cint m) -> Econst (Cint (Z.pow n (Z.to_int m)))
-  | Econst (Cfloat n), Econst (Cint m) -> Econst (Cfloat (FloatConst.pow_int n (Z.to_int m) ~rnd:Mpfr.Near))
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.one -> Econst (Cfloat (FloatConst.of_int 1 ~rnd:Mpfr.Near))
+  | Econst c1, Econst c2 -> Econst (cpow c1 c2)
   | _, _ -> epow e1 e2
-let esq e = Ebinop (Epow, e, Econst z_two)
-(*let eadds es = List.fold_left (fun res e -> eadd e res) (econst Z.zero) es
-let emuls es = List.fold_left (fun res e -> emul e res) (econst Z.one) es*)
+let esq e = Ebinop (Epow, e, Econst (Cint z_two))
+(*let eadds es = List.fold_left (fun res e -> eadd e res) (econst (Cint Z.zero)) es
+let emuls es = List.fold_left (fun res e -> emul e res) (econst (Cint Z.one)) es*)
 let eadds es =
   match es with
-  | [] -> econst Z.zero
+  | [] -> econst (Cint Z.zero)
   | e::[] -> e
   | e::es -> (match add_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> eadd res e) e es
               | RightAssoc -> List.fold_left (fun res e -> eadd e res) e es)
 let eadds' es =
   match es with
-  | [] -> econst Z.zero
+  | [] -> econst (Cint Z.zero)
   | e::[] -> e
   | e::es -> (match add_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> eadd' res e) e es
               | RightAssoc -> List.fold_left (fun res e -> eadd' e res) e es)
 let emuls es =
   match es with
-  | [] -> econst Z.one
+  | [] -> econst (Cint Z.one)
   | e::[] -> e
   | e::es -> (match mul_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> emul res e) e es
               | RightAssoc -> List.fold_left (fun res e -> emul e res) e es)
 let emuls' es =
   match es with
-  | [] -> econst Z.one
+  | [] -> econst (Cint Z.one)
   | e::[] -> e
   | e::es -> (match mul_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> emul' res e) e es
@@ -493,7 +509,13 @@ let rec len_eexp e =
 let rec eq_eexp e1 e2 =
   match e1, e2 with
   | Evar v1, Evar v2 -> eq_var v1 v2
-  | Econst n1, Econst n2 -> Z.equal n1 n2
+  | Econst c1, Econst c2 -> (
+      match c1, c2 with
+      | Cint n1, Cint n2 -> Z.equal n1 n2
+      | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
+      | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
+      | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+  )
   | Eunop (op1, e1), Eunop (op2, e2) -> op1 = op2 && eq_eexp e1 e2
   | Ebinop (op1, e11, e12), Ebinop (op2, e21, e22) -> op1 = op2 && eq_eexp e11 e21 && eq_eexp e12 e22
   | _ -> false
@@ -507,7 +529,13 @@ let rec cmp_eexp e1 e2 =
   | Evar v1, Evar v2 -> cmp_var v1 v2
   | Evar _, _ -> -1
   | Econst _, Evar _ -> 1
-  | Econst n1, Econst n2 -> Z.compare n1 n2
+  | Econst c1, Econst c2 -> (
+      match c1, c2 with
+      | Cint n1, Cint n2 -> Z.compare n1 n2
+      | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
+      | Cfloat f1, Cint n2 -> FloatConst.cmp f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
+      | Cint n1, Cfloat f2 -> FloatConst.cmp (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+  )
   | Econst _, _ -> -1
   | Eunop _, Evar _
     | Eunop _, Econst _ -> 1
@@ -538,21 +566,30 @@ let rec simplify_eexp e =
   | Eunop (Eneg, e) ->
      let e = simplify_eexp e in
      (match e with
-      | Econst n when Z.equal n Z.zero -> Econst Z.zero
+      | Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.zero)
+      | Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
       | Eunop (Eneg, sub) -> sub
       | _ -> Eunop (Eneg, e))
   | Ebinop (op, e1, e2) ->
      let e1 = simplify_eexp e1 in
      let e2 = simplify_eexp e2 in
      (match op, e1, e2 with
-      | Eadd, e, Econst n when Z.equal n Z.zero -> e
-      | Eadd, Econst n, e when Z.equal n Z.zero -> e
-      | Esub, e, Econst n when Z.equal n Z.zero -> e
-      | Esub, Econst n, e when Z.equal n Z.zero -> simplify_eexp (Eunop (Eneg, e))
-      | Emul, _e, Econst n when Z.equal n Z.zero -> Econst Z.zero
-      | Emul, Econst n, _e when Z.equal n Z.zero -> Econst Z.zero
-      | Emul, e, Econst n when Z.equal n Z.one -> e
-      | Emul, Econst n, e when Z.equal n Z.one -> e
+      | Eadd, e, Econst (Cint n) when Z.equal n Z.zero -> e
+      | Eadd, e, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> e
+      | Eadd, Econst (Cint n), e when Z.equal n Z.zero -> e
+      | Eadd, Econst (Cfloat f), e when FloatConst.eq f FloatConst.zero -> e
+      | Esub, e, Econst (Cint n) when Z.equal n Z.zero -> e
+      | Esub, e, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> e
+      | Esub, Econst (Cint n), e when Z.equal n Z.zero -> simplify_eexp (Eunop (Eneg, e))
+      | Esub, Econst (Cfloat f), e when FloatConst.eq f FloatConst.zero -> simplify_eexp (Eunop (Eneg, e))
+      | Emul, _e, Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.zero)
+      | Emul, _e, Econst (Cfloat f) when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
+      | Emul, Econst (Cint n), _e when Z.equal n Z.zero -> Econst (Cint Z.zero)
+      | Emul, Econst (Cfloat f), _e when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
+      | Emul, e, Econst (Cint n) when Z.equal n Z.one -> e
+      | Emul, e, Econst (Cfloat f) when FloatConst.eq f FloatConst.one -> e
+      | Emul, Econst (Cint n), e when Z.equal n Z.one -> e
+      | Emul, Econst (Cfloat f), e when FloatConst.eq f FloatConst.one -> e
       | _ -> Ebinop (op, e1, e2))
   | _ -> e
 
@@ -584,14 +621,14 @@ let expand_eexp e =
     let m = List.fold_left (fun res v -> let c = if EM.mem v res then Z.add (EM.find v res) Z.one
                                                  else Z.one in
                                          EM.add v c res) EM.empty vs in
-    EM.fold (fun v c res -> emul' res (epow' v (Econst c))) m (Econst Z.one) in
+    EM.fold (fun v c res -> emul' res (epow' v (Econst (Cint c)))) m (Econst (Cint Z.one)) in
   (* convert monomial to eexp *)
   let eexp_of_mon c ms =
-    if Z.equal c Z.zero then Econst Z.zero
+    if Z.equal c Z.zero then Econst (Cint Z.zero)
     else if Z.equal c Z.one then prod ms
-    else emul' (Econst c) (prod ms) in
+    else emul' (Econst (Cint c)) (prod ms) in
   (* convert term to eexp *)
-  let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t (Econst Z.zero) in
+  let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t (Econst (Cint Z.zero)) in
   (* a term of a single monomial *)
   let mon_term c ms = TM.add ms c TM.empty in
   (* add a monomial to a term *)
@@ -606,13 +643,17 @@ let expand_eexp e =
   let esub_term t1 t2 = eadd_term t1 (eneg_term t2) in
   let emul_term t1 t2 = TM.fold (fun ms1 c1 res -> eadd_term (emul_mon_to_term c1 ms1 t2) res) t1 TM.empty in
   let is_term_constant t = TM.cardinal t = 1 && TM.mem [] t in
+  let ediv_term t1 t2 =
+    if is_term_constant t1 && is_term_constant t2 then mon_term (Z.pow (TM.find [] t1) (Z.to_int (TM.find [] t2))) []
+    else mon_term Z.one [Ebinop (Ediv, eexp_of_term t1, eexp_of_term t2)] in
   let epow_term t1 t2 =
     if is_term_constant t1 && is_term_constant t2 then mon_term (Z.pow (TM.find [] t1) (Z.to_int (TM.find [] t2))) []
     else mon_term Z.one [Ebinop (Epow, eexp_of_term t1, eexp_of_term t2)] in
   let rec h e =
     match e with
     | Evar _ -> mon_term Z.one [e]
-    | Econst n -> mon_term n []
+    | Econst (Cint n) -> mon_term n []
+    | Econst (Cfloat _) -> mon_term Z.one [e] 
     | Eunop (Eneg, e) -> let t = h e in
                          eneg_term t
     | Ebinop (op, e1, e2) -> let t1 = h e1 in
@@ -622,6 +663,7 @@ let expand_eexp e =
                                | Eadd -> eadd_term t1 t2
                                | Esub -> esub_term t1 t2
                                | Emul -> emul_term t1 t2
+                               | Ediv -> ediv_term t1 t2
                                | Epow -> epow_term t1 t2
                              end in
   eexp_of_term (h e)
@@ -1186,7 +1228,11 @@ let atom_is_signed a = typ_is_signed (typ_of_atom a)
 let eq_atom a1 a2 =
   match a1, a2 with
   | Avar v1, Avar v2 -> eq_var v1 v2
-  | Aconst (ty1, n1), Aconst (ty2, n2) -> ty1 = ty2 && Z.equal n1 n2
+  | Aconst (ty1, c1), Aconst (ty2, c2) -> ty1 = ty2 && 
+    (match c1, c2 with
+    | Cint n1, Cint n2 -> Z.equal n1 n2
+    | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
+    | _, _ -> assert false) 
   | _, _ -> false
 
 let cmp_atom a1 a2 =
@@ -1194,10 +1240,15 @@ let cmp_atom a1 a2 =
   | Avar v1, Avar v2 -> cmp_var v1 v2
   | Avar _, Aconst _ -> -1
   | Aconst _, Avar _ -> 1
-  | Aconst (ty1, n1), Aconst (ty2, n2) ->
-     let c = cmp_typ ty1 ty2 in
-     if c = 0 then Z.compare n1 n2
-     else c
+  | Aconst (ty1, c1), Aconst (ty2, c2) ->
+    let c = cmp_typ ty1 ty2 in
+    if c = 0 then 
+      (match c1, c2 with
+      | Cint n1, Cint n2 -> Z.compare n1 n2
+      | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
+      | Cint n, Cfloat f ->  FloatConst.cmp (FloatConst.of_z n ~rnd:Mpfr.Near) f
+      | Cfloat f, Cint n -> FloatConst.cmp f (FloatConst.of_z n ~rnd:Mpfr.Near))
+    else c
 
 let eexp_of_atom a =
   match a with
@@ -1326,6 +1377,8 @@ let string_of_typ ty =
   match ty with
   | Tuint w -> "uint" ^ string_of_int w
   | Tsint w -> "int" ^ string_of_int w
+  | Tdouble -> "double"
+  | Tsingle -> "single"
 
 (*
  * The string representation of a variable with SSA index taken into consideration
