@@ -9,7 +9,7 @@ let smtlib_true = "true"
 let smtlib2_declare_vars_mix pvs avs =
   let printer v is_pvar =
     Printf.sprintf
-      "(declare-fun %s () %s)"
+      "(declare-const %s %s)"
       (string_of_var v)
       (if is_pvar
        then Printf.sprintf "(_ BitVec %d)" (size_of_var v)
@@ -24,6 +24,49 @@ let smtlib_bv2i v =
   then smtlib_bv2int v
   else smtlib_bv2nat v
 
+let rec smtlib_poly_of_eexp ?(expn=true) is_pvar e = (* Print Cryptoline's integer AST as the Poly AST required by the solver *)
+  let string_of_z c = (* Convert integers to SMT-format strings *)
+    if Z.lt c Z.zero then "(- " ^ Z.to_string (Z.abs c) ^ ")"
+    else Z.to_string c
+  in
+  match e with
+  | Evar v ->
+    if is_pvar v then
+      Printf.sprintf "(PConst %s)" (smtlib_bv2i v)(* (bv2nat v) or (bv2int v): program BV variable -> coefficient constant *)
+    else
+      Printf.sprintf "(PVar \"%s\")" (string_of_var v) (* Non-program variable -> polynomial variable *)
+  | Econst c ->
+    Printf.sprintf "(PConst %s)" (string_of_z c)
+
+  | Eunop (op, e1) ->
+    begin match op with
+    | Eneg ->
+        Printf.sprintf "(PNeg %s)" (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
+    end
+
+  | Ebinop (op, e1, e2) ->
+      begin match op with
+      | Eadd ->
+          Printf.sprintf "(PAdd %s %s)"
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e2)
+      | Esub ->
+          Printf.sprintf "(PSub %s %s)"
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e2)
+      | Emul ->
+          Printf.sprintf "(PMul %s %s)"
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
+            (smtlib_poly_of_eexp ~expn:expn is_pvar e2)
+      | Epow ->
+         if is_eexp_over_const e2 then (* Restrict the exponent to be a constant *)
+            let k = eval_eexp_const e2 |> Z.to_string in
+            Printf.sprintf "(PPow %s %s)"
+              (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
+              k
+          else
+            raise (Utils.Std.UnsupportedException "non-constant exponent in PPow")
+      end
 let rec smtlib_eexp_mix ?(expn=true) is_pvar e =
   let string_of_z c =
     if Z.lt c Z.zero then "(- " ^ Z.to_string (Z.abs c) ^ ")"
@@ -47,26 +90,35 @@ let rec smtlib_eexp_mix ?(expn=true) is_pvar e =
          (smtlib_eexp_mix ~expn:expn is_pvar e1)
          (smtlib_eexp_mix ~expn:expn is_pvar e2)
 
-let smtlib_eeqmod e1 e2 ms =
-  match ms with
-  | [] -> assert false
-  | m::[] ->
-     Printf.sprintf "(eqmod %s %s %s)" e1 e2 m
-  | _ ->
-     raise (Utils.Std.UnsupportedException "eqmod with more than one modulus is not supported")
-
 let rec smtlib_ebexp_mix ?(expn=true) is_pvar e =
   match e with
   | Etrue -> smtlib_true
   | Eeq (e1, e2) ->
-     let smt1 = smtlib_eexp_mix ~expn:expn is_pvar e1 in
-     let smt2 = smtlib_eexp_mix ~expn:expn is_pvar e2 in
-     Smt.smtlib_eq smt1 smt2
+      let p1 = smtlib_poly_of_eexp ~expn:expn is_pvar e1 in
+      let p2 = smtlib_poly_of_eexp ~expn:expn is_pvar e2 in
+      Printf.sprintf "(eqP %s %s)" p1 p2
   | Eeqmod (e1, e2, ms) ->
-     let smt1 = smtlib_eexp_mix ~expn:expn is_pvar e1 in
-     let smt2 = smtlib_eexp_mix ~expn:expn is_pvar e2 in
-     let smtms = tmap (smtlib_eexp_mix ~expn:expn is_pvar) ms in
-     smtlib_eeqmod smt1 smt2 smtms
+      let p1 = smtlib_poly_of_eexp ~expn:expn is_pvar e1 in
+      let p2 = smtlib_poly_of_eexp ~expn:expn is_pvar e2 in
+      begin match ms with
+      | [] -> assert false
+      | _ ->
+          (* Calculate the number of moduli *)
+          let count = List.length ms in
+          (* Determine the function name *)
+          (* If there are N moduli, name it "eqmodPN" (e.g., eqmodP2, eqmodP3) *)
+          let func_name =
+            Printf.sprintf "eqmodP%d" count
+          in
+
+          (* Convert all moduli to strings *)
+          let pms_list = List.map (smtlib_poly_of_eexp ~expn:expn is_pvar) ms in
+          let pms_str = String.concat " " pms_list in
+          (* Use the dynamically determined func_name *)
+          (* Example result: (eqmodP2 p1 p2 m1 m2) *)
+          Printf.sprintf "(%s %s %s %s)" func_name p1 p2 pms_str
+      end
+
   | Ecmp (op, e1, e2) ->
      let smt1 = smtlib_eexp_mix ~expn:expn is_pvar e1 in
      let smt2 = smtlib_eexp_mix ~expn:expn is_pvar e2 in
@@ -136,7 +188,6 @@ let smtlib_spec ?(expn=true) vgen s =
     Printf.sprintf
       "(set-info :smt-lib-version 2.0)\n\
        (set-logic ALL)\n\
-       (declare-fun eqmod (Int Int Int) Bool)\n\
        ; variable declaration\n\
        %s\n\
        ; range precondition and program \n\
