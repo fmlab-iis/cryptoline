@@ -24,17 +24,17 @@ let smtlib_bv2i v =
   then smtlib_bv2int v
   else smtlib_bv2nat v
 
-let rec smtlib_poly_of_eexp ?(expn=true) is_pvar e = (* 把cryptoline的整數AST印成solver需要的Poly AST *)
-  let string_of_z c = (* 把整數轉成符合SMT格式的字串 *)
+let rec smtlib_poly_of_eexp ?(expn=true) is_pvar e = (* Print Cryptoline's integer AST as the Poly AST required by the solver *)
+  let string_of_z c = (* Convert integers to SMT-format strings *)
     if Z.lt c Z.zero then "(- " ^ Z.to_string (Z.abs c) ^ ")"
     else Z.to_string c
   in
   match e with
   | Evar v ->
     if is_pvar v then
-      Printf.sprintf "(PConst %s)" (smtlib_bv2i v)(* (bv2nat v) or (bv2int v) program BV變數 -> 係數常數 *)
+      Printf.sprintf "(PConst %s)" (smtlib_bv2i v)(* (bv2nat v) or (bv2int v): program BV variable -> coefficient constant *)
     else
-      Printf.sprintf "(PVar \"%s\")" (string_of_var v) (* 非program變數 -> 多項式變數 *)
+      Printf.sprintf "(PVar \"%s\")" (string_of_var v) (* Non-program variable -> polynomial variable *)
   | Econst c ->
     Printf.sprintf "(PConst %s)" (string_of_z c)
 
@@ -59,7 +59,7 @@ let rec smtlib_poly_of_eexp ?(expn=true) is_pvar e = (* 把cryptoline的整數AS
             (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
             (smtlib_poly_of_eexp ~expn:expn is_pvar e2)
       | Epow ->
-         if is_eexp_over_const e2 then (* 限制exponent為常數 *)
+         if is_eexp_over_const e2 then (* Restrict the exponent to be a constant *)
             let k = eval_eexp_const e2 |> Z.to_string in
             Printf.sprintf "(PPow %s %s)"
               (smtlib_poly_of_eexp ~expn:expn is_pvar e1)
@@ -103,19 +103,19 @@ let rec smtlib_ebexp_mix ?(expn=true) is_pvar e =
       begin match ms with
       | [] -> assert false
       | _ ->
-          (* 算出有幾個模數 *)
+          (* Calculate the number of moduli *)
           let count = List.length ms in
-          (* 決定函式名稱 *)
-          (* 如果有 N 個，就叫 "eqmodPN" (例如 eqmodP2, eqmodP3) *)
+          (* Determine the function name *)
+          (* If there are N moduli, name it "eqmodPN" (e.g., eqmodP2, eqmodP3) *)
           let func_name =
             Printf.sprintf "eqmodP%d" count
           in
 
-          (* 把所有模數轉成字串 *)
+          (* Convert all moduli to strings *)
           let pms_list = List.map (smtlib_poly_of_eexp ~expn:expn is_pvar) ms in
           let pms_str = String.concat " " pms_list in
-          (* 使用動態決定的 func_name *)
-          (* 結果範例: (eqmodP2 p1 p2 m1 m2) *)
+          (* Use the dynamically determined func_name *)
+          (* Example result: (eqmodP2 p1 p2 m1 m2) *)
           Printf.sprintf "(%s %s %s %s)" func_name p1 p2 pms_str
       end
 
