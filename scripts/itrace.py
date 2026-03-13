@@ -88,6 +88,10 @@ class Extractor:
     # 8x: 512-bit on 64-bit architecture
     def	has8xVector(self, insn):
         raise NotImplementedError("Subclasses must override has8xVector")
+    def archUpdate(self, mnemonic, frame):
+        pass
+    def mnemonic(self, insn):
+        return insn["asm"]
 
 class X86_64(Extractor):
     branchpattern = re.compile(r'^(?:repz\s+)?(j\w*|call|ret)q?')
@@ -378,6 +382,58 @@ class RISCV(Extractor):
     def has8xVector(self, insn):
         return False
 
+    vsew = -1
+    vlen = 0
+    vlmul = 0
+    vsetpattern = re.compile(r'^vseti*vli*\s+([a-z0-9]+),\s*([a-z0-9]+),\s*(.*)')
+
+    def archUpdate(self, mnemonic, frame):
+        vset = self.vsetpattern.search(mnemonic)
+        if not vset:
+            return
+
+        # handle vlen
+        if vset.group(1) != "zero":
+            self.vlen = frame.read_register(vset.group(1))
+        else:
+            if vset.group(2).isnumeric():
+                self.vlen = vset.group(2)
+            else:
+                self.vlen = frame.read_register(vset.group(2))
+
+        # handle vsew and vlmul
+        if vset.group(3).startswith("e"):
+            vtype = re.match(r'e([1-8]+),\s*(mf*)([1248]),.*', vset.group(3))
+            self.vsew = vtype.group(1)
+            if vtype.group(2) == "mf": # fraction, round up to 1
+                self.vlmul = 1
+            else:
+                self.vlmul = int(vtype.group(3))
+        else:
+            vtype = frame.read_register(vset.group(3))
+            self.vsew = 8 << ((vtype >> 3) & 0b111)
+            if vtype & 0b100:          # fraction, round up to 1
+                self.vlmul = 1
+            else:
+                self.vlmul = 1 << (vtype & 0b11)
+
+    vecpattern = re.compile(r'^(v[a-z][a-z0-9]+\.v[a-z]*)(\s+v([0-9]+))(,.*)')
+    segpattern = re.compile(r'^v[ls]seg([2-8])e[0-9]+\.v')
+
+    def mnemonic(self, insn):
+        mnemonic = insn["asm"]
+        vec = self.vecpattern.search(mnemonic)
+        if not vec:
+            return mnemonic
+        # extend vector instructions with vsew and vlen
+        mnemonic = "{0:s}({1}x{2}/{3})".format(vec.group(1), self.vlen, self.vsew, self.vlmul)
+        mnemonic += vec.group(2)
+        # extend vector register for segmented load/stores
+        seg = self.segpattern.search(vec.group(1))
+        if seg:
+            mnemonic += "..{}".format(int(vec.group(3)) + int(seg.group(1)) - 1)
+        return "{0:s}{1:s}".format(mnemonic, vec.group(4))
+
 # figure out if platform is 32- or 64-bit and instantiate extractor,
 # all based on 'info target'...
 
@@ -415,7 +471,7 @@ def trace():
     print("\t#! -> SP = 0x{0:x}".format(int(frame.read_register("sp"))))
     while(frame.is_valid()):
         insns = arch.disassemble(frame.pc(), count=2)	# 2nd for delay slot
-        mnemonic = insns[0]["asm"]
+        mnemonic = extr.mnemonic(insns[0])
         debug("mnemonic = %s" % mnemonic)
         b = extr.isBranch(insns, frame)
         if b:                               # skip over flow control
@@ -473,6 +529,7 @@ def trace():
             debug("Unexpected invalid frame! Well, not necessarily...")
             frame = gdb.newest_frame()
             arch = frame.architecture()
+        extr.archUpdate(mnemonic, frame)
 
     gdb.execute("stepi", to_string=True)    # step over retq
     debug("After stepi 3")
