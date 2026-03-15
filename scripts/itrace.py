@@ -65,6 +65,10 @@ except NameError:
 ##############################################################################
 # this part is executed in gdb context and that's where it all happens...
 
+def sign_extend(value, bits):
+    sign_bit = 1 << bits
+    return (value & (sign_bit - 1)) - (value & sign_bit)
+
 class Extractor:
     def __init__(self):
         pass
@@ -92,11 +96,11 @@ class Extractor:
 class X86_64(Extractor):
     branchpattern = re.compile(r'^(?:repz\s+)?(j\w*|call|ret)q?')
     # e.g. 0x400(%rax,%rbx,8), 0x123(%rdx), etc.
-    eapattern = re.compile(r'(-?(?:0x)?[0-9a-f]+)?'
-                            '\\(''%([a-z0-9]+)'
-                                '(?:,%([a-z0-9]+),'
-                                '([1248]))?''\\)'
-                            '(?:\\s*,\\s*%([a-z0-9]+))?')
+    eapattern = re.compile(r'(-?(?:0x)?[0-9a-f]+)?'         # offset
+                           r'\(%([a-z0-9]+)'                # base
+                             r'(?:,%([a-z0-9]+),([1248]))?' # index and scale
+                           r'\)'
+                           r'(?:\s*,\s*%([a-z0-9]+))?')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -144,11 +148,12 @@ class X86_64(Extractor):
 
 class ARM64(Extractor):
     branchpattern = re.compile(r'^(b\.\w+|bl?r?|cbn?z|ret)\b')
-    # e.g. [x20,#40], [x20],#8, [x20,x21], [x20, w2, uxtw #3]
+    # e.g. [x20,#40], [x20],#8, [x20,x21], [x20, w2, uxtw #3], [x20,x21,lsl#3]
     eapattern = re.compile(r'\[(x[0-9]+|sp)'
-#                            '(?:\\s*,\\s*(x[0-9]+|#-?(?:0x)?[0-9a-fA-F]+))?''\\]'
-                            '(?:\\s*,\\s*(x[0-9]+(\\s*,\\s*lsl\\s*#[0-9]+)?|#-?(?:0x)?[0-9a-fA-F]+|w[0-9]+,\\s*[su]xtw(\\s*#[0-9]+)))?''\\]'
-                            '(?:\\s*,\\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
+                             r'(?:\s*,\s*([xw][0-9]+|#-?(?:0x)?[0-9a-fA-F]+)'
+                             r'(?:\s*,\s*(lsl|[su]xtw)(?:\s*#([0-3]))?)?)?'
+                           r'\]'
+                           r'(?:\s*,\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -171,22 +176,30 @@ class ARM64(Extractor):
             return
         base = ea.group(1)
         offset = ea.group(2)
-        postfix = ea.group(3)
+        adjust = ea.group(3)
+        scale = ea.group(4)
+        postfix = ea.group(5)
         debug("Effective address: Group 1: %s" % base)
         debug("Effective address: Group 2: %s" % offset)
         base = "%s" % frame.read_register(base)
         debug("Effective address: Base: 0x%x" % int(base,0))
         addr = int(base, 0) & 0xffffffffffffffff
         if offset:
-            if offset.startswith("#"): offset = offset[1:]
+            if offset.startswith("#"):
+                offset = int(offset[1:], 0)
             else:
-                reg = re.findall(r'[wx][0-9]+', offset)[0]
-                size = re.findall(r'#[0-9]+', offset)
-                size = 2**(0 if size == [] else int(size[0][1:], 0))
-                off = "%s" % frame.read_register(reg)
-                offset = "%s" % (int(off, 0)*size)
+                offset = "%s" % frame.read_register(offset)
+                offset = int(offset, 0)
+                if adjust == "uxtw":
+                    offset &= 0xffffffff
+                elif adjust == "sxtw":
+                    offset = sign_extend(offset, 31)
+                else:
+                    offset = sign_extend(offset, 63)
+                if scale:
+                    offset <<= int(scale)
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
-            addr += int(offset, 0)
+            addr += offset
         if insn["asm"].startswith("ld") :
             return {'addr':addr, 'load':True}
         else :
@@ -203,9 +216,11 @@ class ARM64(Extractor):
 
 class ARM32(Extractor):
     branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
-    eapattern = re.compile(r'(?:\[([a-z]+[0-9]*)'
-                               '(?:\\s*,\\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\\s*:\\d+)?''\\]'
-                            '|(?:ld|st)m\\w*\\.?\\w*\\s+(\\w+)!?,)')
+    eapattern = re.compile(r'(?:'
+                             r'\[([a-z]+[0-9]*)'
+                               r'(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\s*:\d+)?'
+                             r'\]'
+                           r'|(?:ld|st)m\w*\.?\w*\s+(\w+)!?,)')
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -226,7 +241,7 @@ class ARM32(Extractor):
         ea = self.eapattern.search(insn["asm"])
         if not ea:
             return
-        base = ea.group(1) if ea.group(1) != None else ea.group(3)
+        base = ea.group(1) or ea.group(3)
         offset = ea.group(2)
         debug("Effective address: Group 1: %s" % base)
         debug("Effective address: Group 2: %s" % offset)
