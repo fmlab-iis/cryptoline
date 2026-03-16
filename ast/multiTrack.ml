@@ -568,9 +568,9 @@ object
   method tveexp : eexp -> eexp vaction
   method tvrexp : rexp -> rexp vaction
   method tvatom : atom -> atom vaction
-  method tvaconst : (typ * Z.t) -> (typ * Z.t) vaction
-  method tveconst : Z.t -> Z.t vaction
-  method tvrconst : (size * Z.t) -> (size * Z.t) vaction
+  method tvaconst : (typ * const) -> (typ * const) vaction
+  method tveconst : const -> const vaction
+  method tvrconst : (size * const) -> (size * const) vaction
   method tvvar : var -> var vaction
   method tvlval : var -> var vaction
   method tvgvar : var -> var vaction
@@ -588,9 +588,9 @@ object (* (self) *)
   method tveexp _e = DoChildren
   method tvrexp _e = DoChildren
   method tvatom _a = DoChildren
-  method tvaconst (_ty, _n) = DoChildren
-  method tveconst _n = DoChildren
-  method tvrconst (_size, _n) = DoChildren
+  method tvaconst (_ty, _c) = DoChildren
+  method tveconst _c = DoChildren
+  method tvrconst (_size, _c) = DoChildren
   method tvvar _v = DoChildren
   method tvlval _v = DoChildren
   method tvgvar _v = DoChildren
@@ -614,23 +614,23 @@ let tvisit_gvar visitor v =
   | ChangeTo v' -> v'
   | ChangeDoChildrenPost (v', f) -> f v'
 
-let tvisit_aconst visitor (ty, n) =
-  match visitor#tvaconst (ty, n) with
-  | SkipChildren | DoChildren -> (ty, n)
-  | ChangeTo (ty', n') -> (ty', n')
-  | ChangeDoChildrenPost ((ty', n'), f) -> f (ty', n')
+let tvisit_aconst visitor (ty, c) =
+  match visitor#tvaconst (ty, c) with
+  | SkipChildren | DoChildren -> (ty, c)
+  | ChangeTo (ty', c') -> (ty', c')
+  | ChangeDoChildrenPost ((ty', c'), f) -> f (ty', c')
 
-let tvisit_econst visitor n =
-  match visitor#tveconst n with
-  | SkipChildren | DoChildren -> n
-  | ChangeTo n' -> n'
-  | ChangeDoChildrenPost (n', f) -> f n'
+let tvisit_econst visitor c =
+  match visitor#tveconst c with
+  | SkipChildren | DoChildren -> c
+  | ChangeTo c' -> c'
+  | ChangeDoChildrenPost (c', f) -> f c'
 
-let tvisit_rconst visitor (size, n) =
-  match visitor#tvrconst (size, n) with
-  | SkipChildren | DoChildren -> (size, n)
-  | ChangeTo (size', n') -> (size', n')
-  | ChangeDoChildrenPost ((size', n'), f) -> f (size', n')
+let tvisit_rconst visitor (size, c) =
+  match visitor#tvrconst (size, c) with
+  | SkipChildren | DoChildren -> (size, c)
+  | ChangeTo (size', c') -> (size', c')
+  | ChangeDoChildrenPost ((size', c'), f) -> f (size', c')
 
 let tvisit_atom visitor a =
   let act = visitor#tvatom a in
@@ -645,7 +645,7 @@ let tvisit_atom visitor a =
        | _ -> failwith ("Never happen") in
      f (match a with
         | Avar v -> Avar (tvisit_var visitor v)
-        | Aconst (ty, n) -> let (ty', n') = (tvisit_aconst visitor (ty, n)) in Aconst (ty', n'))
+        | Aconst (ty, c) -> let (ty', c') = (tvisit_aconst visitor (ty, c)) in Aconst (ty', c'))
 
 let rec tvisit_eexp visitor e =
   let act = visitor#tveexp e in
@@ -660,7 +660,7 @@ let rec tvisit_eexp visitor e =
        | _ -> failwith ("Never happen") in
      f (match e with
         | Evar v -> Evar (tvisit_var visitor v)
-        | Econst n -> Econst (tvisit_econst visitor n)
+        | Econst c -> Econst (tvisit_econst visitor c)
         | Eunop (op, e) -> Eunop (op, tvisit_eexp visitor e)
         | Ebinop (op, e1, e2) -> Ebinop (op, tvisit_eexp visitor e1, tvisit_eexp visitor e2))
 
@@ -677,7 +677,7 @@ let rec tvisit_rexp visitor e =
        | _ -> failwith ("Never happen") in
      f (match e with
         | Rvar v -> Rvar (tvisit_var visitor v)
-        | Rconst (size, n) -> let (size, n) = tvisit_rconst visitor (size, n) in Rconst (size, n)
+        | Rconst (size, c) -> let (size, c) = tvisit_rconst visitor (size, c) in Rconst (size, c)
         | Runop (size, op, e) -> Runop (size, op, tvisit_rexp visitor e)
         | Rbinop (size, op, e1, e2) -> Rbinop (size, op, tvisit_rexp visitor e1, tvisit_rexp visitor e2)
         | Ruext (size, e, n) -> Ruext (size, tvisit_rexp visitor e, n)

@@ -43,7 +43,6 @@ type associativity = LeftAssoc | RightAssoc
 (* RightAssoc: add [n0, n1, ..., nm] = nm + (...(n2 + (n1 + n0))...) *)
 let add_assoc = LeftAssoc
 let mul_assoc = LeftAssoc
-let div_assoc = LeftAssoc
 let conj_assoc = LeftAssoc
 let disj_assoc = LeftAssoc
 let _unused_assoc = RightAssoc
@@ -74,10 +73,6 @@ type const =
 
 let const_of_z n = Cint n
 let const_of_double f = Cfloat f
-let const_to_string c =
-  match c with
-  | Cint n -> Z.to_string n
-  | Cfloat f -> FloatConst.to_string f
 
 let cadd c1 c2 =
   match c1, c2 with
@@ -101,9 +96,10 @@ let cmul c1 c2 =
     Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f ->
     Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
-let cdiv c1 c2 =
+let cdiv c1 c2 = (*floating-point division of constants*)
   match c1, c2 with
-  | Cint n, Cint m when not (Z.equal m Z.zero) -> Cint (Z.div n m)
+  | Cint n, Cint m when not (Z.equal m Z.zero) -> 
+      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) (FloatConst.of_z m ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cfloat f1, Cfloat f2 when not (FloatConst.eq f2 FloatConst.zero) -> 
       Cfloat (FloatConst.div f1 f2 ~rnd:Mpfr.Near)
   | Cfloat f, Cint n when not (Z.equal n Z.zero) ->
@@ -122,7 +118,22 @@ let cneg c =
   | Cint n -> Cint (Z.neg n)
   | Cfloat f -> Cfloat (FloatConst.neg f ~rnd:Mpfr.Near)
 
-
+let sgn_const c =
+  match c with
+  | Cint n -> if Z.lt n Z.zero then -1 else 1
+  | Cfloat f -> FloatConst.sgn f
+let eq_const c1 c2 =
+  match c1, c2 with
+  | Cint n1, Cint n2 -> Z.equal n1 n2
+  | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
+  | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
+  | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+let cmp_const c1 c2 =
+  match c1, c2 with
+  | Cint n1, Cint n2 -> Z.compare n1 n2
+  | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
+  | Cfloat f1, Cint n2 -> FloatConst.cmp f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
+  | Cint n1, Cfloat f2 -> FloatConst.cmp (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
 
 
 (** Types *)
@@ -458,7 +469,7 @@ let ediv' e1 e2 = match e1, e2 with
 let epow e1 e2 =
   match e2 with
   | Econst (Cint _) -> Ebinop (Epow, e1, e2)
-  | _ -> failwith "Epow must have integer exponentials"
+  | _ -> failwith "Epow must have integer exponentials."
 let epow' e1 e2 =
   match e1, e2 with
   | _, Econst (Cint n) when Z.equal n Z.zero -> Econst (Cint Z.one)
@@ -514,13 +525,7 @@ let rec len_eexp e =
 let rec eq_eexp e1 e2 =
   match e1, e2 with
   | Evar v1, Evar v2 -> eq_var v1 v2
-  | Econst c1, Econst c2 -> (
-      match c1, c2 with
-      | Cint n1, Cint n2 -> Z.equal n1 n2
-      | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
-      | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
-      | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
-  )
+  | Econst c1, Econst c2 -> eq_const c1 c2
   | Eunop (op1, e1), Eunop (op2, e2) -> op1 = op2 && eq_eexp e1 e2
   | Ebinop (op1, e11, e12), Ebinop (op2, e21, e22) -> op1 = op2 && eq_eexp e11 e21 && eq_eexp e12 e22
   | _ -> false
@@ -534,13 +539,7 @@ let rec cmp_eexp e1 e2 =
   | Evar v1, Evar v2 -> cmp_var v1 v2
   | Evar _, _ -> -1
   | Econst _, Evar _ -> 1
-  | Econst c1, Econst c2 -> (
-      match c1, c2 with
-      | Cint n1, Cint n2 -> Z.compare n1 n2
-      | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
-      | Cfloat f1, Cint n2 -> FloatConst.cmp f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
-      | Cint n1, Cfloat f2 -> FloatConst.cmp (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
-  )
+  | Econst c1, Econst c2 -> cmp_const c1 c2
   | Econst _, _ -> -1
   | Eunop _, Evar _
     | Eunop _, Econst _ -> 1
@@ -690,7 +689,7 @@ let limbs r es = limbs_rec r 0 es
 let limbs r es =
   let mons = List.mapi (fun i e ->
                  if i = 0 then e
-                 else emul e (epow (econst z_two) (econst (Z.mul (Z.of_int i) (Z.of_int r))))) es in
+                 else emul e (epow (econst (Cint z_two)) (econst (Cint (Z.mul (Z.of_int i) (Z.of_int r)))))) es in
   match add_assoc with
   | LeftAssoc -> eadds mons
   | RightAssoc -> eadds (List.rev mons)
@@ -699,7 +698,7 @@ let poly p es =
   let mons = List.mapi (fun i e ->
                  if i = 0 then e  (* assuming any n (incl. 0) to the power of 0 is 1 *)
                  else if i = 1 then emul e p
-                 else emul e (epow p (econst (Z.of_int i)))) es in
+                 else emul e (epow p (econst (Cint (Z.of_int i))))) es in
   match add_assoc with
   | LeftAssoc -> eadds mons
   | RightAssoc -> eadds (List.rev mons)
@@ -713,6 +712,7 @@ let ebinop_precedence op =
   | Eadd -> 0
   | Esub -> 0
   | Emul -> 1
+  | Ediv -> 1
   | Epow -> 2
 
 let eexp_precedence e =
@@ -779,7 +779,7 @@ let rec eexp_has_sub e sub =
 
 type rexp =
   | Rvar of var
-  | Rconst of size * Z.t
+  | Rconst of size * const
   | Runop of size * runop * rexp
   | Rbinop of size * rbinop * rexp * rexp
   | Ruext of size * rexp * int
@@ -797,7 +797,7 @@ let size_of_rexp e =
   | Rconcat (w1, w2, _, _) -> w1 + w2
 
 let rvar v = Rvar v
-let rconst w n = Rconst (w, n)
+let rconst w c = Rconst (w, c)
 let rnegb w e = Runop (w, Rnegb, e)
 let rnotb w e = Runop (w, Rnotb, e)
 let radd w e1 e2 = Rbinop (w, Radd, e1, e2)
@@ -819,18 +819,18 @@ let rrol w e1 e2 = Rbinop (w, Rrol, e1, e2)
 let rror w e1 e2 = Rbinop (w, Rror, e1, e2)
 let rconcat w1 w2 e1 e2 = Rconcat (w1, w2, e1, e2)
 let rsq w e = Rbinop (w, Rmul, e, e)
-(*let radds w es = List.fold_left (fun res e -> radd w e res) (rconst w Z.zero) es
-let rmuls w es = List.fold_left (fun res e -> rmul w e res) (rconst w Z.one) es*)
+(*let radds w es = List.fold_left (fun res e -> radd w e res) (rconst w (Cint Z.zero)) es
+let rmuls w es = List.fold_left (fun res e -> rmul w e res) (rconst w (Cint Z.one)) es*)
 let radds w es =
   match es with
-  | [] -> rconst w Z.zero
+  | [] -> rconst w (Cint Z.zero)
   | e::[] -> e
   | e::es -> (match add_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> radd w res e) e es
               | RightAssoc -> List.fold_left (fun res e -> radd w e res) e es)
 let rmuls w es =
   match es with
-  | [] -> rconst w Z.one
+  | [] -> rconst w (Cint Z.one)
   | e::[] -> e
   | e::es -> (match mul_assoc with
               | LeftAssoc -> List.fold_left (fun res e -> rmul w res e) e es
@@ -844,7 +844,7 @@ let is_rexp_atom e =
 let rec eq_rexp e1 e2 =
   match e1, e2 with
   | Rvar v1, Rvar v2 -> eq_var v1 v2
-  | Rconst (w1, n1), Rconst (w2, n2) -> w1 = w2 && Z.equal n1 n2
+  | Rconst (w1, c1), Rconst (w2, c2) -> w1 = w2 && eq_const c1 c2
   | Runop (w1, op1, e1), Runop (w2, op2, e2) -> w1 = w2 && op1 = op2 && eq_rexp e1 e2
   | Rbinop (w1, op1, e1a, e1b), Rbinop (w2, op2, e2a, e2b) -> w1 = w2 && op1 = op2 && eq_rexp e1a e2a && eq_rexp e1b e2b
   | Ruext (w1, e1, n1), Ruext (w2, e2, n2)
@@ -944,19 +944,19 @@ let reqmod w e1 e2 m =
   req (w+1) (rsmod (w+1)
                (rsub (w+1) (Ruext (w, e1, 1)) (Ruext (w, e2, 1)))
                (Ruext (w, m, 1)))
-            (rconst (w+1) Z.zero)
+            (rconst (w+1) (Cint Z.zero))
 let requmod w e1 e2 m = reqmod w e1 e2 m
 (* signed version of eqmod *)
 let reqsmod w e1 e2 m =
   req (w+1) (rsmod (w+1)
                (rsub (w+1) (Rsext (w, e1, 1)) (Rsext (w, e2, 1)))
                (Rsext (w, m, 1)))
-            (rconst (w+1) Z.zero)
+            (rconst (w+1) (Cint Z.zero))
 let reqsrem w e1 e2 m =
   req (w+1) (rsrem (w+1)
                (rsub (w+1) (Rsext (w, e1, 1)) (Rsext (w, e2, 1)))
                (Rsext (w, m, 1)))
-            (rconst (w+1) Z.zero)
+            (rconst (w+1) (Cint Z.zero))
 
 let rneg e =
   match e with
@@ -1235,11 +1235,7 @@ let atom_is_signed a = typ_is_signed (typ_of_atom a)
 let eq_atom a1 a2 =
   match a1, a2 with
   | Avar v1, Avar v2 -> eq_var v1 v2
-  | Aconst (ty1, c1), Aconst (ty2, c2) -> ty1 = ty2 && 
-    (match c1, c2 with
-    | Cint n1, Cint n2 -> Z.equal n1 n2
-    | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
-    | _, _ -> assert false) 
+  | Aconst (ty1, c1), Aconst (ty2, c2) -> ty1 = ty2 && eq_const c1 c2
   | _, _ -> false
 
 let cmp_atom a1 a2 =
@@ -1249,23 +1245,18 @@ let cmp_atom a1 a2 =
   | Aconst _, Avar _ -> 1
   | Aconst (ty1, c1), Aconst (ty2, c2) ->
     let c = cmp_typ ty1 ty2 in
-    if c = 0 then 
-      (match c1, c2 with
-      | Cint n1, Cint n2 -> Z.compare n1 n2
-      | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
-      | Cint n, Cfloat f ->  FloatConst.cmp (FloatConst.of_z n ~rnd:Mpfr.Near) f
-      | Cfloat f, Cint n -> FloatConst.cmp f (FloatConst.of_z n ~rnd:Mpfr.Near))
+    if c = 0 then cmp_const c1 c2 
     else c
 
 let eexp_of_atom a =
   match a with
   | Avar v -> Evar v
-  | Aconst (_, n) -> Econst n
+  | Aconst (_, c) -> Econst c
 
 let rexp_of_atom a =
   match a with
   | Avar v -> Rvar v
-  | Aconst (ty, n) -> Rconst (size_of_typ ty, n)
+  | Aconst (ty, c) -> Rconst (size_of_typ ty, c)
 
 (* Return the algebra solver specified in the prove-with clauses. If
    no algebra solver is specified, return [!Options.Std.algebra_solver]. *)
@@ -1338,8 +1329,8 @@ let ezero = econst (Cint Z.zero)
 let eone = econst (Cint Z.one)
 let etwo = econst (Cint z_two)
 let epow2e e = epow etwo e
-let epow2z z = epow2e (econst z)
-let epow2i i = epow2z (Cint (Z.of_int i))
+let epow2z z = epow2e (econst (Cint z))
+let epow2i i = epow2z (Z.of_int i)
 let epow2a a = epow2e (eexp_of_atom a)
 let emulpow2e e n = emul e (epow2e n)
 let emulpow2z e n = emul e (epow2z n)
@@ -1378,7 +1369,11 @@ let rspec_of_spec s =
 (** String Outputs *)
 
 (* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
-let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
+let string_of_const c = 
+  let c_str = (match c with
+              | Cint n -> Z.to_string n
+              | Cfloat f -> FloatConst.to_string f) in
+  if sgn_const c = -1 then "(" ^ c_str ^ ")" else c_str
 
 let string_of_typ ty =
   match ty with
@@ -1486,7 +1481,11 @@ let rec string_of_rexp ?typ:(typ=false) e =
   let se e = if is_rexp_atom e then string_of_rexp ~typ:typ e else "(" ^ string_of_rexp ~typ:typ e ^ ")" in
   match e with
   | Rvar v -> string_of_var ~typ:typ v
-  | Rconst (w, n) -> if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_int w else Z.to_string n ^ typ_delim ^ string_of_int w
+  | Rconst (w, c) -> 
+      let c_str = (match c with
+              | Cint n -> Z.to_string n
+              | Cfloat f -> FloatConst.to_string f) in
+      if sgn_const c = -1 then "(" ^ c_str ^ ")" ^ typ_delim ^ string_of_int w else c_str ^ typ_delim ^ string_of_int w
   | Runop (_, op, e) -> string_of_runop op ^ " " ^ se e
   | Rbinop (_, op, e1, e2) -> string_of_rbinop op ^ " " ^ se e1 ^ " " ^ se e2
   | Ruext (_, e, i) -> "uext " ^ se e ^ " " ^ string_of_int i
@@ -1574,9 +1573,12 @@ let string_of_bexp_prove_with ?typ:(typ=false) (es, rs) =
 let string_of_atom ?typ:(typ=false) a =
   match a with
   | Avar v -> string_of_var ~typ:typ v
-  | Aconst (ty, n) ->
-     if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" ^ typ_delim ^ string_of_typ ty
-     else Z.to_string n ^ typ_delim ^ string_of_typ ty
+  | Aconst (ty, c) ->
+     let c_str = (match c with
+                  | Cint n -> Z.to_string n
+                  | Cfloat f -> FloatConst.to_string f) in
+     if sgn_const c = -1 then "(" ^ c_str ^ ")" ^ typ_delim ^ string_of_typ ty
+     else c_str ^ typ_delim ^ string_of_typ ty
 
 let string_of_instr_no_semicolon ?typ:(typ=false) i =
   let vstr v = string_of_var ~typ:typ v in
@@ -2303,7 +2305,7 @@ let rec ssa_eexp m e =
 let rec ssa_rexp m e =
   match e with
   | Rvar v -> Rvar (ssa_var m v)
-  | Rconst (w, n) -> Rconst (w, n)
+  | Rconst (w, c) -> Rconst (w, c)
   | Runop (w, op, e) -> Runop (w, op, ssa_rexp m e)
   | Rbinop (w, op, e1, e2) -> Rbinop (w, op, ssa_rexp m e1, ssa_rexp m e2)
   | Ruext (w, e, i) -> Ruext (w, ssa_rexp m e, i)
@@ -3176,11 +3178,11 @@ let subst_lval am lv =
   if VM.mem lv am
   then match VM.find lv am with
        | Avar v -> v
-       | Aconst (_, n) ->
+       | Aconst (_, c) ->
           let err = Printf.sprintf
                       "Failed to replace a variable %s with a constant %s: a variable is required."
                       (string_of_var lv)
-                      (Z.to_string n) in
+                      (string_of_const c) in
           raise (Failure err)
   else lv
 
@@ -3577,17 +3579,21 @@ let auto_cast_var ?preserve:(preserve=false) vt ty v =
       if preserve then ([Ivpc (v', Avar v)], v')
       else ([Icast (None, v', Avar v)], v')
 
-let auto_cast_const ?preserve:(preserve=false) ct ty (nty, n) =
-  if nty = ty then ([], Aconst (ty, n))
+let auto_cast_const ?preserve:(preserve=false) ct ty (nty, c) =
+  if nty = ty then ([], Aconst (ty, c))
   else
     try
-      ([], Avar (Hashtbl.find ct (n, ty)))
+      ([], Avar (Hashtbl.find ct (c, ty)))
     with Not_found ->
-    let vn = "auto_cast_" ^ (if Z.lt n Z.zero then "minus" else "") ^ Z.to_string (Z.abs n) ^ "_" ^ string_of_typ ty in
+    let vn = 
+      let abs_c_str = (match c with
+                      | Cint n -> Z.to_string (Z.abs n)
+                      | Cfloat f -> FloatConst.to_string (FloatConst.abs f ~rnd:Mpfr.Near)) in
+      "auto_cast_" ^ (if sgn_const c = -1 then "minus" else "") ^ abs_c_str ^ "_" ^ string_of_typ ty in
     let v = mkvar vn ty in
-    let _ = Hashtbl.add ct (n, ty) v in
-    if preserve then ([Ivpc (v, Aconst (nty, n))], Avar v)
-    else ([Icast (None, v, Aconst (nty, n))], Avar v)
+    let _ = Hashtbl.add ct (c, ty) v in
+    if preserve then ([Ivpc (v, Aconst (nty, c))], Avar v)
+    else ([Icast (None, v, Aconst (nty, c))], Avar v)
 
 let auto_cast_atom ?preserve:(preserve=false) (vt, ct) ty a =
   match a with
@@ -3870,7 +3876,7 @@ let rec visit_rexp visitor e =
        | _ -> failwith ("Never happen") in
      f (match e with
         | Rvar v -> Rvar (visit_var visitor v)
-        | Rconst (size, n) -> let (size, n) = visit_rconst visitor (size, n) in Rconst (size, n)
+        | Rconst (size, c) -> let (size, c) = visit_rconst visitor (size, c) in Rconst (size, c)
         | Runop (size, op, e) -> Runop (size, op, visit_rexp visitor e)
         | Rbinop (size, op, e1, e2) -> Rbinop (size, op, visit_rexp visitor e1, visit_rexp visitor e2)
         | Ruext (size, e, n) -> Ruext (size, visit_rexp visitor e, n)
@@ -4731,14 +4737,15 @@ let rec eval_eexp_const e =
   | Econst n -> n
   | Eunop (op, e) -> let v = eval_eexp_const e in
                      (match op with
-                      | Eneg -> Z.neg v)
+                      | Eneg -> cneg v)
   | Ebinop (op, e1, e2) -> let v1 = eval_eexp_const e1 in
                            let v2 = eval_eexp_const e2 in
                            (match op with
-                            | Eadd -> Z.add v1 v2
-                            | Esub -> Z.sub v1 v2
-                            | Emul -> Z.mul v1 v2
-                            | Epow -> Z.pow v1 (Z.to_int v2))
+                            | Eadd -> cadd v1 v2
+                            | Esub -> csub v1 v2
+                            | Emul -> cmul v1 v2
+                            | Ediv -> cdiv v1 v2
+                            | Epow -> cpow v1 v2)
 let rec is_rexp_over_const e =
   match e with
   | Rvar _ -> false
@@ -4751,7 +4758,10 @@ let rec is_rexp_over_const e =
 let rec eval_rexp_const e =
   match e with
   | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
-  | Rconst (w, n) -> bits_of_z w n
+  | Rconst (w, c) -> 
+      (match c with
+       | Cint n -> bits_of_z w n
+       | Cfloat _ -> raise (EvaluationException ("Floating-point constant cannot be evaluated.")))
   | Runop (_, op, e) -> let v = eval_rexp_const e in
                         (match op with
                          | Rnegb -> negB v
@@ -4762,7 +4772,7 @@ let rec eval_rexp_const e =
                                | Radd -> addB v1 v2
                                | Rsub -> subB v1 v2
                                | Rmul -> mulB v1 v2
-                               | Rdiv -> divB v1 v2
+                               | Rdiv -> raise (EvaluationException ("Floating-point division cannot be evaluated."))
                                | Rudiv -> udivB v1 v2
                                | Rumod -> uremB v1 v2
                                | Rsdiv -> sdivB v1 v2
@@ -4797,14 +4807,16 @@ let bvcryptoline_of_ebinop op =
 let rec bvcryptoline_of_eexp e =
   match e with
   | Evar v -> Printf.sprintf "(bvevar %s)" (bvcryptoline_of_var v)
-  | Econst n -> Printf.sprintf "(bveconst %s%%Z)" (Z.to_string n)
+  | Econst c -> Printf.sprintf "(bveconst %s%%Z)" (string_of_const c)
   | Eunop (op, e) -> Printf.sprintf "(%s %s)" (bvcryptoline_of_eunop op) (bvcryptoline_of_eexp e)
   | Ebinop (Epow, e1, e2) when (is_eexp_over_const e1) && (is_eexp_over_const e2) ->
      let v = eval_eexp_const e in
      bvcryptoline_of_eexp (Econst v)
   | Ebinop (Epow, e1, e2) when (is_eexp_over_const e2) ->
-     let n = eval_eexp_const e2 in
-     bvcryptoline_of_eexp (emuls (List.init (Z.to_int n) (fun _ -> e1)))
+     let c = eval_eexp_const e2 in
+     (match c with
+     | Cint n -> bvcryptoline_of_eexp (emuls (List.init (Z.to_int n) (fun _ -> e1)))
+     | Cfloat _ -> raise (UnsupportedException "Epow must have integer exponentials."))
   | Ebinop (op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_ebinop op) (bvcryptoline_of_eexp e1) (bvcryptoline_of_eexp e2)
 let rec bvcryptoline_of_ebexp e =
   match e with
@@ -4828,6 +4840,7 @@ let bvcryptoline_of_rbinop op =
   | Radd -> "bvradd"
   | Rsub -> "bvrsub"
   | Rmul -> "bvrmul"
+  | Rdiv -> raise (UnsupportedException "The floating-point division operation over range expressions is not supported by BvCryptoLine.")
   | Rudiv -> raise (UnsupportedException "The unsigned division operation over range expressions is not supported by BvCryptoLine.")
   | Rumod -> raise (UnsupportedException "The unsigned modulo operation over range expressions is not supported by BvCryptoLine.")
   | Rsdiv -> raise (UnsupportedException "The signed division operation over range expressions is not supported by BvCryptoLine.")
@@ -4854,8 +4867,10 @@ let bvcryptoline_of_rcmpop op =
 let rec bvcryptoline_of_rexp e =
   match e with
   | Rvar v -> Printf.sprintf "(bvrvar %s)" (bvcryptoline_of_var v)
-  | Rconst (_, n) -> if Z.lt n Z.zero then raise (UnsupportedException ("Only unsigned values are supported by BvCryptoLine"))
-                     else Printf.sprintf "(bvrposz %s%%Z)" (Z.to_string n)
+  | Rconst (_, c) -> 
+      (match c with
+      | Cint n when Z.geq n Z.zero -> Printf.sprintf "(bvrposz %s%%Z)" (Z.to_string n)
+      | _ -> raise (UnsupportedException ("Only unsigned integers are supported by BvCryptoLine.")))
   | Runop (_, op, e) -> Printf.sprintf "(%s %s)" (bvcryptoline_of_runop op) (bvcryptoline_of_rexp e)
   | Rbinop (_, op, e1, e2) -> Printf.sprintf "(%s %s %s)" (bvcryptoline_of_rbinop op) (bvcryptoline_of_rexp e1) (bvcryptoline_of_rexp e2)
   | Ruext (_, e, i) -> Printf.sprintf "(bvrExt _ %s %d)" (bvcryptoline_of_rexp e) i
@@ -4880,7 +4895,10 @@ let bvcryptoline_of_bexp_prove_with (es, rs) =
 let bvcryptoline_of_atom a =
   match a with
   | Avar v -> Printf.sprintf "(bvVar %s)" (bvcryptoline_of_var v)
-  | Aconst (_, n) -> Printf.sprintf "(bvConst (fromPosZ %s%%Z))" (Z.to_string n)
+  | Aconst (_, c) -> 
+      (match c with
+      | Cint n -> Printf.sprintf "(bvConst (fromPosZ %s%%Z))" (Z.to_string n)
+      | Cfloat _ -> raise (UnsupportedException ("Floating-point numbers are not supported by BvCryptoLine.")))
 let bvcryptoline_of_instr i =
   match i with
   | Imov (v, a) -> Printf.sprintf "(bvAssign %s %s)" (bvcryptoline_of_var v) (bvcryptoline_of_atom a)

@@ -24,7 +24,8 @@ module type FloatType = sig
   val abs: t -> rnd:Mpfr.round -> t
   val pow: t -> t -> rnd:Mpfr.round -> t
   val pow_int: t -> int -> rnd:Mpfr.round -> t
-  
+ 
+  val sgn: t -> int (* returns +1 if param>0, 0 if param=0, -1 if param<0 *)
   val cmp: t -> t -> int
   val cmp_int: t -> int -> int
   val is_representable: prec -> t -> bool
@@ -61,6 +62,7 @@ module type S = sig
   val pow: t -> t -> rnd:Mpfr.round -> t
   val pow_int: t -> int -> rnd:Mpfr.round -> t
 
+  val sgn: t -> int (* returns +1 if param>0, 0 if param=0, -1 if param<0 *)
   val cmp: t -> t -> int
   val cmp_int: t -> int -> int
   val eq: t -> t -> bool
@@ -101,6 +103,7 @@ module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   let pow = FloatNum.pow
   let pow_int = FloatNum.pow_int
 
+  let sgn = FloatNum.sgn
   let cmp = FloatNum.cmp
   let cmp_int = FloatNum.cmp_int
   let eq x y = (FloatNum.cmp x y = 0)
@@ -181,6 +184,9 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
   let pow x y ~rnd = Mpfrf.pow x y rnd
   let pow_int x n ~rnd = Mpfrf.pow_int x n rnd
 
+  let sgn x =
+    let s = Mpfrf.sgn x in
+    if s = 0 then 0 else if s > 0 then 1 else -1
   let cmp = Mpfrf.cmp
   let cmp_int = Mpfrf.cmp_int
   let params = function
@@ -244,6 +250,7 @@ module Qnumber: FloatType with type t = Mpqf.t = struct
     let _ = Mpq.div_2exp r x k in
     Mpqf.of_mpq r
 
+  let sgn = Mpqf.sgn
   let cmp = Mpqf.cmp
   let cmp_int = Mpqf.cmp_int
   let is_representable p q =

@@ -40,8 +40,6 @@ type const =
 
 val const_of_z : Z.t -> const
 val const_of_double : Mpfrf.t -> const
-val const_to_string : const -> string
-val float_of_z : Z.t -> int -> Mpfr.round -> Mpfrf.t
 
 val cadd: const -> const -> const
 val csub: const -> const -> const
@@ -49,6 +47,10 @@ val cmul: const -> const -> const
 val cdiv: const -> const -> const
 val cpow: const -> const -> const
 val cneg: const -> const
+
+val sgn_const: const -> int
+val eq_const: const -> const -> bool
+val cmp_const: const -> const -> int
 
 
 
@@ -197,7 +199,7 @@ type ebinop =
   | Eadd     (** addition *)
   | Esub     (** subtraction *)
   | Emul     (** multiplication *)
-  | Ediv     (** division *)
+  | Ediv     (** floating-point division *)
   | Epow     (** exponentation *) (* *)
 (** algebraic binary operators *)
 
@@ -332,7 +334,7 @@ type rbinop =
   | Radd     (** addition *)
   | Rsub     (** subtraction *)
   | Rmul     (** multiplication *)
-  | Rdiv     (** division *)
+  | Rdiv     (** floating-point division *)
   | Rudiv    (** unsigned division *)
   | Rumod    (** unsigned mod *)
   | Rsdiv    (** 2's complement signed division *)

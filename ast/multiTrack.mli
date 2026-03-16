@@ -425,13 +425,13 @@ object
   method tvatom : atom -> atom vaction
   (** visit an atom *)
 
-  method tvaconst : (typ * Z.t) -> (typ * Z.t) vaction
+  method tvaconst : (typ * const) -> (typ * const) vaction
   (** visit a constant in an atom *)
 
-  method tveconst : Z.t -> Z.t vaction
+  method tveconst : const -> const vaction
   (** visit a constant in an algebraic expression *)
 
-  method tvrconst : (size * Z.t) -> (size * Z.t) vaction
+  method tvrconst : (size * const) -> (size * const) vaction
   (** visit a constant in a range expression *)
 
   method tvvar : var -> var vaction
@@ -457,13 +457,13 @@ val tvisit_lval : tvisitor -> var -> var
 val tvisit_gvar : tvisitor -> var -> var
 (** Visit a declaration of a ghost variable by a visitor. *)
 
-val tvisit_aconst : tvisitor -> (typ * Z.t) -> (typ * Z.t)
+val tvisit_aconst : tvisitor -> (typ * const) -> (typ * const)
 (** Visit a constant in an atom by a visitor. *)
 
-val tvisit_econst : tvisitor -> Z.t -> Z.t
+val tvisit_econst : tvisitor -> const -> const
 (** Visit a constant in an algebraic expression by a visitor. *)
 
-val tvisit_rconst : tvisitor -> (size * Z.t) -> (size * Z.t)
+val tvisit_rconst : tvisitor -> (size * const) -> (size * const)
 (** Visit a constant in a range expression by a visitor. *)
 
 val tvisit_atom : tvisitor -> atom -> atom
