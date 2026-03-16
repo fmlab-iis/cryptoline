@@ -117,6 +117,10 @@ let cpow c1 c2 =
   | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.pow f1 f2 ~rnd:Mpfr.Near)
   | Cfloat f, Cint n -> Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+let cneg c =
+  match c with
+  | Cint n -> Cint (Z.neg n)
+  | Cfloat f -> Cfloat (FloatConst.neg f ~rnd:Mpfr.Near)
 
 
 
@@ -412,6 +416,7 @@ let eneg e = Eunop (Eneg, e)
 let eneg' e =
   match e with
   | Eunop (Eneg, e) -> e
+  | Econst c -> Econst (cneg c)  (*not sure if this works*)
   | _ -> e
 let eadd e1 e2 = Ebinop (Eadd, e1, e2)
 let eadd' e1 e2 =
@@ -624,36 +629,38 @@ let expand_eexp e =
     EM.fold (fun v c res -> emul' res (epow' v (Econst (Cint c)))) m (Econst (Cint Z.one)) in
   (* convert monomial to eexp *)
   let eexp_of_mon c ms =
-    if Z.equal c Z.zero then Econst (Cint Z.zero)
-    else if Z.equal c Z.one then prod ms
-    else emul' (Econst (Cint c)) (prod ms) in
+    (match c with
+    | Cint n when Z.equal n Z.zero -> Econst (Cint Z.zero)
+    | Cfloat f when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
+    | Cint n when Z.equal n Z.one -> prod ms
+    | Cfloat f when FloatConst.eq f FloatConst.one -> prod ms 
+    | _ -> emul' (Econst c) (prod ms)) in
   (* convert term to eexp *)
   let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t (Econst (Cint Z.zero)) in
   (* a term of a single monomial *)
   let mon_term c ms = TM.add ms c TM.empty in
   (* add a monomial to a term *)
   let add_mon_to_term c ms t =
-    if TM.mem ms t then let c' = Z.add c (TM.find ms t) in
+    if TM.mem ms t then let c' = cadd c (TM.find ms t) in
                         TM.add ms c' t
     else TM.add ms c t in
   (* multiply a term by a monomial *)
-  let emul_mon_to_term c ms t = TM.fold (fun t_ms t_c res -> TM.add (norm_mon (tappend ms t_ms)) (Z.mul c t_c) res) t TM.empty in
-  let eneg_term t = TM.map (fun c -> Z.neg c) t in
+  let emul_mon_to_term c ms t = TM.fold (fun t_ms t_c res -> TM.add (norm_mon (tappend ms t_ms)) (cmul c t_c) res) t TM.empty in
+  let eneg_term t = TM.map (fun c -> cneg c) t in
   let eadd_term t1 t2 = TM.fold (fun ms1 c1 t2 -> add_mon_to_term c1 ms1 t2) t1 t2 in
   let esub_term t1 t2 = eadd_term t1 (eneg_term t2) in
   let emul_term t1 t2 = TM.fold (fun ms1 c1 res -> eadd_term (emul_mon_to_term c1 ms1 t2) res) t1 TM.empty in
   let is_term_constant t = TM.cardinal t = 1 && TM.mem [] t in
   let ediv_term t1 t2 =
-    if is_term_constant t1 && is_term_constant t2 then mon_term (Z.pow (TM.find [] t1) (Z.to_int (TM.find [] t2))) []
-    else mon_term Z.one [Ebinop (Ediv, eexp_of_term t1, eexp_of_term t2)] in
+    if is_term_constant t1 && is_term_constant t2 then mon_term (cdiv (TM.find [] t1) (TM.find [] t2)) []
+    else mon_term (Cint Z.one) [Ebinop (Ediv, eexp_of_term t1, eexp_of_term t2)] in
   let epow_term t1 t2 =
-    if is_term_constant t1 && is_term_constant t2 then mon_term (Z.pow (TM.find [] t1) (Z.to_int (TM.find [] t2))) []
-    else mon_term Z.one [Ebinop (Epow, eexp_of_term t1, eexp_of_term t2)] in
+    if is_term_constant t1 && is_term_constant t2 then mon_term (cpow (TM.find [] t1) (TM.find [] t2)) []
+    else mon_term (Cint Z.one) [Ebinop (Epow, eexp_of_term t1, eexp_of_term t2)] in
   let rec h e =
     match e with
-    | Evar _ -> mon_term Z.one [e]
-    | Econst (Cint n) -> mon_term n []
-    | Econst (Cfloat _) -> mon_term Z.one [e] 
+    | Evar _ -> mon_term (Cint Z.one) [e]
+    | Econst c -> mon_term c []
     | Eunop (Eneg, e) -> let t = h e in
                          eneg_term t
     | Ebinop (op, e1, e2) -> let t1 = h e1 in

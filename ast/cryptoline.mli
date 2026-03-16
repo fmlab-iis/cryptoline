@@ -48,6 +48,7 @@ val csub: const -> const -> const
 val cmul: const -> const -> const
 val cdiv: const -> const -> const
 val cpow: const -> const -> const
+val cneg: const -> const
 
 
 
