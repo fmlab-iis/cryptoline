@@ -46,14 +46,14 @@ except NameError:
             os.environ["TRACE_OUTFILE"] = sys.argv[4]
 
     try:
-        os.execlpe("gdb-multiarch", "gdb", "--batch",
+        os.execlpe("gdb-multiarch", "gdb", "--batch", "--nx",
                                     "--command=" + sys.argv[0],
                                     sys.argv[1],
                    os.environ)
     except OSError as e :
         if e.errno == 2 :    # no such file or directory, retry just gdb
             try:
-                os.execlpe("gdb", "gdb", "--batch",
+                os.execlpe("gdb", "gdb", "--batch", "--nx",
                                   "--command=" + sys.argv[0],
                                   sys.argv[1],
                            os.environ)
@@ -65,13 +65,16 @@ except NameError:
 ##############################################################################
 # this part is executed in gdb context and that's where it all happens...
 
+bits_to_fmt = {8: 'b', 16: 'h', 32: 'w', 64: 'g'}
+
 def sign_extend(value, bits):
     sign_bit = 1 << bits
     return (value & (sign_bit - 1)) - (value & sign_bit)
 
 class Extractor:
-    def __init__(self):
-        pass
+    def __init__(self, wordsize):
+        self.wordsize = wordsize
+        self.mask = (1<<wordsize) - 1
     def printHeader(self, function):
         raise NotImplementedError("Subclasses must override printHeader")
     def isBranch(self, insns, frame):
@@ -83,15 +86,6 @@ class Extractor:
         raise NotImplementedError("Subclasses must override isFunctionReturn")
     def getEA(self, insn, frame):
         raise NotImplementedError("Subclasses must override getEA")
-    # 2x: 128-bit on 64-bit architecture
-    def has2xVector(self, insn):
-        raise NotImplementedError("Subclasses must override has2xVector")
-    # 4x: 256-bit on 64-bit architecture
-    def	has4xVector(self, insn):
-        raise NotImplementedError("Subclasses must override has4xVector")
-    # 8x: 512-bit on 64-bit architecture
-    def	has8xVector(self, insn):
-        raise NotImplementedError("Subclasses must override has8xVector")
     def archUpdate(self, mnemonic, frame):
         pass
     def mnemonic(self, insn):
@@ -127,28 +121,32 @@ class X86_64(Extractor):
             ea = self.eapattern.search("(%rsp),%zz")
         else :
             ea = self.eapattern.search(mnemonic)
-        if not ea or insn["asm"].startswith("lea") :
+        if not ea or mnemonic.startswith("lea") :
             return
         addr = 0
         if ea.group(1) : addr = int(ea.group(1), 0)
         if ea.group(2) == "rip" : addr += insn["length"]
         addr += int(frame.read_register(ea.group(2)))
+        addr &= 0xffffffffffffffff
         if ea.group(3):
             addr += int(frame.read_register(ea.group(3))) * \
                     int(ea.group(4))
-        if ea.group(5) and not insn["asm"].startswith("lea") :
-            return {'addr':addr, 'load':True}
-        else :
-            return {'addr':addr}
-
-    def has2xVector(self, insn):
-        return re.search(r'%xmm\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has4xVector(self, insn):
-        return re.search(r'%ymm\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has8xVector(self, insn):
-        return re.search(r'%zmm\d+\b', insn, flags=re.IGNORECASE) != None
+        dst = ea.group(5)
+        if dst:
+            fmt = "1xg" # default to one 64-bit value
+            if dst.startswith("xmm"):
+                fmt = "2xg"
+            elif dst.startswith("ymm"):
+                fmt = "4xg"
+            elif dst.startswith("zmm"):
+                fmt = "8xg"
+            elif mnemonic.startswith("movzb") or mnemonic.startswith("movsb"):
+                fmt = "1xb"
+            elif dst.startswith("e") or dst.endswith("d"):
+                fmt = "1xw"
+            return {'addr': addr, 'load': fmt}
+        else:
+            return {'addr': addr}
 
 class ARM64(Extractor):
     branchpattern = re.compile(r'^(b\.\w+|bl?r?|cbn?z|ret)\b')
@@ -158,6 +156,7 @@ class ARM64(Extractor):
                              r'(?:\s*,\s*(lsl|[su]xtw)(?:\s*#([0-3]))?)?)?'
                            r'\]'
                            r'(?:\s*,\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
+    v_to_fmt = {'b': 'b', 'h': 'h', 's': 'w', 'd': 'g'}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -175,7 +174,8 @@ class ARM64(Extractor):
         return b.group(1) == "ret"
 
     def getEA(self, insn, frame):
-        ea = self.eapattern.search(insn["asm"])
+        mnemonic = insn["asm"]
+        ea = self.eapattern.search(mnemonic)
         if not ea:
             return
         base = ea.group(1)
@@ -204,19 +204,25 @@ class ARM64(Extractor):
                     offset <<= int(scale)
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += offset
-        if insn["asm"].startswith("ld") :
-            return {'addr':addr, 'load':True}
-        else :
-            return {'addr':addr}
-
-    def has2xVector(self, insn):
-        return re.search(r'\bv\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has4xVector(self, insn):
-        return re.search(r'\bz\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has8xVector(self, insn):
-        return False
+        if mnemonic.startswith("ld"):
+            fmt = "1xg" # default to one 64-bit value
+            if mnemonic.startswith("ldp"):
+                fmt = "2xg"
+            elif mnemonic.startswith("ldrb") or mnemonic.startswith("ldrsb"):
+                fmt = "1xb"
+            elif mnemonic.startswith("ldrh") or mnemonic.startswith("ldrsh"):
+                fmt = "1xh"
+            elif mnemonic.startswith("ldrsw") or re.search(r'w[0-9]+,\s*\[', mnemonic):
+                fmt = "1xw"
+            else:
+                # TODO: multiply by the amount of destination registers?
+                v = re.search(r'v[0-9]+\s.([1-8]*)([bhsd])', mnemonic)
+                if v:
+                    fmt = "{}x{}".format(v.group(1) or "1", self.v_to_fmt(v.group(2)))
+                # TODO: handle SVE?
+            return {'addr': addr, 'load': fmt}
+        else:
+            return {'addr': addr}
 
 class ARM32(Extractor):
     branchpattern = re.compile(r'^(b(?!f)\w*|cbn?z)\b')
@@ -242,7 +248,8 @@ class ARM32(Extractor):
         return b.group(1) == "bx"
 
     def getEA(self, insn, frame):
-        ea = self.eapattern.search(insn["asm"])
+        mnemonic = insn["asm"]
+        ea = self.eapattern.search(mnemonic)
         if not ea:
             return
         base = ea.group(1) or ea.group(3)
@@ -264,28 +271,27 @@ class ARM32(Extractor):
             else: offset = "%s" % frame.read_register(offset)
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += int(offset, 0)
-        if insn["asm"].startswith("ld"):
-            return {'addr':addr, 'load':True}
-        else :
-            return {'addr':addr}
-
-    def has2xVector(self, insn):
-        return re.search(r'\bd\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has4xVector(self, insn):
-        return re.search(r'\bq\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has8xVector(self, insn):
-        return False
+        if mnemonic.startswith("ld"):
+            fmt = "1xw"
+            if mnemonic.startswith("ldrb") or mnemonic.startswith("ldrsb"):
+                fmt = "1xb"
+            elif mnemonic.startswith("ldrh") or mnemonic.startswith("ldrsh"):
+                fmt = "1xh"
+            # TODO: handle ldmia?
+            return {'addr': addr, 'load': fmt}
+        elif mnemonic.startswith("vld"):
+            if re.search(r'\bq[0-9]+\b', mnemonic):
+                return {'addr': addr, 'load': "2xg"}
+            else:
+                return {'addr': addr, 'load': "1xg"}
+        else:
+            return {'addr': addr}
  
 
 class MIPS(Extractor):
     branchpattern = re.compile(r'^(b|j\w*)\s*(.*)')
     # e.g. 20($2)
     eapattern = re.compile(r'(-?(?:0x)?[0-9a-fA-F]+)?\((\w+)\)')
-
-    def __init__(self):
-        self.mask = (1<<wordsize) - 1
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -315,7 +321,8 @@ class MIPS(Extractor):
         return b.group(1) == "jr" and b.group(2) == "ra"
 
     def getEA(self, insn, frame):
-        ea = self.eapattern.search(insn["asm"])
+        mnemonic = insn["asm"]
+        ea = self.eapattern.search(mnemonic)
         if not ea:
             return
         base = ea.group(2)
@@ -327,33 +334,16 @@ class MIPS(Extractor):
         if offset:
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += int(offset, 0)
-        if insn["asm"].startswith("l") :
-            return {'addr':addr, 'load':True}
+        if mnemonic.startswith("l") :
+            fmt = "1x{}".format(bits_to_fmt[self.wordsize])
+            return {'addr': addr, 'load': fmt}
         else :
-            return {'addr':addr}
- 
-    def has2xVector(self, insn):
-        if wordsize == 64:
-            return re.search(r'\$w\d+\b', insn, flags=re.IGNORECASE) != None
-        else:
-            return False
-
-    def has4xVector(self, insn):
-        if wordsize == 64:
-            return False
-        else:
-            return re.search(r'\$w\d+\b', insn, flags=re.IGNORECASE) != None
-
-    def has8xVector(self, insn):
-        return False
+            return {'addr': addr}
 
 class RISCV(Extractor):
     branchpattern = re.compile(r'^(b|j\w*|ret)\s*(.*)')
     # e.g. 20($2)
     eapattern = re.compile(r'(-?(?:0x)?[0-9a-fA-F]+)?\((\w+)\)')
-
-    def __init__(self):
-        self.mask = (1<<wordsize) - 1
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -371,7 +361,8 @@ class RISCV(Extractor):
         return b.group(1) == "ret"
 
     def getEA(self, insn, frame):
-        ea = self.eapattern.search(insn["asm"])
+        mnemonic = insn["asm"]
+        ea = self.eapattern.search(mnemonic)
         if not ea:
             return
         base = ea.group(2)
@@ -383,19 +374,20 @@ class RISCV(Extractor):
         if offset:
             debug("Effective address: Offset: 0x%x" % int(offset, 0))
             addr += int(offset, 0)
-        if insn["asm"].startswith("l") :
-            return {'addr':addr, 'load':True}
-        else :
-            return {'addr':addr}
-
-    def has2xVector(self, insn):
-        return False
-
-    def has4xVector(self, insn):
-        return False
-
-    def has8xVector(self, insn):
-        return False
+        if mnemonic.startswith("l"):
+            fmt = "1x{}".format(bits_to_fmt[self.wordsize])
+            if mnemonic.starswith("lb"):
+                fmt = "1xb"
+            elif mnemonic.starswith("lh"):
+                fmt = "1xh"
+            elif mnemonic.starswith("lw"):
+                fmt = "1xw"
+            return {'addr': addr, 'load': fmt}
+        elif mnemonic.startswith("vl"):
+            # TODO: multiply by the amount of destination registers for vlseg?
+            return {'addr': addr, 'load': "{}x{}".format(self.vlen, bits_to_fmt[self.vsew])}
+        else:
+            return {'addr': addr}
 
     vsew = -1
     vlen = 0
@@ -419,7 +411,7 @@ class RISCV(Extractor):
         # handle vsew and vlmul
         if vset.group(3).startswith("e"):
             vtype = re.match(r'e([1-8]+),\s*(mf*)([1248]),.*', vset.group(3))
-            self.vsew = vtype.group(1)
+            self.vsew = int(vtype.group(1))
             if vtype.group(2) == "mf": # fraction, round up to 1
                 self.vlmul = 1
             else:
@@ -463,15 +455,15 @@ else:
     wordsize = 64
 
 if re.search(r'x86-64',mach):
-    extr = X86_64()
+    extr = X86_64(64)
 elif re.search(r'aarch64',mach):
-    extr = ARM64()
+    extr = ARM64(64)
 elif re.search(r'arm',mach):
-    extr = ARM32()
+    extr = ARM32(32)
 elif re.search(r'mips',mach):
-    extr = MIPS()
+    extr = MIPS(wordsize)
 elif re.search(r'riscv',mach):
-    extr = RISCV()
+    extr = RISCV(wordsize)
 else:
     raise Exception("Unsupported machine type: %s" % mach)
 
@@ -514,21 +506,10 @@ def trace():
                     print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
                           .format(mnemonic, ea["addr"], ea["value"], insns[0]["addr"]))
                 elif ea.get("load") :
-                    unit = 'g' if wordsize == 64 else 'w'
                     values = []
-                    factors = []
-                    if extr.has2xVector(mnemonic):
-                        factors.append(2)
-                    if extr.has4xVector(mnemonic):
-                        factors.append(4)
-                    if extr.has8xVector(mnemonic):
-                        factors.append(8)
-                    if len(factors) == 0:
-                        factors.append(1)
                     try :
-                        for factor in factors:
-                            value = gdb.execute("x/{0}x{1} 0x{2:x}".format(factor, unit, ea["addr"]), False, True)
-                            values.extend(re.findall(r'(0[xX][0-9a-fA-F]+)(?![:0-9a-fA-F])', value))
+                        value = gdb.execute("x/{0} 0x{1:x}".format(ea["load"], ea["addr"]), False, True)
+                        values.extend(re.findall(r'(0[xX][0-9a-fA-F]+\b)(?!(?:\s+<.*>)?:)', value))
                     except gdb.MemoryError :
                         values.append("'?'")
                     print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
