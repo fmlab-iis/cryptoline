@@ -30,32 +30,34 @@ debug_flag = False
 try:
     gdb             # gdb module is pre-loaded in gdb context
 except NameError:
-    argc = len(sys.argv)
-    if argc < 3 or not os.access(sys.argv[1], os.X_OK):
-        print("Usage: {0:s} executable function [remote-target] [output]".format(sys.argv[0]))
+    if len(sys.argv) < 3 or not os.access(sys.argv[1], os.X_OK):
+        print("Usage: {0:s} executable function [remote-target] [output] [-- args]".format(sys.argv[0]))
         sys.exit(-1)
+
+    prog = [sys.argv[1]]
 
     # pass arguments through environment
     os.environ["TRACE_FUNCTION"] = sys.argv[2]
-    if argc > 3 :
-        if re.match(r'/dev/|:', sys.argv[3]) :
-            os.environ["TRACE_TARGET_REMOTE"] = sys.argv[3]
-        elif argc == 4 :
-            os.environ["TRACE_OUTFILE"] = sys.argv[3]
-        if argc > 4 :
-            os.environ["TRACE_OUTFILE"] = sys.argv[4]
+    argv = sys.argv[3:]
+    if len(argv) > 0 and re.match(r'/dev/|:', argv[0]):
+        os.environ["TRACE_TARGET_REMOTE"] = argv.pop(0)
+    if len(argv) > 0 and argv[0] != "--":
+        os.environ["TRACE_OUTFILE"] = argv.pop(0)
+    # pass remaining arguments on gdb command line
+    if len(argv) > 1 and argv[0] == "--":
+        prog.extend(argv[1:])
 
     try:
         os.execlpe("gdb-multiarch", "gdb", "--batch", "--nx",
                                     "--command=" + sys.argv[0],
-                                    sys.argv[1],
+                                    "--args", *prog,
                    os.environ)
     except OSError as e :
         if e.errno == 2 :    # no such file or directory, retry just gdb
             try:
                 os.execlpe("gdb", "gdb", "--batch", "--nx",
                                   "--command=" + sys.argv[0],
-                                  sys.argv[1],
+                                  "--args", *prog,
                            os.environ)
             except OSError as e :
                 pass
@@ -555,6 +557,8 @@ else :
     gdb.execute("run", to_string=True)
 
 debug("After run")
+
+gdb.execute("set scheduler-locking on", to_string=True)
 
 extr.printHeader(function)
 trace()
