@@ -2099,6 +2099,10 @@ val eval_rexp_const : rexp -> bits
 (** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
 
+val eval_rexp_float : rexp -> float
+(** [eval_rexp_float e] evaluates [e] if [is_rexp_over_const e] is [true], and
+    raises {!Utils.Std.EvaluationException} otherwise. *)
+
 val remove_cut_spec : spec -> spec
 (** Remove all cuts in a specification. *)
 

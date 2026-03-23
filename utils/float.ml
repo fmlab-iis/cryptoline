@@ -25,8 +25,12 @@ module type FloatType = sig
   val pow: t -> t -> rnd:Mpfr.round -> t
   val pow_int: t -> int -> rnd:Mpfr.round -> t
  
-  val sgn: t -> int (* returns +1 if param>0, 0 if param=0, -1 if param<0 *)
+  val sgn: t -> int
+  (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
+
   val cmp: t -> t -> int
+  (** [cmp x y] returns a positive value if [x]>[y], [0] if [x]=[y], a negative value if [x]<[y] *)
+
   val cmp_int: t -> int -> int
   val is_representable: prec -> t -> bool
 end
@@ -62,8 +66,12 @@ module type S = sig
   val pow: t -> t -> rnd:Mpfr.round -> t
   val pow_int: t -> int -> rnd:Mpfr.round -> t
 
-  val sgn: t -> int (* returns +1 if param>0, 0 if param=0, -1 if param<0 *)
+  val sgn: t -> int
+  (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
+  
   val cmp: t -> t -> int
+  (** [cmp x y] returns a positive value if [x]>[y], [0] if [x]=[y], a negative value if [x]<[y] *)
+
   val cmp_int: t -> int -> int
   val eq: t -> t -> bool
   val eq_int: t -> int -> bool

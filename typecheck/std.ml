@@ -61,13 +61,13 @@ let rec apply_check_to_atoms f atoms =
 let vars_lined_program p =
   List.fold_left (fun res (_, i) -> VS.union (vars_instr i) res) VS.empty p
 
-let check_const_range lno ty n =
+let check_const_range lno ty c =
   let min = min_of_typ ty in
   let max = max_of_typ ty in
-  if Z.lt n min then
-    Some ("The constant " ^ Z.to_string n ^ " for type " ^ string_of_typ ty ^ " is smaller than the minimum value " ^ Z.to_string min ^ " allowed at line " ^ (string_of_int lno) ^".")
-  else if Z.gt n max then
-    Some ("The constant " ^ Z.to_string n ^ " for type " ^ string_of_typ ty ^ " is larger than the maximum value " ^ Z.to_string max ^ " allowed at line " ^ (string_of_int lno) ^ ".")
+  if cmp_const c min < 0 then
+    Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is smaller than the minimum value " ^ string_of_const min ^ " allowed at line " ^ (string_of_int lno) ^".")
+  else if cmp_const c max > 0 then
+    Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is larger than the maximum value " ^ string_of_const max ^ " allowed at line " ^ (string_of_int lno) ^ ".")
   else
     None
 
@@ -232,7 +232,7 @@ let illformed_instr_reason vs cs gs lno i =
   let const_in_range atoms =
     let in_range a =
       match a with
-      | Aconst (ty, n) -> check_const_range lno ty n
+      | Aconst (ty, c) -> check_const_range lno ty c
       | _ -> None in
     apply_check_to_atoms in_range atoms in
   let shift_in_range a n =

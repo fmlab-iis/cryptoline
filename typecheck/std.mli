@@ -39,7 +39,7 @@ type ill_formed = IllPrecondition of bexp
                 | IllInstruction of instr
                 | IllPostcondition of bexp_prove_with
 val chain_reasons : (string option) list -> string option
-val check_const_range : int -> typ -> Z.t -> string option
+val check_const_range : int -> typ -> const -> string option
 val check_unsigned_var : var -> string option
 val check_signed_var : var -> string option
 val check_bit_var : int -> var -> string option

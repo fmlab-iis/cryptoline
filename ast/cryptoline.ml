@@ -4799,13 +4799,12 @@ let rec eval_rexp_float e =
       raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
   | Rconst (_, c) ->
       (match c with
-       | Cint n ->  FloatConst.of_z n ~rnd:Mpfr.Near
+       | Cint n -> FloatConst.of_z n ~rnd:Mpfr.Near
        | Cfloat f -> f)
   | Runop (_, op, e) ->
       let v = eval_rexp_float e in
       (match op with
-       | Rnegb ->
-           FloatConst.neg v
+       | Rnegb -> FloatConst.neg v ~rnd:Mpfr.Near
        | _ ->
            raise (EvaluationException "Floating-point does not support this operation"))
   | Rbinop (_, op, e1, e2) ->
