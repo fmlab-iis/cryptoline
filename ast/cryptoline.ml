@@ -4793,6 +4793,34 @@ let rec eval_rexp_const e =
   | Rconcat (_, _, e1, e2) -> let v1 = eval_rexp_const e1 in
                               let v2 = eval_rexp_const e2 in
                               tappend v2 v1
+let rec eval_rexp_float e =
+  match e with
+  | Rvar v ->
+      raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
+  | Rconst (_, c) ->
+      (match c with
+       | Cint n ->  FloatConst.of_z n ~rnd:Mpfr.Near
+       | Cfloat f -> f)
+  | Runop (_, op, e) ->
+      let v = eval_rexp_float e in
+      (match op with
+       | Rnegb ->
+           FloatConst.neg v
+       | _ ->
+           raise (EvaluationException "Floating-point does not support this operation"))
+  | Rbinop (_, op, e1, e2) ->
+      let v1 = eval_rexp_float e1 in
+      let v2 = eval_rexp_float e2 in
+      (match op with
+       | Radd -> FloatConst.add v1 v2 ~rnd:Mpfr.Near
+       | Rsub -> FloatConst.sub v1 v2 ~rnd:Mpfr.Near
+       | Rmul -> FloatConst.mul v1 v2 ~rnd:Mpfr.Near
+       | Rdiv -> FloatConst.div v1 v2 ~rnd:Mpfr.Near
+       | _ ->
+           raise (EvaluationException "Floating-point does not support this operation"))
+  | Ruext _ | Rsext _ | Rconcat _ ->
+      raise (EvaluationException "Floating-point does not support this operation")
+      
 let bvcryptoline_of_var v = string_of_var v
 let bvcryptoline_of_eunop op =
   match op with
