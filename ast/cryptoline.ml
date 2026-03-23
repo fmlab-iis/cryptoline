@@ -4795,11 +4795,10 @@ let rec eval_rexp_const e =
                               tappend v2 v1
 let rec eval_rexp_float e =
   match e with
-  | Rvar v ->
-      raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
+  | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
   | Rconst (_, c) ->
       (match c with
-       | Cint n -> FloatConst.of_z n ~rnd:Mpfr.Near
+       | Cint n -> raise (EvaluationException ("Shall not mix integer and floating-point"))
        | Cfloat f -> f)
   | Runop (_, op, e) ->
       let v = eval_rexp_float e in
