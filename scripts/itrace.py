@@ -204,7 +204,7 @@ class ARM64(Extractor):
                     offset = sign_extend(offset, 63)
                 if scale:
                     offset <<= int(scale)
-            debug("Effective address: Offset: 0x%x" % int(offset, 0))
+            debug("Effective address: Offset: 0x%x" % offset)
             addr += offset
         if mnemonic.startswith("ld"):
             fmt = "1xg" # default to one 64-bit value
@@ -218,9 +218,9 @@ class ARM64(Extractor):
                 fmt = "1xw"
             else:
                 # TODO: multiply by the amount of destination registers?
-                v = re.search(r'v[0-9]+\s.([1-8]*)([bhsd])', mnemonic)
+                v = re.search(r'v[0-9]+\.([1-8]*)([bhsd])', mnemonic)
                 if v:
-                    fmt = "{}x{}".format(v.group(1) or "1", self.v_to_fmt(v.group(2)))
+                    fmt = "{}x{}".format(v.group(1) or "1", self.v_to_fmt[v.group(2)])
                 # TODO: handle SVE?
             return {'addr': addr, 'load': fmt}
         else:
