@@ -573,7 +573,10 @@ let resolve_selection ctx lno xs sel =
      select_from_range lno xs io jo ko
 
 let parse_typed_const ctx lno ty n_token =
-  let n = n_token ctx in
+  let n = 
+  match n_token ctx with
+  | Cint n -> n
+  | Cfloat _ -> raise_at_line lno "Floating-point is not allowed in typed constant"
   let size = size_of_typ ty in
   (* Check range *)
   let _ = if not (!Options.Std.implicit_const_conversion) && (Z.lt n (Ast.Cryptoline.min_of_typ ty) || Z.gt n (Ast.Cryptoline.max_of_typ ty))
