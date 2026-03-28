@@ -291,8 +291,11 @@ eexp:
   | eexp ADDOP eexp                               { eadd $1 $3 }
   | eexp SUBOP eexp                               { esub $1 $3 }
   | eexp MULOP eexp                               { emul $1 $3 }
-  | eexp POWOP const_exp_primary                              { let e = $1 in
-                                                    let i = Z.to_int $3 in
+  | eexp POWOP const_exp_primary                  { let e = $1 in
+                                                    let i =
+                                                    match $3 with
+                                                    | Cint n -> Z.to_int n
+                                                    | Cfloat _ -> raise_at_line lno "Exponent must be an integer" 
                                                     match e with
                                                     | Econst n -> Econst (Z.pow n i)
                                                     | _ ->
@@ -302,7 +305,15 @@ eexp:
                                                         else if j = 2 then esq e
                                                         else emul (helper (j - 1)) e in
                                                       helper i }
-  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
+  {
+  let n =
+    match $2 with
+    | Cint z -> Z.to_int z
+    | Cfloat _ ->raise_at_line lno "ULIMBS size must be an integer"
+  in 
+  limbs n $4
+}
 ;
 
 eexp_no_unary:
