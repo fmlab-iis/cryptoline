@@ -110,6 +110,17 @@ let interval_of_typ typ =
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
      let _ = Mpq.sub upper upper (Mpq.of_int 1) in
      Interval.of_mpq lower upper
+     
+   | Tsingle ->
+      let l = Mpq.of_float (-3.4028235e38) in
+      (* The smallest normal single floating-point number is -(2-2^{-23})*2^{127} and is roughly -3.4028235e38*)
+      let u = Mpq.of_float (3.4028235e38) in
+      Interval.of_mpq l u
+
+  | Tdouble ->
+      let l = Mpq.of_float (-1.7976931348623157e308) in
+      let u = Mpq.of_float (1.7976931348623157e308) in
+      Interval.of_mpq l u
 
 let interval_of_atom mgr dom a =
   match a with
