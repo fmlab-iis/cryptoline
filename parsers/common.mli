@@ -390,6 +390,7 @@ type instr_t =
   | `SBB of lval_t * atom_t * atom_t * atom_t
   | `SBBS of lval_t * lval_t * atom_t * atom_t * atom_t
   | `MUL of lval_t * atom_t * atom_t
+  | 'DIV of lval_t * atom_t * atom_t
   | `VMUL of lval_vec_t * atom_vec_t * atom_vec_t
   | `MULS of lval_t * lval_t * atom_t * atom_t
   | `MULL of lval_t * lval_t * atom_t * atom_t
