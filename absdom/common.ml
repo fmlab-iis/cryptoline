@@ -112,15 +112,36 @@ let interval_of_typ typ =
      Interval.of_mpq lower upper
      
    | Tsingle ->
-      let l = Mpq.of_float (-3.4028235e38) in
-      (* The smallest normal single floating-point number is -(2-2^{-23})*2^{127} and is roughly -3.4028235e38*)
-      let u = Mpq.of_float (3.4028235e38) in
-      Interval.of_mpq l u
+      (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
+      let a = Mpq.init () in
+      Mpq.mul_2exp a one 128;           (* 2^128 *)
 
+      let b = Mpq.init () in
+      Mpq.mul_2exp b one 104;           (* 2^104 *)
+
+      let upper = Mpq.init () in
+      Mpq.sub upper a b;                (* upper = 2^128 - 2^104 *)
+
+      let lower = Mpq.init () in
+      Mpq.neg lower upper;
+
+      Interval.of_mpq lower upper
+      
   | Tdouble ->
-      let l = Mpq.of_float (-1.7976931348623157e308) in
-      let u = Mpq.of_float (1.7976931348623157e308) in
-      Interval.of_mpq l u
+      (* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
+      let a = Mpq.init () in
+      Mpq.mul_2exp a one 1024;          (* 2^1024 *)
+
+      let b = Mpq.init () in
+      Mpq.mul_2exp b one 971;           (* 2^971 *)
+
+      let upper = Mpq.init () in
+      Mpq.sub upper a b;                (* upper = 2^1024 - 2^971 *)
+
+      let lower = Mpq.init () in
+      Mpq.neg lower upper;
+
+      Interval.of_mpq lower upper
 
 let interval_of_atom mgr dom a =
   match a with
