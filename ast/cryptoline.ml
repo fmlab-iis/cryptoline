@@ -1175,6 +1175,7 @@ type instr =
   | Imuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
   | Imull of var * var * atom * atom                        (** Full-multiplication *)
   | Imulj of var * atom * atom                              (** Full-multiplication *)
+  | Idiv of var * atom * atom                               (** Division *)
   | Isplit of var * var * atom * Z.t                        (** Split and extend *)
   | Ispl of var * var * atom * Z.t                          (** Split without extension *)
   (* Comparison *)
@@ -1615,6 +1616,7 @@ let string_of_instr_no_semicolon ?typ:(typ=false) i =
   | Imuls (c, v, a1, a2) -> "muls " ^ vstr c ^ " " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Imull (vh, vl, a1, a2) -> "mull " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a1 ^ " " ^ astr a2
   | Imulj (v, a1, a2) -> "mulj " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
+  | Idiv (v, a1, a2) -> "div " ^ vstr v ^ " " ^ astr a1 ^ " " ^ astr a2
   | Isplit (vh, vl, a, n) -> "split " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   | Ispl (vh, vl, a, n) -> "spl " ^ vstr vh ^ " " ^ vstr vl ^ " " ^ astr a ^ " " ^ Z.to_string n
   (* Comparison *)
@@ -1748,6 +1750,7 @@ let vars_instr ?(upd=false) i =
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
     | Imulj (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
+    | Idiv (v, a1, a2)
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
     | Isbb (v, a1, a2, c) -> addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom c))
@@ -1813,6 +1816,7 @@ let lvs_instr i =
   | Imuls (c, v, _, _) -> VS.add c (VS.singleton v)
   | Imull (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
   | Imulj (v, _, _) -> VS.singleton v
+  | Idiv (v, _, _) -> VS.singleton v
   | Ishl (v, _, _) -> VS.singleton v
   | Ishls (l, v, _, _) -> VS.add l (VS.singleton v)
   | Ishr (v, _, _) -> VS.singleton v
@@ -1866,6 +1870,7 @@ let rvs_instr i =
   | Imuls (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Imull (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Imulj (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
+  | Idiv (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Ishl (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
   | Ishls (_, _, a, _) -> vars_atom a
   | Ishr (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
@@ -1920,6 +1925,7 @@ let lcarries_instr i =
   | Imuls (c, _, _, _) -> VS.singleton c
   | Imull _
   | Imulj _
+  | Idiv _ -> VS.empty
   | Ishl _
   | Ishls _
   | Ishr _
@@ -2056,6 +2062,7 @@ let vids_instr i =
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
     | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
+    | Idiv (v, a1, a2)
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
     | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c))
@@ -2119,6 +2126,7 @@ let lvids_instr i =
   | Imuls (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
   | Imull (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
   | Imulj (v, _, _) -> IS.singleton v.vid
+  | Idiv (v, _, _) -> IS.singleton v.vid
   | Ishl (v, _, _) -> IS.singleton v.vid
   | Ishls (l, v, _, _) -> IS.add l.vid (IS.singleton v.vid)
   | Ishr (v, _, _) -> IS.singleton v.vid
@@ -2170,6 +2178,7 @@ let rvids_instr i =
   | Imuls (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Imull (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Imulj (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
+  | Idiv (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Ishl (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
   | Ishls (_, _, a, _) -> vids_atom a
   | Ishr (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
@@ -2222,6 +2231,7 @@ let lcids_instr i =
   | Imuls (c, _, _, _) -> IS.singleton c.vid
   | Imull _
   | Imulj _
+  | Idiv _ -> IS.empty
   | Ishl _
   | Ishls _
   | Ishr _
@@ -2508,6 +2518,11 @@ let ssa_instr m i =
      let a2 = ssa_atom m a2 in
      let m = upd_sidx v m in
      (m, Imulj (ssa_var m v, a1, a2))
+  | Idiv (v, a1, a2) ->
+     let a1 = ssa_atom m a1 in
+     let a2 = ssa_atom m a2 in
+     let m = upd_sidx v m in
+     (m, Idiv (ssa_var m v, a1, a2))
   | Isplit (vh, vl, a, n) ->
      let a = ssa_atom m a in
      let ml = upd_sidx vl m in
@@ -3225,6 +3240,7 @@ let subst_instr am em rm i =
   | Imuls (c, v, a1, a2) -> Imuls (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2)
   | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | Idiv (v, a1, a2) -> Idiv (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
   | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
   | Iseteq (v, a1, a2) -> Iseteq (subst_lval am v, subst_atom am a1, subst_atom am a2)
@@ -3698,6 +3714,9 @@ let auto_cast_instr ?preserve:(preserve=false) t i =
   | Imulj (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
                          let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
                          casts1@casts2@[Imulj (v, a1, a2)]
+  | Idiv (v, a1, a2) -> let (casts1, a1) = auto_cast_atom ~preserve:preserve t v.vtyp a1 in
+                        let (casts2, a2) = auto_cast_atom ~preserve:preserve t v.vtyp a2 in
+                        casts1@casts2@[Idiv (v, a1, a2)]
   | Isplit (vh, vl, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t vh.vtyp a in
                              casts@[Isplit (vh, vl, a, n)]
   | Ispl (vh, vl, a, n) -> let (casts, a) = auto_cast_atom ~preserve:preserve t vh.vtyp a in
@@ -4260,6 +4279,15 @@ let visit_instr ?(reverse=false) visitor i =
                                     let a2' = vatom a2 in
                                     let v' = vlval v in
                                     Imulj (v', a1', a2')
+        | Idiv (v, a1, a2) -> if reverse
+                              then let v' = vlval v in
+                                   let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   Idiv (v', a1', a2')
+                              else let a1' = vatom a1 in
+                                   let a2' = vatom a2 in
+                                   let v' = vlval v in
+                                   Idiv (v', a1', a2')
         | Isplit (vh, vl, a, n) -> if reverse
                                    then let vl' = vlval vl in
                                         let vh' = vlval vh in
@@ -4962,6 +4990,7 @@ let bvcryptoline_of_instr i =
   | Imuls _ -> raise (UnsupportedException "Instruction muls is not supported by BvCryptoLine.")
   | Imull (vh, vl, a1, a2) -> Printf.sprintf "(bvMulf %s %s %s %s)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a1) (bvcryptoline_of_atom a2)
   | Imulj _ -> raise (UnsupportedException "Instruction mulj is not supported by BvCryptoLine.")
+  | Idiv _ -> raise (UnsupportedException "Instruction div is not supported by BvCryptoLine.")
   | Isplit (vh, vl, a, n) -> Printf.sprintf "(bvSplit %s %s %s %d)" (bvcryptoline_of_var vh) (bvcryptoline_of_var vl) (bvcryptoline_of_atom a) (Z.to_int n)
   | Ispl _ -> raise (UnsupportedException "Instruction spl is not supported by BvCryptoLine.")
   (* Comparison *)
@@ -5149,6 +5178,7 @@ let update_variable_id_instr m i =
   | Imuls (vh, vl, a1, a2)
   | Imull (vh, vl, a1, a2) -> update_variable_id_atoms m [Avar vh; Avar vl; a1; a2]
   | Imulj (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
+  | Idiv (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
   | Isplit (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
   | Ispl (vh, vl, a, _) -> update_variable_id_atoms m [Avar vh; Avar vl; a]
   | Iseteq (v, a1, a2) -> update_variable_id_atoms m [Avar v; a1; a2]
