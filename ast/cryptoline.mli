@@ -731,6 +731,7 @@ type instr =
   | Imuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
   | Imull of var * var * atom * atom                        (** Full-multiplication *)
   | Imulj of var * atom * atom                              (** Full-multiplication *)
+  | Idiv of var * atom * atom                               (** Division *)
   | Isplit of var * var * atom * Z.t                        (** Split and extend *)
   | Ispl of var * var * atom * Z.t                          (** Split without extension *)
   (* Comparison, no polynomial encoding *)
