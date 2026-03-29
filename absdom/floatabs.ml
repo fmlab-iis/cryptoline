@@ -38,6 +38,9 @@ module FloatAbsDomain = struct
     let result = Mpq.init () in
     let () = Mpq.mul result tmp two_1023 in
     result
+
+  let mpq_min = Mpq.of_string "-1.0"
+  let mpq_max = Mpq.of_string "1.0"
   
   let scalar_min = Scalar.of_mpq mpq_min
   let scalar_max = Scalar.of_mpq mpq_max
