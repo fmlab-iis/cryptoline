@@ -2096,6 +2096,13 @@ val eval_eexp_const : eexp -> const
 (** [eval_eexp_const e] evaluates [e] if [is_eexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
 
+type eval_result =
+  | BV of bits
+  | FP of FloatConst.t
+exception EvaluationException of string
+
+val eval_rexp : rexp -> eval_result
+
 val eval_rexp_const : rexp -> bits
 (** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
