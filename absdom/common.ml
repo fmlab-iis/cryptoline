@@ -115,8 +115,11 @@ let interval_of_atom mgr dom a =
   match a with
   | Avar v -> Abstract1.bound_variable mgr dom (apvar v)
   (*return the possible range of (apvar v) under dom*)
-  | Aconst (_, z) -> Interval.of_mpq (mpq_of_z z)
-                       (mpq_of_z z)
+  | Aconst (_, c) ->
+    match c with 
+    | Cint z  -> Interval.of_mpq (mpq_of_z z) (mpq_of_z z)
+    | Cfloat -> let q = mpq_of_floatconst f in
+    Interval.of_mpq q q
   (*match a with... is like the if-else structure in OCaml. If a matches the condition/format, then it runs -> code*)
 
 let _interval_of_texpr mgr abs e = Abstract1.bound_texpr mgr abs e
