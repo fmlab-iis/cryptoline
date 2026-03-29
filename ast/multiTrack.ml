@@ -84,6 +84,7 @@ type tagged_instr =
   | TImuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
   | TImull of var * var * atom * atom                        (** Full-multiplication *)
   | TImulj of var * atom * atom                              (** Full-multiplication *)
+  | TIdiv of var * atom * atom                               (** Division *)
   | TIsplit of var * var * atom * Z.t                        (** Split and extend *)
   | TIspl of var * var * atom * Z.t                          (** Split without extension *)
   (* Comparison *)
@@ -261,6 +262,7 @@ let tagged_instr_untag i =
   | TImuls (c, v, a1, a2) -> Imuls (c, v, a1, a2)
   | TImull (vh, vl, a1, a2) -> Imull (vh, vl, a1, a2)
   | TImulj (v, a1, a2) -> Imulj (v, a1, a2)
+  | TIdiv (v, a1, a2) -> Idiv (v, a1, a2)
   | TIsplit (vh, vl, a, n) -> Isplit (vh, vl, a, n)
   | TIspl (vh, vl, a, n) -> Ispl (vh, vl, a, n)
   (* Comparison *)
@@ -339,6 +341,7 @@ let tag_instr i =
   | Imuls (c, v, a1, a2) -> TImuls (c, v, a1, a2)
   | Imull (vh, vl, a1, a2) -> TImull (vh, vl, a1, a2)
   | Imulj (v, a1, a2) -> TImulj (v, a1, a2)
+  | Idiv (v, a1, a2) -> TIdiv (v, a1, a2)
   | Isplit (vh, vl, a, n) -> TIsplit (vh, vl, a, n)
   | Ispl (vh, vl, a, n) -> TIspl (vh, vl, a, n)
   (* Comparison *)
@@ -437,6 +440,7 @@ let instr_of_tag t i =
   | TImuls (c, v, a1, a2) -> Imuls (c, v, a1, a2)
   | TImull (vh, vl, a1, a2) -> Imull (vh, vl, a1, a2)
   | TImulj (v, a1, a2) -> Imulj (v, a1, a2)
+  | TIdiv (v, a1, a2) -> Idiv (v, a1, a2)
   | TIsplit (vh, vl, a, n) -> Isplit (vh, vl, a, n)
   | TIspl (vh, vl, a, n) -> Ispl (vh, vl, a, n)
   (* Comparison *)
@@ -1079,6 +1083,15 @@ let tvisit_instr ?(reverse=false) visitor i =
                                      let a2' = tvatom a2 in
                                      let v' = tvlval v in
                                      TImulj (v', a1', a2')
+        | TIdiv (v, a1, a2) -> if reverse
+                               then let v' = tvlval v in
+                                    let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    TIdiv (v', a1', a2')
+                               else let a1' = tvatom a1 in
+                                    let a2' = tvatom a2 in
+                                    let v' = tvlval v in
+                                    TIdiv (v', a1', a2')
         | TIsplit (vh, vl, a, n) -> if reverse
                                     then let vl' = tvlval vl in
                                          let vh' = tvlval vh in
@@ -1284,6 +1297,7 @@ let subst_tagged_instr am em rm i =
   | TImuls (c, v, a1, a2) -> TImuls (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
   | TImull (vh, vl, a1, a2) -> TImull (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2)
   | TImulj (v, a1, a2) -> TImulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
+  | TIdiv (v, a1, a2) -> TIdiv (subst_lval am v, subst_atom am a1, subst_atom am a2)
   | TIsplit (vh, vl, a, n) -> TIsplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
   | TIspl (vh, vl, a, n) -> TIspl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
   | TIseteq (v, a1, a2) -> TIseteq (subst_lval am v, subst_atom am a1, subst_atom am a2)
