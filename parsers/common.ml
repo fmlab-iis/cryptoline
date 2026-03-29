@@ -462,6 +462,7 @@ type instr_t =
   | `VMULL of lval_vec_t * lval_vec_t * atom_vec_t * atom_vec_t
   | `MULJ of lval_t * atom_t * atom_t
   | `VMULJ of lval_vec_t * atom_vec_t * atom_vec_t
+  | 'DIV of lval_t * atom_t * atom_t
   | `SPLIT of lval_t * lval_t * atom_t * Z.t contextual
   | `VSPLIT of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual
   | `SPL of lval_t * lval_t * atom_t * Z.t contextual
@@ -1131,6 +1132,14 @@ let parse_mulj_at ctx lno dest src1 src2 =
   let ty = typ_of_atom a1 in
   let v = resolve_lv_with ctx lno dest (Some (typ_to_double_size ty)) in
   [lno, TImulj (v, a1, a2)]
+  
+let parse_div_at ctx lno dest src1 src2 =
+  let a1 = resolve_atom_with ctx lno src1 in
+  let a2 = resolve_atom_with ctx lno src2 in
+  let ty = typ_of_atom a1 in
+  let v = resolve_lv_with ctx lno dest (Some ty) in
+  [lno, TIdiv (v, a1, a2)]
+  (*Divide by 0 is not considered here*)
 
 let parse_split_at ctx lno destH destL src num =
   let a = resolve_atom_with ctx lno src in
@@ -2771,6 +2780,8 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_mulj_at ctx lno dest src1 src2
   | `VMULJ (dest, src1, src2) ->
      unpack_vmulj parse_mulj_at ctx lno dest src1 src2
+  | 'DIV (`LVPLAIN dest, src1, src2) ->
+     parse_div_at ctx lno dest src1 src2
   | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
      parse_split_at ctx lno destH destL src num
   | `VSPLIT (destH, destL, src, num) ->
