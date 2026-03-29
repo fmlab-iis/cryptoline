@@ -4783,6 +4783,32 @@ let rec is_rexp_over_const e =
   | Ruext (_, e, _)
     | Rsext (_, e, _) -> is_rexp_over_const e
   | Rconcat (_, _, e1, e2) -> (is_rexp_over_const e1) && (is_rexp_over_const e2)
+
+type eval_result =
+  | BV of bits
+  | FP of FloatConst.t
+
+let rec is_float_rexp e =
+  match e with
+  | Rvar v -> false
+  | Rconst (_, c) ->
+      (match c with
+       | Cfloat _ -> true
+       | Cint _ -> false)
+  | Runop (_, _, e1) -> is_float_rexp e1
+  | Rbinop (_, _, e1, e2) ->
+      is_float_rexp e1 || is_float_rexp e2
+  | Ruext (_, e, _) -> is_float_rexp e
+  | Rsext (_, e, _) -> is_float_rexp e
+  | Rconcat (_, _, e1, e2) ->
+      is_float_rexp e1 || is_float_rexp e2
+
+let eval_rexp e =
+  if is_float_rexp e then
+    FP (eval_rexp_float e)
+  else
+    BV (eval_rexp_const e)
+    
 let rec eval_rexp_const e =
   match e with
   | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
