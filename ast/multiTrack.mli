@@ -55,6 +55,7 @@ type tagged_instr =
   | TImuls of var * var * atom * atom                        (** Half-multiply and set carry. *)
   | TImull of var * var * atom * atom                        (** Full-multiplication *)
   | TImulj of var * atom * atom                              (** Full-multiplication *)
+  | TIdiv of var * atom * atom                               (** Division *)
   | TIsplit of var * var * atom * Z.t                        (** Split and extend *)
   | TIspl of var * var * atom * Z.t                          (** Split without extension *)
   (* Comparison *)
