@@ -390,7 +390,7 @@ type instr_t =
   | `SBB of lval_t * atom_t * atom_t * atom_t
   | `SBBS of lval_t * lval_t * atom_t * atom_t * atom_t
   | `MUL of lval_t * atom_t * atom_t
-  | 'DIV of lval_t * atom_t * atom_t
+  | `DIV of lval_t * atom_t * atom_t
   | `VMUL of lval_vec_t * atom_vec_t * atom_vec_t
   | `MULS of lval_t * lval_t * atom_t * atom_t
   | `MULL of lval_t * lval_t * atom_t * atom_t
@@ -1191,6 +1191,12 @@ val parse_var_expansion : lno -> string -> Z.t -> Z.t -> var list contextual
 
 val parse_named_constant : lno -> string -> Z.t contextual
 (** [parse_named_constant lno cname] parses a named constant *)
+
+val parse_int_const : lno -> const contextual -> Z.t contextual
+(** [parse_int_const lno c] parses an integer constant for an instruction *)
+
+val parse_int_counts : lno -> const contextual list -> Z.t contextual list
+(** [parse_int_consts lno cs] parses the list of integer constants for a (vectorized) instruction *)
 
 val parse_defined_var : lno -> string -> typ option -> [`AVAR of avar_prim_t]
 (** [parse_defined_var lno vname vtypopt] parses a defined variable *)

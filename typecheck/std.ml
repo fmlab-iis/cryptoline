@@ -74,7 +74,8 @@ let check_const_range lno ty c =
 let check_typ_sign signed name ty =
   match ty with
   | Tuint _ -> if signed then Some (name ^ " should be signed but is unsigned") else None
-  | Tsint _ -> if not signed then Some (name ^ " should be unsigned but is signed") else None
+  | Tsint _ | Tsingle | Tdouble -> if not signed then Some (name ^ " should be unsigned but is signed") else None
+
 let check_var_sign signed v = check_typ_sign signed (string_of_var v) v.vtyp
 let check_var_size size v = if size_of_var v = size then None
                             else Some ("Size of " ^ string_of_var v ^ " should be " ^ string_of_int size)
@@ -138,21 +139,23 @@ let check_diff_lvs lno v1 v2 =
 
 let check_mull_lvs lno vh vl =
   match vh.vtyp, vl.vtyp with
-  | Tuint wh, Tuint wl
-    | Tsint wh, Tuint wl -> if wh = wl then None
+  | Tuint wh, Tuint wl | Tsint wh, Tuint wl -> if wh = wl then None
                             else Some ("The bit-width (" ^ string_of_typ vh.vtyp ^ ") of " ^ string_of_var vh
                                        ^ " and the bit-width (" ^ string_of_typ vl.vtyp ^ ") of " ^ string_of_var vl
                                        ^ " should be the same at line " ^ (string_of_int lno))
-  | _, Tsint _ -> Some ("The low part of a full multiplication is always unsigned at line " ^ (string_of_int lno))
+  | Tuint _, Tsint _ | Tsint _, Tsint _  -> Some ("The low part of a full multiplication is always unsigned at line " ^ (string_of_int lno))
+  | _ -> Some ("mull does not support floating-point types at line " ^ (string_of_int lno))
+
 
 let check_split_lvs lno vh vl =
   match vh.vtyp, vl.vtyp with
-  | Tuint wh, Tuint wl
-    | Tsint wh, Tuint wl -> if wh = wl then None
+  | Tuint wh, Tuint wl | Tsint wh, Tuint wl -> if wh = wl then None
                             else Some ("The bit-width (" ^ string_of_typ vh.vtyp ^ ") of " ^ string_of_var vh
                                        ^ " and the bit-width (" ^ string_of_typ vl.vtyp ^ ") of " ^ string_of_var vl
                                        ^ " should be the same at line " ^ (string_of_int lno))
-  | _, Tsint _ -> Some ("The low part of a split is always unsigned at line " ^ (string_of_int lno))
+  | Tuint _, Tsint _ | Tsint _, Tsint _-> Some ("The low part of a split is always unsigned at line " ^ (string_of_int lno))
+  | _ -> Some ("split does not support floating-point types at line " ^ (string_of_int lno))
+
 
 let check_spl_lvs lno vh vl w n =
   if size_of_var vh != w - n then Some ("The size of the variable " ^ string_of_var vh ^ " should be " ^ string_of_int (w - n) ^ " at line " ^ string_of_int lno)
@@ -240,7 +243,8 @@ let illformed_instr_reason vs cs gs lno i =
     else None in
   let shift_in_range_atom a n =
     match n with
-    | Aconst (_, n) -> shift_in_range a n
+    | Aconst (_, Cint n) -> shift_in_range a n
+    | Aconst (_, c) (* c = Cfloat _ *) -> Some (Printf.sprintf "The number of shifts %s in the atom %s must be an integer." (string_of_const c) (string_of_atom a)) 
     | _ -> None in
   let reasons =
     match i with
@@ -272,6 +276,8 @@ let illformed_instr_reason vs cs gs lno i =
        [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atoms [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
     | Imulj (v, a1, a2) ->
        [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
+    | Idiv (v, a1, a2) -> (* TODO: add fine-grained type check for Idiv *)
+        [defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Isplit (vh, vl, a, _) ->
        [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atom a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
     | Ispl (vh, vl, a, n) ->

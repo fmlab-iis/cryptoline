@@ -574,13 +574,10 @@ let resolve_selection ctx lno xs sel =
      select_from_range lno xs io jo ko
 
 let parse_typed_const ctx lno ty n_token =
-  let n = 
-  match n_token ctx with
-  | Cint n -> n
-  | Cfloat _ -> raise_at_line lno "Floating-point is not allowed in typed constant"
+  let n = n_token ctx in
   let size = size_of_typ ty in
   (* Check range *)
-  let _ = if not (!Options.Std.implicit_const_conversion) && (Z.lt n (Ast.Cryptoline.min_of_typ ty) || Z.gt n (Ast.Cryptoline.max_of_typ ty))
+  let _ = if not (!Options.Std.implicit_const_conversion) && (cmp_const (Cint n) (Ast.Cryptoline.min_of_typ ty) < 0 || cmp_const (Cint n) (Ast.Cryptoline.max_of_typ ty) > 0)
           then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
   (* Normalize the number: convert to non-negative integer *)
@@ -602,8 +599,9 @@ let parse_typed_const ctx lno ty n_token =
                            if sign = '1' then Z.sub n (Z.pow num_two (w - 1))
                            else n
          end
+    | Tsingle | Tdouble -> raise_at_line lno "Floating-point types (single/double) are not allowed for typed constant"
   in
-  Aconst (ty, n)
+  Aconst (ty, Cint n)
 
 let parse_named_constant lno cname =
   fun ctx ->
@@ -611,6 +609,15 @@ let parse_named_constant lno cname =
     SM.find cname ctx.cconsts
   with Not_found ->
     raise_at_line lno ("Undefined constant: " ^ cname)
+
+let parse_int_const lno c =
+  fun ctx ->
+    match c ctx with
+    | Cint n -> n
+    | Cfloat _ -> raise_at_line lno "Constant is expected to be an integer."
+
+let parse_int_consts lno cs =
+  List.map (parse_int_const lno) cs
 
 let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
   let vo =

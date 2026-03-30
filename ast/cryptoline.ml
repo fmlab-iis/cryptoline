@@ -1750,7 +1750,7 @@ let vars_instr ?(upd=false) i =
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
     | Imulj (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
-    | Idiv (v, a1, a2)
+    | Idiv (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
     | Isbb (v, a1, a2, c) -> addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom c))
@@ -2062,7 +2062,7 @@ let vids_instr i =
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
     | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
-    | Idiv (v, a1, a2)
+    | Idiv (v, a1, a2)  -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
     | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c))
@@ -4790,7 +4790,7 @@ type eval_result =
 
 let rec is_float_rexp e =
   match e with
-  | Rvar v -> false
+  | Rvar _ -> false
   | Rconst (_, c) ->
       (match c with
        | Cfloat _ -> true
@@ -4802,12 +4802,6 @@ let rec is_float_rexp e =
   | Rsext (_, e, _) -> is_float_rexp e
   | Rconcat (_, _, e1, e2) ->
       is_float_rexp e1 || is_float_rexp e2
-
-let eval_rexp e =
-  if is_float_rexp e then
-    FP (eval_rexp_float e)
-  else
-    BV (eval_rexp_const e)
     
 let rec eval_rexp_const e =
   match e with
@@ -4852,7 +4846,7 @@ let rec eval_rexp_float e =
   | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
   | Rconst (_, c) ->
       (match c with
-       | Cint n -> raise (EvaluationException ("Shall not mix integer and floating-point"))
+       | Cint _ -> raise (EvaluationException ("Shall not mix integer and floating-point"))
        | Cfloat f -> f)
   | Runop (_, op, e) ->
       let v = eval_rexp_float e in
@@ -4872,7 +4866,13 @@ let rec eval_rexp_float e =
            raise (EvaluationException "Floating-point does not support this operation"))
   | Ruext _ | Rsext _ | Rconcat _ ->
       raise (EvaluationException "Floating-point does not support this operation")
-      
+
+let eval_rexp e =
+  if is_float_rexp e then
+    FP (eval_rexp_float e)
+  else
+    BV (eval_rexp_const e)
+
 let bvcryptoline_of_var v = string_of_var v
 let bvcryptoline_of_eunop op =
   match op with
