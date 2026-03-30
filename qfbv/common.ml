@@ -661,7 +661,8 @@ let btor_imp_check_sat m es =
 let btor_atom m a =
   match a with
   | Avar v -> m#mkvar v
-  | Aconst (ty, n) -> m#mkconstd (size_of_typ ty) n
+  | Aconst (ty, Cint n) -> m#mkconstd (size_of_typ ty) n
+  | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")
 
 let btor_cast m od v a =
   let a_btor = btor_atom m a in
@@ -676,7 +677,9 @@ let btor_cast m od v a =
       | Tsint wv, Tsint wa ->
        if wv = wa then a_btor
        else if wv < wa then m#mklow wv (wa - wv) a_btor
-       else m#mksext wa (wv - wa) a_btor in
+       else m#mksext wa (wv - wa) a_btor
+    | _, _ -> raise (UnsupportedException "Floating-point to BTOR is unsupported.") 
+  in
   let od_btor =
     match od with
     | None -> None
@@ -700,6 +703,7 @@ let btor_cast m od v a =
             else m#mkadd (wa - wv + 1)
                    (m#mksext (wa - wv) 1 (m#mkhigh wv (wa - wv) a_btor))
                    (m#mkzext 1 (wa - wv) (m#mkhigh (wv - 1) 1 (m#mklow wv (wa - wv) a_btor)))
+         | _, _ -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")
        in
        Some (d, d_btor) in
   m#setvar v v_btor;
@@ -713,7 +717,8 @@ let btor_instr m i =
                       m#setvar v (m#mksll w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
+                                     | Aconst (_, Cint z) -> m#mkconstd_for_shift w z
+                                     | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")))
   | Ishls (l, v, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
@@ -724,7 +729,8 @@ let btor_instr m i =
                       m#setvar v (m#mksrl w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
+                                     | Aconst (_, Cint z) -> m#mkconstd_for_shift w z
+                                     | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")))
   | Ishrs (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
@@ -735,7 +741,8 @@ let btor_instr m i =
                       m#setvar v (m#mksra w a_btor
                                     (match n with
                                      | Avar _ -> btor_atom m n
-                                     | Aconst (_, z) -> m#mkconstd_for_shift w z))
+                                     | Aconst (_, Cint z) -> m#mkconstd_for_shift w z
+                                     | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")))
   | Isars (v, l, a, n) -> let w = size_of_var v in
                           let ni = Z.to_int n in
                           let a_btor = btor_atom m a in
@@ -777,13 +784,17 @@ let btor_instr m i =
                       let a_btor = btor_atom m a in
                       let n_btor = match n with
                         | Avar _ -> btor_atom m n
-                        | Aconst (_, z) -> m#mkconstd_for_rotate w z in
+                        | Aconst (_, Cint z) -> m#mkconstd_for_rotate w z 
+                        | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")
+                      in
                       m#setvar v (m#mkrol w a_btor n_btor)
   | Iror (v, a, n) -> let w = size_of_var v in
                       let a_btor = btor_atom m a in
                       let n_btor = match n with
                         | Avar _ -> btor_atom m n
-                        | Aconst (_, z) -> m#mkconstd_for_rotate w z in
+                        | Aconst (_, Cint z) -> m#mkconstd_for_rotate w z 
+                        | Aconst (_, Cfloat _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")
+                      in
                       m#setvar v (m#mkror w a_btor n_btor)
   | Inondet v -> ignore(m#mkvar v)
   | Icmov (v, c, a1, a2) -> let w = size_of_var v in
@@ -927,6 +938,7 @@ let btor_instr m i =
   | Iassume _ -> ()
   | Icut _ -> ()
   | Ighost _ -> ()
+  | Idiv (_, _, _) -> raise (UnsupportedException "Floating-point to BTOR is unsupported.")
 
 let rec btor_mkbits m res_rev w j v_btor =
   if w <= j then List.rev res_rev
