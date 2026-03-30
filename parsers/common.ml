@@ -462,7 +462,7 @@ type instr_t =
   | `VMULL of lval_vec_t * lval_vec_t * atom_vec_t * atom_vec_t
   | `MULJ of lval_t * atom_t * atom_t
   | `VMULJ of lval_vec_t * atom_vec_t * atom_vec_t
-  | 'DIV of lval_t * atom_t * atom_t
+  | `DIV of lval_t * atom_t * atom_t
   | `SPLIT of lval_t * lval_t * atom_t * Z.t contextual
   | `VSPLIT of lval_vec_t * lval_vec_t * atom_vec_t * Z.t contextual
   | `SPL of lval_t * lval_t * atom_t * Z.t contextual
