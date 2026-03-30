@@ -987,7 +987,7 @@ val parse_rbexp_veqsrem : lno -> rexp list contextual -> rexp list contextual ->
 val parse_rexp_defined_var : lno -> [`AVAR of avar_prim_t] -> rexp contextual
 (** [parse_rexp_defined_var lno v_tok] parses a defined var as a rexp *)
 
-val parse_rexp_const : lno -> Z.t contextual -> Z.t contextual -> rexp contextual
+val parse_rexp_const : lno -> Z.t contextual -> const contextual -> rexp contextual
 (** [parse_rexp_const lno w_tok n_tok] parses a constant as a rexp *)
 
 val parse_rexp_vec_elem : lno -> rexp list contextual -> Z.t -> rexp contextual
@@ -1195,7 +1195,7 @@ val parse_named_constant : lno -> string -> Z.t contextual
 val parse_int_const : lno -> const contextual -> Z.t contextual
 (** [parse_int_const lno c] parses an integer constant for an instruction *)
 
-val parse_int_counts : lno -> const contextual list -> Z.t contextual list
+val parse_int_consts : lno -> const contextual list -> Z.t contextual list
 (** [parse_int_consts lno cs] parses the list of integer constants for a (vectorized) instruction *)
 
 val parse_defined_var : lno -> string -> typ option -> [`AVAR of avar_prim_t]
