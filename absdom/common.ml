@@ -205,18 +205,42 @@ let texpr_nondet env ty =
   let lo, hi =
     match ty with
     | Tuint sz ->
-       let ret = Mpq.init () in
-       let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
-       let _ = Mpq.sub ret ret (Mpq.of_int 1) in
-       Mpq.of_int 0, ret
+        let hi = Mpq.init () in
+        Mpq.mul_2exp hi one sz;       (* 2^sz *)
+        Mpq.sub hi hi one;            (* 2^sz - 1 *)
+        (Mpq.of_int 0, hi)
     | Tsint sz ->
-       let h = Mpq.init () in
-       let l = Mpq.init () in
-       let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
-       let _ = Mpq.sub h h (Mpq.of_int 1) in
-       let _ = Mpq.mul_2exp l (Mpq.of_int 1) (pred sz) in
-       let _ = Mpq.neg l l in
-       l, h in
+        let hi = Mpq.init () in
+        Mpq.mul_2exp hi one (pred sz); (* 2^(sz-1) *)
+        Mpq.sub hi hi one;             (* 2^(sz-1) - 1 *)
+        let lo = Mpq.init () in
+        Mpq.mul_2exp lo one (pred sz);
+        Mpq.neg lo lo;                 (* -2^(sz-1) *)
+        (lo, hi)
+    | Tsingle -> (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
+        let a = Mpq.init () in
+        Mpq.mul_2exp a one 128;
+
+        let b = Mpq.init () in
+        Mpq.mul_2exp b one 104;
+
+        let hi = Mpq.init () in
+        Mpq.sub hi a b;
+
+        let lo = Mpq.init () in
+        Mpq.neg lo hi;
+        (lo, hi)
+    | Tdouble ->(* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
+        let a = Mpq.init () in
+        Mpq.mul_2exp a one 1024;
+        let b = Mpq.init () in
+        Mpq.mul_2exp b one 971;
+        let hi = Mpq.init () in
+        Mpq.sub hi a b;
+        let lo = Mpq.init () in
+        Mpq.neg lo hi;
+        (lo, hi)
+  in
   Texpr1.cst env (Coeff.i_of_mpq lo hi)
 let texpr_one env = texpr_cst env Z.one
 let texpr_zero env = texpr_cst env Z.zero
