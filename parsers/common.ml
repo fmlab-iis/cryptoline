@@ -2780,7 +2780,7 @@ let recognize_instr_at ctx lno (instr : instr_t) =
      parse_mulj_at ctx lno dest src1 src2
   | `VMULJ (dest, src1, src2) ->
      unpack_vmulj parse_mulj_at ctx lno dest src1 src2
-  | 'DIV (`LVPLAIN dest, src1, src2) ->
+  | `DIV (`LVPLAIN dest, src1, src2) ->
      parse_div_at ctx lno dest src1 src2
   | `SPLIT (`LVPLAIN destH, `LVPLAIN destL, src, num) ->
      parse_split_at ctx lno destH destL src num
