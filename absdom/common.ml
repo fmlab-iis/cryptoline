@@ -114,10 +114,10 @@ let interval_of_typ typ =
    | Tsingle ->
       (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
       let a = Mpq.init () in
-      Mpq.mul_2exp a one 128;           (* 2^128 *)
+      Mpq.mul_2exp a (Mpq.of_int 1) 128;           (* 2^128 *)
 
       let b = Mpq.init () in
-      Mpq.mul_2exp b one 104;           (* 2^104 *)
+      Mpq.mul_2exp b (Mpq.of_int 1) 104;           (* 2^104 *)
 
       let upper = Mpq.init () in
       Mpq.sub upper a b;                (* upper = 2^128 - 2^104 *)
@@ -130,10 +130,10 @@ let interval_of_typ typ =
   | Tdouble ->
       (* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
       let a = Mpq.init () in
-      Mpq.mul_2exp a one 1024;          (* 2^1024 *)
+      Mpq.mul_2exp a (Mpq.of_int 1) 1024;          (* 2^1024 *)
 
       let b = Mpq.init () in
-      Mpq.mul_2exp b one 971;           (* 2^971 *)
+      Mpq.mul_2exp b (Mpq.of_int 1) 971;           (* 2^971 *)
 
       let upper = Mpq.init () in
       Mpq.sub upper a b;                (* upper = 2^1024 - 2^971 *)
@@ -150,7 +150,7 @@ let interval_of_atom mgr dom a =
   | Aconst (_, c) ->
     match c with 
     | Cint z  -> Interval.of_mpq (mpq_of_z z) (mpq_of_z z)
-    | Cfloat -> let q = mpq_of_floatconst f in
+    | Cfloat f -> let q = FloatConst.to_mpq f in
     Interval.of_mpq q q
   (*match a with... is like the if-else structure in OCaml. If a matches the condition/format, then it runs -> code*)
 

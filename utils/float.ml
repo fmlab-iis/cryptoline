@@ -13,6 +13,7 @@ module type FloatType = sig
   val of_z: Z.t -> rnd:Mpfr.round -> t
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
+  val to_mpq: t -> 'a Mpq.tt
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val sub: t -> t ->rnd:Mpfr.round -> t
@@ -46,6 +47,7 @@ module type S = sig
   val of_z: Z.t -> rnd:Mpfr.round -> t
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
+  val to_mpq: t -> 'a Mpq.tt
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val add_int: t -> int ->rnd:Mpfr.round -> t
@@ -91,6 +93,7 @@ module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   let of_z = FloatNum.of_z
   let of_int = FloatNum.of_int
   let of_float = FloatNum.of_float
+  let to_mpq = FloatNum.to_mpq
 
   let add = FloatNum.add
   let add_int x n ~rnd = FloatNum.add x (FloatNum.of_int n ~rnd) ~rnd
@@ -174,6 +177,7 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
     let x = (Mpfr.init2 53: Mpfr.t) in
     let _ = Mpfr.set_d x f rnd in
     Mpfrf.of_mpfr x
+  let to_mpq x = Mpqf.to_mpq (Mpfrf.to_mpqf x)
 
   let add x y ~rnd = Mpfrf.add x y rnd
   let sub x y ~rnd = Mpfrf.sub x y rnd
@@ -232,6 +236,7 @@ module Qnumber: FloatType with type t = Mpqf.t = struct
   let of_int n ~rnd:_ = Mpqf.of_int n
   let of_z n ~rnd:_ = Mpqf.of_string (Z.to_string n)
   let of_float f ~rnd:_ = Mpqf.of_float f
+  let to_mpq = Mpqf.to_mpq
 
   let add x y ~rnd:_ = Mpqf.add x y
   let sub x y ~rnd:_ = Mpqf.sub x y
