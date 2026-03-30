@@ -148,7 +148,8 @@ let value_of_atom m a =
        try VM.find v m
        with Not_found -> failwith("Uninitialized variable: " ^ string_of_var v)
      end
-  | Aconst (ty, n) -> bits_of_z (size_of_typ ty) n
+  | Aconst (ty, Cint n) -> bits_of_z (size_of_typ ty) n
+  | Aconst (_, Cfloat _) -> failwith("Floating-point constants are not supported in the simulator")
 
 let to_bit bs =
   match bs with
@@ -311,6 +312,7 @@ let simulate_instr m i =
      let bs2 = value_of_atom m a2 in
      let bs = (if atom_is_signed a1 then smuljB else umuljB) bs1 bs2 in
      VM.add v bs m
+  | Idiv (_, _, _) -> failwith("Simulation of DIV is not supported.")
   | Isplit (vh, vl, a, n) ->
      let bs = value_of_atom m a in
      let n = Z.to_int n in
@@ -322,7 +324,7 @@ let simulate_instr m i =
      let (bsh, bsl) = (high (size_of_atom a - n) bs, low n bs) in
      VM.add vh bsh (VM.add vl bsl m)
   | Iseteq (v, a1, a2) ->
-     let bs1 = value_of_atom m a1 in
+      let bs1 = value_of_atom m a1 in
      let bs2 = value_of_atom m a2 in
      let sv = size_of_var v in
      let bit_eq = of_bit (eqB bs1 bs2) in
@@ -357,13 +359,17 @@ let simulate_instr m i =
      let ty = typ_of_atom a in
      VM.add v ((match ty with
                 | Tuint _ -> ucastB
-                | Tsint _ -> scastB) bs (size_of_var v)) m
+                | Tsint _ -> scastB
+                | Tsingle | Tdouble -> failwith("Floating-point types are not supported."))
+                bs (size_of_var v)) m
   | Ivpc (v, a) ->
      let bs = value_of_atom m a in
      let ty = typ_of_atom a in
      VM.add v ((match ty with
                 | Tuint _ -> ucastB
-                | Tsint _ -> scastB) bs (size_of_var v)) m
+                | Tsint _ -> scastB
+                | Tsingle | Tdouble -> failwith("Floating-point types are not supported."))
+                bs (size_of_var v)) m
   | Ijoin (v, ah, al) ->
      let bsh = value_of_atom m ah in
      let bsl = value_of_atom m al in
