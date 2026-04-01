@@ -1074,6 +1074,7 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
   | Imuls (f, v, a0, a1) -> muls_dom mgr dom f v a0 a1
   | Imull (vh, vl, a0, a1) -> mull_dom mgr dom vh vl a0 a1
   | Imulj (v, a0, a1) -> mulj_dom mgr dom v a0 a1
+  | Idiv (v, a0, a1) -> div_dom mgr dom v a0 a1
   | Isplit (vh, vl, a, z) | Ispl (vh, vl, a, z) -> split_dom mgr dom vh vl a z
   | Ijoin (v, a0, a1) -> join_dom mgr dom v a0 a1
   | Ighost (_, (_, rbe)) | Iassume (_, rbe) ->
@@ -1234,6 +1235,7 @@ let instr_safe (mgr, env) dom instr =
   | Isbc (v, a0, a1, a2) -> sbc_safe mgr env dom v a0 a1 a2
   | Isbb (v, a0, a1, a2) -> sbb_safe mgr env dom v a0 a1 a2
   | Imul (v, a0, a1) -> mul_safe mgr env dom v a0 a1
+  | Idiv (v, a0, a1) -> div_safe mgr env dom v a0 a1
   | Ishl (v, a0, a1) -> shl_safe mgr env dom v a0 a1
   | Isar (v, a0, a1) -> sar_safe mgr env dom v a0 a1
   | Ishr (v, a0, a1) -> shr_safe mgr env dom v a0 a1
