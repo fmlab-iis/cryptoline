@@ -360,6 +360,13 @@ let texpr_bv_mul ?(safe=true) env w signed ta0 ta1 =
        let tvh = texpr_div2i env tmul w in
        let tv = texpr_sub tmul (texpr_mul tvh (texpr_pow2i env w)) in
        if signed then texpr_to_signed_i env w tv else tv
+       
+let texpr_bv_div ?(safe=true) env w signed ta0 ta1 =
+  if safe then Texpr1.binop Texpr1.Div ta0 ta1 Texpr1.Real Texpr1.Rnd
+  else let tdiv = Texpr1.binop Texpr1.Div ta0 ta1 Texpr1.Real Texpr1.Rnd in
+       let tvh = texpr_div2i env tdiv w in
+       let tv = texpr_sub tdiv (texpr_mul tvh (texpr_pow2i env w)) in
+       if signed then texpr_to_signed_i env w tv else tv
 
 let texpr_bv_shl ?(safe=true) env w signed ta0 ta1 =
   if safe then texpr_mul ta0 (texpr_pow2e env ta1)
@@ -834,6 +841,12 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
     let ta1 = texpr_of_atom env a1 in
     Abstract1.assign_texpr_array mgr dom [| apvar v |] [| texpr_mul ta0 ta1 |]
       (if var_bound then Some (var_bound_dom mgr env v) else None) in
+  let div_dom mgr dom v a0 a1 = 
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let tv = texpr_bv_div ~safe env (size_of_atom a0) (atom_is_signed a0) ta0 ta1 in
+    Abstract1.assign_texpr_array mgr dom [| apvar v |] [| tv |]
+      (if var_bound then Some (var_bound_dom mgr env v) else None) in
   let split_dom mgr dom vh vl a z =
     let ta = texpr_of_atom env a in
     let (tvh, tvl) = texpr_split_i env ta (Z.to_int z) in
@@ -1183,6 +1196,14 @@ let instr_safe (mgr, env) dom instr =
                  [| texpr_mul ta0 ta1 |] None in
      Abstract1.sat_interval mgr dom' (apvar v)
        (interval_of_typ (typ_of_var v)) in
+  let div_safe mgr env dom v a0 a1 =
+    let ta0 = texpr_of_atom env a0 in
+    let ta1 = texpr_of_atom env a1 in
+    let tdiv =     Texpr1.binop Texpr1.Div ta0 ta1 Texpr1.Real Texpr1.Rnd in
+    let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |] 
+                [| tdiv |] None in
+    Abstract1.sat_interval mgr dom' (apvar v)
+      (interval_of_typ (typ_of_var v)) in
   let shl_safe mgr env dom v a0 a1 =
     match a1 with
     | Avar _ -> false
