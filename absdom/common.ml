@@ -261,7 +261,10 @@ let tcons_deq tel ter =
 let texpr_of_atom env a =
   match a with
   | Avar v -> texpr_var env v
-  | Aconst (_, z) -> texpr_cst env z
+  | Aconst (_, c) ->
+    match c with
+    | Cint z -> texpr_cst env z
+    | Cfloat f -> raise (UnsupportedException "Floating-point is not supported in texpr_of_atom")
 (*define the function texpr_of_atom be that a can be either constant of variable*)
 
 let meet (mgr, _env) dom0 dom1 = Abstract1.meet mgr dom0 dom1
@@ -376,11 +379,16 @@ let texpr_bv_sar env w signed ta0 ta1 =
 let texpr_bv_cat env sz1 te0 te1 =
   texpr_add (texpr_mul2i env te0 sz1) te1
 
-let texpr_bv_const ~signed env w z =
-  let tz = texpr_cst env z in
-  if is_representable (if signed then Tsint w else Tuint w) z then tz
-  else let utz = texpr_to_unsigned_i env w tz in
-       if signed then texpr_to_signed_i env w utz else utz
+let texpr_bv_const ~signed env w c =
+  match c with
+  | Cint z ->
+      let tz = texpr_cst env z in
+      if is_representable (if signed then Tsint w else Tuint w) c then tz
+      else
+        let utz = texpr_to_unsigned_i env w tz in
+        if signed then texpr_to_signed_i env w utz else utz
+  | Cfloat _ ->
+      raise (UnsupportedException "bitvector constant cannot be float")
 
 let texpr_bv_not ~signed env sz te =
   if signed then texpr_sub (texpr_neg te) (texpr_one env)
@@ -434,7 +442,10 @@ let texpr_of_rexp ~signed mgr env abs re =
                          else if signed then texpr_to_signed_i env (size_of_var v) tv
                          else tv in
                 Some re
-    | Rconst (sz, z) -> Some (texpr_bv_const ~signed env sz z)
+    | Rconst (sz, c) ->
+      match c with
+      | Cint z -> Some (texpr_bv_const ~signed env sz z)
+      | Cfloat _ -> rasie (UnsupportedException "float not allowed in bitvector constant")
     | Ruext (sz, e, i) -> (match helper e with
                            | Some te -> let re =
                                           if i < 0 then assert false
@@ -592,20 +603,38 @@ let abs_set_nondet_var (mgr, env) dom v =
   let lo, hi =
     match typ_of_var v with
     | Tuint sz ->
-       let ret = Mpq.init () in
-       let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
-       let _ = Mpq.sub ret ret (Mpq.of_int 1) in
-       Mpq.of_int 0, ret
+        let ret = Mpq.init () in
+        let _ = Mpq.mul_2exp ret (Mpq.of_int 1) sz in
+        let _ = Mpq.sub ret ret (Mpq.of_int 1) in
+        Mpq.of_int 0, ret
     | Tsint sz ->
-       let h = Mpq.init () in
-       let l = Mpq.init () in
-       let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
-       let _ = Mpq.sub h h (Mpq.of_int 1) in
-       let _ = Mpq.mul_2exp l (Mpq.of_int 1) (pred sz) in
-       let _ = Mpq.neg l l in
-       l, h in
+        let h = Mpq.init () in
+        let l = Mpq.init () in
+        let _ = Mpq.mul_2exp h (Mpq.of_int 1) (pred sz) in
+        let _ = Mpq.sub h h (Mpq.of_int 1) in
+        let _ = Mpq.mul_2exp l (Mpq.of_int 1) (pred sz) in
+        let _ = Mpq.neg l l in
+        l, h
+    | Tdouble ->
+        (* ±(2^1023)*(2-2^-52) *)
+        let max_double = Mpq.init () in
+        let min_double = Mpq.init () in
+        let _ = Mpq.set_si max_double ((1 lsl 53) - 1) in
+        let _ = Mpq.mul_2exp max_double max_double (1023 - 52) in
+        let _ = Mpq.neg min_double max_double in
+        min_double, max_double
+    | Tsingle ->
+        (* ±(2^127)*(2-2^-23) *)
+        let max_single = Mpq.init () in
+        let min_single = Mpq.init () in
+        let _ = Mpq.set_si max_single ((1 lsl 24) - 1) in
+        let _ = Mpq.mul_2exp max_single max_single (127 - 23) in
+        let _ = Mpq.neg min_single max_single in
+        min_single, max_single
+  in
   Abstract1.assign_texpr mgr dom (apvar v)
-    (Texpr1.cst env (Coeff.i_of_mpq lo hi)) None
+    (Texpr1.cst env (Coeff.i_of_mpq lo hi))
+    None
 
 (* safe: the instruction is safe *)
 let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
