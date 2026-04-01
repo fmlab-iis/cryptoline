@@ -491,6 +491,9 @@ let texpr_of_rexp ~signed mgr env abs re =
                                                            | Radd -> Some (texpr_bv_add ~safe:false env sz signed te0 te1)
                                                            | Rsub -> Some (texpr_bv_sub ~safe:false env sz signed te0 te1)
                                                            | Rmul -> Some (texpr_bv_mul ~safe:false env sz signed te0 te1)
+                                                           | Rdiv -> Some (Texpr1.binop Texpr1.Div te0 te1 Texpr1.Real Texpr1.Rnd)
+                                                           | Rudiv -> Some (texpr_bv_div ~safe:false env sz false te0 te1)
+                                                           | Rsdiv -> Some (texpr_bv_div ~safe:false env sz true te0 te1)
                                                            | Rumod -> let re =
                                                                         let re = texpr_bv_umod ~signed:false env sz te0 te1 in
                                                                         if signed then texpr_to_signed_i env sz re else re in
