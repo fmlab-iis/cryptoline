@@ -1047,6 +1047,8 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
               if wv >= wa then ta
               else let utv = texpr_eucl_rem2i env ta wv in
                    texpr_to_signed_i env wv utv in
+           | Tsingle -> raise (UnsupportedException "cast doesn't support floating-point")
+           | Tdouble -> raise (UnsupportedException "cast doesn't support floating-point")
     Abstract1.assign_texpr mgr dom (apvar v) tv
       (if var_bound then Some (vars_bounds_dom mgr env [v]) else None) in
   let vpc_dom mgr dom v a =
@@ -1082,7 +1084,7 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
       | Some rdom -> Abstract1.meet mgr dom rdom
       | None -> dom)
   | Ishl (v, a0, a1) -> shl_dom mgr dom v a0 a1
-  | Ishls (vf, v, a0, z) -> shls_dom mgr dom vf v a0 (mkatom_const (typ_of_var v) z)
+  | Ishls (vf, v, a0, z) -> shls_dom mgr dom vf v a0 (Aconst (typ_of_var v, Cint z))
   | Isar (v, a0, a1) -> sar_dom mgr dom v a0 a1
   | Isars (v, l, a0, z) -> sars_dom mgr dom v l a0 z
   | Ishr (v, a0, a1) -> shr_dom mgr dom v a0 a1
@@ -1184,13 +1186,16 @@ let instr_safe (mgr, env) dom instr =
   let shl_safe mgr env dom v a0 a1 =
     match a1 with
     | Avar _ -> false
-    | Aconst (_, z) ->
-       let ta0 = texpr_of_atom env a0 in
-       let tpow2 = texpr_pow2i env (Z.to_int z) in
-       let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
-                    [| texpr_mul ta0 tpow2 |] None in
-     Abstract1.sat_interval mgr dom' (apvar v)
-       (interval_of_typ (typ_of_var v)) in
+    | Aconst (_, c) ->
+      match c with
+      | Cint z -> 
+          let ta0 = texpr_of_atom env a0 in
+          let tpow2 = texpr_pow2i env (Z.to_int z) in
+          let dom' = Abstract1.assign_texpr_array mgr dom [| apvar v |]
+                      [| texpr_mul ta0 tpow2 |] None in
+                      Abstract1.sat_interval mgr dom' (apvar v)
+                      (interval_of_typ (typ_of_var v)) in
+      | Cfloat _ -> raise (UnsupportedException "floating-point is not allowed to shift")
   let cshl_safe mgr env dom vh _vl a0 a1 z =
     let te0 = texpr_of_atom env a0 in
     let te1 = texpr_of_atom env a1 in
