@@ -1648,11 +1648,11 @@ let make_rename_formals_to_actuals_visitor formal_args actual_args =
   let rename_formals_visitor =
     object(*(self)*)
       inherit tnop_visitor
-      method! tvvar v = ChangeTo (subst_lval am v)
-      method! tvatom a = ChangeTo (subst_atom am a)
-      method! tvlval v = ChangeTo (subst_lval am v)
-      method! tvgvar v = ChangeTo (subst_lval am v)
-      method! tvbexp e = ChangeTo (subst_bexp em rm e)
+      method! tvvar v = ChangeTo (subst_lval am v |> fst)
+      method! tvatom a = ChangeTo (subst_atom am a |> fst)
+      method! tvlval v = ChangeTo (subst_lval am v |> fst)
+      method! tvgvar v = ChangeTo (subst_lval am v |> fst)
+      method! tvbexp e = ChangeTo (subst_bexp em rm e |> fst)
     end in
   rename_formals_visitor
 
@@ -1666,7 +1666,7 @@ let make_rename_actuals_to_ghosts_visitor actual_args ghost_vars =
   let rename_actuals_visitor =
     object(*(self)*)
       inherit tnop_visitor
-      method! tvatom a = ChangeTo (subst_atom am a)
+      method! tvatom a = ChangeTo (subst_atom am a |> fst)
     end in
   rename_actuals_visitor
 
@@ -1876,7 +1876,7 @@ let parse_call_at ctx lno fname_token actuals_token =
     let (_, em, rm) = subst_maps_of_list (List.combine formal_inputs actual_inputs) in
     let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te,
                                    tagged_rbexp_prove_with_of_tagged_rbexp tr) in
-    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre)) in
+    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre) |> fst) in
   (* Make nondeterministic assignments to actual outputs *)
   let nondet_instrs =
     List.fold_left (fun res ovar -> (lno, TInondet ovar)::res)
@@ -1894,7 +1894,7 @@ let parse_call_at ctx lno fname_token actuals_token =
     let (_, em, rm) = subst_maps_of_list (List.combine formal_args actual_args') in
     let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss,
                                              tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
-    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost)) in
+    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost) |> fst) in
   (* Add actual output parameters to the parsing context *)
   let _ = List.iter (ctx_define_var ctx) (tmap var_of_atom actual_outputs) in
   let _ = List.iter (ctx_define_ghost ctx) ghost_inouts in
@@ -1981,7 +1981,7 @@ let parse_inlinespec_at ctx lno fname_token actuals_token =
     let (_, em, rm) = subst_maps_of_list (List.combine formal_inputs actual_inputs) in
     let to_prove_with (te, tr) = (tagged_ebexp_prove_with_of_tagged_ebexp te,
                                    tagged_rbexp_prove_with_of_tagged_rbexp tr) in
-    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre)) in
+    TIassert (subst_tagged_bexp_prove_with em rm (to_prove_with f_def.fpre) |> fst) in
   (* Make nondeterministic assignments to the union of actual outputs and assigned variables *)
   let nondet_instrs =
     let actual_output_vars_rev = List.rev_map var_of_atom actual_outputs in
@@ -2000,7 +2000,7 @@ let parse_inlinespec_at ctx lno fname_token actuals_token =
     let (_, em, rm) = subst_maps_of_list (List.combine formal_args actual_args') in
     let from_prove_with (tepwss, trpwss) = (tagged_ebexp_of_tagged_ebexp_prove_with tepwss,
                                              tagged_rbexp_of_tagged_rbexp_prove_with trpwss) in
-    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost)) in
+    TIassume (subst_tagged_bexp em rm (from_prove_with f_def.fpost) |> fst) in
   (* Add actual output parameters to the parsing context *)
   let _ = List.iter (ctx_define_var ctx) (tmap var_of_atom actual_outputs) in
   (* Final result *)

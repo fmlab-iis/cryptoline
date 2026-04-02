@@ -530,32 +530,41 @@ val tvisit_spec : tvisitor -> tagged_spec -> tagged_spec
 
 (** {1 Substitution for Multi-track Programs} *)
 
-val subst_tagged_ebexp : eexp VM.t -> tagged_ebexp -> tagged_ebexp
-(** Apply substitution to tagged algebraic predicates *)
+val subst_tagged_ebexp : eexp VM.t -> tagged_ebexp -> tagged_ebexp * bool
+(** Apply substitution to tagged algebraic predicates. The returned boolean
+    indicates if any replacements were made. *)
 
-val subst_tagged_rbexp : rexp VM.t -> tagged_rbexp -> tagged_rbexp
-(** Apply substitution to tagged range predicates *)
+val subst_tagged_rbexp : rexp VM.t -> tagged_rbexp -> tagged_rbexp * bool
+(** Apply substitution to tagged range predicates. The returned boolean
+    indicates if any replacements were made. *)
 
-val subst_tagged_bexp : eexp VM.t -> rexp VM.t -> tagged_bexp -> tagged_bexp
-(** Apply substitution to tagged predicates *)
+val subst_tagged_bexp : eexp VM.t -> rexp VM.t -> tagged_bexp -> tagged_bexp * bool
+(** Apply substitution to tagged predicates. The returned boolean indicates
+    if any replacements were made. *)
 
-val subst_tagged_ebexp_prove_with : eexp VM.t -> tagged_ebexp_prove_with -> tagged_ebexp_prove_with
-(** Apply substitution to tagged algebraic predicates with prove-with clauses *)
+val subst_tagged_ebexp_prove_with : eexp VM.t -> tagged_ebexp_prove_with -> tagged_ebexp_prove_with * bool
+(** Apply substitution to tagged algebraic predicates with prove-with clauses.
+    The returned boolean indicates if any replacements were made.*)
 
-val subst_tagged_rbexp_prove_with : rexp VM.t -> tagged_rbexp_prove_with -> tagged_rbexp_prove_with
-(** Apply substitution to tagged range predicates with prove-with clauses *)
+val subst_tagged_rbexp_prove_with : rexp VM.t -> tagged_rbexp_prove_with -> tagged_rbexp_prove_with * bool
+(** Apply substitution to tagged range predicates with prove-with clauses.
+    The returned boolean indicates if any replacements were made. *)
 
-val subst_tagged_bexp_prove_with : eexp VM.t -> rexp VM.t -> tagged_bexp_prove_with -> tagged_bexp_prove_with
-(** Apply substitution to tagged predicates with prove-with clauses *)
+val subst_tagged_bexp_prove_with : eexp VM.t -> rexp VM.t -> tagged_bexp_prove_with -> tagged_bexp_prove_with * bool
+(** Apply substitution to tagged predicates with prove-with clauses. The
+    returned boolean indicates if any replacements were made. *)
 
-val subst_tagged_instr : atom VM.t -> eexp VM.t -> rexp VM.t -> tagged_instr -> tagged_instr
-(** Apply substitution to tagged instructions *)
+val subst_tagged_instr : atom VM.t -> eexp VM.t -> rexp VM.t -> tagged_instr -> tagged_instr * bool
+(** Apply substitution to tagged instructions. The returned boolean indicates
+    if any replacements were made. *)
 
-val subst_tagged_program : atom VM.t -> eexp VM.t -> rexp VM.t -> tagged_program -> tagged_program
-(** Apply substitution to tagged programs *)
+val subst_tagged_program : atom VM.t -> eexp VM.t -> rexp VM.t -> tagged_program -> tagged_program * bool
+(** Apply substitution to tagged programs. The returned boolean indicates if
+    any replacements were made. *)
 
-val subst_lined_tagged_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_tagged_program -> lined_tagged_program
-(** Apply substitution to lined tagged programs *)
+val subst_lined_tagged_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_tagged_program -> lined_tagged_program * bool
+(** Apply substitution to lined tagged programs. The returned boolean
+    indicates if any replacements were made. *)
 
 
 (** {1 SSA for Multi-track Specifications} *)

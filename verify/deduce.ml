@@ -171,7 +171,7 @@ let simple_rewrite all_eqns l r =
     List.fold_left (fun current left ->
         if Hashtbl.mem rules left
         then let right = Hashtbl.find rules left in
-             let next = normalize_eexp (replace_eexp [(left, right)] current) in
+             let next = normalize_eexp (replace_eexp [(left, right)] current |> fst) in
 (*
              let _ = print_endline (string_of_eexp next) in
  *)

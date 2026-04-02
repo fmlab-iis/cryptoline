@@ -258,8 +258,10 @@ module EES : Set.S with type elt = eexp
 val subs_eexp : eexp -> EES.t
 (** [subs_eexp e] is the set of all sub-expressions of [e]. *)
 
-val simplify_eexp : eexp -> eexp
-(** Simplify an algebraic expression. For example, e + 0 becomes e. *)
+val simplify_eexp : ?moduli:eexp list -> eexp -> eexp
+(** [simplify_eexp ~moduli:ms e] simplifies an algebraic expression [e].
+    For example, f + 0 becomes f. If there is a constant moduli n in [ms]
+    and a sub-expression f * n in [e], then f * n becomes 0. *)
 
 val expand_eexp : eexp -> eexp
 (** [expand_eexp e] expands [e] *)
@@ -1293,7 +1295,7 @@ val vars_program : ?upd:bool -> program -> VS.t
  * ignored for SSA programs.
  *)
 
-val lvs_instr : instr -> VS.t
+val lvs_instr : ?upd:bool -> instr -> VS.t
 (** [lvs_instr i] is the set of variables with new values written in the instruction [i]. *)
 
 val lvs_program : ?upd:bool -> program -> VS.t
@@ -1309,9 +1311,9 @@ val lvs_program : ?upd:bool -> program -> VS.t
 val rvs_instr : instr -> VS.t
 (** [rvs_instr i] is the set of variables with values read in the instruction [i]. *)
 
-val rvs_program : ?upd:bool -> program -> VS.t
+val rvs_program : program -> VS.t
 (**
- * [rvs_program ~upd:b p] is the set of variables with values read in the
+ * [rvs_program p] is the set of variables with values read in the
  * program [p]. If [b] is true, the type of a variable in the returned set is
  * always updated when the variable is assigned in the program. Otherwise,
  * the type of a variable in the returned set remains unchanged once the
@@ -1319,7 +1321,7 @@ val rvs_program : ?upd:bool -> program -> VS.t
  * ignored for SSA programs.
 *)
 
-val lcarries_instr : instr -> VS.t
+val lcarries_instr : ?upd:bool -> instr -> VS.t
 (**
  * [lcarries_instr i] is the set of carries and borrows assigned in the instruction [i].
  * Only carries and borrows in addition and subtraction instructions are included.
@@ -1350,8 +1352,8 @@ val lbits_program : ?upd:bool -> program -> VS.t
  * ignored for SSA programs.
 *)
 
-val gvs_instr : instr -> VS.t
-(** [gvs_instr i] is the set of ghost variables defined in the instruction [i]. *)
+val gvs_instr : ?upd:bool -> instr -> VS.t
+(** [gvs_instr ~upd:b i] is the set of ghost variables defined in the instruction [i]. *)
 
 val gvs_program : ?upd:bool -> program -> VS.t
 (**
@@ -1457,6 +1459,179 @@ val vids_rspec : rspec -> IS.t
 (** [vids_rspec s] is the set of IDs of variables in the range specification [s]. *)
 
 
+(** {1 Variable Membership} *)
+
+val has_var_in_eexp : (var -> bool) -> eexp -> bool
+(** [has_var_in_eexp f e] returns [true] if variable satisfying [f] appears in
+    expression [e] *)
+
+val has_var_in_eexps : (var -> bool) -> eexp list -> bool
+(** [has_var_in_eexps f es] returns [true] if variable satisfying [f] appears
+    in some expression in [es] *)
+
+val has_var_in_rexp : (var -> bool) -> rexp -> bool
+(** [has_var_in_rexp f e] returns [true] if variable satisfying [f] appears
+    in expression [e] *)
+
+val has_var_in_rexps : (var -> bool) -> rexp list -> bool
+(** [has_var_in_rexps f es] returns [true] if variable satisfying [f] appears
+    in some expression in [es] *)
+
+val has_var_in_ebexp : (var -> bool) -> ebexp -> bool
+(** [has_var_in_ebexp f e] returns [true] if variable satisfying [f] appears
+    in expression [e] *)
+
+val has_var_in_ebexps : (var -> bool) -> ebexp list -> bool
+(** [has_var_in_ebexps f es] returns [true] if variable satisfying [f] appears
+    in some expression in [es] *)
+
+val has_var_in_rbexp : (var -> bool) -> rbexp -> bool
+(** [has_var_in_rbexp f e] returns [true] if variable satisfying [f] appears in
+    expression [e] *)
+
+val has_var_in_rbexps : (var -> bool) -> rbexp list -> bool
+(** [has_var_in_rbexps f es] returns [true] if variable satisfying [f] appears
+    in some expression in [es] *)
+
+val has_var_in_bexp : (var -> bool) -> bexp -> bool
+(** [has_var_in_bexp f e] returns [true] if variable satisfying [f] appears in
+    expression [e] *)
+
+val has_var_in_ebexp_prove_with : (var -> bool) -> ebexp_prove_with -> bool
+(** [has_var_in_ebexp_prove_with f e] returns [true] if variable satisfying
+    [f] appears in expression [e] *)
+
+val has_var_in_rbexp_prove_with : (var -> bool) -> rbexp_prove_with -> bool
+(** [has_var_in_rbexp_prove_with f e] returns [true] if variable satisfying
+    [f] appears in expression [e] *)
+
+val has_var_in_bexp_prove_with : (var -> bool) -> bexp_prove_with -> bool
+(** [has_var_in_bexp_prove_with f e] returns [true] if variable satisfying [f]
+    appears in expression [e] *)
+
+val has_var_in_instr : (var -> bool) -> instr -> bool
+(** [has_var_in_instr f i] returns [true] if variable satisfying [f] appears in
+    instruction [i] *)
+
+val has_var_in_program : (var -> bool) -> program -> bool
+(** [has_var_in_program f p] returns [true] if variable satisfying [f] appears
+    in program [p] *)
+
+
+val var_in_eexp : var -> eexp -> bool
+(** [var_in_eexp v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_eexps : var -> eexp list -> bool
+(** [var_in_eexps v es] returns [true] if variable [v] appears in
+    some expression in [es] *)
+
+val var_in_rexp : var -> rexp -> bool
+(** [var_in_rexp v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_rexps : var -> rexp list -> bool
+(** [var_in_rexps v es] returns [true] if variable [v] appears in
+    some expression in [es] *)
+
+val var_in_ebexp : var -> ebexp -> bool
+(** [var_in_ebexp v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_ebexps : var -> ebexp list -> bool
+(** [var_in_ebexps v es] returns [true] if variable [v] appears in
+    some expression in [es] *)
+
+val var_in_rbexp : var -> rbexp -> bool
+(** [var_in_rbexp v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_rbexps : var -> rbexp list -> bool
+(** [var_in_rbexps v es] returns [true] if variable [v] appears in
+    some expression in [es] *)
+
+val var_in_bexp : var -> bexp -> bool
+(** [var_in_bexp v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_ebexp_prove_with : var -> ebexp_prove_with -> bool
+(** [var_in_ebexp_prove_with v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_rbexp_prove_with : var -> rbexp_prove_with -> bool
+(** [var_in_rbexp_prove_with v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_bexp_prove_with : var -> bexp_prove_with -> bool
+(** [var_in_bexp_prove_with v e] returns [true] if variable [v] appears in
+    expression [e] *)
+
+val var_in_instr : var -> instr -> bool
+(** [var_in_instr v i] returns [true] if variable [v] appears in instruction
+    [i] *)
+
+val var_in_program : var -> program -> bool
+(** [var_in_program v p] returns [true] if variable [v] appears in program
+    [p] *)
+
+
+val vid_in_eexp : int -> eexp -> bool
+(** [vid_in_eexp vid e] returns [true] if variable ID [vid] appears in
+    expression [e] *)
+
+val vid_in_eexps : int -> eexp list -> bool
+(** [vid_in_eexps vid es] returns [true] if variable ID [vid] appears in
+    some expression in [es] *)
+
+val vid_in_rexp : int -> rexp -> bool
+(** [vid_in_rexp vid e] returns [true] if variable ID [vid] appears in
+    expression [e] *)
+
+val vid_in_rexps : int -> rexp list -> bool
+(** [vid_in_rexps vid es] returns [true] if variable ID [vid] appears in
+    some expression in [es] *)
+
+val vid_in_ebexp : int -> ebexp -> bool
+(** [vid_in_ebexp vid e] returns [true] if variable ID [vid] appears in
+    expression [e] *)
+
+val vid_in_ebexps : int -> ebexp list -> bool
+(** [vid_in_ebexps vid es] returns [true] if variable ID [vid] appears in
+    some expression in [es] *)
+
+val vid_in_rbexp : int -> rbexp -> bool
+(** [vid_in_rbexp vid e] returns [true] if variable ID [vid] appears in
+    expression [e] *)
+
+val vid_in_rbexps : int -> rbexp list -> bool
+(** [vid_in_rbexps vid es] returns [true] if variable ID [vid] appears in
+    some expression in [es] *)
+
+val vid_in_bexp : int -> bexp -> bool
+(** [vid_in_bexp vid e] returns [true] if variable ID [vid] appears in
+    expression [e] *)
+
+val vid_in_ebexp_prove_with : int -> ebexp_prove_with -> bool
+(** [vid_in_ebexp_prove_with vid e] returns [true] if variable ID [vid]
+    appears in expression [e] *)
+
+val vid_in_rbexp_prove_with : int -> rbexp_prove_with -> bool
+(** [vid_in_rbexp_prove_with vid e] returns [true] if variable ID [vid]
+    appears in expression [e] *)
+
+val vid_in_bexp_prove_with : int -> bexp_prove_with -> bool
+(** [vid_in_bexp_prove_with vid e] returns [true] if variable ID [vid] appears
+    in expression [e] *)
+
+val vid_in_instr : int -> instr -> bool
+(** [vid_in_instr vid i] returns [true] if variable ID [vid] appears in
+    instruction [i] *)
+
+val vid_in_program : int -> program -> bool
+(** [vid_in_program vid p] returns [true] if variable ID [vid] appears in
+    program [p] *)
+
+
 (** {1 Substitution} *)
 
 val amap_trans : atom VM.t -> atom VM.t
@@ -1496,59 +1671,85 @@ val get_subst_maps_vpc : program -> atom VM.t * eexp VM.t * rexp VM.t * program
 (** Return substitution maps from value-preserved casting in a program. *)
 
 val subst_maps_of_list : (var * atom) list -> atom VM.t * eexp VM.t * rexp VM.t
-(** Convert a list of (v, a) pairs to substitution maps where v is a variable to be replaced by the atom a. *)
+(** Convert a list of (v, a) pairs to substitution maps where v is a variable
+    to be replaced by the atom a. *)
 
-val subst_eexp : eexp VM.t -> eexp -> eexp
-(** [subst_eexp em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+val map_subst : ('a -> 'a * bool) -> 'a list -> 'a list * bool
+(** [map_subst f es] applies a substitution function [f] to a list of
+    elements [es]. The substitution function returns the substitution
+    result together with a boolean flag indicating if any replacements
+    were made. *)
 
-val subst_rexp : rexp VM.t -> rexp -> rexp
-(** [subst_rexp rm e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+val subst_eexp : eexp VM.t -> eexp -> eexp * bool
+(** [subst_eexp env e] replaces variables in [e] by the corresponding algebraic
+    expressions in [env]. It returns the substituted expression along with a
+    boolean flag indicating if any replacements were made. *)
 
-val subst_ebexp : eexp VM.t -> ebexp -> ebexp
-(** [subst_ebexp em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+val subst_rexp : rexp VM.t -> rexp -> rexp * bool
+(** [subst_rexp env e] replaces variables in [e] by the corresponding range
+    expressions in [env]. It returns the substituted expression along with a
+    boolean flag indicating if any replacements were made. *)
 
-val subst_rbexp : rexp VM.t -> rbexp -> rbexp
-(** [subst_rbexp em e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+val subst_ebexp : eexp VM.t -> ebexp -> ebexp * bool
+(** [subst_ebexp env e] replaces variables in [e] by the corresponding algebraic
+    expressions in [env]. It returns the substituted expression along with a
+    boolean flag indicating if any replacements were made. *)
 
-val subst_bexp : eexp VM.t -> rexp VM.t -> bexp -> bexp
+val subst_rbexp : rexp VM.t -> rbexp -> rbexp * bool
+(** [subst_rbexp env e] replaces variables in [e] by the corresponding range
+    expressions in [env]. It returns the substituted expression along with a
+    boolean flag indicating if any replacements were made. *)
+
+val subst_bexp : eexp VM.t -> rexp VM.t -> bexp -> bexp * bool
 (** [subst_bexp em rm e] replaces variables in [e] based on substitutions of
     algebraic expressions in [em] and substitutions of range expressions in
-    [rm]. *)
+    [rm]. It returns the substituted expression along with a boolean flag
+    indicating if any replacements were made. *)
 
-val subst_ebexp_prove_with : eexp VM.t -> ebexp_prove_with -> ebexp_prove_with
-(** [subst_ebexp_prove_with em e] replaces variables in [e] by the corresponding algebraic expressions in [em]. *)
+val subst_ebexp_prove_with : eexp VM.t -> ebexp_prove_with -> ebexp_prove_with * bool
+(** [subst_ebexp_prove_with em e] replaces variables in [e] by the
+    corresponding algebraic expressions in [em]. The returned boolean
+    indicates if any replacements were made. *)
 
-val subst_rbexp_prove_with : rexp VM.t -> rbexp_prove_with -> rbexp_prove_with
-(** [subst_rbexp_prove_with em e] replaces variables in [e] by the corresponding range expressions in [rm]. *)
+val subst_rbexp_prove_with : rexp VM.t -> rbexp_prove_with -> rbexp_prove_with * bool
+(** [subst_rbexp_prove_with em e] replaces variables in [e] by the
+    corresponding range expressions in [rm]. The returned boolean
+    indicates if any replacements were made. *)
 
-val subst_bexp_prove_with : eexp VM.t -> rexp VM.t -> bexp_prove_with -> bexp_prove_with
+val subst_bexp_prove_with : eexp VM.t -> rexp VM.t -> bexp_prove_with -> bexp_prove_with * bool
 (** [subst_bexp_prove_with em rm e] replaces variables in [e] based on
     substitutions of algebraic expressions in [em] and substitutions of range
-    expressions in [rm]. *)
+    expressions in [rm]. The returned boolean indicates if any replacements
+    were made. *)
 
-val subst_lval : atom VM.t -> var -> var
-(** [subst_lval am v] replaces the lval [v] by the variable in the corresponding
-    atom in [am] if the corresponding atom is a variable, and does nothing
-    otherwise. *)
+val subst_lval : atom VM.t -> var -> var * bool
+(** [subst_lval am v] replaces the lval [v] by the variable in the
+    corresponding atom in [am] if the corresponding atom is a variable,
+    and does nothing otherwise. The returned boolean indicates if any
+    replacements were made. *)
 
-val subst_atom : atom VM.t -> atom -> atom
-(** [subst_atom am a] replaces variables in [a] by the corresponding atoms in am. *)
+val subst_atom : atom VM.t -> atom -> atom * bool
+(** [subst_atom am a] replaces variables in [a] by the corresponding atoms
+    in [am]. The returned boolean indicates if any replacements were made. *)
 
-val subst_instr : atom VM.t -> eexp VM.t -> rexp VM.t -> instr -> instr
+val subst_instr : atom VM.t -> eexp VM.t -> rexp VM.t -> instr -> instr * bool
 (** [subst_instr am em rm i] replaces variables in [i] based on [am], [em], and
     [rm]. It is not necessary that a variable is mapped to the same variable or
-    constant in [am], [em], and [rm]. *)
+    constant in [am], [em], and [rm]. The returned boolean indicates if any
+    replacements were made. *)
 
-val subst_program : atom VM.t -> eexp VM.t -> rexp VM.t -> program -> program
+val subst_program : atom VM.t -> eexp VM.t -> rexp VM.t -> program -> program * bool
 (** [subst_program am em rm p] replaces variables in [p] based on [am], [em],
-    and [rm]. *)
+    and [rm]. The returned boolean indicates if any replacements were made. *)
 
-val subst_lined_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_program -> lined_program
+val subst_lined_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_program -> lined_program * bool
 (** [subst_lined_program am em rm p] replaces variables in [p] based on [am],
-    [em], and [rm]. *)
+    [em], and [rm]. The returned boolean indicates if any replacements were made. *)
 
-val replace_eexp : (eexp * eexp) list -> eexp -> eexp
-(** [replace_eexp [(p1, r1); ...; (pn, rn)] e] replaces [p1], ..., and [pn] in [e] respectively with [r1], ..., and [rn]. *)
+val replace_eexp : (eexp * eexp) list -> eexp -> eexp * bool
+(** [replace_eexp [(p1, r1); ...; (pn, rn)] e] replaces [p1], ..., and [pn] in
+    [e] respectively with [r1], ..., and [rn]. The returned boolean indicates
+    if any replacements were made. *)
 
 
 (** {1 Static Single Assignment (SSA)} *)
@@ -1675,14 +1876,18 @@ val rewrite_vpc_ssa_spec : spec -> spec
 
 (** {1 Slicing} *)
 
-val slice_ebexp : VS.t -> ebexp -> ebexp
-(** [slice_ebexp vs e] slices an algebraic predicate according to a set of relevant variables. *)
+val slice_ebexp : VS.t -> ebexp -> ebexp * bool
+(** [slice_ebexp vs e] slices an algebraic predicate according to a set of
+    relevant variables. The returned boolean flag indicates if the slice
+    is successfull. *)
 
-val slice_rbexp : VS.t -> rbexp -> rbexp
-(** [slice_rbexp vs e] slices a range predicate according to a set of relevant variables. *)
+val slice_rbexp : VS.t -> rbexp -> rbexp * bool
+(** [slice_rbexp vs e] slices a range predicate according to a set of relevant
+    variables. The returned boolean flag indicates if the slice is successfull. *)
 
-val slice_bexp : VS.t -> bexp -> bexp
-(** [slice_bexp vs e] slices a predicate according to a set of relevant variables. *)
+val slice_bexp : VS.t -> bexp -> bexp * bool
+(** [slice_bexp vs e] slices a predicate according to a set of relevant
+    variables. The returned boolean flag indicates if the slice is successfull. *)
 
 val slice_program : VS.t -> program -> (VS.t * program)
 (**

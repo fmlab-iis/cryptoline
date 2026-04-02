@@ -68,7 +68,7 @@ let slice_for_safety f p safety_cond hashopt =
        rbexp_vars_sat program_vars f
     | None ->
        program_pre_vars_sat (vars_bexp safety_cond) rbexp_vars_sat f p in
-  (slice_rbexp vars f, slice_program_ssa vars p)
+  (fst (slice_rbexp vars f), slice_program_ssa vars p)
 
 (*
  * Convert a precondition and a program to QFBV bexps according to a safety condition.
@@ -136,7 +136,7 @@ let rewrite_poly_spec vgen ps =
   let add_varset eb = (eb, vids_ebexp eb) in
   let add_varsets ebs = List.rev (List.rev_map add_varset ebs) in
   let subst_ebexp_vs (v, e) (eb, vs) =
-    if IS.mem v.vid vs then (subst_ebexp (VM.singleton v e) eb, IS.union (IS.remove v.vid vs) (vids_eexp e))
+    if IS.mem v.vid vs then (subst_ebexp (VM.singleton v e) eb |> fst, IS.union (IS.remove v.vid vs) (vids_eexp e))
     else (eb, vs) in
   let subst_ebexp_vss (v, e) ebexp_vss =
     List.rev (List.rev_map (subst_ebexp_vs (v, e)) ebexp_vss) in
@@ -200,9 +200,9 @@ let rewrite_assignments_ebexp ideal p =
        (match is_assignment hd with
         | None -> do_rewrite (hd::finished) tl p
         | Some (v, e) -> let em = VM.singleton v e in
-                         do_rewrite (List.rev (List.rev_map (subst_eexp em) finished))
-                           (List.rev (List.rev_map (subst_eexp em) tl))
-                           (subst_ebexp em p)) in
+                         do_rewrite (map_subst (subst_eexp em) finished |> fst)
+                           (map_subst (subst_eexp em) tl |> fst)
+                           (subst_ebexp em p |> fst)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 

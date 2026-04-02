@@ -1233,77 +1233,386 @@ let tvisit_spec visitor s =
 
 (** Substitution for tagged programs *)
 
+let tagged_map_subst f te =
+  let (te', cte) =
+    SM.fold (
+      fun tag es (m, c) ->
+        let (es', ces) = map_subst f es in
+        if ces
+        then (SM.add tag es' m, true)
+        else (SM.add tag es m, c)
+    ) te (SM.empty, false) in
+  if cte
+  then (te', true)
+  else (te, false)
+
 let subst_tagged_ebexp em te =
-  SM.map (fun es -> List.rev_map (subst_ebexp em) es |> List.rev) te
+  tagged_map_subst (subst_ebexp em) te
 
 let subst_tagged_rbexp rm tr =
-  SM.map (fun rs -> List.rev_map (subst_rbexp rm) rs |> List.rev) tr
+  tagged_map_subst (subst_rbexp rm) tr
 
 let subst_tagged_bexp em rm tb =
-  (subst_tagged_ebexp em (fst tb), subst_tagged_rbexp rm (snd tb))
+  let (te, cte) = subst_tagged_ebexp em (fst tb) in
+  let (tr, ctr) = subst_tagged_rbexp rm (snd tb) in
+  if cte || ctr
+  then ((te, tr), true)
+  else (tb, false)
 
 let subst_tagged_ebexp_prove_with em tepwss =
-  SM.map (fun epwss -> List.rev_map (subst_ebexp_prove_with em) epwss |> List.rev) tepwss
+  tagged_map_subst (subst_ebexp_prove_with em) tepwss
 
 let subst_tagged_rbexp_prove_with rm trpwss =
-  SM.map (fun rpwss -> List.rev_map (subst_rbexp_prove_with rm) rpwss |> List.rev) trpwss
+  tagged_map_subst (subst_rbexp_prove_with rm) trpwss
 
 let subst_tagged_bexp_prove_with em rm tbpwss =
-  (subst_tagged_ebexp_prove_with em (fst tbpwss), subst_tagged_rbexp_prove_with rm (snd tbpwss))
+  let (te, cte) = subst_tagged_ebexp_prove_with em (fst tbpwss) in
+  let (tr, ctr) = subst_tagged_rbexp_prove_with rm (snd tbpwss) in
+  if cte || ctr
+  then ((te, tr), true)
+  else (tbpwss, false)
 
 let subst_tagged_instr am em rm i =
   match i with
-  | TImov (v, a) -> TImov (subst_lval am v, subst_atom am a)
-  | TIshl (v, a1, a2) -> TIshl (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIshls (l, v, a, n) -> TIshls (subst_lval am l, subst_lval am v, subst_atom am a, n)
-  | TIshr (v, a1, a2) -> TIshr (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIshrs (v, l, a, n) -> TIshrs (subst_lval am v, subst_lval am l, subst_atom am a, n)
-  | TIsar (v, a1, a2) -> TIsar (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsars (v, l, a, n) -> TIsars (subst_lval am v, subst_lval am l, subst_atom am a, n)
-  | TIcshl (vh, vl, a1, a2, n) -> TIcshl (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | TIcshls (l, vh, vl, a1, a2, n) -> TIcshls (subst_lval am l, subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | TIcshr (vh, vl, a1, a2, n) -> TIcshr (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | TIcshrs (vh, vl, l, a1, a2, n) -> TIcshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atom am a1, subst_atom am a2, n)
-  | TIrol (v, a, n) -> TIrol (subst_lval am v, subst_atom am a, subst_atom am n)
-  | TIror (v, a, n) -> TIror (subst_lval am v, subst_atom am a, subst_atom am n)
-  | TInondet v -> TInondet (subst_lval am v)
-  | TIcmov (v, c, a1, a2) -> TIcmov (subst_lval am v, subst_atom am c, subst_atom am a1, subst_atom am a2)
-  | TInop -> TInop
-  | TIadd (v, a1, a2) -> TIadd (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIadds (c, v, a1, a2) -> TIadds (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIadc (v, a1, a2, y) -> TIadc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TIadcs (c, v, a1, a2, y) -> TIadcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TIsub (v, a1, a2) -> TIsub (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsubc (c, v, a1, a2) -> TIsubc (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsubb (c, v, a1, a2) -> TIsubb (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsbc (v, a1, a2, y) -> TIsbc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TIsbcs (c, v, a1, a2, y) -> TIsbcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TIsbb (v, a1, a2, y) -> TIsbb (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TIsbbs (c, v, a1, a2, y) -> TIsbbs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | TImul (v, a1, a2) -> TImul (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TImuls (c, v, a1, a2) -> TImuls (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TImull (vh, vl, a1, a2) -> TImull (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2)
-  | TImulj (v, a1, a2) -> TImulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsplit (vh, vl, a, n) -> TIsplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
-  | TIspl (vh, vl, a, n) -> TIspl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
-  | TIseteq (v, a1, a2) -> TIseteq (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIsetne (v, a1, a2) -> TIsetne (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIand (v, a1, a2) -> TIand (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIor (v, a1, a2) -> TIor (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TIxor (v, a1, a2) -> TIxor (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | TInot (v, a) -> TInot (subst_lval am v, subst_atom am a)
-  | TIcast (od, v, a) -> TIcast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atom am a)
-  | TIvpc (v, a) -> TIvpc (subst_lval am v, subst_atom am a)
-  | TIjoin (v, ah, al) -> TIjoin (subst_lval am v, subst_atom am ah, subst_atom am al)
-  | TIassert te -> TIassert (subst_tagged_bexp_prove_with em rm te)
-  | TIassume te -> TIassume (subst_tagged_bexp em rm te)
-  | TIcut te -> TIcut (subst_tagged_bexp_prove_with em rm te)
-  | TIghost (vs, te) -> TIghost (VS.of_list (List.map (subst_lval am) (VS.elements vs)), subst_tagged_bexp em rm te)
+  | TImov (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (TImov (v', a'), true)
+    else (i, false)
+  | TIshl (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIshl (v', a1', a2'), true)
+    else (i, false)
+  | TIshls (l, v, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (TIshls (l', v', a', n), true)
+    else (i, false)
+  | TIshr (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIshr (v', a1', a2'), true)
+    else (i, false)
+  | TIshrs (v, l, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (TIshrs (v', l', a', n), true)
+    else (i, false)
+  | TIsar (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIsar (v', a1', a2'), true)
+    else (i, false)
+  | TIsars (v, l, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (TIsars (v', l', a', n), true)
+    else (i, false)
+  | TIcshl (vh, vl, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (TIcshl (vh', vl', a1', a2', n), true)
+    else (i, false)
+  | TIcshls (l, vh, vl, a1, a2, n) ->
+    let (l', cl) = subst_lval am l in
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cl || cvh || cvl || ca1 || ca2
+    then (TIcshls (l', vh', vl', a1', a2', n), true)
+    else (i, false)
+  | TIcshr (vh, vl, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (TIcshr (vh', vl', a1', a2', n), true)
+    else (i, false)
+  | TIcshrs (vh, vl, l, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (l', cl) = subst_lval am l in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || cl || ca1 || ca2
+    then (TIcshrs (vh', vl', l', a1', a2', n), true)
+    else (i, false)
+  | TIrol (v, a, n) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    let (n', cn) = subst_atom am n in
+    if cv || ca || cn
+    then (TIrol (v', a', n'), true)
+    else (i, false)
+  | TIror (v, a, n) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    let (n', cn) = subst_atom am n in
+    if cv || ca || cn
+    then (TIror (v', a', n'), true)
+    else (i, false)
+  | TInondet v ->
+    let (v', cv) = subst_lval am v in
+    if cv
+    then (TInondet v', true)
+    else (i, false)
+  | TIcmov (v, c, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (c', cc) = subst_atom am c in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || cc || ca1 || ca2
+    then (TIcmov (v', c', a1', a2'), true)
+    else (i, false)
+  | TInop -> (TInop, false)
+  | TIadd (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIadd (v', a1', a2'), true)
+    else (i, false)
+  | TIadds (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (TIadds (c', v', a1', a2'), true)
+    else (i, false)
+  | TIadc (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (TIadc (v', a1', a2', y'), true)
+    else (i, false)
+  | TIadcs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (TIadcs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | TIsub (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIsub (v', a1', a2'), true)
+    else (i, false)
+  | TIsubc (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (TIsubc (c', v', a1', a2'), true)
+    else (i, false)
+  | TIsubb (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (TIsubb (c', v', a1', a2'), true)
+    else (i, false)
+  | TIsbc (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (TIsbc (v', a1', a2', y'), true)
+    else (i, false)
+  | TIsbcs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (TIsbcs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | TIsbb (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (TIsbb (v', a1', a2', y'), true)
+    else (i, false)
+  | TIsbbs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (TIsbbs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | TImul (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TImul (v', a1', a2'), true)
+    else (i, false)
+  | TImuls (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (TImuls (c', v', a1', a2'), true)
+    else (i, false)
+  | TImull (vh, vl, a1, a2) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (TImull (vh', vl', a1', a2'), true)
+    else (i, false)
+  | TImulj (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TImulj (v', a1', a2'), true)
+    else (i, false)
+  | TIsplit (vh, vl, a, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a', ca) = subst_atom am a in
+    if cvh || cvl || ca
+    then (TIsplit (vh', vl', a', n), true)
+    else (i, false)
+  | TIspl (vh, vl, a, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a', ca) = subst_atom am a in
+    if cvh || cvl || ca
+    then (TIspl (vh', vl', a', n), true)
+    else (i, false)
+  | TIseteq (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIseteq (v', a1', a2'), true)
+    else (i, false)
+  | TIsetne (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIsetne (v', a1', a2'), true)
+    else (i, false)
+  | TIand (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIand (v', a1', a2'), true)
+    else (i, false)
+  | TIor (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIor (v', a1', a2'), true)
+    else (i, false)
+  | TIxor (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (TIxor (v', a1', a2'), true)
+    else (i, false)
+  | TInot (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (TInot (v', a'), true)
+    else (i, false)
+  | TIcast (od, v, a) ->
+    let (od', cod) =
+      match apply_to_some (subst_lval am) od with
+      | None -> (None, false)
+      | Some (od', cod) -> (Some od', cod) in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cod || cv || ca
+    then (TIcast (od', v', a'), true)
+    else (i, false)
+  | TIvpc (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (TIvpc (v', a'), true)
+    else (i, false)
+  | TIjoin (v, ah, al) ->
+    let (v', cv) = subst_lval am v in
+    let (ah', cah) = subst_atom am ah in
+    let (al', cal) = subst_atom am al in
+    if cv || cah || cal
+    then (TIjoin (v', ah', al'), true)
+    else (i, false)
+  | TIassert te ->
+    let (te', cte) = subst_tagged_bexp_prove_with em rm te in
+    if cte
+    then (TIassert te', true)
+    else (i, false)
+  | TIassume te ->
+    let (te', cte) = subst_tagged_bexp em rm te in
+    if cte
+    then (TIassume te', true)
+    else (i, false)
+  | TIcut te ->
+    let (te', cte) = subst_tagged_bexp_prove_with em rm te in
+    if cte
+    then (TIcut te', true)
+    else (i, false)
+  | TIghost (vs, te) ->
+    let (vs', cvs) =
+      let (vlist, cvs) = map_subst (subst_lval am) (VS.elements vs) in
+      (VS.of_list vlist, cvs) in
+    let (te', cte) = subst_tagged_bexp em rm te in
+    if cvs || cte
+    then (TIghost (vs', te'), true)
+    else (i, false)
 
-let subst_tagged_program am em rm p = List.rev_map (subst_tagged_instr am em rm) p |> List.rev
+let subst_tagged_program am em rm p =
+  map_subst (subst_tagged_instr am em rm) p
 
-let subst_lined_tagged_program am em rm p = List.rev_map (fun (lno, i) -> lno, subst_tagged_instr am em rm i) p |> List.rev
-
+let subst_lined_tagged_program am em rm p =
+  let subst_lined_instr (lno, i) =
+    let (i', ci) = subst_tagged_instr am em rm i in
+    ((lno, i'), ci) in
+  map_subst subst_lined_instr p
 
 (** SSA for tagged specification *)
 

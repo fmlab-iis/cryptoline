@@ -3,105 +3,135 @@
 open Ast.Cryptoline
 open Utils.Std
 
+exception RewriteSeparationException
 
-let get_rewrite_pattern e =
-  let rec single_variables e =
+(* Exception to trigger fallback from DAG to Worklist *)
+exception Circular_dependency
+
+module IntMap = Map.Make(Int)
+
+
+(** [get_rewrite_pattern e] tries to find v = e' in a complicated
+    expression [e] *)
+let get_rewrite_pattern ?(moduli=[]) e =
+  (* find variables linearly appearing in expression [e], storing the
+     linear variables in the set [vs] *)
+  let rec linear_variables e vs =
     match e with
-    | Evar v -> VS.singleton v
-    | Econst _ -> VS.empty
-    | Eunop (_, e) -> single_variables e
-    | Ebinop (op, e1, e2) when op = Eadd || op = Esub -> VS.union (single_variables e1) (single_variables e2)
-    | _ -> VS.empty in
-  let rec num_occurrence v e =
+    | Evar v -> VS.add v vs
+    | Econst _ -> vs
+    | Eunop (_, e1) -> linear_variables e1 vs
+    | Ebinop (op, e1, e2) when op = Eadd || op = Esub ->
+      linear_variables e2 (linear_variables e1 vs)
+    | _ -> vs in
+  (* count the occurrences of variables [vs] in expression [e], storing
+     the counts in the map [counts] *)
+  let rec count_occurrences vs e counts =
     match e with
-    | Evar x when eq_var x v -> 1
-    | Eunop (_, e) -> num_occurrence v e
-    | Ebinop (_, e1, e2) -> num_occurrence v e1 + num_occurrence v e2
-    | _ -> 0 in
+    | Evar x ->
+      if VS.mem x vs then
+        let c = match VM.find_opt x counts with Some n -> n | None -> 0 in
+        VM.add x (c + 1) counts
+      else counts
+    | Econst _ -> counts
+    | Eunop (_, e1) -> count_occurrences vs e1 counts
+    | Ebinop (_, e1, e2) -> count_occurrences vs e2 (count_occurrences vs e1 counts) in
+  (* return true if variable [v] has count 1 in map [m] *)
+  let has_count_one m v =
+    match VM.find_opt v m with
+    | Some 1 -> true
+    | _ -> false in
+  (* try to deduce expresion v = pat' from the expression e = pat *)
   let rec separate v e pat =
     match e with
     | Evar x when eq_var x v -> pat
-    | Eunop (Eneg, e) when VS.mem v (vars_eexp e) -> separate v e (eneg pat)
+    | Eunop (Eneg, e) when var_in_eexp v e -> separate v e (eneg pat)
     | Ebinop (op, e1, e2) ->
-       let in1 = VS.mem v (vars_eexp e1) in
-       let in2 = VS.mem v (vars_eexp e2) in
-       let (has_v, add_pat, pat) =
-         match op, in1, in2 with
-         | Eadd, true, false -> (e1, eneg e2, pat)
-         | Eadd, false, true -> (e2, eneg e1, pat)
-         | Esub, true, false -> (e1, e2, pat)
-         | Esub, false, true -> (e2, e1, eneg pat)
-         | _ -> failwith "Impossible Ebinop case in get_rewrite_pattern." in
-       separate v has_v (eadd pat add_pat)
+      let in1 = var_in_eexp v e1 in
+      let in2 = var_in_eexp v e2 in
+      let (has_v, add_pat, pat) =
+        match op, in1, in2 with
+        | Eadd, true, false -> (e1, eneg e2, pat)
+        | Eadd, false, true -> (e2, eneg e1, pat)
+        | Esub, true, false -> (e1, e2, pat)
+        | Esub, false, true -> (e2, e1, eneg pat)
+        | _ -> failwith "Impossible Ebinop case in get_rewrite_pattern." in
+      separate v has_v (eadd pat add_pat)
     | _ -> failwith "Impossible case in get_rewrite_pattern." in
-  let candidates = VS.filter (fun v -> num_occurrence v e = 1) (single_variables e) in
-  if VS.cardinal candidates = 0 then
-    None
+  (* *)
+  let initial_candidates = linear_variables e VS.empty in
+  if VS.is_empty initial_candidates
+  then None
   else
-    let v = VS.min_elt candidates in
-    let pat = separate v e (econst Z.zero) in
-    let pat = simplify_eexp pat in
-    Some (v, pat)
-
-exception RewriteSeparationException
+    let candidates =
+      let all_counts = count_occurrences initial_candidates e VM.empty in
+      VS.filter (has_count_one all_counts) initial_candidates in
+    if VS.is_empty candidates then None
+    else
+      let v = VS.min_elt candidates in
+      let pat = separate v e (econst Z.zero) |> simplify_eexp ~moduli:moduli in
+      Some (v, pat)
 
 let get_rewrite_pattern' e others =
   let rec num_occurrence sub e =
     if eq_eexp sub e then 1
     else match e with
-         | Eunop (_, e) -> num_occurrence sub e
-         | Ebinop (_, e1, e2) -> num_occurrence sub e1 + num_occurrence sub e2
-         | _ -> 0 in
+      | Eunop (_, e) -> num_occurrence sub e
+      | Ebinop (_, e1, e2) -> num_occurrence sub e1 + num_occurrence sub e2
+      | _ -> 0 in
   let vars_disjoint_except_eq sub e =
     let vars_sub = vars_eexp sub in
     let rec helper e =
       if eq_eexp sub e then true
       else match e with
-           | Evar v -> not (VS.mem v vars_sub)
-           | Eunop (_, e) -> helper e
-           | Ebinop (_, e1, e2) -> helper e1 && helper e2
-           | _ -> true in
+        | Evar v -> not (VS.mem v vars_sub)
+        | Eunop (_, e) -> helper e
+        | Ebinop (_, e1, e2) -> helper e1 && helper e2
+        | _ -> true in
     helper e in
   let rec sub_exprs_with_var e =
     if VS.is_empty (vars_eexp e) then []
     else e::(match e with
-             | Eunop (_, e) -> sub_exprs_with_var e
-             | Ebinop (_, e1, e2) -> (sub_exprs_with_var e1) @@ (sub_exprs_with_var e2)
-             | _ -> []) in
+        | Eunop (_, e) -> sub_exprs_with_var e
+        | Ebinop (_, e1, e2) -> (sub_exprs_with_var e1) @@ (sub_exprs_with_var e2)
+        | _ -> []) in
   let rec separate sub e pat =
     if eq_eexp sub e then pat
     else
       match e with
       | Eunop (Eneg, e) when eexp_has_sub e sub -> separate sub e (eneg pat)
       | Ebinop (op, e1, e2) ->
-         let in1 = eexp_has_sub e1 sub in
-         let in2 = eexp_has_sub e2 sub in
-         let (has_sub, add_pat, pat) =
-           match op, in1, in2 with
-           | Eadd, true, false -> (e1, eneg e2, pat)
-           | Eadd, false, true -> (e2, eneg e1, pat)
-           | Esub, true, false -> (e1, e2, pat)
-           | Esub, false, true -> (e2, e1, eneg pat)
-           | _ -> raise RewriteSeparationException in
-         separate sub has_sub (eadd pat add_pat)
+        let in1 = eexp_has_sub e1 sub in
+        let in2 = eexp_has_sub e2 sub in
+        let (has_sub, add_pat, pat) =
+          match op, in1, in2 with
+          | Eadd, true, false -> (e1, eneg e2, pat)
+          | Eadd, false, true -> (e2, eneg e1, pat)
+          | Esub, true, false -> (e1, e2, pat)
+          | Esub, false, true -> (e2, e1, eneg pat)
+          | _ -> raise RewriteSeparationException in
+        separate sub has_sub (eadd pat add_pat)
       | _ -> raise RewriteSeparationException in
   (* Check shorter eexp first. *)
   let sort_by_length es =
-    snd (List.split (List.sort (fun (l1, _) (l2, _) -> Stdlib.compare l1 l2)
-                       (List.map (fun e -> (len_eexp e, e)) es))) in
-  let is_candidate sub = num_occurrence sub e = 1
-                         && vars_disjoint_except_eq sub e
-                         && List.for_all (vars_disjoint_except_eq sub) others in
+    tmap (fun e -> (len_eexp e, e)) es
+    |> List.sort (fun (l1, _) (l2, _) -> Stdlib.compare l1 l2)
+    |> List.split
+    |> snd in
+  let is_candidate sub =
+    num_occurrence sub e = 1
+    && vars_disjoint_except_eq sub e
+    && List.for_all (vars_disjoint_except_eq sub) others in
   let rec find_separable subs =
     match subs with
     | [] -> None
     | hd::tl when is_candidate hd ->
-       (try
-          let pat = separate hd e (econst Z.zero) in
-          let pat = simplify_eexp pat in
-          Some (hd, pat)
-        with RewriteSeparationException ->
-          find_separable tl)
+      (try
+         let pat = separate hd e (econst Z.zero) in
+         let pat = simplify_eexp pat in
+         Some (hd, pat)
+       with RewriteSeparationException ->
+         find_separable tl)
     | _::tl -> find_separable tl in
   find_separable (sort_by_length (sub_exprs_with_var e))
 
@@ -110,7 +140,7 @@ let subsumed_by_moduli e moduli =
     match e with
     | Ebinop (Emul, _, m) -> List.exists (eq_eexp m) moduli
     | Ebinop (Eadd, e0, e1)
-      | Ebinop (Esub, e0, e1) -> helper e0 moduli && helper e1 moduli
+    | Ebinop (Esub, e0, e1) -> helper e0 moduli && helper e1 moduli
     | _ -> false in
   (* We don't need to traverse e when moduli is empty. *)
   match moduli with
@@ -126,19 +156,20 @@ let is_assignment_under_moduli e moduli =
   | Econst _ -> None
   (* v = e (mod em), e = v (mod em) *)
   | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), em)
-       when subsumed_by_moduli em moduli && not (IS.mem v.vid (IS.union (vids_eexp e) (vids_eexp em))) ->
-     Some (v, e)
+    when subsumed_by_moduli em moduli && not (vid_in_eexp v.vid e || vid_in_eexp v.vid em) ->
+    Some (v, e)
   | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), em)
-       when subsumed_by_moduli em moduli && not (IS.mem v.vid (IS.union (vids_eexp e) (vids_eexp em))) ->
-     Some (v, e)
+    when subsumed_by_moduli em moduli && not (vid_in_eexp v.vid e || vid_in_eexp v.vid em) ->
+    Some (v, e)
   (* v = e, e = v *)
-  | Ebinop (Esub, Evar v, e) when not (IS.mem v.vid (vids_eexp e)) -> Some (v, e)
-  | Ebinop (Esub, e, Evar v) when not (IS.mem v.vid (vids_eexp e)) -> Some (v, e)
+  | Ebinop (Esub, Evar v, e) when not (vid_in_eexp v.vid e) -> Some (v, e)
+  | Ebinop (Esub, e, Evar v) when not (vid_in_eexp v.vid e) -> Some (v, e)
   (* v + e1 = e2, e2 = v + e1 *)
   | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2)
-       when not (IS.mem v.vid (IS.union (vids_eexp e1) (vids_eexp e2))) -> Some (v, esub e2 e1)
+    when not (vid_in_eexp v.vid e1 || vid_in_eexp v.vid e2) -> Some (v, esub e2 e1)
   | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
-       when not (IS.mem v.vid (IS.union (vids_eexp e1) (vids_eexp e2))) -> Some (v, esub e2 e1)
+    when not (vid_in_eexp v.vid e1 || vid_in_eexp v.vid e2) -> Some (v, esub e2 e1)
+  (* Fallback to the optimized general pattern matcher *)
   | _ -> get_rewrite_pattern e
 
 let is_assignment_under_moduli' e others moduli =
@@ -146,45 +177,155 @@ let is_assignment_under_moduli' e others moduli =
   | Econst _ -> None
   (* v = e (mod em), e = v (mod em) *)
   | Ebinop (Esub, (Ebinop (Esub, Evar v, e)), em)
-       when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
-     Some (evar v, e)
+    when subsumed_by_moduli em moduli && not (var_in_eexp v e || var_in_eexp v em) ->
+    Some (evar v, e)
   | Ebinop (Esub, (Ebinop (Esub, e, Evar v)), em)
-       when subsumed_by_moduli em moduli && not (VS.mem v (VS.union (vars_eexp e) (vars_eexp em))) ->
-     Some (evar v, e)
+    when subsumed_by_moduli em moduli && not (var_in_eexp v e || var_in_eexp v em) ->
+    Some (evar v, e)
   (* v = e, e = v *)
-  | Ebinop (Esub, Evar v, e) when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
-  | Ebinop (Esub, e, Evar v) when not (VS.mem v (vars_eexp e)) -> Some (evar v, e)
+  | Ebinop (Esub, Evar v, e) when not (var_in_eexp v e) -> Some (evar v, e)
+  | Ebinop (Esub, e, Evar v) when not (var_in_eexp v e) -> Some (evar v, e)
   (* v + e1 = e2, e2 = v + e1 *)
   | Ebinop (Esub, Ebinop (Eadd, Evar v, e1), e2)
-       when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
+    when not (var_in_eexp v e1 || var_in_eexp v e2) -> Some (evar v, esub e2 e1)
   | Ebinop (Esub, e2, Ebinop (Eadd, Evar v, e1))
-       when not (VS.mem v (VS.union (vars_eexp e1) (vars_eexp e2))) -> Some (evar v, esub e2 e1)
+    when not (var_in_eexp v e1 || var_in_eexp v e2) -> Some (evar v, esub e2 e1)
   | _ -> get_rewrite_pattern' e others
 
 
 (** Rewriting in ideal membership problems *)
 
+(* [topological_sort assigns] applies topological sort to the list
+   of assignments [assigns] *)
+let topological_sort assigns =
+  let assign_map = List.fold_left (fun acc (v, e) ->
+      IntMap.add v.vid (v, e, vids_eexp e) acc
+    ) IntMap.empty assigns in
+  let rec visit vid (visited, visiting, sorted) =
+    if IS.mem vid visiting then raise Circular_dependency
+    else if IS.mem vid visited then (visited, visiting, sorted)
+    else
+      let visiting' = IS.add vid visiting in
+      let (visited_after, _, sorted_after) =
+        match IntMap.find_opt vid assign_map with
+        | Some (_, _, deps) -> IS.fold visit deps (visited, visiting', sorted)
+        | None -> (visited, visiting', sorted) in
+      let final_sorted =
+        match IntMap.find_opt vid assign_map with
+        | Some (v, e, _) -> (v, e) :: sorted_after
+        | None -> sorted_after in
+      (IS.add vid visited_after, visiting, final_sorted) in
+  let (_, _, sorted_assigns) =
+    IntMap.fold
+      (fun vid _ acc -> visit vid acc)
+      assign_map (IS.empty, IS.empty, []) in
+  List.rev sorted_assigns
+
+let is_not_ezero e =
+  match e with
+  | Econst n when Z.equal n Z.zero -> false
+  | _ -> true
+
+(* try to apply rewriting using patterns with non-circular dependencies *)
+let rec try_dag_rewrite ideal p moduli const_moduli =
+  let rec partition assigned_vids assigns nonassigns ideal =
+    match ideal with
+    | [] -> (assigns, nonassigns)
+    | hd::tl ->
+      match is_assignment_under_moduli hd moduli with
+      | Some ((v, _) as pat) when not (IS.mem v.vid assigned_vids) ->
+        partition (IS.add v.vid assigned_vids) (pat::assigns) nonassigns tl
+      | _ ->
+        partition assigned_vids assigns (hd::nonassigns) tl in
+  let (assigns, nonassigns_rev) = partition IS.empty [] [] ideal in
+  if assigns = []
+  then (List.filter is_not_ezero ideal, p)
+  else
+    let sorted_assigns = topological_sort assigns in
+    let final_env = List.fold_left (fun env (v, e) ->
+        let (e', _) = subst_eexp env e in
+        VM.add v (simplify_eexp ~moduli:const_moduli e') env
+      ) VM.empty sorted_assigns in
+    let final_residuals = List.rev_map (fun poly ->
+        let (subbed, changed) = subst_eexp final_env poly in
+        if changed then simplify_eexp ~moduli:const_moduli subbed else poly
+      ) nonassigns_rev in
+    let (p_subbed, changed_p) = subst_eexp final_env p in
+    let p_final = if changed_p then simplify_eexp ~moduli:const_moduli p_subbed else p in
+    try_dag_rewrite final_residuals p_final moduli const_moduli
+
+let functional_worklist_rewrite ideal p moduli const_moduli =
+  (* Cache variable IDs immediately to prevent constant AST traversals *)
+  let initial_stack =
+    tmap (fun poly -> (poly, vids_eexp poly)) ideal in
+  (*
+     env: identified rewriting patterns
+     stack: polynomials not used for rewriting patterns
+     residuals: polynomials that are not rewriting patterns
+     dep_index: a map from a variable v to a set of variables vs, given that
+                for every v' in vs, there is some (v', e') in env such that
+                v appears in e' (as long as (v, e) is identified as a rewriting
+                pattern, e' has to be rewritten)
+  *)
+  let rec loop env stack residuals dep_index =
+    let get_dependents vid dep_index =
+      match IntMap.find_opt vid dep_index with
+      | Some s -> s
+      | None -> VS.empty in
+    match stack with
+    | [] -> (env, residuals)
+    | (poly, vs) :: rest_stack ->
+      let (subbed, changed) = subst_eexp env poly in
+      let simp = if changed then simplify_eexp ~moduli:const_moduli subbed else poly in
+      let simp_vs = if changed then vids_eexp simp else vs in
+      match is_assignment_under_moduli simp moduli with
+      | None ->
+        loop env rest_stack ((simp, simp_vs) :: residuals) dep_index
+      | Some (v, e) ->
+        let single_env = VM.singleton v e in
+        let dependents = get_dependents v.vid dep_index in
+        (* Only update the environment variables that actually need it *)
+        let (env', dep_index') = VS.fold (fun dep_v (c_env, c_idx) ->
+            let old_rhs = VM.find dep_v c_env in
+            let (new_rhs, changed_rhs) = subst_eexp single_env old_rhs in
+            if changed_rhs
+            then
+              begin
+                let simp_rhs = simplify_eexp ~moduli:const_moduli new_rhs in
+                let c_env' = VM.add dep_v simp_rhs c_env in
+                let c_idx' = IS.fold (fun new_vid idx ->
+                    let s = get_dependents new_vid idx in
+                    IntMap.add new_vid (VS.add dep_v s) idx
+                  ) (vids_eexp simp_rhs) c_idx in
+                (c_env', c_idx')
+              end
+            else (c_env, c_idx)
+          ) dependents (env, dep_index) in
+        let new_env = VM.add v e env' in
+        let new_dep_index = IS.fold (fun e_vid idx ->
+            let s = get_dependents e_vid idx in
+            IntMap.add e_vid (VS.add v s) idx
+          ) (vids_eexp e) dep_index' in
+        let (affected, unaffected) = List.partition (fun (_, r_vs) ->
+            IS.mem v.vid r_vs
+          ) residuals in
+        loop new_env (List.rev_append affected rest_stack) unaffected new_dep_index in
+  let (final_env, final_residuals_with_vs) = loop VM.empty initial_stack [] IntMap.empty in
+  let final_residuals = List.rev_map fst final_residuals_with_vs in
+  let (p_subbed, changed_p) = subst_eexp final_env p in
+  let p_final = if changed_p then simplify_eexp ~moduli:const_moduli p_subbed else p in
+  (List.filter is_not_ezero final_residuals, p_final)
+
 let rewrite_assignments ideal p moduli =
-  let add_varsets polys =
-    List.rev (List.rev_map (fun poly -> (poly, vids_eexp poly)) polys) in
-  let subst_poly_vs (v, e) (poly, vs) =
-    if IS.mem v.vid vs then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
-    else (poly, vs) in
-  let subst_poly_vss (v, e) poly_vss =
-    List.rev (List.rev_map (subst_poly_vs (v, e)) poly_vss) in
-  let rec do_rewrite idx finished_vs ideal_vs p_vs =
-    match ideal_vs with
-    | [] -> (fst (List.split finished_vs), fst p_vs)
-    | (hd_poly, hd_vs)::tl ->
-       (match is_assignment_under_moduli hd_poly moduli with
-        | None ->
-           do_rewrite (idx+1) ((hd_poly, hd_vs)::finished_vs) tl p_vs
-        | Some (v, e) ->
-           do_rewrite (idx+1) (subst_poly_vss (v, e) finished_vs)
-             (subst_poly_vss (v, e) tl) (subst_poly_vs (v, e) p_vs)) in
-  let (finished, p) =
-    do_rewrite 0 [] (add_varsets ideal) (p, vids_eexp p) in
-  (List.rev finished, p)
+  let is_econst e =
+    match e with
+    | Econst _ -> true
+    | _ -> false in
+  let const_moduli = List.filter is_econst moduli in
+  try
+    try_dag_rewrite ideal p moduli const_moduli
+  with Circular_dependency ->
+    functional_worklist_rewrite ideal p moduli const_moduli
 
 (**
    [rewrite_assignments_two_phase ideal_aps post_p_ms_list moduli] rewrites
@@ -197,31 +338,31 @@ let rewrite_assignments ideal p moduli =
                          [pi] is a polynomial asserted to be [0] modulo the moduli [msi]
    @param moduli moduli in the postcondition
    @return rewritten [(ideal_aps, post_p_ms_list)]
- *)
+*)
 let rewrite_assignments_two_phase ideal_aps (post_p_ms_list : (ebexp * IS.t * eexp * eexp list) list) moduli =
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
   let add_vids_post_p_ms_list post_p_ms_list = List.rev_map (fun (post, sc, p, ms) -> ((post, sc, p, ms), (vids_eexp p, (List.map vids_eexp ms)))) (List.rev post_p_ms_list) in
   let subst_poly_vs (v, e) (poly, vs) = if IS.mem v.vid vs
-                                        then (subst_eexp (VM.singleton v e) poly, IS.union (IS.remove v.vid vs) (vids_eexp e))
-                                        else (poly, vs) in
+    then (subst_eexp (VM.singleton v e) poly |> fst, IS.union (IS.remove v.vid vs) (vids_eexp e))
+    else (poly, vs) in
   let subst_apoly_vs (v, e) ((poly, annot), vs) = let (poly', vs') = subst_poly_vs (v, e) (poly, vs) in
-                                                  ((poly', annot), vs') in
+    ((poly', annot), vs') in
   let subst_apoly_vss (v, e) apoly_vss = List.rev (List.rev_map (subst_apoly_vs (v, e)) apoly_vss) in
   let subst_post_p_ms_vs_list (v, e) post_p_ms_vs_list =
     List.rev_map
       (fun ((post, sc, p, ms), (vs, ms_vs)) -> let (p', vs') = subst_poly_vs (v, e) (p, vs) in
-                                               let ms_ms_vs' = List.map2 (fun m m_vs -> subst_poly_vs (v, e) (m, m_vs)) ms ms_vs in
-                                               let (ms', ms_vs') = List.split ms_ms_vs' in
-                                               ((post, sc, p', ms'), (vs', ms_vs')))
+        let ms_ms_vs' = List.map2 (fun m m_vs -> subst_poly_vs (v, e) (m, m_vs)) ms ms_vs in
+        let (ms', ms_vs') = List.split ms_ms_vs' in
+        ((post, sc, p', ms'), (vs', ms_vs')))
       (List.rev post_p_ms_vs_list) in
   let rec do_rewrite finished_aps_vs_rev ideal_aps_vs post_p_ms_vs_list =
     match ideal_aps_vs with
     | [] -> (fst (List.split (List.rev finished_aps_vs_rev)), fst (List.split post_p_ms_vs_list))
     | (((hd_poly, _), _) as hd)::tl ->
-       (match is_assignment_under_moduli hd_poly moduli with
-        | None -> do_rewrite (hd::finished_aps_vs_rev) tl post_p_ms_vs_list
-        | Some (v, e) -> do_rewrite (subst_apoly_vss (v, e) finished_aps_vs_rev)
-                           (subst_apoly_vss (v, e) tl) (subst_post_p_ms_vs_list (v, e) post_p_ms_vs_list)) in
+      (match is_assignment_under_moduli hd_poly moduli with
+       | None -> do_rewrite (hd::finished_aps_vs_rev) tl post_p_ms_vs_list
+       | Some (v, e) -> do_rewrite (subst_apoly_vss (v, e) finished_aps_vs_rev)
+                          (subst_apoly_vss (v, e) tl) (subst_post_p_ms_vs_list (v, e) post_p_ms_vs_list)) in
   do_rewrite [] (add_vids ideal_aps) (add_vids_post_p_ms_list post_p_ms_list)
 
 let rewrite_assignments' ideal p moduli =
@@ -229,12 +370,12 @@ let rewrite_assignments' ideal p moduli =
     match ideal with
     | [] -> (finished, p)
     | hd::tl ->
-       (match is_assignment_under_moduli' hd (p::(finished @@ tl)) moduli with
-        | None -> do_rewrite (hd::finished) tl p
-        | Some (sub, e) ->
-           do_rewrite (List.rev (List.rev_map (replace_eexp [(sub, e)]) finished))
-             (List.rev (List.rev_map (replace_eexp [(sub, e)]) tl))
-             (replace_eexp [(sub, e)] p)) in
+      (match is_assignment_under_moduli' hd (p::(finished @@ tl)) moduli with
+       | None -> do_rewrite (hd::finished) tl p
+       | Some (sub, e) ->
+         do_rewrite (map_subst (replace_eexp [(sub, e)]) finished |> fst)
+           (map_subst (replace_eexp [(sub, e)]) tl |> fst)
+           (replace_eexp [(sub, e)] p |> fst)) in
   let (finished, p) = do_rewrite [] ideal p in
   (List.rev finished, p)
 
@@ -242,14 +383,14 @@ let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * IS.t * e
   let add_vids aps = List.rev_map (fun (poly, annot) -> ((poly, annot), vids_eexp poly)) (List.rev aps) in
   let add_vids_post_p_ms_list post_p_ms_list  = List.rev_map (fun (post, sc, p, ms) -> ((post, sc, p, ms), vids_eexp p)) (List.rev post_p_ms_list) in
   let subst_poly_vs (sub, sub_vs, e, e_vs) (poly, vs) = if IS.disjoint sub_vs vs then (poly, vs)
-                                                        else (replace_eexp [(sub, e)] poly, IS.union (IS.diff vs sub_vs) e_vs) in
+    else (replace_eexp [(sub, e)] poly |> fst, IS.union (IS.diff vs sub_vs) e_vs) in
   let subst_apoly_vs pat ((poly, annot), vs) = let (poly', vs') = subst_poly_vs pat (poly, vs) in
-                                               ((poly', annot), vs') in
+    ((poly', annot), vs') in
   let subst_apoly_vss pat apoly_vss = List.rev (List.rev_map (subst_apoly_vs pat) apoly_vss) in
   let subst_post_p_ms_vs_list pat post_p_ms_vs_list =
     List.rev_map
       (fun ((post, sc, p, ms), vs) -> let (p', vs') = subst_poly_vs pat (p, vs) in
-                                      ((post, sc, p', ms), vs'))
+        ((post, sc, p', ms), vs'))
       (List.rev post_p_ms_vs_list) in
   let get_others finished_aps_vs_rev tl post_p_ms_vs_list : eexp list =
     let ps1 : eexp list = fst (List.split (fst (List.split finished_aps_vs_rev))) in
@@ -260,11 +401,11 @@ let rewrite_assignments_two_phase' ideal_aps (post_p_ms_list : (ebexp * IS.t * e
     match ideal_aps_vs with
     | [] -> (fst (List.split (List.rev finished_aps_vs_rev)), fst (List.split post_p_ms_vs_list))
     | (((hd_poly, _), _) as hd)::tl ->
-       (match is_assignment_under_moduli' hd_poly (get_others finished_aps_vs_rev tl post_p_ms_vs_list) moduli with
-        | None -> do_rewrite (hd::finished_aps_vs_rev) tl post_p_ms_vs_list
-        | Some (sub, e) -> let pat = (sub, vids_eexp sub, e, vids_eexp e) in
-                           do_rewrite (subst_apoly_vss pat finished_aps_vs_rev)
-                             (subst_apoly_vss pat tl) (subst_post_p_ms_vs_list pat post_p_ms_vs_list)) in
+      (match is_assignment_under_moduli' hd_poly (get_others finished_aps_vs_rev tl post_p_ms_vs_list) moduli with
+       | None -> do_rewrite (hd::finished_aps_vs_rev) tl post_p_ms_vs_list
+       | Some (sub, e) -> let pat = (sub, vids_eexp sub, e, vids_eexp e) in
+         do_rewrite (subst_apoly_vss pat finished_aps_vs_rev)
+           (subst_apoly_vss pat tl) (subst_post_p_ms_vs_list pat post_p_ms_vs_list)) in
   do_rewrite [] (add_vids ideal_aps) (add_vids_post_p_ms_list post_p_ms_list)
 
 
@@ -280,20 +421,20 @@ let rewrite_ebexps ebexps =
   let rec helper (em, rvs) res current =
     match current with
     | (Eeq (Evar v, e) as hd)::tl | (Eeq (e, Evar v) as hd)::tl ->
-       if (* true || *) is_const e then
-         if VS.mem v rvs then
-           let em' = VM.add v e VM.empty in
-           let rvs' = vars_eexp e in
-           helper (em', rvs') (tmap (subst_ebexp em) res)
-             (tmap (subst_ebexp em) tl)
-         else
-           let em' = VM.add v e em in
-           let rvs' = VS.union rvs (vars_eexp e) in
-           helper (em', rvs') res tl
-       else
-         helper (em, rvs) (hd::res) tl
+      if (* true || *) is_const e then
+        if VS.mem v rvs then
+          let em' = VM.add v e VM.empty in
+          let rvs' = vars_eexp e in
+          helper (em', rvs') (map_subst (subst_ebexp em) res |> fst)
+            (map_subst (subst_ebexp em) tl |> fst)
+        else
+          let em' = VM.add v e em in
+          let rvs' = VS.union rvs (vars_eexp e) in
+          helper (em', rvs') res tl
+      else
+        helper (em, rvs) (hd::res) tl
     | Etrue::tl -> helper (em, rvs) res tl
     | hd::tl -> helper (em, rvs) (hd::res) tl
-    | [] -> tmap (subst_ebexp em) res in
+    | [] -> map_subst (subst_ebexp em) res |> fst in
   helper (VM.empty, VS.empty) [] ebexps |> List.rev
 

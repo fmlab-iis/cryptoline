@@ -284,6 +284,11 @@ type eexp =
 
 let evar v = Evar v
 let econst n = Econst n
+
+let ezero = econst Z.zero
+let eone = econst Z.one
+let etwo = econst z_two
+
 let eneg e = Eunop (Eneg, e)
 let eneg' e =
   match e with
@@ -306,8 +311,8 @@ let esub' e1 e2 =
 let emul e1 e2 = Ebinop (Emul, e1, e2)
 let emul' e1 e2 =
   match e1, e2 with
-  | Econst n, _ when Z.equal n Z.zero -> Econst Z.zero
-  | _, Econst n when Z.equal n Z.zero -> Econst Z.zero
+  | Econst n, _ when Z.equal n Z.zero -> ezero
+  | _, Econst n when Z.equal n Z.zero -> ezero
   | Econst n, _ when Z.equal n Z.one -> e2
   | _, Econst n when Z.equal n Z.one -> e1
   | Econst n, Econst m -> Econst (Z.mul n m)
@@ -318,13 +323,13 @@ let epow e1 e2 =
   | _ -> failwith "Epow must have integer exponentials"
 let epow' e1 e2 =
   match e1, e2 with
-  | _, Econst n when Z.equal n Z.zero -> Econst Z.one
+  | _, Econst n when Z.equal n Z.zero -> eone
   | _, Econst n when Z.equal n Z.one -> e1
-  | Econst n, _ when Z.equal n Z.zero -> Econst Z.zero
-  | Econst n, _ when Z.equal n Z.one -> Econst Z.one
+  | Econst n, _ when Z.equal n Z.zero -> ezero
+  | Econst n, _ when Z.equal n Z.one -> eone
   | Econst n, Econst m -> Econst (Z.pow n (Z.to_int m))
   | _, _ -> epow e1 e2
-let esq e = Ebinop (Epow, e, Econst z_two)
+let esq e = Ebinop (Epow, e, etwo)
 (*let eadds es = List.fold_left (fun res e -> eadd e res) (econst Z.zero) es
 let emuls es = List.fold_left (fun res e -> emul e res) (econst Z.one) es*)
 let eadds es =
@@ -356,6 +361,8 @@ let emuls' es =
               | LeftAssoc -> List.fold_left (fun res e -> emul' res e) e es
               | RightAssoc -> List.fold_left (fun res e -> emul' e res) e es)
 
+let e2pow n = Z.pow z_two n
+
 let rec len_eexp e =
   match e with
   | Evar _ -> 1
@@ -363,14 +370,20 @@ let rec len_eexp e =
   | Eunop (_, e) -> 1 + len_eexp e
   | Ebinop (_, e1, e2) -> 1 + len_eexp e1 + len_eexp e2
 
-(* Expressions should not be compared by = and ==. *)
+(* Expressions should not be compared only by = and ==. *)
 let rec eq_eexp e1 e2 =
-  match e1, e2 with
-  | Evar v1, Evar v2 -> eq_var v1 v2
-  | Econst n1, Econst n2 -> Z.equal n1 n2
-  | Eunop (op1, e1), Eunop (op2, e2) -> op1 = op2 && eq_eexp e1 e2
-  | Ebinop (op1, e11, e12), Ebinop (op2, e21, e22) -> op1 = op2 && eq_eexp e11 e21 && eq_eexp e12 e22
-  | _ -> false
+  if e1 == e2
+  then true
+  else match e1, e2 with
+    | Evar v1, Evar v2 ->
+      eq_var v1 v2
+    | Econst n1, Econst n2 ->
+      Z.equal n1 n2
+    | Eunop (op1, e1), Eunop (op2, e2) ->
+      op1 = op2 && eq_eexp e1 e2
+    | Ebinop (op1, e11, e12), Ebinop (op2, e21, e22) ->
+      op1 = op2 && eq_eexp e11 e21 && eq_eexp e12 e22
+    | _ -> false
 
 let cmp_eunop op1 op2 = Stdlib.compare op1 op2
 
@@ -407,28 +420,125 @@ module EEElt : Set.OrderedType with type t = eexp =
 
 module EES : Set.S with type elt = eexp = Set.Make(EEElt)
 
-let rec simplify_eexp e =
+
+(* Simplify an expression. *)
+let rec simplify_eexp_fast e =
   match e with
-  | Eunop (Eneg, e) ->
-     let e = simplify_eexp e in
-     (match e with
-      | Econst n when Z.equal n Z.zero -> Econst Z.zero
-      | Eunop (Eneg, sub) -> sub
-      | _ -> Eunop (Eneg, e))
+  | Eunop (Eneg, e1) ->
+    let e1' = simplify_eexp_fast e1 in
+    begin
+      match e1' with
+      (* -0 = 0 *)
+      | Econst n when Z.equal n Z.zero -> e1'
+      (* Push negation to Z *)
+      | Econst n -> Econst (Z.neg n)
+      (* - - e = e *)
+      | Eunop (Eneg, e1'') -> e1''
+      | _ ->
+        if e1' == e1 then e
+        else Eunop (Eneg, e1')
+    end
   | Ebinop (op, e1, e2) ->
-     let e1 = simplify_eexp e1 in
-     let e2 = simplify_eexp e2 in
-     (match op, e1, e2 with
-      | Eadd, e, Econst n when Z.equal n Z.zero -> e
-      | Eadd, Econst n, e when Z.equal n Z.zero -> e
-      | Esub, e, Econst n when Z.equal n Z.zero -> e
-      | Esub, Econst n, e when Z.equal n Z.zero -> simplify_eexp (Eunop (Eneg, e))
-      | Emul, _e, Econst n when Z.equal n Z.zero -> Econst Z.zero
-      | Emul, Econst n, _e when Z.equal n Z.zero -> Econst Z.zero
-      | Emul, e, Econst n when Z.equal n Z.one -> e
-      | Emul, Econst n, e when Z.equal n Z.one -> e
-      | _ -> Ebinop (op, e1, e2))
+    let e1' = simplify_eexp_fast e1 in
+    let e2' = simplify_eexp_fast e2 in
+    begin
+      match op, e1', e2' with
+      (* e + 0 = e *)
+      | Eadd, _, Econst n when Z.equal n Z.zero -> e1'
+      (* 0 + e = e *)
+      | Eadd, Econst n, _ when Z.equal n Z.zero -> e2'
+      (* n + m *)
+      | Eadd, Econst n, Econst m -> Econst (Z.add n m)
+      (* e - 0 = e *)
+      | Esub, _, Econst n when Z.equal n Z.zero -> e1'
+      (* n - m *)
+      | Esub, Econst n, Econst m -> Econst (Z.sub n m)
+      (* 0 - (- e) = e *)
+      (* 0 - e = - e *)
+      | Esub, Econst n, _ when Z.equal n Z.zero ->
+        (match e2' with
+         | Eunop (Eneg, e2'') -> e2''
+         | _ -> Eunop (Eneg, e2'))
+      (* e * 0 = 0 *)
+      | Emul, _, Econst n when Z.equal n Z.zero -> e2'
+      (* 0 * e = 0 *)
+      | Emul, Econst n, _ when Z.equal n Z.zero -> e1'
+      (* e * 1 = e *)
+      | Emul, _, Econst n when Z.equal n Z.one -> e1'
+      (* 1 * e = e *)
+      | Emul, Econst n, _ when Z.equal n Z.one -> e2'
+      (* n * m *)
+      | Emul, Econst n, Econst m -> Econst (Z.mul n m)
+      (* e**0 = 1 *)
+      | Epow, _, Econst n when Z.equal n Z.zero -> eone
+      (* e**1 = e *)
+      | Epow, _, Econst n when Z.equal n Z.one -> e1'
+      | _ ->
+        if e1' == e1 && e2' == e2 then e
+        else Ebinop (op, e1', e2')
+    end
   | _ -> e
+
+(* Simplify an expression with constant moduli taken into consideration. *)
+let simplify_eexp_moduli const_moduli e =
+  let in_const_moduli e =
+    match e with
+    | Econst _ -> List.exists (eq_eexp e) const_moduli
+    | _ -> false in
+  let rec aux_mod e =
+    if in_const_moduli e then ezero
+    else
+      let simplified =
+        match e with
+        | Eunop (Eneg, e1) ->
+          let e1' = aux_mod e1 in
+          begin
+            match e1' with
+            | Econst n when Z.equal n Z.zero -> e1'
+            | Eunop (Eneg, e1'') -> e1''
+            | _ ->
+              if e1' == e1 then e
+              else Eunop (Eneg, e1')
+          end
+        | Ebinop (op, e1, e2) ->
+          let e1' = aux_mod e1 in
+          let e2' =
+            if op = Epow then simplify_eexp_fast e2
+            else aux_mod e2 in
+          begin
+            match op, e1', e2' with
+            | Eadd, e1', Econst n when Z.equal n Z.zero -> e1'
+            | Eadd, Econst n, e2' when Z.equal n Z.zero -> e2'
+            | Eadd, Econst n, Econst m -> Econst (Z.add n m)
+            | Esub, e1', Econst n when Z.equal n Z.zero -> e1'
+            | Esub, Econst n, Econst m -> Econst (Z.sub n m)
+            | Esub, Econst n, e2' when Z.equal n Z.zero ->
+              (match e2' with
+               | Eunop (Eneg, e2'') -> e2''
+               | _ -> Eunop (Eneg, e2'))
+            | Emul, _, Econst n when Z.equal n Z.zero -> e2'
+            | Emul, Econst n, _ when Z.equal n Z.zero -> e1'
+            | Emul, e1', Econst n when Z.equal n Z.one -> e1'
+            | Emul, Econst n, e2' when Z.equal n Z.one -> e2'
+            | Emul, Econst n, Econst m -> Econst (Z.mul n m)
+            | Epow, _, Econst n when Z.equal n Z.zero -> eone
+            | Epow, _, Econst n when Z.equal n Z.one -> e1'
+            | _ ->
+              if e1' == e1 && e2' == e2 then e
+              else Ebinop (op, e1', e2')
+          end
+        | _ -> e
+      in
+      if simplified == e then simplified
+      else if in_const_moduli simplified then ezero
+      else simplified
+  in
+  aux_mod e
+
+let simplify_eexp ?(moduli=[]) e =
+  match moduli with
+  | [] -> simplify_eexp_fast e
+  | _ -> simplify_eexp_moduli moduli e
 
 type mon = eexp list
 
@@ -458,14 +568,14 @@ let expand_eexp e =
     let m = List.fold_left (fun res v -> let c = if EM.mem v res then Z.add (EM.find v res) Z.one
                                                  else Z.one in
                                          EM.add v c res) EM.empty vs in
-    EM.fold (fun v c res -> emul' res (epow' v (Econst c))) m (Econst Z.one) in
+    EM.fold (fun v c res -> emul' res (epow' v (Econst c))) m eone in
   (* convert monomial to eexp *)
   let eexp_of_mon c ms =
-    if Z.equal c Z.zero then Econst Z.zero
+    if Z.equal c Z.zero then ezero
     else if Z.equal c Z.one then prod ms
     else emul' (Econst c) (prod ms) in
   (* convert term to eexp *)
-  let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t (Econst Z.zero) in
+  let eexp_of_term t = TM.fold (fun ms c res -> eadd' res (eexp_of_mon c ms)) t ezero in
   (* a term of a single monomial *)
   let mon_term c ms = TM.add ms c TM.empty in
   (* add a monomial to a term *)
@@ -1167,11 +1277,6 @@ let new_name ?prefix:prefix names =
     !name
   else prefix
 
-let e2pow n = Z.pow z_two n
-
-let ezero = econst Z.zero
-let eone = econst Z.one
-let etwo = econst z_two
 let epow2e e = epow etwo e
 let epow2z z = epow2e (econst z)
 let epow2i i = epow2z (Z.of_int i)
@@ -1504,248 +1609,299 @@ let string_of_rspec ?typ:(typ=false) s =
 
 (** Variable Sets *)
 
-
-let rec vars_eexp e =
+let rec vars_eexp_acc e acc =
   match e with
-  | Evar x -> VS.singleton x
-  | Econst _ -> VS.empty
-  | Eunop (_, e) -> vars_eexp e
-  | Ebinop (_, e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
+  | Evar x -> VS.add x acc
+  | Econst _ -> acc
+  | Eunop (_, e1) -> vars_eexp_acc e1 acc
+  | Ebinop (_, e1, e2) -> vars_eexp_acc e2 (vars_eexp_acc e1 acc)
 
-let rec vars_rexp e =
+let vars_eexp e =
+  vars_eexp_acc e VS.empty
+
+let rec vars_rexp_acc e acc =
   match e with
-  | Rvar x -> VS.singleton x
-  | Rconst _ -> VS.empty
-  | Runop (_, _, e) -> vars_rexp e
-  | Rbinop (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
+  | Rvar x -> VS.add x acc
+  | Rconst _ -> acc
+  | Runop (_, _, e) -> vars_rexp_acc e acc
+  | Rbinop (_, _, e1, e2) -> vars_rexp_acc e2 (vars_rexp_acc e1 acc)
   | Ruext (_, e, _)
-    | Rsext (_, e, _) -> vars_rexp e
-  | Rconcat (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
+  | Rsext (_, e, _) -> vars_rexp_acc e acc
+  | Rconcat (_, _, e1, e2) -> vars_rexp_acc e2 (vars_rexp_acc e1 acc)
 
-let rec vars_ebexp e =
+let vars_rexp e =
+  vars_rexp_acc e VS.empty
+
+let rec vars_ebexp_acc e acc =
   match e with
-  | Etrue -> VS.empty
+  | Etrue -> acc
   | Ecmp (_, e1, e2)
-  | Eeq (e1, e2) -> VS.union (vars_eexp e1) (vars_eexp e2)
-  | Eeqmod (e1, e2, ps) -> VS.union (vars_eexp e1) (List.fold_left (fun vs p -> VS.union vs (vars_eexp p)) (vars_eexp e2) ps)
-  | Eand (e1, e2) -> VS.union (vars_ebexp e1) (vars_ebexp e2)
+  | Eeq (e1, e2) -> vars_eexp_acc e2 (vars_eexp_acc e1 acc)
+  | Eeqmod (e1, e2, ps) ->
+    List.fold_left (fun acc e ->
+        vars_eexp_acc e acc
+      ) (vars_eexp_acc e2 (vars_eexp_acc e1 acc)) ps
+  | Eand (e1, e2) -> vars_ebexp_acc e2 (vars_ebexp_acc e1 acc)
 
-let rec vars_rbexp e =
+let vars_ebexp e =
+  vars_ebexp_acc e VS.empty
+
+let rec vars_rbexp_acc e acc =
   match e with
-  | Rtrue -> VS.empty
-  | Req (_, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
-  | Rcmp (_, _, e1, e2) -> VS.union (vars_rexp e1) (vars_rexp e2)
-  | Rneg e -> vars_rbexp e
+  | Rtrue -> acc
+  | Req (_, e1, e2)
+  | Rcmp (_, _, e1, e2) -> vars_rexp_acc e2 (vars_rexp_acc e1 acc)
+  | Rneg e -> vars_rbexp_acc e acc
   | Rand (e1, e2)
-  | Ror (e1, e2) -> VS.union (vars_rbexp e1) (vars_rbexp e2)
+  | Ror (e1, e2) -> vars_rbexp_acc e2 (vars_rbexp_acc e1 acc)
 
-let vars_helper vars_f es =
-  List.fold_left (fun res e -> VS.union res (vars_f e)) VS.empty es
+let vars_rbexp e =
+  vars_rbexp_acc e VS.empty
 
-let vars_eexps es = vars_helper vars_eexp es
-let vars_ebexps es = vars_helper vars_ebexp es
-let vars_rexps es = vars_helper vars_rexp es
-let vars_rbexps es = vars_helper vars_rbexp es
+let vars_helper vars_f es acc =
+  List.fold_left (fun acc e -> vars_f e acc) acc es
+
+let vars_eexps_acc es acc = vars_helper vars_eexp_acc es acc
+let vars_eexps es = vars_eexps_acc es VS.empty
+let vars_ebexps_acc es acc = vars_helper vars_ebexp_acc es acc
+let vars_ebexps es = vars_ebexps_acc es VS.empty
+let vars_rexps_acc es acc = vars_helper vars_rexp_acc es acc
+let vars_rexps es = vars_rexps_acc es VS.empty
+let vars_rbexps_acc es acc = vars_helper vars_rbexp_acc es acc
+let vars_rbexps es = vars_rbexps_acc es VS.empty
+
+let vars_bexp_acc e acc =
+  vars_rbexp_acc (rng_bexp e) (vars_ebexp_acc (eqn_bexp e) acc)
 
 let vars_bexp e =
-  VS.union (vars_ebexp (eqn_bexp e)) (vars_rbexp (rng_bexp e))
+  vars_bexp_acc e VS.empty
 
-let vars_ebexp_prove_with es = List.split es |> fst |> vars_ebexps
+let vars_ebexp_prove_with_acc es acc =
+  vars_ebexps_acc (List.split es |> fst) acc
 
-let vars_rbexp_prove_with rs = List.split rs |> fst |> vars_rbexps
+let vars_ebexp_prove_with es =
+  vars_ebexp_prove_with_acc es VS.empty
 
-let vars_bexp_prove_with (es, rs) = VS.union (vars_ebexp_prove_with es) (vars_rbexp_prove_with rs)
+let vars_rbexp_prove_with_acc rs acc =
+  vars_rbexps_acc (List.split rs |> fst) acc
+
+let vars_rbexp_prove_with rs = vars_rbexp_prove_with_acc rs VS.empty
+
+let vars_bexp_prove_with_acc (es, rs) acc =
+  vars_rbexp_prove_with_acc rs (vars_ebexp_prove_with_acc es acc)
+
+let vars_bexp_prove_with (es, rs) =
+  vars_bexp_prove_with_acc (es, rs) VS.empty
+
+let vars_atom_acc a acc =
+  match a with
+  | Avar v -> VS.add v acc
+  | _ -> acc
 
 let vars_atom a =
-  match a with
-  | Avar v -> VS.singleton v
-  | _ -> VS.empty
+  vars_atom_acc a VS.empty
 
-let vars_instr ?(upd=false) i =
+let vars_instr_acc ?(upd=false) i acc =
   let addv = if upd then vs_add_upd else VS.add in
   let unionv = if upd then vs_union_upd else VS.union in
   match i with
-  | Imov (v, a) -> addv v (vars_atom a)
+  | Imov (v, a) -> addv v (vars_atom_acc a acc)
   | Ishl (v, a1, a2)
     | Ishr (v, a1, a2)
-    | Isar (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
+    | Isar (v, a1, a2) -> addv v (vars_atom_acc a2 (vars_atom_acc a1 acc))
   | Ishls (l, v, a, _)
     | Ishrs (v, l, a, _)
-    | Isars (v, l, a, _) -> addv l (addv v (vars_atom a))
+    | Isars (v, l, a, _) -> addv l (addv v (vars_atom_acc a acc))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
-    | Imulj (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
+    | Imulj (v, a1, a2) -> addv v (vars_atom_acc a2 (vars_atom_acc a1 acc))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
-    | Isbb (v, a1, a2, c) -> addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom c))
+    | Isbb (v, a1, a2, c) -> addv v (vars_atom_acc c (vars_atom_acc a2 (vars_atom_acc a1 acc)))
     | Iadds (c, v, a1, a2)
     | Isubc (c, v, a1, a2)
     | Isubb (c, v, a1, a2)
     | Imuls (c, v, a1, a2) ->
-     addv c (addv v (unionv (vars_atom a1) (vars_atom a2)))
+     addv c (addv v (vars_atom_acc a2 (vars_atom_acc a1 acc)))
   | Iadcs (c, v, a1, a2, y)
     | Isbcs (c, v, a1, a2, y)
     | Isbbs (c, v, a1, a2, y) ->
-     addv c (addv v (unionv (unionv (vars_atom a1) (vars_atom a2)) (vars_atom y)))
-  | Isplit (vh, vl, a, _) -> addv vh (addv vl (vars_atom a))
-  | Ispl (vh, vl, a, _) -> addv vh (addv vl (vars_atom a))
+     addv c (addv v (vars_atom_acc y (vars_atom_acc a2 (vars_atom_acc a1 acc))))
+  | Isplit (vh, vl, a, _) -> addv vh (addv vl (vars_atom_acc a acc))
+  | Ispl (vh, vl, a, _) -> addv vh (addv vl (vars_atom_acc a acc))
   | Iseteq (v, a1, a2)
-  | Isetne (v, a1, a2) -> addv v (unionv (vars_atom a1) (vars_atom a2))
+  | Isetne (v, a1, a2) -> addv v (vars_atom_acc a2 (vars_atom_acc a1 acc))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
-     addv vh (addv vl (unionv (vars_atom a1) (vars_atom a2)))
+     addv vh (addv vl (vars_atom_acc a2 (vars_atom_acc a1 acc)))
   | Icshls (l, vh, vl, a1, a2, _)
     | Icshrs (vh, vl, l, a1, a2, _) ->
-     addv vh (addv vl (addv l (unionv (vars_atom a1) (vars_atom a2))))
+     addv vh (addv vl (addv l (vars_atom_acc a2 (vars_atom_acc a1 acc))))
   | Irol (v, a, n)
-    | Iror (v, a, n) -> addv v (unionv (vars_atom a) (vars_atom n))
-  | Inondet v -> VS.singleton v
-  | Icmov (v, c, a1, a2) -> addv v (unionv (vars_atom c) (unionv (vars_atom a1) (vars_atom a2)))
-  | Inop -> VS.empty
+    | Iror (v, a, n) -> addv v (vars_atom_acc n (vars_atom_acc a acc))
+  | Inondet v -> VS.add v acc
+  | Icmov (v, c, a1, a2) -> addv v (vars_atom_acc c (vars_atom_acc a2 (vars_atom_acc a1 acc)))
+  | Inop -> acc
   | Iand (v, a1, a2)
     | Ior (v, a1, a2)
-    | Ixor (v, a1, a2) ->  addv v (unionv (vars_atom a1) (vars_atom a2))
-  | Inot (v, a) -> addv v (vars_atom a)
+    | Ixor (v, a1, a2) ->  addv v (vars_atom_acc a2 (vars_atom_acc a1 acc))
+  | Inot (v, a) -> addv v (vars_atom_acc a acc)
   | Icast (od, v, a) ->
      (match od with
-      | None -> addv v (vars_atom a)
-      | Some d -> addv d (addv v (vars_atom a)))
-  | Ivpc (v, a) -> addv v (vars_atom a)
-  | Ijoin (v, ah, al) -> addv v (unionv (vars_atom ah) (vars_atom al))
-  | Iassert e -> vars_bexp_prove_with e
-  | Iassume e -> vars_bexp e
-  | Icut e -> vars_bexp_prove_with e
-  | Ighost (vs, e) -> unionv vs (vars_bexp e)
+      | None -> addv v (vars_atom_acc a acc)
+      | Some d -> addv d (addv v (vars_atom_acc a acc)))
+  | Ivpc (v, a) -> addv v (vars_atom_acc a acc)
+  | Ijoin (v, ah, al) -> addv v (vars_atom_acc al (vars_atom_acc ah acc))
+  | Iassert e -> vars_bexp_prove_with_acc e acc
+  | Iassume e -> vars_bexp_acc e acc
+  | Icut e -> vars_bexp_prove_with_acc e acc
+  | Ighost (vs, e) -> unionv vs (vars_bexp_acc e acc)
+
+let vars_instr ?(upd=false) i =
+  vars_instr_acc ~upd:upd i VS.empty
+
+let vars_program_acc ?(upd=false) p acc =
+  List.fold_left (fun acc i -> vars_instr_acc ~upd:upd i acc) acc p
 
 let vars_program ?(upd=false) p =
-  let unionv = if upd then vs_union_upd else VS.union in
-  List.fold_left (fun res i -> unionv (vars_instr ~upd i) res) VS.empty p
+  vars_program_acc ~upd:upd p VS.empty
 
-let lvs_instr i =
+let lvs_instr_acc ?(upd=false) i acc =
+  let addv = if upd then vs_add_upd else VS.add in
   match i with
-  | Imov (v, _) -> VS.singleton v
-  | Iadd (v, _, _) -> VS.singleton v
-  | Iadds (c, v, _, _) -> VS.add c (VS.singleton v)
-  | Iadc (v, _, _, _) -> VS.singleton v
-  | Iadcs (c, v, _, _, _) -> VS.add c (VS.singleton v)
-  | Isub (v, _, _) -> VS.singleton v
-  | Isubc (c, v, _, _) -> VS.add c (VS.singleton v)
-  | Isubb (c, v, _, _) -> VS.add c (VS.singleton v)
-  | Isbc (v, _, _, _) -> VS.singleton v
-  | Isbcs (c, v, _, _, _) -> VS.add c (VS.singleton v)
-  | Isbb (v, _, _, _) -> VS.singleton v
-  | Isbbs (c, v, _, _, _) -> VS.add c (VS.singleton v)
-  | Imul (v, _, _) -> VS.singleton v
-  | Imuls (c, v, _, _) -> VS.add c (VS.singleton v)
-  | Imull (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
-  | Imulj (v, _, _) -> VS.singleton v
-  | Ishl (v, _, _) -> VS.singleton v
-  | Ishls (l, v, _, _) -> VS.add l (VS.singleton v)
-  | Ishr (v, _, _) -> VS.singleton v
-  | Ishrs (v, l, _, _) -> VS.add l (VS.singleton v)
-  | Isar (v, _, _) -> VS.singleton v
-  | Isars (v, l, _, _) -> VS.add l (VS.singleton v)
-  | Isplit (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
-  | Ispl (vh, vl, _, _) -> VS.add vh (VS.singleton vl)
+  | Imov (v, _) -> addv v acc
+  | Iadd (v, _, _) -> addv v acc
+  | Iadds (c, v, _, _) -> addv c (addv v acc)
+  | Iadc (v, _, _, _) -> addv v acc
+  | Iadcs (c, v, _, _, _) -> addv c (addv v acc)
+  | Isub (v, _, _) -> addv v acc
+  | Isubc (c, v, _, _) -> addv c (addv v acc)
+  | Isubb (c, v, _, _) -> addv c (addv v acc)
+  | Isbc (v, _, _, _) -> addv v acc
+  | Isbcs (c, v, _, _, _) -> addv c (addv v acc)
+  | Isbb (v, _, _, _) -> addv v acc
+  | Isbbs (c, v, _, _, _) -> addv c (addv v acc)
+  | Imul (v, _, _) -> addv v acc
+  | Imuls (c, v, _, _) -> addv c (addv v acc)
+  | Imull (vh, vl, _, _) -> addv vh (addv vl acc)
+  | Imulj (v, _, _) -> addv v acc
+  | Ishl (v, _, _) -> addv v acc
+  | Ishls (l, v, _, _) -> addv l (addv v acc)
+  | Ishr (v, _, _) -> addv v acc
+  | Ishrs (v, l, _, _) -> addv l (addv v acc)
+  | Isar (v, _, _) -> addv v acc
+  | Isars (v, l, _, _) -> addv l (addv v acc)
+  | Isplit (vh, vl, _, _) -> addv vh (addv vl acc)
+  | Ispl (vh, vl, _, _) -> addv vh (addv vl acc)
   | Iseteq (v, _, _)
-    | Isetne (v, _, _) -> VS.singleton v
-  | Icshl (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
-  | Icshls (l, vh, vl, _, _, _) -> VS.add vh (VS.add vl (VS.singleton l))
-  | Icshr (vh, vl, _, _, _) -> VS.add vh (VS.singleton vl)
-  | Icshrs (vh, vl, l, _, _, _) -> VS.add vh (VS.add vl (VS.singleton l))
+    | Isetne (v, _, _) -> addv v acc
+  | Icshl (vh, vl, _, _, _) -> addv vh (addv vl acc)
+  | Icshls (l, vh, vl, _, _, _) -> addv vh (addv vl (addv l acc))
+  | Icshr (vh, vl, _, _, _) -> addv vh (addv vl acc)
+  | Icshrs (vh, vl, l, _, _, _) -> addv vh (addv vl (addv l acc))
   | Irol (v, _, _)
-    | Iror (v, _, _) -> VS.singleton v
-  | Inondet v -> VS.singleton v
-  | Icmov (v, _, _, _) -> VS.singleton v
-  | Inop -> VS.empty
+    | Iror (v, _, _) -> addv v acc
+  | Inondet v -> addv v acc
+  | Icmov (v, _, _, _) -> addv v acc
+  | Inop -> acc
   | Iand (v, _, _)
   | Ior (v, _, _)
   | Ixor (v, _, _)
-  | Inot (v, _) -> VS.singleton v
-  | Icast (_, v, _) -> VS.singleton v
-  | Ivpc (v, _) -> VS.singleton v
-  | Ijoin (v, _, _) -> VS.singleton v
+  | Inot (v, _) -> addv v acc
+  | Icast (_, v, _) -> addv v acc
+  | Ivpc (v, _) -> addv v acc
+  | Ijoin (v, _, _) -> addv v acc
   | Iassert _
   | Iassume _
   | Icut _
-  | Ighost _ -> VS.empty
+  | Ighost _ -> acc
+
+let lvs_instr ?(upd=false) i =
+  lvs_instr_acc ~upd:upd i VS.empty
+
+let lvs_program_acc ?(upd=false) p acc =
+  List.fold_left (fun acc i -> lvs_instr_acc ~upd:upd i acc) acc p
 
 let lvs_program ?(upd=false) p =
-  let unionv = if upd then vs_union_upd else VS.union in
-  List.fold_left (fun res i -> unionv (lvs_instr i) res) VS.empty p
+  lvs_program_acc ~upd:upd p VS.empty
 
-let rvs_instr i =
+let rvs_instr_acc i acc =
   match i with
-  | Imov (_, a) -> vars_atom a
-  | Iadd (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Iadds (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Iadc (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Iadcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Isub (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Isubc (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Isubb (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Isbc (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Isbcs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Isbb (_, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Isbbs (_, _, a1, a2, c) -> VS.union (VS.union (vars_atom a1) (vars_atom a2)) (vars_atom c)
-  | Imul (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Imuls (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Imull (_, _, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Imulj (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Ishl (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Ishls (_, _, a, _) -> vars_atom a
-  | Ishr (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Ishrs (_, _, a, _) -> vars_atom a
-  | Isar (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Isars (_, _, a, _) -> vars_atom a
-  | Isplit (_, _, a, _) -> vars_atom a
-  | Ispl (_, _, a, _) -> vars_atom a
+  | Imov (_, a) -> vars_atom_acc a acc
+  | Iadd (_, a1, a2)
+  | Iadds (_, _, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Iadc (_, a1, a2, c)
+  | Iadcs (_, _, a1, a2, c) -> vars_atom_acc c (vars_atom_acc a2 (vars_atom_acc a1 acc))
+  | Isub (_, a1, a2)
+  | Isubc (_, _, a1, a2)
+  | Isubb (_, _, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Isbc (_, a1, a2, c)
+  | Isbcs (_, _, a1, a2, c)
+  | Isbb (_, a1, a2, c)
+  | Isbbs (_, _, a1, a2, c) -> vars_atom_acc c (vars_atom_acc a2 (vars_atom_acc a1 acc))
+  | Imul (_, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Imuls (_, _, a1, a2)
+  | Imull (_, _, a1, a2)
+  | Imulj (_, a1, a2)
+  | Ishl (_, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Ishls (_, _, a, _) -> vars_atom_acc a acc
+  | Ishr (_, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Ishrs (_, _, a, _) -> vars_atom_acc a acc
+  | Isar (_, a1, a2) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Isars (_, _, a, _)
+  | Isplit (_, _, a, _)
+  | Ispl (_, _, a, _) -> vars_atom_acc a acc
   | Iseteq (_, a1, a2)
-    | Isetne (_, a1, a2) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Icshl (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Icshls (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Icshr (_, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
-  | Icshrs (_, _, _, a1, a2, _) -> VS.union (vars_atom a1) (vars_atom a2)
+    | Isetne (_, a1, a2)
+  | Icshl (_, _, a1, a2, _)
+  | Icshls (_, _, _, a1, a2, _)
+  | Icshr (_, _, a1, a2, _)
+  | Icshrs (_, _, _, a1, a2, _) -> vars_atom_acc a2 (vars_atom_acc a1 acc)
   | Irol (_, a, n)
-    | Iror (_, a, n) -> VS.union (vars_atom a) (vars_atom n)
-  | Inondet _ -> VS.empty
-  | Icmov (_, c, a1, a2) -> VS.union (vars_atom c) (VS.union (vars_atom a1) (vars_atom a2))
-  | Inop -> VS.empty
+    | Iror (_, a, n) -> vars_atom_acc n (vars_atom_acc a acc)
+  | Inondet _ -> acc
+  | Icmov (_, c, a1, a2) -> vars_atom_acc c (vars_atom_acc a2 (vars_atom_acc a1 acc))
+  | Inop -> acc
   | Iand (_, a1, a2)
     | Ior (_, a1, a2)
-    | Ixor (_, a1, a2) ->  VS.union (vars_atom a1) (vars_atom a2)
-  | Inot (_, a) -> vars_atom a
-  | Icast (_, _, a) -> vars_atom a
-  | Ivpc (_, a) -> vars_atom a
-  | Ijoin (_, ah, al) -> VS.union (vars_atom ah) (vars_atom al)
-  | Iassert e -> vars_bexp_prove_with e
-  | Iassume e -> vars_bexp e
-  | Icut e -> vars_bexp_prove_with e
-  | Ighost (_, e) -> vars_bexp e
+    | Ixor (_, a1, a2) ->  vars_atom_acc a2 (vars_atom_acc a1 acc)
+  | Inot (_, a)
+  | Icast (_, _, a)
+  | Ivpc (_, a) -> vars_atom_acc a acc
+  | Ijoin (_, ah, al) -> vars_atom_acc al (vars_atom_acc ah acc)
+  | Iassert e -> vars_bexp_prove_with_acc e acc
+  | Iassume e -> vars_bexp_acc e acc
+  | Icut e -> vars_bexp_prove_with_acc e acc
+  | Ighost (_, e) -> vars_bexp_acc e acc
 
-let rvs_program ?(upd=false) p =
-  let unionv = if upd then vs_union_upd else VS.union in
-  List.fold_left (fun res i -> unionv (rvs_instr i) res) VS.empty p
+let rvs_instr i = rvs_instr_acc i VS.empty
+
+let rvs_program_acc p acc =
+  List.fold_left (fun acc i -> rvs_instr_acc i acc) acc p
+
+let rvs_program p =
+  rvs_program_acc p VS.empty
 
 (* Carry/borrow variables introduced in an addition or a subtraction instruction. *)
-let lcarries_instr i =
+let lcarries_instr_acc ?(upd=false) i acc =
+  let addv = if upd then vs_add_upd else VS.add in
   match i with
   | Imov _
-  | Iadd _ -> VS.empty
-  | Iadds (c, _, _, _) -> VS.singleton c
-  | Iadc _ -> VS.empty
-  | Iadcs (c, _, _, _, _) -> VS.singleton c
-  | Isub _ -> VS.empty
-  | Isubc (c, _, _, _) -> VS.singleton c
-  | Isubb (c, _, _, _) -> VS.singleton c
-  | Isbc _ -> VS.empty
-  | Isbcs (c, _, _, _, _) -> VS.singleton c
-  | Isbb _ -> VS.empty
-  | Isbbs (c, _, _, _, _) -> VS.singleton c
-  | Imul _ -> VS.empty
-  | Imuls (c, _, _, _) -> VS.singleton c
+  | Iadd _ -> acc
+  | Iadds (c, _, _, _) -> addv c acc
+  | Iadc _ -> acc
+  | Iadcs (c, _, _, _, _) -> addv c acc
+  | Isub _ -> acc
+  | Isubc (c, _, _, _) -> addv c acc
+  | Isubb (c, _, _, _) -> addv c acc
+  | Isbc _ -> acc
+  | Isbcs (c, _, _, _, _) -> addv c acc
+  | Isbb _ -> acc
+  | Isbbs (c, _, _, _, _) -> addv c acc
+  | Imul _ -> acc
+  | Imuls (c, _, _, _) -> addv c acc
   | Imull _
   | Imulj _
   | Ishl _
@@ -1777,277 +1933,364 @@ let lcarries_instr i =
   | Iassert _
   | Iassume _
   | Icut _
-  | Ighost _ -> VS.empty
+  | Ighost _ -> acc
+
+let lcarries_instr ?(upd=false) i =
+  lcarries_instr_acc ~upd:upd i VS.empty
+
+let lcarries_program_acc ?(upd=false) p acc =
+  List.fold_left (fun acc i -> lcarries_instr_acc ~upd:upd i acc) acc p
 
 let lcarries_program ?(upd=false) p =
-  let unionv = if upd then vs_union_upd else VS.union in
-  List.fold_left (fun res i -> unionv (lcarries_instr i) res) VS.empty p
+  lcarries_program_acc ~upd:upd p VS.empty
 
 (* Assigned bit variables *)
 let lbits_instr i = VS.filter var_is_bit (lvs_instr i)
 let lbits_program ?(upd=false) p = VS.filter var_is_bit (lvs_program ~upd p)
 
-let gvs_instr i =
+let gvs_instr_acc ?(upd=false) i acc =
+  let unionv = if upd then vs_union_upd else VS.union in
   match i with
-  | Ighost (vs, _) -> vs
-  | _ -> VS.empty
+  | Ighost (vs, _) -> unionv vs acc
+  | _ -> acc
+
+let gvs_instr ?(upd=false) i =
+  gvs_instr_acc ~upd:upd i VS.empty
+
+let gvs_program_acc ?(upd=false) p acc =
+  List.fold_left (fun acc i -> gvs_instr_acc ~upd:upd i acc) acc p
 
 let gvs_program ?(upd=false) p =
-  let unionv = if upd then vs_union_upd else VS.union in
-  List.fold_left (fun res i -> unionv res (gvs_instr i)) VS.empty p
+  gvs_program_acc ~upd:upd p VS.empty
 
 let alg_gvs_program ?(upd=false) p =
   (* variables that appear in range predicates => they are supposed to be bit-vector variables*)
-  let rng_annot_vars_instr i =
+  let rng_annot_vars_instr_acc i acc =
     match i with
     | Iassert (_, rpwss) | Icut (_, rpwss) ->
-       vars_rbexp_prove_with rpwss
+       vars_rbexp_prove_with_acc rpwss acc
     | Iassume (_, r) | Ighost (_, (_, r)) ->
-       vars_rbexp r
-    | _ -> VS.empty in
+       vars_rbexp_acc r acc
+    | _ -> acc in
   let rng_annot_vars_program p =
-    List.fold_left (fun res i -> VS.union res (rng_annot_vars_instr i)) VS.empty p in
+    List.fold_left (fun res i -> rng_annot_vars_instr_acc i res) VS.empty p in
   VS.diff (gvs_program ~upd:upd p) (rng_annot_vars_program p)
 
 let alg_gvs_spec ?(upd=false) s =
   VS.diff (alg_gvs_program ~upd:upd s.sprog) (vars_rbexp_prove_with (snd s.spost))
 
+let vars_spec_acc ?(upd=false) s acc =
+  vars_bexp_acc s.spre acc
+  |> vars_program_acc ~upd s.sprog
+  |> vars_bexp_prove_with_acc s.spost
+
 let vars_spec ?(upd=false) s =
-  VS.union (vars_bexp s.spre) (VS.union (vars_program ~upd s.sprog) (vars_bexp_prove_with s.spost))
+  vars_spec_acc ~upd:upd s VS.empty
+
+let vars_espec_acc ?(upd=false) s acc =
+  vars_ebexp_acc s.espre acc
+  |> vars_program_acc ~upd s.esprog
+  |> vars_ebexp_prove_with_acc s.espost
+
 let vars_espec ?(upd=false) s =
-  VS.union (vars_ebexp s.espre) (VS.union (vars_program ~upd s.esprog) (vars_ebexp_prove_with s.espost))
+  vars_espec_acc ~upd:upd s VS.empty
+
+let vars_rspec_acc ?(upd=false) s acc =
+  vars_rbexp_acc s.rspre acc
+  |> vars_program_acc ~upd s.rsprog
+  |> vars_rbexp_prove_with_acc s.rspost
+
 let vars_rspec ?(upd=false) s =
-  VS.union (vars_rbexp s.rspre) (VS.union (vars_program ~upd s.rsprog) (vars_rbexp_prove_with s.rspost))
+  vars_rspec_acc ~upd:upd s VS.empty
 
 
 (** Variable ID Sets *)
 
-let vids_of_vs vs = VS.fold (fun v s -> IS.add v.vid s) vs IS.empty
+let vids_of_vs_acc vs acc = VS.fold (fun v s -> IS.add v.vid s) vs acc
 
-let rec vids_eexp e =
+let rec vids_eexp_acc e acc =
   match e with
-  | Evar x -> IS.singleton x.vid
-  | Econst _ -> IS.empty
-  | Eunop (_, e) -> vids_eexp e
-  | Ebinop (_, e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
+  | Evar x -> IS.add x.vid acc
+  | Econst _ -> acc
+  | Eunop (_, e1) -> vids_eexp_acc e1 acc
+  | Ebinop (_, e1, e2) -> vids_eexp_acc e2 (vids_eexp_acc e1 acc)
 
-let rec vids_ebexp e =
+let vids_eexp e =
+  vids_eexp_acc e IS.empty
+
+let rec vids_ebexp_acc e acc =
   match e with
-  | Etrue -> IS.empty
+  | Etrue -> acc
   | Ecmp (_, e1, e2)
-  | Eeq (e1, e2) -> IS.union (vids_eexp e1) (vids_eexp e2)
-  | Eeqmod (e1, e2, ps) -> List.fold_left IS.union (IS.union (vids_eexp e1) (vids_eexp e2)) (tmap vids_eexp ps)
-  | Eand (e1, e2) -> IS.union (vids_ebexp e1) (vids_ebexp e2)
+  | Eeq (e1, e2) -> vids_eexp_acc e2 (vids_eexp_acc e1 acc)
+  | Eeqmod (e1, e2, ps) ->
+    List.fold_left (fun acc e ->
+        vids_eexp_acc e acc
+      ) (vids_eexp_acc e2 (vids_eexp_acc e1 acc)) ps
+  | Eand (e1, e2) -> vids_ebexp_acc e2 (vids_ebexp_acc e1 acc)
 
-let rec vids_rexp e =
+let vids_ebexp e =
+  vids_ebexp_acc e IS.empty
+
+let rec vids_rexp_acc e acc =
   match e with
-  | Rvar x -> IS.singleton x.vid
-  | Rconst _ -> IS.empty
-  | Runop (_, _, e) -> vids_rexp e
-  | Rbinop (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
+  | Rvar x -> IS.add x.vid acc
+  | Rconst _ -> acc
+  | Runop (_, _, e) -> vids_rexp_acc e acc
+  | Rbinop (_, _, e1, e2) -> vids_rexp_acc e2 (vids_rexp_acc e1 acc)
   | Ruext (_, e, _)
-    | Rsext (_, e, _) -> vids_rexp e
-  | Rconcat (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
+    | Rsext (_, e, _) -> vids_rexp_acc e acc
+  | Rconcat (_, _, e1, e2) -> vids_rexp_acc e2 (vids_rexp_acc e1 acc)
 
-let rec vids_rbexp e =
+let vids_rexp e =
+  vids_rexp_acc e IS.empty
+
+let rec vids_rbexp_acc e acc =
   match e with
-  | Rtrue -> IS.empty
-  | Req (_, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
-  | Rcmp (_, _, e1, e2) -> IS.union (vids_rexp e1) (vids_rexp e2)
-  | Rneg e -> vids_rbexp e
+  | Rtrue -> acc
+  | Req (_, e1, e2)
+  | Rcmp (_, _, e1, e2) -> vids_rexp_acc e2 (vids_rexp_acc e1 acc)
+  | Rneg e -> vids_rbexp_acc e acc
   | Rand (e1, e2)
-  | Ror (e1, e2) -> IS.union (vids_rbexp e1) (vids_rbexp e2)
+  | Ror (e1, e2) -> vids_rbexp_acc e2 (vids_rbexp_acc e1 acc)
 
-let vids_bexp e = IS.union (vids_ebexp (eqn_bexp e)) (vids_rbexp (rng_bexp e))
+let vids_rbexp e =
+  vids_rbexp_acc e IS.empty
 
-let vids_ebexp_prove_with es = List.split es |> fst |> tmap vids_ebexp |> List.fold_left IS.union IS.empty
+let vids_bexp_acc e acc =
+  vids_rbexp_acc (rng_bexp e) (vids_ebexp_acc (eqn_bexp e) acc)
 
-let vids_rbexp_prove_with rs = List.split rs |> fst |> tmap vids_rbexp |> List.fold_left IS.union IS.empty
+let vids_bexp e =
+  vids_bexp_acc e IS.empty
 
-let vids_bexp_prove_with (es, rs) = IS.union (vids_ebexp_prove_with es) (vids_rbexp_prove_with rs)
+let vids_ebexp_prove_with_acc es acc =
+  vars_helper (fun (e, _) acc ->
+      vids_ebexp_acc e acc
+    ) es acc
+
+let vids_ebexp_prove_with es =
+  vids_ebexp_prove_with_acc es IS.empty
+
+let vids_rbexp_prove_with_acc rs acc =
+  vars_helper (fun (r, _) acc ->
+      vids_rbexp_acc r acc
+    ) rs acc
+
+let vids_rbexp_prove_with rs =
+  vids_rbexp_prove_with_acc rs IS.empty
+
+let vids_bexp_prove_with_acc (es, rs) acc =
+  vids_rbexp_prove_with_acc rs (vids_ebexp_prove_with_acc es acc)
+
+let vids_bexp_prove_with (es, rs) =
+  vids_bexp_prove_with_acc (es, rs) IS.empty
+
+let vids_atom_acc a acc =
+  match a with
+  | Avar v -> IS.add v.vid acc
+  | _ -> acc
 
 let vids_atom a =
-  match a with
-  | Avar v -> IS.singleton v.vid
-  | _ -> IS.empty
+  vids_atom_acc a IS.empty
 
-let vids_instr i =
+let vids_instr_acc i acc =
   match i with
-  | Imov (v, a) -> IS.add v.vid (vids_atom a)
+  | Imov (v, a) -> IS.add v.vid (vids_atom_acc a acc)
   | Ishl (v, a1, a2)
     | Ishr (v, a1, a2)
-    | Isar (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
+    | Isar (v, a1, a2) -> IS.add v.vid (vids_atom_acc a2 (vids_atom_acc a1 acc))
   | Ishls (l, v, a, _)
     | Ishrs (v, l, a, _)
-    | Isars (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atom a))
+    | Isars (v, l, a, _) -> IS.add l.vid (IS.add v.vid (vids_atom_acc a acc))
   | Iadd (v, a1, a2)
     | Isub (v, a1, a2)
     | Imul (v, a1, a2)
-    | Imulj (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
+    | Imulj (v, a1, a2) -> IS.add v.vid (vids_atom_acc a2 (vids_atom_acc a1 acc))
     | Iadc (v, a1, a2, c)
     | Isbc (v, a1, a2, c)
-    | Isbb (v, a1, a2, c) -> IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c))
+    | Isbb (v, a1, a2, c) -> IS.add v.vid (vids_atom_acc c (vids_atom_acc a2 (vids_atom_acc a1 acc)))
     | Iadds (c, v, a1, a2)
     | Isubc (c, v, a1, a2)
     | Isubb (c, v, a1, a2)
     | Imuls (c, v, a1, a2) ->
-     IS.add c.vid (IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2)))
+     IS.add c.vid (IS.add v.vid (vids_atom_acc a2 (vids_atom_acc a1 acc)))
   | Iadcs (c, v, a1, a2, y)
     | Isbcs (c, v, a1, a2, y)
     | Isbbs (c, v, a1, a2, y) ->
-     IS.add c.vid (IS.add v.vid (IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom y)))
-  | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
-  | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom a))
+     IS.add c.vid (IS.add v.vid (vids_atom_acc y (vids_atom_acc a2 (vids_atom_acc a1 acc))))
+  | Isplit (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom_acc a acc))
+  | Ispl (vh, vl, a, _) -> IS.add vh.vid (IS.add vl.vid (vids_atom_acc a acc))
   | Iseteq (v, a1, a2)
-    | Isetne (v, a1, a2) -> IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
+    | Isetne (v, a1, a2) -> IS.add v.vid (vids_atom_acc a2 (vids_atom_acc a1 acc))
   | Imull (vh, vl, a1, a2)
     | Icshl (vh, vl, a1, a2, _)
     | Icshr (vh, vl, a1, a2, _) ->
-     IS.add vh.vid (IS.add vl.vid (IS.union (vids_atom a1) (vids_atom a2)))
+     IS.add vh.vid (IS.add vl.vid (vids_atom_acc a2 (vids_atom_acc a1 acc)))
   | Icshls (l, vh, vl, a1, a2, _)
     | Icshrs (vh, vl, l, a1, a2, _) ->
-     IS.add vh.vid (IS.add vl.vid (IS.add l.vid (IS.union (vids_atom a1) (vids_atom a2))))
+     IS.add vh.vid (IS.add vl.vid (IS.add l.vid (vids_atom_acc a2 (vids_atom_acc a1 acc))))
   | Irol (v, a, n)
-    | Iror (v, a, n) -> IS.add v.vid (IS.union (vids_atom a) (vids_atom n))
-  | Inondet v -> IS.singleton v.vid
-  | Icmov (v, c, a1, a2) -> IS.add v.vid (IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2)))
-  | Inop -> IS.empty
+    | Iror (v, a, n) -> IS.add v.vid (vids_atom_acc n (vids_atom_acc a acc))
+  | Inondet v -> IS.add v.vid acc
+  | Icmov (v, c, a1, a2) -> IS.add v.vid (vids_atom_acc c (vids_atom_acc a2 (vids_atom_acc a1 acc)))
+  | Inop -> acc
   | Iand (v, a1, a2)
     | Ior (v, a1, a2)
-    | Ixor (v, a1, a2) ->  IS.add v.vid (IS.union (vids_atom a1) (vids_atom a2))
-  | Inot (v, a) -> IS.add v.vid (vids_atom a)
+    | Ixor (v, a1, a2) -> IS.add v.vid (vids_atom_acc a2 (vids_atom_acc a1 acc))
+  | Inot (v, a) -> IS.add v.vid (vids_atom_acc a acc)
   | Icast (od, v, a) ->
      (match od with
-      | None -> IS.add v.vid (vids_atom a)
-      | Some d -> IS.add d.vid (IS.add v.vid (vids_atom a)))
-  | Ivpc (v, a) -> IS.add v.vid (vids_atom a)
-  | Ijoin (v, ah, al) -> IS.add v.vid (IS.union (vids_atom ah) (vids_atom al))
-  | Iassert e -> vids_bexp_prove_with e
-  | Iassume e -> vids_bexp e
-  | Icut e -> vids_bexp_prove_with e
-  | Ighost (vs, e) -> IS.union (vids_of_vs vs) (vids_bexp e)
+      | None -> IS.add v.vid (vids_atom_acc a acc)
+      | Some d -> IS.add d.vid (IS.add v.vid (vids_atom_acc a acc)))
+  | Ivpc (v, a) -> IS.add v.vid (vids_atom_acc a acc)
+  | Ijoin (v, ah, al) -> IS.add v.vid (vids_atom_acc al (vids_atom_acc ah acc))
+  | Iassert e -> vids_bexp_prove_with_acc e acc
+  | Iassume e -> vids_bexp_acc e acc
+  | Icut e -> vids_bexp_prove_with_acc e acc
+  | Ighost (vs, e) -> vids_of_vs_acc vs (vids_bexp_acc e acc)
 
-let vids_program p = List.fold_left (fun res i -> IS.union (vids_instr i) res) IS.empty p
+let vids_instr i =
+  vids_instr_acc i IS.empty
 
-let lvids_instr i =
+let vids_program_acc p acc =
+  vars_helper vids_instr_acc p acc
+
+let vids_program p =
+  vids_program_acc p IS.empty
+
+let lvids_instr_acc i acc =
   match i with
-  | Imov (v, _) -> IS.singleton v.vid
-  | Iadd (v, _, _) -> IS.singleton v.vid
-  | Iadds (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Iadc (v, _, _, _) -> IS.singleton v.vid
-  | Iadcs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Isub (v, _, _) -> IS.singleton v.vid
-  | Isubc (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Isubb (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Isbc (v, _, _, _) -> IS.singleton v.vid
-  | Isbcs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Isbb (v, _, _, _) -> IS.singleton v.vid
-  | Isbbs (c, v, _, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Imul (v, _, _) -> IS.singleton v.vid
-  | Imuls (c, v, _, _) -> IS.add c.vid (IS.singleton v.vid)
-  | Imull (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
-  | Imulj (v, _, _) -> IS.singleton v.vid
-  | Ishl (v, _, _) -> IS.singleton v.vid
-  | Ishls (l, v, _, _) -> IS.add l.vid (IS.singleton v.vid)
-  | Ishr (v, _, _) -> IS.singleton v.vid
-  | Ishrs (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
-  | Isar (v, _, _) -> IS.singleton v.vid
-  | Isars (v, l, _, _) -> IS.add l.vid (IS.singleton v.vid)
-  | Isplit (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
-  | Ispl (vh, vl, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
+  | Imov (v, _)
+  | Iadd (v, _, _) -> IS.add v.vid acc
+  | Iadds (c, v, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Iadc (v, _, _, _) -> IS.add v.vid acc
+  | Iadcs (c, v, _, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Isub (v, _, _) -> IS.add v.vid acc
+  | Isubc (c, v, _, _)
+  | Isubb (c, v, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Isbc (v, _, _, _) -> IS.add v.vid acc
+  | Isbcs (c, v, _, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Isbb (v, _, _, _) -> IS.add v.vid acc
+  | Isbbs (c, v, _, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Imul (v, _, _) -> IS.add v.vid acc
+  | Imuls (c, v, _, _) -> IS.add c.vid (IS.add v.vid acc)
+  | Imull (vh, vl, _, _) -> IS.add vh.vid (IS.add vl.vid acc)
+  | Imulj (v, _, _)
+  | Ishl (v, _, _) -> IS.add v.vid acc
+  | Ishls (l, v, _, _) -> IS.add l.vid (IS.add v.vid acc)
+  | Ishr (v, _, _) -> IS.add v.vid acc
+  | Ishrs (v, l, _, _) -> IS.add l.vid (IS.add v.vid acc)
+  | Isar (v, _, _) -> IS.add v.vid acc
+  | Isars (v, l, _, _) -> IS.add l.vid (IS.add v.vid acc)
+  | Isplit (vh, vl, _, _)
+  | Ispl (vh, vl, _, _) -> IS.add vh.vid (IS.add vl.vid acc)
   | Iseteq (v, _, _)
-    | Isetne (v, _, _) -> IS.singleton v.vid
-  | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
-  | Icshls (l, vh, vl, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.singleton l.vid))
-  | Icshr (vh, vl, _, _, _) -> IS.add vh.vid (IS.singleton vl.vid)
-  | Icshrs (vh, vl, l, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.singleton l.vid))
+    | Isetne (v, _, _) -> IS.add v.vid acc
+  | Icshl (vh, vl, _, _, _) -> IS.add vh.vid (IS.add vl.vid acc)
+  | Icshls (l, vh, vl, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.add l.vid acc))
+  | Icshr (vh, vl, _, _, _) -> IS.add vh.vid (IS.add vl.vid acc)
+  | Icshrs (vh, vl, l, _, _, _) -> IS.add vh.vid (IS.add vl.vid (IS.add l.vid acc))
   | Irol (v, _, _)
-    | Iror (v, _, _) -> IS.singleton v.vid
-  | Inondet v -> IS.singleton v.vid
-  | Icmov (v, _, _, _) -> IS.singleton v.vid
-  | Inop -> IS.empty
+    | Iror (v, _, _) -> IS.add v.vid acc
+  | Inondet v -> IS.add v.vid acc
+  | Icmov (v, _, _, _) -> IS.add v.vid acc
+  | Inop -> acc
   | Iand (v, _, _)
   | Ior (v, _, _)
   | Ixor (v, _, _)
-  | Inot (v, _) -> IS.singleton v.vid
-  | Icast (_, v, _) -> IS.singleton v.vid
-  | Ivpc (v, _) -> IS.singleton v.vid
-  | Ijoin (v, _, _) -> IS.singleton v.vid
+  | Inot (v, _) -> IS.add v.vid acc
+  | Icast (_, v, _) -> IS.add v.vid acc
+  | Ivpc (v, _) -> IS.add v.vid acc
+  | Ijoin (v, _, _) -> IS.add v.vid acc
   | Iassert _
   | Iassume _
   | Icut _
-  | Ighost _ -> IS.empty
+  | Ighost _ -> acc
 
-let lvids_program p = List.fold_left (fun res i -> IS.union (lvids_instr i) res) IS.empty p
+let lvids_instr i =
+  lvids_instr_acc i IS.empty
 
-let rvids_instr i =
+let lvids_program_acc p acc =
+  vars_helper lvids_instr_acc p acc
+
+let lvids_program p =
+  lvids_program_acc p IS.empty
+
+let rvids_instr_acc i acc =
   match i with
-  | Imov (_, a) -> vids_atom a
-  | Iadd (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Iadds (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Iadc (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Iadcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Isub (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Isubc (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Isubb (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Isbc (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Isbcs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Isbb (_, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Isbbs (_, _, a1, a2, c) -> IS.union (IS.union (vids_atom a1) (vids_atom a2)) (vids_atom c)
-  | Imul (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Imuls (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Imull (_, _, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Imulj (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Ishl (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Ishls (_, _, a, _) -> vids_atom a
-  | Ishr (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Ishrs (_, _, a, _) -> vids_atom a
-  | Isar (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Isars (_, _, a, _) -> vids_atom a
-  | Isplit (_, _, a, _) -> vids_atom a
-  | Ispl (_, _, a, _) -> vids_atom a
+  | Imov (_, a) -> vids_atom_acc a acc
+  | Iadd (_, a1, a2)
+  | Iadds (_, _, a1, a2) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Iadc (_, a1, a2, c)
+  | Iadcs (_, _, a1, a2, c) -> vids_atom_acc c (vids_atom_acc a2 (vids_atom_acc a1 acc))
+  | Isub (_, a1, a2)
+  | Isubc (_, _, a1, a2)
+  | Isubb (_, _, a1, a2) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Isbc (_, a1, a2, c)
+  | Isbcs (_, _, a1, a2, c)
+  | Isbb (_, a1, a2, c)
+  | Isbbs (_, _, a1, a2, c) -> vids_atom_acc c (vids_atom_acc a2 (vids_atom_acc a1 acc))
+  | Imul (_, a1, a2)
+  | Imuls (_, _, a1, a2)
+  | Imull (_, _, a1, a2)
+  | Imulj (_, a1, a2)
+  | Ishl (_, a1, a2) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Ishls (_, _, a, _) -> vids_atom_acc a acc
+  | Ishr (_, a1, a2) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Ishrs (_, _, a, _) -> vids_atom_acc a acc
+  | Isar (_, a1, a2) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Isars (_, _, a, _)
+  | Isplit (_, _, a, _)
+  | Ispl (_, _, a, _) -> vids_atom_acc a acc
   | Iseteq (_, a1, a2)
-    | Isetne (_, a1, a2) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Icshl (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Icshls (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Icshr (_, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
-  | Icshrs (_, _, _, a1, a2, _) -> IS.union (vids_atom a1) (vids_atom a2)
+    | Isetne (_, a1, a2)
+  | Icshl (_, _, a1, a2, _)
+  | Icshls (_, _, _, a1, a2, _)
+  | Icshr (_, _, a1, a2, _)
+  | Icshrs (_, _, _, a1, a2, _) -> vids_atom_acc a2 (vids_atom_acc a1 acc)
   | Irol (_, a, n)
-    | Iror (_, a, n) -> IS.union (vids_atom a) (vids_atom n)
-  | Inondet _ -> IS.empty
-  | Icmov (_, c, a1, a2) -> IS.union (vids_atom c) (IS.union (vids_atom a1) (vids_atom a2))
-  | Inop -> IS.empty
+    | Iror (_, a, n) -> vids_atom_acc n (vids_atom_acc a acc)
+  | Inondet _ -> acc
+  | Icmov (_, c, a1, a2) -> vids_atom_acc c (vids_atom_acc a2 (vids_atom_acc a1 acc))
+  | Inop -> acc
   | Iand (_, a1, a2)
     | Ior (_, a1, a2)
-    | Ixor (_, a1, a2) ->  IS.union (vids_atom a1) (vids_atom a2)
-  | Inot (_, a) -> vids_atom a
-  | Icast (_, _, a) -> vids_atom a
-  | Ivpc (_, a) -> vids_atom a
-  | Ijoin (_, ah, al) -> IS.union (vids_atom ah) (vids_atom al)
-  | Iassert e -> vids_bexp_prove_with e
-  | Iassume e -> vids_bexp e
-  | Icut e -> vids_bexp_prove_with e
-  | Ighost (_, e) -> vids_bexp e
+    | Ixor (_, a1, a2) ->  vids_atom_acc a2 (vids_atom_acc a1 acc)
+  | Inot (_, a)
+  | Icast (_, _, a)
+  | Ivpc (_, a) -> vids_atom_acc a acc
+  | Ijoin (_, ah, al) -> vids_atom_acc al (vids_atom_acc ah acc)
+  | Iassert e -> vids_bexp_prove_with_acc e acc
+  | Iassume e -> vids_bexp_acc e acc
+  | Icut e -> vids_bexp_prove_with_acc e acc
+  | Ighost (_, e) -> vids_bexp_acc e acc
 
-let rvids_program p = List.fold_left (fun res i -> IS.union (rvids_instr i) res) IS.empty p
+let rvids_instr i =
+  rvids_instr_acc i IS.empty
+
+let rvids_program_acc p acc =
+  vars_helper rvids_instr_acc p acc
+
+let rvids_program p =
+  rvids_program_acc p IS.empty
 
 (* Assigned carry/borrow variables in addition and subtraction instructions. *)
-let lcids_instr i =
+let lcids_instr_acc i acc =
   match i with
   | Imov _
-  | Iadd _ -> IS.empty
-  | Iadds (c, _, _, _) -> IS.singleton c.vid
-  | Iadc _ -> IS.empty
-  | Iadcs (c, _, _, _, _) -> IS.singleton c.vid
-  | Isub _ -> IS.empty
-  | Isubc (c, _, _, _) -> IS.singleton c.vid
-  | Isubb (c, _, _, _) -> IS.singleton c.vid
-  | Isbc _ -> IS.empty
-  | Isbcs (c, _, _, _, _) -> IS.singleton c.vid
-  | Isbb _ -> IS.empty
-  | Isbbs (c, _, _, _, _) -> IS.singleton c.vid
-  | Imul _ -> IS.empty
-  | Imuls (c, _, _, _) -> IS.singleton c.vid
+  | Iadd _ -> acc
+  | Iadds (c, _, _, _) -> IS.add c.vid acc
+  | Iadc _ -> acc
+  | Iadcs (c, _, _, _, _) -> IS.add c.vid acc
+  | Isub _ -> acc
+  | Isubc (c, _, _, _)
+  | Isubb (c, _, _, _) -> IS.add c.vid acc
+  | Isbc _ -> acc
+  | Isbcs (c, _, _, _, _) -> IS.add c.vid acc
+  | Isbb _ -> acc
+  | Isbbs (c, _, _, _, _) -> IS.add c.vid acc
+  | Imul _ -> acc
+  | Imuls (c, _, _, _) -> IS.add c.vid acc
   | Imull _
   | Imulj _
   | Ishl _
@@ -2079,19 +2322,324 @@ let lcids_instr i =
   | Iassert _
   | Iassume _
   | Icut _
-  | Ighost _ -> IS.empty
+  | Ighost _ -> acc
 
-let lcids_program p = List.fold_left (fun res i -> IS.union (lcids_instr i) res) IS.empty p
+let lcids_instr i =
+  lcids_instr_acc i IS.empty
+
+let lcids_program_acc p acc =
+  vars_helper lcids_instr_acc p acc
+
+let lcids_program p =
+  lcids_program_acc p IS.empty
 
 (* IDs of bit variables assigned in an instruction *)
+let lbids_instr_acc i acc =
+  VS.fold (fun v res -> IS.add v.vid res) (lbits_instr i) acc
+
 let lbids_instr i =
-  VS.fold (fun v res -> IS.add v.vid res) (lbits_instr i) IS.empty
+  lvids_instr_acc i IS.empty
 
-let lbids_program p = List.fold_left (fun res i -> IS.union (lbids_instr i) res) IS.empty p
+let lbids_program_acc p acc =
+  vars_helper lbids_instr_acc p acc
 
-let vids_spec s = union_iss [vids_bexp s.spre; vids_program s.sprog; vids_bexp_prove_with s.spost]
-let vids_espec s = union_iss [vids_ebexp s.espre; vids_program s.esprog; vids_ebexp_prove_with s.espost]
-let vids_rspec s = union_iss [vids_rbexp s.rspre; vids_program s.rsprog; vids_rbexp_prove_with s.rspost]
+let lbids_program p =
+  lbids_program_acc p IS.empty
+
+let vids_spec_acc s acc =
+  vids_bexp_acc s.spre acc
+  |> vids_program_acc s.sprog
+  |> vids_bexp_prove_with_acc s.spost
+
+let vids_spec s =
+  vids_spec_acc s IS.empty
+
+let vids_espec_acc s acc =
+  vids_ebexp_acc s.espre acc
+  |> vids_program_acc s.esprog
+  |> vids_ebexp_prove_with_acc s.espost
+
+let vids_espec s =
+  vids_espec_acc s IS.empty
+
+let vids_rspec_acc s acc =
+  vids_rbexp_acc s.rspre acc
+  |> vids_program_acc s.rsprog
+  |> vids_rbexp_prove_with_acc s.rspost
+
+let vids_rspec s =
+  vids_rspec_acc s IS.empty
+
+
+(** Variable membership *)
+
+let rec has_var_in_eexp f e =
+  match e with
+  | Evar v -> f v
+  | Econst _ -> false
+  | Eunop (_, e1) -> has_var_in_eexp f e1
+  | Ebinop (_, e1, e2) -> has_var_in_eexp f e1 || has_var_in_eexp f e2
+
+let has_var_in_eexps f es =
+  List.exists (has_var_in_eexp f) es
+
+let rec has_var_in_rexp f e =
+  match e with
+  | Rvar v -> f v
+  | Rconst _ -> false
+  | Runop (_, _, e1) -> has_var_in_rexp f e1
+  | Rbinop (_, _, e1, e2) -> has_var_in_rexp f e1 || has_var_in_rexp f e2
+  | Ruext (_, e1, _)
+  | Rsext (_, e1, _) -> has_var_in_rexp f e1
+  | Rconcat (_, _, e1, e2) -> has_var_in_rexp f e1 || has_var_in_rexp f e2
+
+let has_var_in_rexps f es =
+  List.exists (has_var_in_rexp f) es
+
+let rec has_var_in_ebexp f e =
+  match e with
+  | Etrue -> false
+  | Eeq (e1, e2)
+  | Ecmp (_, e1, e2) -> has_var_in_eexp f e1 || has_var_in_eexp f e2
+  | Eeqmod (e1, e2, ms) -> has_var_in_eexp f e1 || has_var_in_eexp f e2 || has_var_in_eexps f ms
+  | Eand (e1, e2) -> has_var_in_ebexp f e1 || has_var_in_ebexp f e2
+
+let has_var_in_ebexps f es =
+  List.exists (has_var_in_ebexp f) es
+
+let rec has_var_in_rbexp f e =
+  match e with
+  | Rtrue -> false
+  | Req (_, e1, e2)
+  | Rcmp (_, _, e1, e2) -> has_var_in_rexp f e1 || has_var_in_rexp f e2
+  | Rneg e1 -> has_var_in_rbexp f e1
+  | Rand (e1, e2)
+  | Ror (e1, e2) -> has_var_in_rbexp f e1 || has_var_in_rbexp f e2
+
+let has_var_in_rbexps f es =
+  List.exists (has_var_in_rbexp f) es
+
+let has_var_in_bexp f e =
+  has_var_in_ebexp f (eqn_bexp e) ||
+  has_var_in_rbexp f (rng_bexp e)
+
+let has_var_in_ebexp_prove_with f es =
+  List.exists (fun (e, _) -> has_var_in_ebexp f e) es
+
+let has_var_in_rbexp_prove_with f es =
+  List.exists (fun (e, _) -> has_var_in_rbexp f e) es
+
+let has_var_in_bexp_prove_with f e =
+  has_var_in_ebexp_prove_with f (fst e) ||
+  has_var_in_rbexp_prove_with f (snd e)
+
+let has_var_in_atom f atom =
+  match atom with
+  | Avar v -> f v
+  | Aconst _ -> false
+
+let has_var_in_atoms f atoms =
+  List.exists (has_var_in_atom f) atoms
+
+let has_var_in_instr f i =
+  match i with
+  | Imov (v, a) -> f v || has_var_in_atom f a
+  | Ishl (v, a1, a2)
+    | Ishr (v, a1, a2)
+    | Isar (v, a1, a2) -> f v || has_var_in_atoms f [a1; a2]
+  | Ishls (l, v, a, _)
+    | Ishrs (v, l, a, _)
+    | Isars (v, l, a, _) -> f l || f v || has_var_in_atom f a
+  | Iadd (v, a1, a2)
+    | Isub (v, a1, a2)
+    | Imul (v, a1, a2)
+    | Imulj (v, a1, a2) -> f v || has_var_in_atoms f [a1; a2]
+    | Iadc (v, a1, a2, c)
+    | Isbc (v, a1, a2, c)
+    | Isbb (v, a1, a2, c) -> f v || has_var_in_atoms f [a1; a2; c]
+    | Iadds (c, v, a1, a2)
+    | Isubc (c, v, a1, a2)
+    | Isubb (c, v, a1, a2)
+    | Imuls (c, v, a1, a2) ->
+      f c || f v || has_var_in_atoms f [a1; a2]
+  | Iadcs (c, v, a1, a2, y)
+    | Isbcs (c, v, a1, a2, y)
+    | Isbbs (c, v, a1, a2, y) ->
+     f c || f v || has_var_in_atoms f [a1; a2; y]
+  | Isplit (vh, vl, a, _)
+  | Ispl (vh, vl, a, _) -> f vh || f vl || has_var_in_atom f a
+  | Iseteq (v, a1, a2)
+  | Isetne (v, a1, a2) -> f v || has_var_in_atoms f [a1; a2]
+  | Imull (vh, vl, a1, a2)
+    | Icshl (vh, vl, a1, a2, _)
+    | Icshr (vh, vl, a1, a2, _) ->
+     f vh || f vl || has_var_in_atoms f [a1; a2]
+  | Icshls (l, vh, vl, a1, a2, _)
+    | Icshrs (vh, vl, l, a1, a2, _) ->
+     f vh || f vl || f l || has_var_in_atoms f [a1; a2]
+  | Irol (v, a, n)
+    | Iror (v, a, n) -> f v || has_var_in_atoms f [a; n]
+  | Inondet v -> f v
+  | Icmov (v, c, a1, a2) -> f v || has_var_in_atoms f [c; a1; a2]
+  | Inop -> false
+  | Iand (v, a1, a2)
+    | Ior (v, a1, a2)
+    | Ixor (v, a1, a2) -> f v || has_var_in_atoms f [a1; a2]
+  | Inot (v, a) -> f v || has_var_in_atom f a
+  | Icast (od, v, a) ->
+     (match od with
+      | None -> f v || has_var_in_atom f a
+      | Some d -> f d || f v || has_var_in_atom f a)
+  | Ivpc (v, a) -> f v || has_var_in_atom f a
+  | Ijoin (v, ah, al) -> f v || has_var_in_atoms f [ah; al]
+  | Iassert e -> has_var_in_bexp_prove_with f e
+  | Iassume e -> has_var_in_bexp f e
+  | Icut e -> has_var_in_bexp_prove_with f e
+  | Ighost (vs, e) -> VS.exists f vs || has_var_in_bexp f e
+
+let has_lv_in_instr f i =
+  match i with
+  | Imov (v, _)
+  | Ishl (v, _, _)
+  | Ishr (v, _, _)
+  | Isar (v, _, _) -> f v
+  | Ishls (l, v, _, _)
+  | Ishrs (v, l, _, _)
+  | Isars (v, l, _, _) -> f l || f v
+  | Iadd (v, _, _)
+  | Isub (v, _, _)
+  | Imul (v, _, _)
+  | Imulj (v, _, _)
+  | Iadc (v, _, _, _)
+  | Isbc (v, _, _, _)
+  | Isbb (v, _, _, _) -> f v
+  | Iadds (c, v, _, _)
+  | Isubc (c, v, _, _)
+  | Isubb (c, v, _, _)
+  | Imuls (c, v, _, _)
+  | Iadcs (c, v, _, _, _)
+  | Isbcs (c, v, _, _, _)
+  | Isbbs (c, v, _, _, _) -> f c || f v
+  | Isplit (vh, vl, _, _)
+  | Ispl (vh, vl, _, _) -> f vh || f vl
+  | Iseteq (v, _, _)
+  | Isetne (v, _, _) -> f v
+  | Imull (vh, vl, _, _)
+  | Icshl (vh, vl, _, _, _)
+  | Icshr (vh, vl, _, _, _) -> f vh || f vl
+  | Icshls (l, vh, vl, _, _, _)
+  | Icshrs (vh, vl, l, _, _, _) -> f vh || f vl || f l
+  | Irol (v, _, _)
+  | Iror (v, _, _)
+  | Inondet v
+  | Icmov (v, _, _, _) -> f v
+  | Inop -> false
+  | Iand (v, _, _)
+  | Ior (v, _, _)
+  | Ixor (v, _, _)
+  | Inot (v, _) -> f v
+  | Icast (od, v, _) ->
+    (match od with
+     | None -> f v
+     | Some d -> f d || f v)
+  | Ivpc (v, _)
+  | Ijoin (v, _, _) -> f v
+  | Iassert _ -> false
+  | Iassume _ -> false
+  | Icut _ -> false
+  | Ighost _ -> false
+
+let has_var_in_program f p =
+  List.exists (has_var_in_instr f) p
+
+
+let var_in_eexp v e =
+  has_var_in_eexp (eq_var v) e
+
+let var_in_eexps v es =
+  has_var_in_eexps (eq_var v) es
+
+let var_in_rexp v e =
+  has_var_in_rexp (eq_var v) e
+
+let var_in_rexps v es =
+  has_var_in_rexps (eq_var v) es
+
+let var_in_ebexp v e =
+  has_var_in_ebexp (eq_var v) e
+
+let var_in_ebexps v es =
+  has_var_in_ebexps (eq_var v) es
+
+let var_in_rbexp v e =
+  has_var_in_rbexp (eq_var v) e
+
+let var_in_rbexps v es =
+  has_var_in_rbexps (eq_var v) es
+
+let var_in_bexp v e =
+  has_var_in_bexp (eq_var v) e
+
+let var_in_ebexp_prove_with v e =
+  has_var_in_ebexp_prove_with (eq_var v) e
+
+let var_in_rbexp_prove_with v e =
+  has_var_in_rbexp_prove_with (eq_var v) e
+
+let var_in_bexp_prove_with v e =
+  has_var_in_bexp_prove_with (eq_var v) e
+
+let var_in_instr v i =
+  has_var_in_instr (eq_var v) i
+
+let var_in_program v p =
+  has_var_in_program (eq_var v) p
+
+
+let var_eq_vid vid = fun v -> v.vid = vid
+
+let vid_in_eexp vid e =
+  has_var_in_eexp (var_eq_vid vid) e
+
+let vid_in_eexps vid es =
+  has_var_in_eexps (var_eq_vid vid) es
+
+let vid_in_rexp vid e =
+  has_var_in_rexp (var_eq_vid vid) e
+
+let vid_in_rexps vid es =
+  has_var_in_rexps (var_eq_vid vid) es
+
+let vid_in_ebexp vid e =
+  has_var_in_ebexp (var_eq_vid vid) e
+
+let vid_in_ebexps vid es =
+  has_var_in_ebexps (var_eq_vid vid) es
+
+let vid_in_rbexp vid e =
+  has_var_in_rbexp (var_eq_vid vid) e
+
+let vid_in_rbexps vid es =
+  has_var_in_rbexps (var_eq_vid vid) es
+
+let vid_in_bexp vid e =
+  has_var_in_bexp (var_eq_vid vid) e
+
+let vid_in_ebexp_prove_with vid e =
+  has_var_in_ebexp_prove_with (var_eq_vid vid) e
+
+let vid_in_rbexp_prove_with vid e =
+  has_var_in_rbexp_prove_with (var_eq_vid vid) e
+
+let vid_in_bexp_prove_with vid e =
+  has_var_in_bexp_prove_with (var_eq_vid vid) e
+
+let vid_in_instr vid i =
+  has_var_in_instr (var_eq_vid vid) i
+
+let vid_in_program vid p =
+  has_var_in_program (var_eq_vid vid) p
+
 
 
 (** Static Single Assignment (SSA) *)
@@ -2976,130 +3524,538 @@ let subst_maps_of_list vas =
         VM.add v (rexp_of_atom a) rm )
     ) (VM.empty, VM.empty, VM.empty) vas
 
-let rec subst_eexp em e =
+let map_subst f es =
+  let (es', ces) =
+    let (es', ces) = tmap f es |> List.split in
+    (es', List.exists Fun.id ces) in
+  if ces
+  then (es', true)
+  else (es, false)
+
+let rec subst_eexp env e =
   match e with
-  | Evar v -> if VM.mem v em then VM.find v em
-              else e
-  | Econst _ -> e
-  | Eunop (op, e) -> Eunop (op, subst_eexp em e)
-  | Ebinop (op, e1, e2) -> Ebinop (op, subst_eexp em e1, subst_eexp em e2)
+  | Evar v ->
+    if VM.mem v env
+    then (VM.find v env, true)
+    else (e, false)
+  | Econst _ -> (e, false)
+  | Eunop (op, e1) ->
+    let (e1', c1) = subst_eexp env e1 in
+    if c1
+    then (Eunop (op, e1'), true)
+    else (e, false)
+  | Ebinop (op, e1, e2) ->
+    let (e1', c1) = subst_eexp env e1 in
+    let (e2', c2) = subst_eexp env e2 in
+    if c1 || c2
+    then (Ebinop (op, e1', e2'), true)
+    else (e, false)
 
-let rec subst_rexp rm e =
+let rec subst_rexp env e =
   match e with
-  | Rvar v -> if VM.mem v rm then VM.find v rm
-              else e
-  | Rconst _ -> e
-  | Runop (w, op, e) -> Runop (w, op, subst_rexp rm e)
-  | Rbinop (w, op, e1, e2) -> Rbinop (w, op, subst_rexp rm e1, subst_rexp rm e2)
-  | Ruext (w, e, i) -> Ruext (w, subst_rexp rm e, i)
-  | Rsext (w, e, i) -> Rsext (w, subst_rexp rm e, i)
-  | Rconcat (w1, w2, e1, e2) -> Rconcat (w1, w2, subst_rexp rm e1, subst_rexp rm e2)
+  | Rvar v ->
+    if VM.mem v env
+    then (VM.find v env, true)
+    else (e, false)
+  | Rconst _ -> (e, false)
+  | Runop (w, op, e1) ->
+    let (e1', c1) = subst_rexp env e1 in
+    if c1
+    then (Runop (w, op, e1'), true)
+    else (e, false)
+  | Rbinop (w, op, e1, e2) ->
+    let (e1', c1) = subst_rexp env e1 in
+    let (e2', c2) = subst_rexp env e2 in
+    if c1 || c2
+    then (Rbinop (w, op, e1', e2'), true)
+    else (e, false)
+  | Ruext (w, e1, i) ->
+    let (e1', c1) = subst_rexp env e1 in
+    if c1
+    then (Ruext (w, e1', i), true)
+    else (e, false)
+  | Rsext (w, e1, i) ->
+    let (e1', c1) = subst_rexp env e1 in
+    if c1
+    then (Rsext (w, e1', i), true)
+    else (e, false)
+  | Rconcat (w1, w2, e1, e2) ->
+    let (e1', c1) = subst_rexp env e1 in
+    let (e2', c2) = subst_rexp env e2 in
+    if c1 || c2
+    then (Rconcat (w1, w2, e1', e2'), true)
+    else (e, false)
 
-let rec subst_ebexp em e =
+let rec subst_ebexp env e =
   match e with
-  | Etrue -> e
-  | Eeq (e1, e2) -> Eeq (subst_eexp em e1, subst_eexp em e2)
-  | Eeqmod (e1, e2, ms) -> Eeqmod (subst_eexp em e1, subst_eexp em e2, List.rev (List.rev_map (subst_eexp em) ms))
-  | Ecmp (op, e1, e2) -> Ecmp (op, subst_eexp em e1, subst_eexp em e2)
-  | Eand (e1, e2) -> Eand (subst_ebexp em e1, subst_ebexp em e2)
+  | Etrue -> (e, false)
+  | Eeq (e1, e2) ->
+    let (e1', c1) = subst_eexp env e1 in
+    let (e2', c2) = subst_eexp env e2 in
+    if c1 || c2
+    then (Eeq (e1', e2'), true)
+    else (e, false)
+  | Eeqmod (e1, e2, ms) ->
+    let (e1', c1) = subst_eexp env e1 in
+    let (e2', c2) = subst_eexp env e2 in
+    let (ms', cms) = map_subst (subst_eexp env) ms in
+    if c1 || c2 || cms
+    then (Eeqmod (e1', e2', ms'), true)
+    else (e, false)
+  | Ecmp (op, e1, e2) ->
+    let (e1', c1) = subst_eexp env e1 in
+    let (e2', c2) = subst_eexp env e2 in
+    if c1 || c2
+    then (Ecmp (op, e1', e2'), true)
+    else (e, false)
+  | Eand (e1, e2) ->
+    let (e1', c1) = subst_ebexp env e1 in
+    let (e2', c2) = subst_ebexp env e2 in
+    if c1 || c2
+    then (Eand (e1', e2'), true)
+    else (e, false)
 
-let rec subst_rbexp rm e =
+let rec subst_rbexp env e =
   match e with
-  | Rtrue -> e
-  | Req (w, e1, e2) -> Req (w, subst_rexp rm e1, subst_rexp rm e2)
-  | Rcmp (w, op, e1, e2) -> Rcmp (w, op, subst_rexp rm e1, subst_rexp rm e2)
-  | Rneg e -> Rneg (subst_rbexp rm e)
-  | Rand (e1, e2) -> Rand (subst_rbexp rm e1, subst_rbexp rm e2)
-  | Ror (e1, e2) -> Ror (subst_rbexp rm e1, subst_rbexp rm e2)
+  | Rtrue -> (e, false)
+  | Req (w, e1, e2) ->
+    let (e1', c1) = subst_rexp env e1 in
+    let (e2', c2) = subst_rexp env e2 in
+    if c1 || c2
+    then (Req (w, e1', e2'), true)
+    else (e, false)
+  | Rcmp (w, op, e1, e2) ->
+    let (e1', c1) = subst_rexp env e1 in
+    let (e2', c2) = subst_rexp env e2 in
+    if c1 || c2
+    then (Rcmp (w, op, e1', e2'), true)
+    else (e, false)
+  | Rneg e1 ->
+    let (e1', c1) = subst_rbexp env e1 in
+    if c1
+    then (Rneg e1', true)
+    else (e, false)
+  | Rand (e1, e2) ->
+    let (e1', c1) = subst_rbexp env e1 in
+    let (e2', c2) = subst_rbexp env e2 in
+    if c1 || c2
+    then (Rand (e1', e2'), true)
+    else (e, false)
+  | Ror (e1, e2) ->
+    let (e1', c1) = subst_rbexp env e1 in
+    let (e2', c2) = subst_rbexp env e2 in
+    if c1 || c2
+    then (Ror (e1', e2'), true)
+    else (e, false)
 
-let subst_bexp em rm e = (subst_ebexp em (eqn_bexp e), subst_rbexp rm (rng_bexp e))
+let subst_bexp em rm e =
+  let (ee, ec) = subst_ebexp em (eqn_bexp e) in
+  let (re, rc) = subst_rbexp rm (rng_bexp e) in
+  if ec || rc
+  then ((ee, re), true)
+  else (e, false)
 
-let subst_ebexp_prove_with em es = map_fst (subst_ebexp em) es
+let subst_ebexp_prove_with em es =
+  let subst_f (e, pwss) =
+    let (e', c) = subst_ebexp em e in
+    ((e', pwss), c) in
+  map_subst subst_f es
 
-let subst_rbexp_prove_with rm rs = map_fst (subst_rbexp rm) rs
+let subst_rbexp_prove_with rm rs =
+  let subst_f (r, pwss) =
+    let (r', c) = subst_rbexp rm r in
+    ((r', pwss), c) in
+  map_subst subst_f rs
 
-let subst_bexp_prove_with em rm (es, rs) = (subst_ebexp_prove_with em es, subst_rbexp_prove_with rm rs)
+let subst_bexp_prove_with em rm (es, rs) =
+  let (es', c1) = subst_ebexp_prove_with em es in
+  let (rs', c2) = subst_rbexp_prove_with rm rs in
+  ((es', rs'), c1 || c2)
 
 let subst_lval am lv =
   if VM.mem lv am
   then match VM.find lv am with
-       | Avar v -> v
-       | Aconst (_, n) ->
-          let err = Printf.sprintf
-                      "Failed to replace a variable %s with a constant %s: a variable is required."
-                      (string_of_var lv)
-                      (Z.to_string n) in
-          raise (Failure err)
-  else lv
+    | Avar v -> (v, true)
+    | Aconst (_, n) ->
+         let err =
+           Printf.sprintf
+             "Failed to replace a variable %s with a constant %s: a variable is required."
+             (string_of_var lv)
+             (Z.to_string n) in
+         raise (Failure err)
+  else (lv, false)
 
 let subst_atom am a =
   match a with
-  | Avar v -> if VM.mem v am then VM.find v am
-              else a
-  | Aconst _ -> a
+  | Avar v ->
+    if VM.mem v am
+    then (VM.find v am, true)
+    else (a, false)
+  | Aconst _ -> (a, false)
 
 let subst_instr am em rm i =
   match i with
-  | Imov (v, a) -> Imov (subst_lval am v, subst_atom am a)
-  | Ishl (v, a1, a2) -> Ishl (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Ishls (l, v, a, n) -> Ishls (subst_lval am l, subst_lval am v, subst_atom am a, n)
-  | Ishr (v, a1, a2) -> Ishr (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Ishrs (v, l, a, n) -> Ishrs (subst_lval am v, subst_lval am l, subst_atom am a, n)
-  | Isar (v, a1, a2) -> Isar (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isars (v, l, a, n) -> Isars (subst_lval am v, subst_lval am l, subst_atom am a, n)
-  | Icshl (vh, vl, a1, a2, n) -> Icshl (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | Icshls (l, vh, vl, a1, a2, n) -> Icshls (subst_lval am l, subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | Icshr (vh, vl, a1, a2, n) -> Icshr (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2, n)
-  | Icshrs (vh, vl, l, a1, a2, n) -> Icshrs (subst_lval am vh, subst_lval am vl, subst_lval am l, subst_atom am a1, subst_atom am a2, n)
-  | Irol (v, a, n) -> Irol (subst_lval am v, subst_atom am a, subst_atom am n)
-  | Iror (v, a, n) -> Iror (subst_lval am v, subst_atom am a, subst_atom am n)
-  | Inondet v -> Inondet (subst_lval am v)
-  | Icmov (v, c, a1, a2) -> Icmov (subst_lval am v, subst_atom am c, subst_atom am a1, subst_atom am a2)
-  | Inop -> Inop
-  | Iadd (v, a1, a2) -> Iadd (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Iadds (c, v, a1, a2) -> Iadds (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Iadc (v, a1, a2, y) -> Iadc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Iadcs (c, v, a1, a2, y) -> Iadcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Isub (v, a1, a2) -> Isub (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isubc (c, v, a1, a2) -> Isubc (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isubb (c, v, a1, a2) -> Isubb (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isbc (v, a1, a2, y) -> Isbc (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Isbcs (c, v, a1, a2, y) -> Isbcs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Isbb (v, a1, a2, y) -> Isbb (subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Isbbs (c, v, a1, a2, y) -> Isbbs (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2, subst_atom am y)
-  | Imul (v, a1, a2) -> Imul (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Imuls (c, v, a1, a2) -> Imuls (subst_lval am c, subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Imull (vh, vl, a1, a2) -> Imull (subst_lval am vh, subst_lval am vl, subst_atom am a1, subst_atom am a2)
-  | Imulj (v, a1, a2) -> Imulj (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isplit (vh, vl, a, n) -> Isplit (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
-  | Ispl (vh, vl, a, n) -> Ispl (subst_lval am vh, subst_lval am vl, subst_atom am a, n)
-  | Iseteq (v, a1, a2) -> Iseteq (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Isetne (v, a1, a2) -> Isetne (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Iand (v, a1, a2) -> Iand (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Ior (v, a1, a2) -> Ior (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Ixor (v, a1, a2) -> Ixor (subst_lval am v, subst_atom am a1, subst_atom am a2)
-  | Inot (v, a) -> Inot (subst_lval am v, subst_atom am a)
-  | Icast (od, v, a) -> Icast (apply_to_some (subst_lval am) od, subst_lval am v, subst_atom am a)
-  | Ivpc (v, a) -> Ivpc (subst_lval am v, subst_atom am a)
-  | Ijoin (v, ah, al) -> Ijoin (subst_lval am v, subst_atom am ah, subst_atom am al)
-  | Iassert e -> Iassert (subst_bexp_prove_with em rm e)
-  | Iassume e -> Iassume (subst_bexp em rm e)
-  | Icut e -> Icut (subst_bexp_prove_with em rm e)
-  | Ighost (vs, e) -> Ighost (VS.of_list (tmap (subst_lval am) (VS.elements vs)), subst_bexp em rm e)
+  | Imov (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (Imov (v', a'), true)
+    else (i, false)
+  | Ishl (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Ishl (v', a1', a2'), true)
+    else (i, false)
+  | Ishls (l, v, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (Ishls (l', v', a', n), true)
+    else (i, false)
+  | Ishr (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Ishr (v', a1', a2'), true)
+    else (i, false)
+  | Ishrs (v, l, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (Ishrs (v', l', a', n), true)
+    else (i, false)
+  | Isar (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Isar (v', a1', a2'), true)
+    else (i, false)
+  | Isars (v, l, a, n) ->
+    let (l', cl) = subst_lval am l in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cl || cv || ca
+    then (Isars (v', l', a', n), true)
+    else (i, false)
+  | Icshl (vh, vl, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (Icshl (vh', vl', a1', a2', n), true)
+    else (i, false)
+  | Icshls (l, vh, vl, a1, a2, n) ->
+    let (l', cl) = subst_lval am l in
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cl || cvh || cvl || ca1 || ca2
+    then (Icshls (l', vh', vl', a1', a2', n), true)
+    else (i, false)
+  | Icshr (vh, vl, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (Icshr (vh', vl', a1', a2', n), true)
+    else (i, false)
+  | Icshrs (vh, vl, l, a1, a2, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (l', cl) = subst_lval am l in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || cl || ca1 || ca2
+    then (Icshrs (vh', vl', l', a1', a2', n), true)
+    else (i, false)
+  | Irol (v, a, n) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    let (n', cn) = subst_atom am n in
+    if cv || ca || cn
+    then (Irol (v', a', n'), true)
+    else (i, false)
+  | Iror (v, a, n) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    let (n', cn) = subst_atom am n in
+    if cv || ca || cn
+    then (Iror (v', a', n'), true)
+    else (i, false)
+  | Inondet v ->
+    let (v', cv) = subst_lval am v in
+    if cv
+    then (Inondet v', true)
+    else (i, false)
+  | Icmov (v, c, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (c', cc) = subst_atom am c in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || cc || ca1 || ca2
+    then (Icmov (v', c', a1', a2'), true)
+    else (i, false)
+  | Inop -> (Inop, false)
+  | Iadd (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Iadd (v', a1', a2'), true)
+    else (i, false)
+  | Iadds (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (Iadds (c', v', a1', a2'), true)
+    else (i, false)
+  | Iadc (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (Iadc (v', a1', a2', y'), true)
+    else (i, false)
+  | Iadcs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (Iadcs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | Isub (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Isub (v', a1', a2'), true)
+    else (i, false)
+  | Isubc (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (Isubc (c', v', a1', a2'), true)
+    else (i, false)
+  | Isubb (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (Isubb (c', v', a1', a2'), true)
+    else (i, false)
+  | Isbc (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (Isbc (v', a1', a2', y'), true)
+    else (i, false)
+  | Isbcs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (Isbcs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | Isbb (v, a1, a2, y) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cv || ca1 || ca2 || cy
+    then (Isbb (v', a1', a2', y'), true)
+    else (i, false)
+  | Isbbs (c, v, a1, a2, y) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    let (y', cy) = subst_atom am y in
+    if cc || cv || ca1 || ca2 || cy
+    then (Isbbs (c', v', a1', a2', y'), true)
+    else (i, false)
+  | Imul (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Imul (v', a1', a2'), true)
+    else (i, false)
+  | Imuls (c, v, a1, a2) ->
+    let (c', cc) = subst_lval am c in
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cc || cv || ca1 || ca2
+    then (Imuls (c', v', a1', a2'), true)
+    else (i, false)
+  | Imull (vh, vl, a1, a2) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cvh || cvl || ca1 || ca2
+    then (Imull (vh', vl', a1', a2'), true)
+    else (i, false)
+  | Imulj (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Imulj (v', a1', a2'), true)
+    else (i, false)
+  | Isplit (vh, vl, a, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a', ca) = subst_atom am a in
+    if cvh || cvl || ca
+    then (Isplit (vh', vl', a', n), true)
+    else (i, false)
+  | Ispl (vh, vl, a, n) ->
+    let (vh', cvh) = subst_lval am vh in
+    let (vl', cvl) = subst_lval am vl in
+    let (a', ca) = subst_atom am a in
+    if cvh || cvl || ca
+    then (Ispl (vh', vl', a', n), true)
+    else (i, false)
+  | Iseteq (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Iseteq (v', a1', a2'), true)
+    else (i, false)
+  | Isetne (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Isetne (v', a1', a2'), true)
+    else (i, false)
+  | Iand (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Iand (v', a1', a2'), true)
+    else (i, false)
+  | Ior (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Ior (v', a1', a2'), true)
+    else (i, false)
+  | Ixor (v, a1, a2) ->
+    let (v', cv) = subst_lval am v in
+    let (a1', ca1) = subst_atom am a1 in
+    let (a2', ca2) = subst_atom am a2 in
+    if cv || ca1 || ca2
+    then (Ixor (v', a1', a2'), true)
+    else (i, false)
+  | Inot (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (Inot (v', a'), true)
+    else (i, false)
+  | Icast (od, v, a) ->
+    let (od', cod) =
+      match apply_to_some (subst_lval am) od with
+      | None -> (None, false)
+      | Some (od', cod) -> (Some od', cod) in
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cod || cv || ca
+    then (Icast (od', v', a'), true)
+    else (i, false)
+  | Ivpc (v, a) ->
+    let (v', cv) = subst_lval am v in
+    let (a', ca) = subst_atom am a in
+    if cv || ca
+    then (Ivpc (v', a'), true)
+    else (i, false)
+  | Ijoin (v, ah, al) ->
+    let (v', cv) = subst_lval am v in
+    let (ah', cah) = subst_atom am ah in
+    let (al', cal) = subst_atom am al in
+    if cv || cah || cal
+    then (Ijoin (v', ah', al'), true)
+    else (i, false)
+  | Iassert e ->
+    let (e', ce) = subst_bexp_prove_with em rm e in
+    if ce
+    then (Iassert e', true)
+    else (i, false)
+  | Iassume e ->
+    let (e', ce) = subst_bexp em rm e in
+    if ce
+    then (Iassume e', true)
+    else (i, false)
+  | Icut e ->
+    let (e', ce) = subst_bexp_prove_with em rm e in
+    if ce
+    then (Icut e', true)
+    else (i, false)
+  | Ighost (vs, e) ->
+    let (vs', cvs) =
+      let (vlist, cvs) = map_subst (subst_lval am) (VS.elements vs) in
+      (VS.of_list vlist, cvs) in
+    let (e', ce) = subst_bexp em rm e in
+    if cvs || ce
+    then (Ighost (vs', e'), true)
+    else (i, false)
 
-let subst_program am em rm p = List.rev_map (subst_instr am em rm) p |> List.rev
+let subst_program am em rm p =
+  let (p', cp) = map_subst (subst_instr am em rm) p in
+  if cp
+  then (p', true)
+  else (p, false)
 
-let subst_lined_program am em rm p = List.rev_map (fun (lno, i) -> lno, subst_instr am em rm i) p |> List.rev
+let subst_lined_program am em rm p =
+  let subst_lined_instr (lno, i) =
+    let (i', ci) = subst_instr am em rm i in
+    ((lno, i'), ci) in
+  map_subst subst_lined_instr p
 
 let rec replace_eexp pats e =
   try
-    snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats)
+    (snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats), true)
   with Not_found ->
     begin
       match e with
-      | Eunop (op, e) -> Eunop (op, replace_eexp pats e)
-      | Ebinop (op, e1, e2) -> Ebinop (op, replace_eexp pats e1, replace_eexp pats e2)
-      | _ -> e
+      | Eunop (op, e1) ->
+        let (e1', ce) = replace_eexp pats e1 in
+        if ce
+        then (Eunop (op, e1'), true)
+        else (e, false)
+      | Ebinop (op, e1, e2) ->
+        let (e1', ce1) = replace_eexp pats e1 in
+        let (e2', ce2) = replace_eexp pats e2 in
+        if ce1 || ce2
+        then (Ebinop (op, e1', e2'), true)
+        else (e, false)
+      | _ -> (e, false)
     end
 
 
@@ -3108,14 +4064,14 @@ let rec replace_eexp pats e =
 let rewrite_mov_ssa_spec spec =
   let (am, em, rm, prog') = get_subst_maps spec.sprog in
   { spre = spec.spre;
-    sprog = subst_program am em rm prog';
-    spost = subst_bexp_prove_with em rm spec.spost }
+    sprog = subst_program am em rm prog' |> fst;
+    spost = subst_bexp_prove_with em rm spec.spost |> fst }
 
 let rewrite_vpc_ssa_spec spec =
  let (am, em, rm, prog') = get_subst_maps_vpc spec.sprog in
   { spre = spec.spre;
-    sprog = subst_program am em rm prog';
-    spost = subst_bexp_prove_with em rm spec.spost }
+    sprog = subst_program am em rm prog' |> fst;
+    spost = subst_bexp_prove_with em rm spec.spost |> fst }
 
 
 (** Slicing *)
@@ -3131,47 +4087,56 @@ module AtomHashtbl = Hashtbl.Make (AtomHashType)
 
 type 'a atomhash_t = 'a AtomHashtbl.t
 
-let rec vars_sat_rec b f vars es =
+let vsmem vars v = VS.mem v vars
+let ismem vars v = IS.mem v.vid vars
+
+let rec vars_sat_rec appear collect vars es =
   match es with
   | [] -> vars
-  | hd::tl -> if b vars hd then vars_sat_rec b f vars tl
-              else vars_sat_rec b f (f vars hd) tl
-let rec vars_sat b f vars es =
-  let vars' = vars_sat_rec b f vars es in
-  if VS.cardinal vars' > VS.cardinal vars then vars_sat b f vars' es
+  | hd::tl ->
+    if appear vars hd
+    then vars_sat_rec appear collect (collect vars hd) tl
+    else vars_sat_rec appear collect vars tl
+let rec vars_sat appear collect vars es =
+  let vars' = vars_sat_rec appear collect vars es in
+  if VS.cardinal vars' > VS.cardinal vars
+  then vars_sat appear collect vars' es
   else vars'
 let eexp_vars_sat vars es =
-  vars_sat (fun vars e -> VS.disjoint vars (vars_eexp e))
-           (fun vars e -> VS.union vars (vars_eexp e)) vars es
+  vars_sat (fun vars e -> has_var_in_eexp (vsmem vars) e)
+           (fun vars e -> vars_eexp_acc e vars) vars es
 let ebexp_vars_sat vars e =
-  vars_sat (fun vars e -> VS.disjoint vars (vars_ebexp e))
-           (fun vars e -> VS.union vars (vars_ebexp e)) vars (split_eand e)
+  vars_sat (fun vars e -> has_var_in_ebexp (vsmem vars) e)
+           (fun vars e -> vars_ebexp_acc e vars) vars (split_eand e)
 let rbexp_vars_sat vars e =
-  vars_sat (fun vars e -> VS.disjoint vars (vars_rbexp e))
-           (fun vars e -> VS.union vars (vars_rbexp e)) vars (split_rand e)
+  vars_sat (fun vars e -> has_var_in_rbexp (vsmem vars) e)
+           (fun vars e -> vars_rbexp_acc e vars) vars (split_rand e)
 let bexp_vars_sat vars e =
   let vars1 = ebexp_vars_sat vars (eqn_bexp e) in
   let vars2 = rbexp_vars_sat vars1 (rng_bexp e) in
   vars2
 
-let rec vids_sat_rec b f vars es =
+let rec vids_sat_rec appear collect vars es =
   match es with
   | [] -> vars
-  | hd::tl -> if b vars hd then vids_sat_rec b f vars tl
-              else vids_sat_rec b f (f vars hd) tl
-let rec vids_sat b f vars es =
-  let vars' = vids_sat_rec b f vars es in
-  if IS.cardinal vars' > IS.cardinal vars then vids_sat b f vars' es
+  | hd::tl ->
+    if appear vars hd
+    then vids_sat_rec appear collect (collect vars hd) tl
+    else vids_sat_rec appear collect vars tl
+let rec vids_sat appear collect vars es =
+  let vars' = vids_sat_rec appear collect vars es in
+  if IS.cardinal vars' > IS.cardinal vars
+  then vids_sat appear collect vars' es
   else vars'
 let eexp_vids_sat vars es =
-  vids_sat (fun vars e -> IS.disjoint vars (vids_eexp e))
-           (fun vars e -> IS.union vars (vids_eexp e)) vars es
+  vids_sat (fun vars e -> has_var_in_eexp (ismem vars) e)
+           (fun vars e -> vids_eexp_acc e vars) vars es
 let ebexp_vids_sat vars e =
-  vids_sat (fun vars e -> IS.disjoint vars (vids_ebexp e))
-           (fun vars e -> IS.union vars (vids_ebexp e)) vars (split_eand e)
+  vids_sat (fun vars e -> has_var_in_ebexp (ismem vars) e)
+           (fun vars e -> vids_ebexp_acc e vars) vars (split_eand e)
 let rbexp_vids_sat vars e =
-  vids_sat (fun vars e -> IS.disjoint vars (vids_rbexp e))
-           (fun vars e -> IS.union vars (vids_rbexp e)) vars (split_rand e)
+  vids_sat (fun vars e -> has_var_in_rbexp (ismem vars) e)
+           (fun vars e -> vids_rbexp_acc e vars) vars (split_rand e)
 let bexp_vids_sat vars e =
   let vars1 = ebexp_vids_sat vars (eqn_bexp e) in
   let vars2 = rbexp_vids_sat vars1 (rng_bexp e) in
@@ -3179,42 +4144,69 @@ let bexp_vids_sat vars e =
 
 let rec slice_ebexp vars e =
   match e with
-  | Etrue -> e
+  | Etrue -> (e, false)
   | Ecmp (_, e1, e2)
-  | Eeq (e1, e2) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) then Etrue
-                    else e
-  | Eeqmod (e1, e2, ps) -> if VS.disjoint vars (vars_eexp e1) && VS.disjoint vars (vars_eexp e2) && (List.for_all (VS.disjoint vars) (List.rev (List.rev_map vars_eexp ps))) then Etrue
-                           else e
+  | Eeq (e1, e2) ->
+    if has_var_in_eexp (vsmem vars) e1 ||
+       has_var_in_eexp (vsmem vars) e2
+    then (e, false)
+    else (Etrue, true)
+  | Eeqmod (e1, e2, ms) ->
+    if has_var_in_eexp (vsmem vars) e1 ||
+       has_var_in_eexp (vsmem vars) e2 ||
+       has_var_in_eexps (vsmem vars) ms
+    then (e, false)
+    else (Etrue, true)
   | Eand (e1, e2) ->
      begin
        match slice_ebexp vars e1, slice_ebexp vars e2 with
-       | Etrue, Etrue -> Etrue
-       | e1, Etrue -> e1
-       | Etrue, e2 -> e2
-       | e1, e2 -> Eand (e1, e2)
+       | (_, false), (_, false) -> (e, false)
+       | (Etrue, _), (Etrue, _) -> (Etrue, true)
+       | (e1', _), (Etrue, _) -> (e1', true)
+       | (Etrue, _), (e2', _) -> (e2', true)
+       | (e1', _), (e2', _) ->
+         if e1 == e1' && e2 == e2'
+         then (e, false)
+         else (Eand (e1', e2'), true)
      end
 
 let rec slice_rbexp vars e =
   match e with
-  | Rtrue -> e
-  | Req (_w, e1, e2) -> if VS.disjoint vars (vars_rexp e1) && VS.disjoint vars (vars_rexp e2) then Rtrue
-                        else e
-  | Rcmp (_w, _op, e1, e2) -> if VS.disjoint vars (vars_rexp e1) && VS.disjoint vars (vars_rexp e2) then Rtrue
-                              else e
-  | Rneg e' -> if VS.disjoint vars (vars_rbexp e') then Rtrue
-               else e
+  | Rtrue -> (e, false)
+  | Req (_, e1, e2)
+  | Rcmp (_, _, e1, e2) ->
+    if has_var_in_rexp (vsmem vars) e1 ||
+       has_var_in_rexp (vsmem vars) e2
+    then (e, false)
+    else (Rtrue, true)
+  | Rneg e1 ->
+    if has_var_in_rbexp (vsmem vars) e1
+    then (e, false)
+    else (Rtrue, true)
   | Rand (e1, e2) ->
      begin
        match slice_rbexp vars e1, slice_rbexp vars e2 with
-       | Rtrue, Rtrue -> Rtrue
-       | e1, Rtrue -> e1
-       | Rtrue, e2 -> e2
-       | e1, e2 -> Rand (e1, e2)
+       | (_, false), (_, false) -> (e, false)
+       | (Rtrue, _), (Rtrue, _) -> (Rtrue, true)
+       | (e1', _), (Rtrue, _) -> (e1', true)
+       | (Rtrue, _), (e2', _) -> (e2', true)
+       | (e1', _), (e2', _) ->
+         if e1 == e1' && e2 == e2'
+         then (e, false)
+         else (Rand (e1', e2'), true)
      end
-  | Ror (e1, e2) -> if VS.disjoint vars (vars_rbexp e1) && VS.disjoint vars (vars_rbexp e2) then Rtrue
-                    else e
+  | Ror (e1, e2) ->
+    if has_var_in_rbexp (vsmem vars) e1 ||
+       has_var_in_rbexp (vsmem vars) e2
+    then (e, false)
+    else (Rtrue, true)
 
-let slice_bexp vars e = (slice_ebexp vars (eqn_bexp e), slice_rbexp vars (rng_bexp e))
+let slice_bexp vars e =
+  let (eqn, se) = slice_ebexp vars (eqn_bexp e) in
+  let (rng, sr) = slice_rbexp vars (rng_bexp e) in
+  if se || sr
+  then ((eqn, rng), true)
+  else (e, false)
 
 let find_dep_vars dep_hash v =
   if AtomHashtbl.mem dep_hash (Avar v) then
@@ -3259,36 +4251,43 @@ let slice_program vars p =
     match p_rev with
     | [] -> (vars, res)
     | hd::tl ->
-       begin
-         match hd with
-         | Iassert _ -> helper vars res tl
-         | Iassume e -> let e' = slice_bexp vars e in
-                        helper (VS.union vars (vars_bexp e')) (if e' = btrue then res else Iassume e'::res) tl
-         | Icut _ -> failwith ("A program with Icut cannot be sliced.")
-         | Ighost (vs, e) -> if VS.disjoint vars vs then helper vars res tl
-                              else helper (VS.union vars (vars_bexp e)) (hd::res) tl
-         | _ ->
-            if VS.disjoint (lvs_instr hd) vars then helper vars res tl
-            else helper (VS.union vars (rvs_instr hd)) (hd::res) tl
-       end in
+      begin
+        match hd with
+        | Iassert _ -> helper vars res tl
+        | Iassume e ->
+          let (e', se) = slice_bexp vars e in
+          helper
+            (vars_bexp_acc e' vars)
+            (if e' = btrue then res
+             else if se then Iassume e'::res
+             else hd::res) tl
+        | Icut _ -> failwith ("A program with Icut cannot be sliced.")
+        | Ighost (vs, e) ->
+          if VS.disjoint vars vs then helper vars res tl
+          else helper (vars_bexp_acc e vars) (hd::res) tl
+        | _ ->
+          if has_lv_in_instr (vsmem vars) hd
+          then helper (rvs_instr_acc hd vars) (hd::res) tl
+          else helper vars res tl
+      end in
   helper vars [] (List.rev p)
 
 let slice_spec s =
   let vars = vars_bexp_prove_with s.spost in
   let (vars', p) = slice_program vars s.sprog in
-  let pre = slice_bexp (bexp_vars_sat vars' s.spre) s.spre in
+  let (pre, _) = slice_bexp (bexp_vars_sat vars' s.spre) s.spre in
   { spre = pre; sprog = p; spost = s.spost }
 
 let slice_espec s =
   let vars = vars_ebexp_prove_with s.espost in
   let (vars', p) = slice_program vars s.esprog in
-  let pre = slice_ebexp (ebexp_vars_sat vars' s.espre) s.espre in
+  let (pre, _) = slice_ebexp (ebexp_vars_sat vars' s.espre) s.espre in
   { espre = pre; esprog = p; espost = s.espost }
 
 let slice_rspec s =
   let vars = vars_rbexp_prove_with s.rspost in
   let (vars', p) = slice_program vars s.rsprog in
-  let pre = slice_rbexp (rbexp_vars_sat vars' s.rspre) s.rspre in
+  let (pre, _) = slice_rbexp (rbexp_vars_sat vars' s.rspre) s.rspre in
   { rspre = pre; rsprog = p; rspost = s.rspost }
 
 (*
@@ -3300,60 +4299,73 @@ let slice_program_ssa vars p =
     match p_rev with
     | [] -> res
     | hd::tl ->
-       begin
-         match hd with
-         | Iassert _ -> helper vars res tl
-         | Iassume e -> let e' = slice_bexp vars e in
-                        helper vars (if e' = btrue then res else Iassume e'::res) tl
-         | Icut _ -> failwith ("A program with Icut cannot be sliced.")
-         | Ighost (vs, e) -> let e' = slice_bexp vars e in
-                             helper vars (if e' = btrue then res else Ighost (vs, e')::res) tl
-         | _ ->
-            if VS.disjoint (lvs_instr hd) vars then helper vars res tl
-            else helper vars (hd::res) tl
-       end in
+      begin
+        match hd with
+        | Iassert _ -> helper vars res tl
+        | Iassume e ->
+          let (e', se) = slice_bexp vars e in
+          helper
+            vars
+            (if e' = btrue then res
+             else if se then Iassume e'::res
+             else hd::res) tl
+        | Icut _ -> failwith ("A program with Icut cannot be sliced.")
+        | Ighost (vs, e) ->
+          let (e', se) = slice_bexp vars e in
+          helper
+            vars
+            (if e' = btrue then res
+             else if se then Ighost (vs, e')::res
+             else hd::res) tl
+        | _ ->
+          if has_lv_in_instr (vsmem vars) hd
+          then helper vars (hd::res) tl
+          else helper vars res tl
+      end in
   helper vars [] (List.rev p)
 
 let program_vars_sat vars p_rev =
   vars_sat (fun vars i -> match i with
-                          | Iassert _ -> true
-                          | Iassume _ -> false
+                          | Iassert _ -> false
+                          | Iassume _ -> true
                           | Icut _ -> failwith ("A program with Icut cannot be sliced.")
-                          | Ighost _ -> false
-                          | _ -> VS.disjoint vars (lvs_instr i))
+                          | Ighost _ -> true
+                          | _ -> has_lv_in_instr (vsmem vars) i)
            (fun vars i -> match i with
                           | Iassert _ -> failwith "Iassert should not appear in program_vars_sat"
                           | Iassume e -> bexp_vars_sat vars e
                           | Icut _ -> failwith "Icut should not appear in program_vars_sat"
                           | Ighost (_vs, e) -> bexp_vars_sat vars e
-                          | _ -> VS.union vars (vars_instr i))
+                          | _ -> vars_instr_acc i vars)
            vars p_rev
 
 let rec program_pre_vars_sat vars pre_vars_sat pre p_rev =
   let vars' = program_vars_sat vars p_rev in
   let vars' = pre_vars_sat vars' pre in
-  if VS.cardinal vars' > VS.cardinal vars then program_pre_vars_sat vars' pre_vars_sat pre p_rev
+  if VS.cardinal vars' > VS.cardinal vars
+  then program_pre_vars_sat vars' pre_vars_sat pre p_rev
   else vars'
 
 let program_vids_sat vars p_rev =
   vids_sat (fun vars i -> match i with
-                          | Iassert _ -> true
-                          | Iassume _ -> false
+                          | Iassert _ -> false
+                          | Iassume _ -> true
                           | Icut _ -> failwith ("A program with Icut cannot be sliced.")
-                          | Ighost _ -> false
-                          | _ -> IS.disjoint vars (lvids_instr i))
+                          | Ighost _ -> true
+                          | _ -> has_lv_in_instr (ismem vars) i)
            (fun vars i -> match i with
                           | Iassert _ -> failwith "Iassert should not appear in program_vars_sat"
                           | Iassume e -> bexp_vids_sat vars e
                           | Icut _ -> failwith "Icut should not appear in program_vars_sat"
                           | Ighost (_vs, e) -> bexp_vids_sat vars e
-                          | _ -> IS.union vars (vids_instr i))
+                          | _ -> vids_instr_acc i vars)
            vars p_rev
 
 let rec program_pre_vids_sat vars pre_vids_sat pre p_rev =
   let vars' = program_vids_sat vars p_rev in
   let vars' = pre_vids_sat vars' pre in
-  if IS.cardinal vars' > IS.cardinal vars then program_pre_vids_sat vars' pre_vids_sat pre p_rev
+  if IS.cardinal vars' > IS.cardinal vars
+  then program_pre_vids_sat vars' pre_vids_sat pre p_rev
   else vars'
 
 (*
@@ -3375,7 +4387,7 @@ let slice_spec_ssa s hashopt =
     | None -> program_pre_vars_sat (vars_bexp_prove_with s.spost)
                 bexp_vars_sat s.spre (List.rev s.sprog) in
   let p = slice_program_ssa vars s.sprog in
-  let pre = slice_bexp vars s.spre in
+  let (pre, _) = slice_bexp vars s.spre in
   { spre = pre; sprog = p; spost = s.spost }
 
 let slice_espec_ssa s hashopt =
@@ -3390,7 +4402,7 @@ let slice_espec_ssa s hashopt =
     | None -> program_pre_vars_sat (vars_ebexp_prove_with s.espost)
                 ebexp_vars_sat s.espre (List.rev s.esprog) in
   let p = slice_program_ssa vars s.esprog in
-  let pre = slice_ebexp vars s.espre in
+  let (pre, _) = slice_ebexp vars s.espre in
   { espre = pre; esprog = p; espost = s.espost }
 
 let slice_rspec_ssa s hashopt =
@@ -3406,7 +4418,7 @@ let slice_rspec_ssa s hashopt =
        program_pre_vars_sat (vars_rbexp_prove_with s.rspost)
          rbexp_vars_sat s.rspre (List.rev s.rsprog) in
   let p = slice_program_ssa vars s.rsprog in
-  let pre = slice_rbexp vars s.rspre in
+  let (pre, _) = slice_rbexp vars s.rspre in
   { rspre = pre; rsprog = p; rspost = s.rspost }
 
 
