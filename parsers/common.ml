@@ -648,7 +648,7 @@ let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
                    then raise_at_line lno (Printf.sprintf "Failed to infer the type of the constant %s" atmname)
                    else bit_t
          | Some ty -> ty in
-       Aconst (ty, n)
+       Aconst (ty, Cint n)
      with Not_found ->
        raise_at_line lno ("Variable " ^ atmname ^ " is undefined.")
 
@@ -866,11 +866,14 @@ let parse_ishl_at ctx lno dest src num =
   let v = resolve_lv_with ctx lno dest (Some ty) in
   let _ =
     match a2 with
-    | Aconst (_, z) ->
+    | Aconst (_, c) ->
        let w = size_of_var v in
-       if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-         raise_at_line lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+	   match c with
+	   | Cint z ->
+	     if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at_line lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")
     | _ -> ()
   in
   [lno, TIshl (v, a1, a2)]
@@ -896,11 +899,14 @@ let parse_ishr_at ctx lno dest src num =
   let v = resolve_lv_with ctx lno dest (Some ty) in
   let _ =
     match a2 with
-    | Aconst (_, z) ->
+    | Aconst (_, c) ->
        let w = size_of_var v in
-       if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-         raise_at_line lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+	   match c with
+	   | Cint z ->
+         if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at_line lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")
     | _ -> ()
   in
   [lno, TIshr (v, a1, a2)]
@@ -926,11 +932,14 @@ let parse_isar_at ctx lno dest src num =
   let v = resolve_lv_with ctx lno dest (Some ty) in
   let _ =
     match a2 with
-    | Aconst (_, z) ->
+    | Aconst (_, c) ->
        let w = size_of_var v in
-       if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
-         raise_at_line lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
+	   match c with
+	   | Cint z ->
+	     if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
+           raise_at_line lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
+	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")	
     | _ -> ()
   in
   [lno, TIsar (v, a1, a2)]
@@ -1522,7 +1531,10 @@ let parse_cast_at ctx lno optlv dest src =
                             else if wv = wa then Some bit_t
                             else Some (Tuint (wa - wv))
 	| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa))
-                            else Some (Tsint (wa - wv + 1)) in
+                            else Some (Tsint (wa - wv + 1))
+	| (Tsingle | Tdouble), _ -> raise (UnsupportedException "Floating-point is not bitvector.")
+	| _, (Tsingle | Tdouble) -> raise (UnsupportedException "Floating-point is not bitvector.") 
+		in
   let od =
 	match optlv with
 	| None -> None
@@ -3054,9 +3066,9 @@ let parse_eexp_pow _lno e_tok i_tok =
    * There are examples that have extremely large exponents.
    * Don't compute the exponentiation.
    *)
-  if Z.equal i Z.zero then Econst Z.one
+  if Z.equal i Z.zero then Econst (Cint Z.one)
   else if Z.equal i Z.one then e
-  else epow e (Econst i)
+  else epow e (Econst (Cint i))
 
 let parse_eexp_as_constant lno e_tok =
   fun ctx ->
@@ -3101,9 +3113,9 @@ let parse_veexp_pow _lno ve_tok i_tok =
   fun ctx ->
   let es = ve_tok ctx in
   let i = i_tok ctx in
-  if Z.equal i Z.zero then List.rev_map (fun _ -> Econst Z.one) es
+  if Z.equal i Z.zero then List.rev_map (fun _ -> Econst (Cint Z.one)) es
   else if Z.equal i Z.one then es
-  else List.rev (List.rev_map (fun e -> epow e (Econst i)) es)
+  else List.rev (List.rev_map (fun e -> epow e (Econst (Cint i))) es)
 
 let parse_veexp_pows lno ve_tok is_tok =
   fun ctx ->
@@ -3112,9 +3124,9 @@ let parse_veexp_pows lno ve_tok is_tok =
   let _ = check_vec_sizes2 lno es is in
   List.rev_map2 (
       fun e i ->
-      if Z.equal i Z.zero then Econst Z.one
+      if Z.equal i Z.zero then Econst (Cint Z.one)
       else if Z.equal i Z.one then e
-      else epow e (Econst i)
+      else epow e (Econst (Cint i))
     ) es is |> List.rev
 
 let parse_veexp_limbs lno w_tok ves_tok =
@@ -3306,9 +3318,9 @@ let parse_rexp_limbs extfun _lno w_tok es_tok =
   let es = extfun tw es in
   let rec helper i es =
     match es with
-    | [] -> Rconst (tw, Z.zero)
-    | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-    | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+    | [] -> Rconst (tw, Cint Z.zero)
+    | hd::[] -> rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))
+    | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))) (helper (i+1) tl) in
   let res = helper 0 es in
   res
 
@@ -3406,9 +3418,9 @@ let parse_vrexp_limbs extfun _lno w_tok ves_tok =
   let tw es = List.fold_left max 0 (List.mapi (fun i e -> size_of_rexp e + i * w) es) in
   let rec helper i tw es =
     match es with
-    | [] -> Rconst (tw, Z.zero)
-    | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-    | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tw tl) in
+    | [] -> Rconst (tw, Cint Z.zero)
+    | hd::[] -> rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))
+    | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))) (helper (i+1) tw tl) in
   let ess = Utils.Std.transpose (ves_tok ctx) in
   ess |> List.rev_map (fun es -> let tw = tw es in helper 0 tw (extfun tw es)) |> List.rev
 
