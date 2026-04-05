@@ -110,37 +110,27 @@ let interval_of_typ typ =
      let _ = Mpq.mul_2exp upper (Mpq.of_int 1) (pred sz) in
      let _ = Mpq.sub upper upper (Mpq.of_int 1) in
      Interval.of_mpq lower upper
-     
    | Tsingle ->
       (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
-      let a = Mpq.init () in
-      Mpq.mul_2exp a (Mpq.of_int 1) 128;           (* 2^128 *)
-
-      let b = Mpq.init () in
-      Mpq.mul_2exp b (Mpq.of_int 1) 104;           (* 2^104 *)
-
       let upper = Mpq.init () in
-      Mpq.sub upper a b;                (* upper = 2^128 - 2^104 *)
-
       let lower = Mpq.init () in
+      let a = Mpq.init () in
+      let b = Mpq.init () in
+      Mpq.mul_2exp a (Mpq.of_int 1) 128;          (* 2^128 *)
+      Mpq.mul_2exp b (Mpq.of_int 1) 104;          (* 2^104 *)
+      Mpq.sub upper a b;                    (* upper = 2^128 - 2^104 *)
       Mpq.neg lower upper;
-
       Interval.of_mpq lower upper
-      
   | Tdouble ->
       (* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
-      let a = Mpq.init () in
-      Mpq.mul_2exp a (Mpq.of_int 1) 1024;          (* 2^1024 *)
-
-      let b = Mpq.init () in
-      Mpq.mul_2exp b (Mpq.of_int 1) 971;           (* 2^971 *)
-
       let upper = Mpq.init () in
-      Mpq.sub upper a b;                (* upper = 2^1024 - 2^971 *)
-
       let lower = Mpq.init () in
+      let a = Mpq.init () in
+      let b = Mpq.init () in
+      Mpq.mul_2exp a (Mpq.of_int 1) 1024;         (* 2^1024 *)
+      Mpq.mul_2exp b (Mpq.of_int 1) 971;          (* 2^971 *)
+      Mpq.sub upper a b;                    (* upper = 2^1024 - 2^971 *)
       Mpq.neg lower upper;
-
       Interval.of_mpq lower upper
 
 let interval_of_atom mgr dom a =
@@ -206,39 +196,38 @@ let texpr_nondet env ty =
     match ty with
     | Tuint sz ->
         let hi = Mpq.init () in
-        Mpq.mul_2exp hi one sz;       (* 2^sz *)
-        Mpq.sub hi hi one;            (* 2^sz - 1 *)
+        Mpq.mul_2exp hi (Mpq.of_int 1) sz;       (* 2^sz *)
+        Mpq.sub hi hi (Mpq.of_int 1);            (* 2^sz - 1 *)
         (Mpq.of_int 0, hi)
     | Tsint sz ->
         let hi = Mpq.init () in
-        Mpq.mul_2exp hi one (pred sz); (* 2^(sz-1) *)
-        Mpq.sub hi hi one;             (* 2^(sz-1) - 1 *)
+        Mpq.mul_2exp hi (Mpq.of_int 1) (pred sz); (* 2^(sz-1) *)
+        Mpq.sub hi hi (Mpq.of_int 1);             (* 2^(sz-1) - 1 *)
         let lo = Mpq.init () in
-        Mpq.mul_2exp lo one (pred sz);
+        Mpq.mul_2exp lo (Mpq.of_int 1) (pred sz);
         Mpq.neg lo lo;                 (* -2^(sz-1) *)
         (lo, hi)
-    | Tsingle -> (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
-        let a = Mpq.init () in
-        Mpq.mul_2exp a one 128;
-
-        let b = Mpq.init () in
-        Mpq.mul_2exp b one 104;
-
+    | Tsingle -> 
+        (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
         let hi = Mpq.init () in
-        Mpq.sub hi a b;
-
         let lo = Mpq.init () in
-        Mpq.neg lo hi;
-        (lo, hi)
-    | Tdouble ->(* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
         let a = Mpq.init () in
-        Mpq.mul_2exp a one 1024;
         let b = Mpq.init () in
-        Mpq.mul_2exp b one 971;
-        let hi = Mpq.init () in
-        Mpq.sub hi a b;
-        let lo = Mpq.init () in
+        Mpq.mul_2exp a (Mpq.of_int 1) 128;        (* 2^128 *)
+        Mpq.mul_2exp b (Mpq.of_int 1) 104;        (* 2^104 *)
+        Mpq.sub hi a b;                    (* upper = 2^128 - 2^104 *)
         Mpq.neg lo hi;
+        (lo, hi)        
+    | Tdouble -> 
+        (* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
+        let hi = Mpq.init () in
+        let lo = Mpq.init () in
+        let a = Mpq.init () in
+        let b = Mpq.init () in
+        Mpq.mul_2exp a (Mpq.of_int 1) 1024;        (* 2^1024 *)
+        Mpq.mul_2exp b (Mpq.of_int 1) 971;        (* 2^971 *)
+        Mpq.sub hi a b;
+        Mpq.neg lo hi;                    (* upper = 2^1024 - 2^971 *)
         (lo, hi)
   in
   Texpr1.cst env (Coeff.i_of_mpq lo hi)
@@ -264,7 +253,7 @@ let texpr_of_atom env a =
   | Aconst (_, c) ->
     match c with
     | Cint z -> texpr_cst env z
-    | Cfloat f -> raise (UnsupportedException "Floating-point is not supported in texpr_of_atom")
+    | Cfloat _ -> raise (UnsupportedException "Floating-point is not supported in texpr_of_atom")
 (*define the function texpr_of_atom be that a can be either constant of variable*)
 
 let meet (mgr, _env) dom0 dom1 = Abstract1.meet mgr dom0 dom1
@@ -449,10 +438,7 @@ let texpr_of_rexp ~signed mgr env abs re =
                          else if signed then texpr_to_signed_i env (size_of_var v) tv
                          else tv in
                 Some re
-    | Rconst (sz, c) ->
-      match c with
-      | Cint z -> Some (texpr_bv_const ~signed env sz z)
-      | Cfloat _ -> rasie (UnsupportedException "float not allowed in bitvector constant")
+    | Rconst (sz, c) -> Some (texpr_bv_const ~signed env sz c)
     | Ruext (sz, e, i) -> (match helper e with
                            | Some te -> let re =
                                           if i < 0 then assert false
@@ -626,21 +612,27 @@ let abs_set_nondet_var (mgr, env) dom v =
         let _ = Mpq.neg l l in
         l, h
     | Tdouble ->
-        (* ±(2^1023)*(2-2^-52) *)
-        let max_double = Mpq.init () in
-        let min_double = Mpq.init () in
-        let _ = Mpq.set_si max_double ((1 lsl 53) - 1) in
-        let _ = Mpq.mul_2exp max_double max_double (1023 - 52) in
-        let _ = Mpq.neg min_double max_double in
-        min_double, max_double
+        (* (2 - 2^-52) * 2^1023 = 2^1024 - 2^971 *)
+        let h = Mpq.init () in
+        let l = Mpq.init () in
+        let a = Mpq.init () in
+        let b = Mpq.init () in
+        Mpq.mul_2exp a (Mpq.of_int 1) 1024;
+        Mpq.mul_2exp b (Mpq.of_int 1) 971;
+        Mpq.sub h a b;
+        Mpq.neg l h;
+        l, h
     | Tsingle ->
-        (* ±(2^127)*(2-2^-23) *)
-        let max_single = Mpq.init () in
-        let min_single = Mpq.init () in
-        let _ = Mpq.set_si max_single ((1 lsl 24) - 1) in
-        let _ = Mpq.mul_2exp max_single max_single (127 - 23) in
-        let _ = Mpq.neg min_single max_single in
-        min_single, max_single
+        (* (2 - 2^-23) * 2^127 = 2^128 - 2^104 *)
+        let h = Mpq.init () in
+        let l = Mpq.init () in
+        let a = Mpq.init () in
+        let b = Mpq.init () in
+        Mpq.mul_2exp a (Mpq.of_int 1) 128;
+        Mpq.mul_2exp b (Mpq.of_int 1) 104;
+        Mpq.sub h a b;
+        Mpq.neg l h;
+        l, h
   in
   Abstract1.assign_texpr mgr dom (apvar v)
     (Texpr1.cst env (Coeff.i_of_mpq lo hi))
@@ -1062,9 +1054,9 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
            | Tsint wv, Tsint wa ->
               if wv >= wa then ta
               else let utv = texpr_eucl_rem2i env ta wv in
-                   texpr_to_signed_i env wv utv in
-           | Tsingle -> raise (UnsupportedException "cast doesn't support floating-point")
-           | Tdouble -> raise (UnsupportedException "cast doesn't support floating-point")
+                   texpr_to_signed_i env wv utv
+           | (Tdouble|Tsingle), _ | _, (Tdouble|Tsingle) -> raise (UnsupportedException "cast doesn't support floating-point")
+    in
     Abstract1.assign_texpr mgr dom (apvar v) tv
       (if var_bound then Some (vars_bounds_dom mgr env [v]) else None) in
   let vpc_dom mgr dom v a =
@@ -1100,7 +1092,7 @@ let interp_instr ?(safe=true) ?(var_bound=true) (mgr, env) dom instr =
       | Some rdom -> Abstract1.meet mgr dom rdom
       | None -> dom)
   | Ishl (v, a0, a1) -> shl_dom mgr dom v a0 a1
-  | Ishls (vf, v, a0, z) -> shls_dom mgr dom vf v a0 (Aconst (typ_of_var v, Cint z))
+  | Ishls (vf, v, a0, z) -> shls_dom mgr dom vf v a0 (mkatom_const (typ_of_var v) (Cint z))
   | Isar (v, a0, a1) -> sar_dom mgr dom v a0 a1
   | Isars (v, l, a0, z) -> sars_dom mgr dom v l a0 z
   | Ishr (v, a0, a1) -> shr_dom mgr dom v a0 a1
@@ -1212,6 +1204,7 @@ let instr_safe (mgr, env) dom instr =
     | Avar _ -> false
     | Aconst (_, c) ->
       match c with
+      | Cfloat _ -> false
       | Cint z -> 
           let ta0 = texpr_of_atom env a0 in
           let tpow2 = texpr_pow2i env (Z.to_int z) in
@@ -1219,7 +1212,6 @@ let instr_safe (mgr, env) dom instr =
                       [| texpr_mul ta0 tpow2 |] None in
                       Abstract1.sat_interval mgr dom' (apvar v)
                       (interval_of_typ (typ_of_var v)) in
-      | Cfloat _ -> raise (UnsupportedException "floating-point is not allowed to shift")
   let cshl_safe mgr env dom vh _vl a0 a1 z =
     let te0 = texpr_of_atom env a0 in
     let te1 = texpr_of_atom env a1 in
