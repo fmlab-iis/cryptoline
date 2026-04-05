@@ -181,7 +181,7 @@ type func =
 type parsing_context =
   {
     mutable cfuns: func SM.t;       (** a map from function name to function definition *)
-    mutable cconsts: Z.t SM.t;      (** a map from constant name to constant value *)
+    mutable cconsts: const SM.t;    (** a map from constant name to constant value *)
     mutable cvars: var SM.t;        (** a map from variable name to variable *)
     mutable cvecs: vectyp SM.t;     (** a map from vector name to its type *)
     mutable ccarries: var SM.t;     (** a map from carry name to carry variable *)
@@ -282,7 +282,7 @@ type avar_prim_t =
 type aconst_prim_t =
   {
     atmtyphint: typ option;            (** an optional type specified explicitly *)
-    atmvalue: Z.t contextual;          (** a constant depending on the context *)
+    atmvalue: const contextual;          (** a constant depending on the context *)
   }
 (** an unresolved constant in a scalar atom *)
 
@@ -498,7 +498,7 @@ type instr_t =
 val resolve_selection : ('a list -> selection -> 'a list) lined contextual
 (** [resolve_selection ctx lno xs sel] returns a selection of elements in [xs] according to the selection [sel] *)
 
-val parse_typed_const : (typ -> Z.t contextual -> atom) lined contextual
+val parse_typed_const : (typ -> const contextual -> atom) lined contextual
 (** parse a typed constant *)
 
 val resolve_var_with : ?chktyp:bool -> ([`AVAR of avar_prim_t] -> atom) lined contextual
@@ -900,7 +900,7 @@ val parse_eexp_defined_var : lno -> [`AVAR of avar_prim_t] -> eexp contextual
 val parse_eexp_pow : lno -> eexp contextual -> Z.t contextual -> eexp contextual
 (** [parse_eexp_pow lno e_tok i_tok] parses an exponentiation *)
 
-val parse_eexp_as_constant : lno -> eexp contextual -> Z.t contextual
+val parse_eexp_as_constant : lno -> eexp contextual -> const contextual
 (** parse an eexp as a constant *)
 
 val parse_veexp_slices : lno -> eexp list contextual -> selection list -> eexp list contextual
@@ -1189,14 +1189,17 @@ val parse_actual_atom_vec : lno -> atom_vec_t -> (type_kind list * type_kind lis
 val parse_var_expansion : lno -> string -> Z.t -> Z.t -> var list contextual
 (** [parse_var_expansion lno prefix st ed] parses a variable name expansion with prefix [prefix], initial index [st], and final index [ed] *)
 
-val parse_named_constant : lno -> string -> Z.t contextual
+val parse_named_constant : lno -> string -> const contextual
 (** [parse_named_constant lno cname] parses a named constant *)
 
 val parse_int_const : lno -> const contextual -> Z.t contextual
-(** [parse_int_const lno c] parses an integer constant for an instruction *)
+(** [parse_int_const lno c] parses [c] into an integer constant for an instruction, raising an error if [c ctx] if not [Cint _]. *)
 
 val parse_int_consts : lno -> const contextual list -> Z.t contextual list
 (** [parse_int_consts lno cs] parses the list of integer constants for a (vectorized) instruction *)
+
+val parse_int_consts_ctx : lno -> const list contextual -> Z.t list contextual
+(** [parse_int_consts lno cs] parses the list of integer constants for an instruction, raising an error if [c ctx] if not a list of [Cint _]. *)
 
 val parse_defined_var : lno -> string -> typ option -> [`AVAR of avar_prim_t]
 (** [parse_defined_var lno vname vtypopt] parses a defined variable *)

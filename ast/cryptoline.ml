@@ -73,6 +73,7 @@ type const =
 
 let const_of_z n = Cint n
 let const_of_double f = Cfloat f
+(* let const_to_string = string_of_const *)
 
 let cadd c1 c2 =
   match c1, c2 with
@@ -107,11 +108,32 @@ let cdiv c1 c2 = (*floating-point division of constants*)
   | Cint n, Cfloat f when not (FloatConst.eq f FloatConst.zero) ->
       Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
   | _, _ -> failwith "Denominator must not be zero."
+
+
+
+
 let cpow c1 c2 =
   match c1, c2 with
-  | Cint n, Cint m -> Cint (Z.pow n (Z.to_int m))
+  | Cint n, Cint m ->
+    if Z.lt m Z.zero then
+      raise (UnsupportedException "Negative integer exponent is not supported for integer constants")
+    else
+      let num_two = Z.of_int 2 in
+      let rec big_pow x n =
+        if Z.equal n Z.zero then Z.one
+        else if Z.equal n Z.one then x
+        else
+          let y = big_pow x (Z.div n num_two) in
+          let z = Z.pow y 2 in
+          if Z.equal (Z.rem n num_two) Z.zero then z
+          else Z.mul x z in
+      Cint (big_pow n m)
   | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.pow f1 f2 ~rnd:Mpfr.Near)
-  | Cfloat f, Cint n -> Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:Mpfr.Near)
+  | Cfloat f, Cint n ->
+    if Z.fits_int n then
+      Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:Mpfr.Near)
+    else
+      Cfloat (FloatConst.pow f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
 let cneg c =
   match c with
@@ -163,8 +185,8 @@ let min_of_typ ty =
   match ty with
   | Tuint _w -> Cint Z.zero
   | Tsint w -> Cint (Z.neg (Z.pow z_two (w - 1)))
-  | Tdouble -> Cfloat (FloatConst.min_val Float.Double)
-  | Tsingle -> Cfloat (FloatConst.min_val Float.Single)
+  | Tdouble -> Cfloat (FloatConst.neg (FloatConst.max_val Float.Double) ~rnd:Mpfr.Near)
+  | Tsingle -> Cfloat (FloatConst.neg (FloatConst.max_val Float.Single) ~rnd:Mpfr.Near)
 
 
 let max_of_typ ty =

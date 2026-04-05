@@ -1,9 +1,39 @@
 open Std 
 
 type prec = Single | Double
-let params: prec -> int*int*int = function
-  | Double -> (53, -1073, 1024)
-  | Single -> (24, -148, 128)
+type fp_format = {
+  mant_bits: int;
+  emin_norm: int;
+  emax_norm: int;
+}
+type mpfr_format = {
+  precision : int;
+  emin : int;
+  emax : int;
+}
+
+let to_mpfr_fmt (fmt: fp_format) =
+  {
+    precision = fmt.mant_bits + 1;
+    emin = 1 + fmt.emin_norm - fmt.mant_bits;
+    emax = fmt.emax_norm + 1;
+  }
+
+let double_fmt: fp_format = {mant_bits = 52; emin_norm = -1022; emax_norm = 1023}
+let single_fmt: fp_format = {mant_bits = 23; emin_norm = -126; emax_norm = 127}
+let double_mpfr_fmt: mpfr_format = to_mpfr_fmt double_fmt
+let single_mpfr_fmt: mpfr_format = to_mpfr_fmt single_fmt
+
+let get_fmt (p: prec) =
+  match p with
+  | Double -> double_fmt 
+  | Single -> single_fmt
+
+let get_mpfr_fmt (p: prec) =
+  match p with
+  | Double -> double_mpfr_fmt
+  | Single -> single_mpfr_fmt
+
 
 module type FloatType = sig
   type t
@@ -27,13 +57,11 @@ module type FloatType = sig
   val pow_int: t -> int -> rnd:Mpfr.round -> t
  
   val sgn: t -> int
-  (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
-
   val cmp: t -> t -> int
-  (** [cmp x y] returns a positive value if [x]>[y], [0] if [x]=[y], a negative value if [x]<[y] *)
 
   val cmp_int: t -> int -> int
   val is_representable: prec -> t -> bool
+  val round_to: prec -> rnd:Mpfr.round -> t -> t
 end
 
 module type S = sig
@@ -69,24 +97,22 @@ module type S = sig
   val pow_int: t -> int -> rnd:Mpfr.round -> t
 
   val sgn: t -> int
-  (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
-  
   val cmp: t -> t -> int
-  (** [cmp x y] returns a positive value if [x]>[y], [0] if [x]=[y], a negative value if [x]<[y] *)
 
   val cmp_int: t -> int -> int
   val eq: t -> t -> bool
   val eq_int: t -> int -> bool
   val is_representable: prec -> t -> bool
+  val round_to: prec -> rnd:Mpfr.round -> t -> t
   val min_val: prec -> t
-  val max_val: prec -> t 
+  val max_val: prec -> t
 end
 
 module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   type t = FloatNum.t
 
   let zero = FloatNum.of_int 0 ~rnd:Mpfr.Near
-  let one = FloatNum.of_int 0 ~rnd:Mpfr.Near
+  let one = FloatNum.of_int 1 ~rnd:Mpfr.Near
 
   let of_string = FloatNum.of_string
   let to_string = FloatNum.to_string
@@ -120,38 +146,20 @@ module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   let eq x y = (FloatNum.cmp x y = 0)
   let eq_int x n = (FloatNum.cmp_int x n = 0)
   let is_representable = FloatNum.is_representable
-  let min_val p =
-    match p with
-    | Double -> 
-        let rnd = Mpfr.Near in
-        let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
-        let x = FloatNum.mul_2exp x 53 ~rnd in (* x := x * 2^53 == 2^ 53 *)
-        let x = sub_int x 1 ~rnd in (* x := x-1 == 2^53-1 *)
-        let x = FloatNum.mul_2exp x 971 ~rnd in (* x := x * 2^971 == (2-2^52) * 2^1023 *)
-        FloatNum.neg x ~rnd (* x := -x == - (2-2^52) * 2^1023 *)
-    | Single ->
-        let rnd = Mpfr.Near in
-        let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
-        let x = FloatNum.mul_2exp x 24 ~rnd in (* x := x * 2^24 == 2^ 24 *)
-        let x = sub_int x 1 ~rnd in (* x := x-1 == 2^24-1 *)
-        let x = FloatNum.mul_2exp x 104 ~rnd in (* x := x * 2^104 == (2-2^23) * 2^127 *)
-        FloatNum.neg x ~rnd (* x := -x == - (2-2^23) * 2^127 *)
-  let max_val p =
-    match p with
-    | Double ->
-        let rnd = Mpfr.Near in
-        let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
-        let x = FloatNum.mul_2exp x 53 ~rnd in (* x := x * 2^53 == 2^ 53 *)
-        let x = sub_int x 1 ~rnd in (* x := x-1 == 2^53-1 *)
-        FloatNum.mul_2exp x 971 ~rnd (* x := x * 2^971 == (2-2^52) * 2^1023 *)
-    | Single ->
-        let rnd = Mpfr.Near in
-        let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
-        let x = FloatNum.mul_2exp x 24 ~rnd in (* x := x * 2^24 == 2^ 24 *)
-        let x = sub_int x 1 ~rnd in (* x := x-1 == 2^24-1 *)
-        FloatNum.mul_2exp x 104 ~rnd (* x := x * 2^104 == (2-2^23) * 2^127 *)
-end
+  let round_to = FloatNum.round_to
 
+  let min_val p =
+    let fmt = get_fmt p in
+    let rnd = Mpfr.Near in
+    FloatNum.mul_2exp (FloatNum.of_int 1 ~rnd) (fmt.emin_norm - fmt.mant_bits) ~rnd
+  let max_val p =
+    let fmt = get_fmt p in
+    let rnd = Mpfr.Near in
+    let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
+    let x = FloatNum.mul_2exp x (fmt.mant_bits + 1) ~rnd in (* x := x * 2^53 == 2^ 53 *)
+    let x = sub_int x 1 ~rnd in (* x := x-1 == 2^53-1 *)
+    FloatNum.mul_2exp x (fmt.emax_norm - fmt.mant_bits) ~rnd (* x := x * 2^971 == (2-2^52) * 2^1023 *)
+end
 
 
 
@@ -161,20 +169,20 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
   type t = Mpfrf.t
 
   let of_string s ~rnd =
-    let x = (Mpfr.init2 53: Mpfr.t) in
+    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
     let _ = Mpfr.set_str x s ~base:10 rnd in
     Mpfrf.of_mpfr x
   let to_string = Mpfrf.to_string
   let of_z n ~rnd =
-    let x = (Mpfr.init2 53: Mpfr.t) in
+    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
     let _ = Mpfr.set_str x (Z.to_string n) ~base:10 rnd in
     Mpfrf.of_mpfr x
   let of_int n ~rnd =
-    let x = (Mpfr.init2 53: Mpfr.t) in
+    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
     let _ = Mpfr.set_si x n rnd in
     Mpfrf.of_mpfr x
   let of_float f ~rnd =
-    let x = (Mpfr.init2 53: Mpfr.t) in
+    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
     let _ = Mpfr.set_d x f rnd in
     Mpfrf.of_mpfr x
   let to_mpq x = Mpqf.to_mpq (Mpfrf.to_mpqf x)
@@ -201,20 +209,17 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
     if s = 0 then 0 else if s > 0 then 1 else -1
   let cmp = Mpfrf.cmp
   let cmp_int = Mpfrf.cmp_int
-  let params = function
-    | Double -> (53, -1073, 1024)
-    | Single -> (24, -148, 128)
-  let is_representable p f =
+  let is_representable p f = (* this func is generated by ChatGPT cuz im too lazy to write it myself *)
     if not (Mpfr.number_p f) then
       false
     else (
-      let (prec', emin, emax) = params p in
+      let {precision; emax; emin} = get_mpfr_fmt p in
       let old_emin = Mpfr.get_emin () in
       let old_emax = Mpfr.get_emax () in
       let _ = Mpfr.set_emin emin in
       let _ = Mpfr.set_emax emax in
       try
-        let x = Mpfr.init2 prec' in
+        let x = Mpfr.init2 precision in
         let ternary = Mpfr.set x f Mpfr.Near in
         let _ = Mpfr.subnormalize x ternary Mpfr.Near in
         let ok = (Mpfr.cmp x f = 0) in
@@ -226,7 +231,30 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
         let _ = Mpfr.set_emax old_emax in
         raise e
     )
+  let round_to p ~rnd f = (* this func is generated by ChatGPT cuz im too lazy to write it myself *)
+    let { precision; emin; emax } = get_mpfr_fmt p in
+    let old_emin = Mpfr.get_emin () in
+    let old_emax = Mpfr.get_emax () in
+    let _ = Mpfr.set_emin emin in
+    let _ = Mpfr.set_emax emax in
+    try
+      let x = (Mpfr.init2 precision : Mpfr.t) in
+      let ternary = Mpfr.set x f rnd in
+      let _ = Mpfr.subnormalize x ternary rnd in
+      let res = Mpfrf.of_mpfr x in
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      res
+    with e ->
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      raise e
 end
+
+
+
+
+
 
 module Qnumber: FloatType with type t = Mpqf.t = struct
   type t = Mpqf.t
@@ -266,20 +294,38 @@ module Qnumber: FloatType with type t = Mpqf.t = struct
   let sgn = Mpqf.sgn
   let cmp = Mpqf.cmp
   let cmp_int = Mpqf.cmp_int
-  let is_representable p q =
-    let (prec', emin, emax) = params p in
+  let is_representable p q = (* this func is generated by ChatGPT cuz im too lazy to write it myself *)
+    let {precision; emax; emin} = get_mpfr_fmt p in
     let old_emin = Mpfr.get_emin () in
     let old_emax = Mpfr.get_emax () in
     let _ = Mpfr.set_emin emin in
     let _ = Mpfr.set_emax emax in
     try
-      let x = Mpfr.init2 prec' in
+      let x = Mpfr.init2 precision in
       let ternary = Mpfr.set_q x q Mpfr.Near in
       let _ = Mpfr.subnormalize x ternary Mpfr.Near in
       let q_round = Mpfr.to_mpq x in
       let _ = Mpfr.set_emin old_emin in
       let _ = Mpfr.set_emax old_emax in
       Mpq.cmp q q_round = 0
+    with e ->
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      raise e
+  let round_to p ~rnd q = (* this func is generated by ChatGPT cuz im too lazy to write it myself *)
+    let { precision; emin; emax } = get_mpfr_fmt p in
+    let old_emin = Mpfr.get_emin () in
+    let old_emax = Mpfr.get_emax () in
+    let _ = Mpfr.set_emin emin in
+    let _ = Mpfr.set_emax emax in
+    try
+      let x = (Mpfr.init2 precision : Mpfr.t) in
+      let ternary = Mpfr.set_q x (Mpqf.to_mpq q) rnd in
+      let _ = Mpfr.subnormalize x ternary rnd in
+      let res = Mpqf.of_mpq (Mpfr.to_mpq x) in
+      let _ = Mpfr.set_emin old_emin in
+      let _ = Mpfr.set_emax old_emax in
+      res
     with e ->
       let _ = Mpfr.set_emin old_emin in
       let _ = Mpfr.set_emax old_emax in

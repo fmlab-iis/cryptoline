@@ -226,7 +226,7 @@ type func =
 type parsing_context =
   {
     mutable cfuns: func SM.t;       (* a map from function name to function definition *)
-    mutable cconsts: Z.t SM.t;      (* a map from constant name to constant value *)
+    mutable cconsts: const SM.t;    (* a map from constant name to constant value *)
     mutable cvars: var SM.t;        (* a map from variable name to variable *)
     mutable cvecs: vectyp SM.t;     (* a map from vector name to its type *)
     mutable ccarries: var SM.t;     (* a map from carry name to carry variable *)
@@ -322,7 +322,7 @@ let string_of_parsing_context ctx =
       "Procedures:";
       String.concat "\n" (List.rev (SM.fold (fun fn _ res -> ("  " ^ fn)::res) ctx.cfuns []));
       "Constants:";
-      String.concat "\n" (List.rev (SM.fold (fun cn cv res -> ("  " ^ cn ^ " = " ^ Z.to_string cv)::res) ctx.cconsts []));
+      String.concat "\n" (List.rev (SM.fold (fun cn cv res -> ("  " ^ cn ^ " = " ^ string_of_const cv)::res) ctx.cconsts []));
       "Variables:";
       String.concat "\n" (List.rev (SM.fold (fun _ v res -> ("  " ^ string_of_var ~typ:true v)::res) ctx.cvars []));
       "Vectors:";
@@ -357,7 +357,7 @@ type avar_prim_t =
 type aconst_prim_t =
   {
     atmtyphint: typ option;
-    atmvalue: Z.t contextual;
+    atmvalue: const contextual;
   }
 
 type avecelm_prim_t =
@@ -574,34 +574,58 @@ let resolve_selection ctx lno xs sel =
      select_from_range lno xs io jo ko
 
 let parse_typed_const ctx lno ty n_token =
-  let n = n_token ctx in
-  let size = size_of_typ ty in
-  (* Check range *)
-  let _ = if not (!Options.Std.implicit_const_conversion) && (cmp_const (Cint n) (Ast.Cryptoline.min_of_typ ty) < 0 || cmp_const (Cint n) (Ast.Cryptoline.max_of_typ ty) > 0)
-          then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
-                                  ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
-  (* Normalize the number: convert to non-negative integer *)
-  let n = Utils.Std.to_positive_same_size n size in
-  (* Normalize the number: convert to bit vector *)
-  let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
-  let _ = if List.length bits > size then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
-  (* Normalize the number: convert back to integer *)
-  let n =
-    match ty with
-    | Tuint _ -> num_of_bits bits
-    | Tsint w ->
-       if w = 0 then Z.zero
-       else
-         begin
-           match bits with
-           | [] -> Z.zero
-           | sign::rest -> let n = num_of_bits rest in
-                           if sign = '1' then Z.sub n (Z.pow num_two (w - 1))
-                           else n
-         end
-    | Tsingle | Tdouble -> raise_at_line lno "Floating-point types (single/double) are not allowed for typed constant"
-  in
-  Aconst (ty, Cint n)
+  match n_token ctx with
+  | Cint n ->
+    let size = size_of_typ ty in
+    (* Check range *)
+    let _ = if not (!Options.Std.implicit_const_conversion) && (cmp_const (Cint n) (Ast.Cryptoline.min_of_typ ty) < 0 || cmp_const (Cint n) (Ast.Cryptoline.max_of_typ ty) > 0)
+            then raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
+                                    ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
+    (* Normalize the number: convert to non-negative integer *)
+    let n = Utils.Std.to_positive_same_size n size in
+    (* Normalize the number: convert to bit vector *)
+    let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
+    let _ = if List.length bits > size then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
+    (* Normalize the number: convert back to integer *)
+    let c =
+      match ty with
+      | Tuint _ -> Cint (num_of_bits bits)
+      | Tsint w ->
+         if w = 0 then Cint Z.zero
+         else
+           begin
+             match bits with
+             | [] -> Cint Z.zero
+             | sign::rest -> let n = num_of_bits rest in
+                             if sign = '1' then Cint (Z.sub n (Z.pow num_two (w - 1)))
+                             else Cint n
+           end
+      | Tsingle | Tdouble ->
+          let rnd = Mpfr.Near in
+          let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
+          let f = Ast.Cryptoline.FloatConst.of_z n ~rnd in
+          if Ast.Cryptoline.FloatConst.is_representable p f then Cfloat f
+          else if !Options.Std.implicit_const_conversion then Cfloat (Ast.Cryptoline.FloatConst.round_to p ~rnd f)
+          else raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
+                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
+    in
+    Aconst (ty, c)
+  | Cfloat f ->
+    let c =
+      match ty with
+      | Tuint _ | Tsint _ -> 
+          raise_at_line lno "Floating-point constants cannot be converted into integer types."
+      | Tsingle -> 
+          if FloatConst.is_representable Utils.Float.Single f then Cfloat f
+          else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to Utils.Float.Single ~rnd:Mpfr.Near f)
+          else raise_at_line lno ("The floating-point constant does not fit into type Tsingle."
+                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
+      | Tdouble ->
+          if FloatConst.is_representable Utils.Float.Double f then Cfloat f
+          else raise_at_line lno ("The floating-point constant does not fit into type Tdouble."
+                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
+    in
+    Aconst (ty, c)
 
 let parse_named_constant lno cname =
   fun ctx ->
@@ -611,13 +635,19 @@ let parse_named_constant lno cname =
     raise_at_line lno ("Undefined constant: " ^ cname)
 
 let parse_int_const lno c =
-  fun ctx ->
+  fun ctx -> 
     match c ctx with
     | Cint n -> n
     | Cfloat _ -> raise_at_line lno "Constant is expected to be an integer."
 
 let parse_int_consts lno cs =
   List.map (parse_int_const lno) cs
+
+let parse_int_consts_ctx lno cs =
+  fun ctx ->
+    List.map
+      (fun c -> parse_int_const lno (fun _ -> c) ctx)
+      (cs ctx)
 
 let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
   let vo =
@@ -642,13 +672,13 @@ let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
      Avar v
   | None ->
      try
-       let n = parse_named_constant lno atmname ctx in
+       let c = parse_named_constant lno atmname ctx in
        let ty = match atmtyphint with
          | None -> if chktyp
                    then raise_at_line lno (Printf.sprintf "Failed to infer the type of the constant %s" atmname)
                    else bit_t
          | Some ty -> ty in
-       Aconst (ty, Cint n)
+       Aconst (ty, c)
      with Not_found ->
        raise_at_line lno ("Variable " ^ atmname ^ " is undefined.")
 
@@ -868,12 +898,12 @@ let parse_ishl_at ctx lno dest src num =
     match a2 with
     | Aconst (_, c) ->
        let w = size_of_var v in
-	   match c with
+	   (match c with
 	   | Cint z ->
 	     if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
            raise_at_line lno ("An shl instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")
+	   | Cfloat _ -> raise_at_line lno ("An shl instruction expects a non-floatingpoint shift offset"))
     | _ -> ()
   in
   [lno, TIshl (v, a1, a2)]
@@ -901,12 +931,12 @@ let parse_ishr_at ctx lno dest src num =
     match a2 with
     | Aconst (_, c) ->
        let w = size_of_var v in
-	   match c with
+	   (match c with
 	   | Cint z ->
          if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
            raise_at_line lno ("An shr instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")
+	   | Cfloat _ -> raise_at_line lno ("An shr instruction expects a non-floatingpoint shift offset"))
     | _ -> ()
   in
   [lno, TIshr (v, a1, a2)]
@@ -934,12 +964,12 @@ let parse_isar_at ctx lno dest src num =
     match a2 with
     | Aconst (_, c) ->
        let w = size_of_var v in
-	   match c with
+	   (match c with
 	   | Cint z ->
 	     if Z.leq z Z.zero || Z.geq z (Z.of_int w) then
            raise_at_line lno ("An sar instruction expects an offset between 0 and the " ^ string_of_int w ^ " (both excluding)."
                             ^ " An offset not in the range is found: " ^ Z.to_string z ^ ".")
-	   | Cfloat _ -> raise (UnsupportedException "Shifting operation does not support floating-point")	
+	   | Cfloat _ -> raise_at_line lno ("An sar instruction expects a non-floatingpoint shift offset"))	
     | _ -> ()
   in
   [lno, TIsar (v, a1, a2)]

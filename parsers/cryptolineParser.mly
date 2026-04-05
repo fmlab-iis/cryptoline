@@ -545,7 +545,7 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { fun _ -> Precondition }
-  | CUTS LSQUARE const_exp_list RSQUARE           { fun ctx -> Cuts (List.rev_map Z.to_int ($3 ctx) |> List.rev) }
+  | CUTS LSQUARE const_exp_list RSQUARE           { fun ctx -> Cuts (List.rev_map Z.to_int ((parse_int_consts_ctx (get_line_start()) $3) ctx) |> List.rev) }
   | ALL CUTS                                      { fun _ -> AllCuts }
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
@@ -701,7 +701,7 @@ eexp:
   | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
   | eexp DIVOP eexp                               { fun ctx -> ediv ($1 ctx) ($3 ctx) }
-  | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 $3 }
+  | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 (parse_int_const (get_line_start()) $3) }
   | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
                                                   { fun ctx -> limbs (Z.to_int ((parse_int_const (get_line_start()) $2) ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
@@ -743,8 +743,8 @@ veexp:
   | veexp ADDOP veexp                             { parse_veexp_add (get_line_start()) $1 $3 }
   | veexp SUBOP veexp                             { parse_veexp_sub (get_line_start()) $1 $3 }
   | veexp MULOP veexp                             { parse_veexp_mul (get_line_start()) $1 $3 }
-  | veexp POWOP eexp_primary_as_const             { parse_veexp_pow (get_line_start()) $1 $3 }
-  | veexp POWOP LSQUARE const_exp_list RSQUARE    { parse_veexp_pows (get_line_start()) $1 $4 }
+  | veexp POWOP eexp_primary_as_const             { parse_veexp_pow (get_line_start()) $1 (parse_int_const (get_line_start()) $3) }
+  | veexp POWOP LSQUARE const_exp_list RSQUARE    { parse_veexp_pows (get_line_start()) $1 (parse_int_consts_ctx (get_line_start()) $4) }
   | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
                                                   { parse_veexp_limbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
   | POLY eexp LSQUARE veexps RSQUARE              { parse_veexp_poly (get_line_start()) $2 $4 }
@@ -837,8 +837,8 @@ rexp_primary:
 rexp:
     rexp_primary                                  { $1 }
   | vrexp_primary LSQUARE NUM RSQUARE             { parse_rexp_vec_elem (get_line_start()) $1 $3 }
-  | UEXT rexp_primary const_exp_primary           { parse_rexp_uext (get_line_start()) $2 $3 }
-  | SEXT rexp_primary const_exp_primary           { parse_rexp_sext (get_line_start()) $2 $3 }
+  | UEXT rexp_primary const_exp_primary           { parse_rexp_uext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
+  | SEXT rexp_primary const_exp_primary           { parse_rexp_sext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
   | NEG rexp_primary                              { parse_rexp_neg (get_line_start()) $2 }
   | NEGOP rexp_primary                            { parse_rexp_neg (get_line_start()) $2 }
   | NOT rexp_primary                              { parse_rexp_not (get_line_start()) $2 }
@@ -865,9 +865,9 @@ rexp:
   | ADDS LSQUARE rexps RSQUARE                    { parse_rexp_adds (get_line_start()) $3 }
   | MULS LSQUARE rexps RSQUARE                    { parse_rexp_muls (get_line_start()) $3 }
   | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { parse_rexp_ulimbs (get_line_start()) $2 $4 }
+                                                  { parse_rexp_ulimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
   | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { parse_rexp_slimbs (get_line_start()) $2 $4 }
+                                                  { parse_rexp_slimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
   | rexp ADDOP rexp                               { parse_rexp_add (get_line_start()) $1 $3 }
   | rexp SUBOP rexp                               { parse_rexp_sub (get_line_start()) $1 $3 }
   | rexp MULOP rexp                               { parse_rexp_mul (get_line_start()) $1 $3 }
@@ -898,8 +898,8 @@ vrexp_primary:
 vrexp:
     vrexp_primary                                 { $1 }
   | vrexp_primary LSQUARE ranges RSQUARE          { parse_vrexp_slices (get_line_start()) $1 $3 }
-  | UEXT vrexp_primary const_exp_primary          { parse_vrexp_uext (get_line_start()) $2 $3 }
-  | SEXT vrexp_primary const_exp_primary          { parse_vrexp_sext (get_line_start()) $2 $3 }
+  | UEXT vrexp_primary const_exp_primary          { parse_vrexp_uext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
+  | SEXT vrexp_primary const_exp_primary          { parse_vrexp_sext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
   | NEG vrexp_primary                             { parse_vrexp_neg (get_line_start()) $2 }
   | NEGOP vrexp_primary                           { parse_vrexp_neg (get_line_start()) $2 }
   | NOT vrexp_primary                             { parse_vrexp_not (get_line_start()) $2 }
@@ -925,9 +925,9 @@ vrexp:
   | ADDS LSQUARE vrexps RSQUARE                   { parse_vrexp_adds (get_line_start()) $3 }
   | MULS LSQUARE vrexps RSQUARE                   { parse_vrexp_muls (get_line_start()) $3 }
   | ULIMBS const_exp_primary LSQUARE vrexps RSQUARE
-                                                  { parse_vrexp_ulimbs (get_line_start()) $2 $4 }
+                                                  { parse_vrexp_ulimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
   | SLIMBS const_exp_primary LSQUARE vrexps RSQUARE
-                                                  { parse_vrexp_slimbs (get_line_start()) $2 $4 }
+                                                  { parse_vrexp_slimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
   | vrexp ADDADDOP vrexp                          { parse_vrexp_append (get_line_start()) $1 $3 }
   | vrexp ADDOP vrexp                             { parse_vrexp_add (get_line_start()) $1 $3 }
   | vrexp SUBOP vrexp                             { parse_vrexp_sub (get_line_start()) $1 $3 }
@@ -1038,19 +1038,19 @@ ranges_slicing:
 ;
 
 ranges_indices:
-  const_exp COMMA const_exp_list                  { [ SelSingle (fun ctx -> Z.to_int ($1 ctx)); SelMultiple (fun ctx -> (List.rev_map Z.to_int ($3 ctx) |> List.rev)) ] }
+  const_exp COMMA const_exp_list                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_consts_ctx (get_line_start()) $3 in [ SelSingle (fun ctx -> Z.to_int (i ctx)); SelMultiple (fun ctx -> (List.rev_map Z.to_int (j ctx) |> List.rev)) ] }
 ;
 
 range_slicing:
-    const_exp COLON const_exp                     { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), Some (Z.to_int ($3 ctx)), None)) }
-  |               COLON const_exp                 { SelRange (fun ctx -> (None, Some (Z.to_int ($2 ctx)), None)) }
-  | const_exp COLON                               { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), None, None)) }
+    const_exp COLON const_exp                     { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $3 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), None)) }
+  |               COLON const_exp                 { let i = parse_int_const (get_line_start()) $2 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), None)) }
+  | const_exp COLON                               { let i = parse_int_const (get_line_start()) $1 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, None)) }
   | const_exp COLON const_exp COLON const_exp
-                                                  { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), Some (Z.to_int ($3 ctx)), Some (Z.to_int ($5 ctx)))) }
+                                                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $3 in let k = parse_int_const (get_line_start()) $5 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), Some (Z.to_int (k ctx)))) }
   |               COLON const_exp COLON const_exp
-                                                  { SelRange (fun ctx -> (None, Some (Z.to_int ($2 ctx)), Some (Z.to_int ($4 ctx)))) }
+                                                  { let i = parse_int_const (get_line_start()) $2 in let j = parse_int_const (get_line_start()) $4 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)))) }
   | const_exp COLON               COLON const_exp
-                                                  { SelRange (fun ctx -> (Some (Z.to_int ($1 ctx)), None, Some (Z.to_int ($4 ctx)))) }
+                                                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $4 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, Some (Z.to_int (j ctx)))) }
 ;
 
 var_expansion:
@@ -1091,18 +1091,11 @@ const_exp_list:
 
 const_exp:
     const_exp_primary                             { fun ctx -> $1 ctx }
-  | SUBOP const_exp %prec UMINUS                  { fun ctx -> Z.neg ($2 ctx) }
-  | const_exp ADDOP const_exp                     { fun ctx -> Z.add ($1 ctx) ($3 ctx) }
-  | const_exp SUBOP const_exp                     { fun ctx -> Z.sub ($1 ctx) ($3 ctx) }
-  | const_exp MULOP const_exp                     { fun ctx -> Z.mul ($1 ctx) ($3 ctx) }
-  | const_exp POWOP const_exp                     { fun ctx ->
-                                                    let n = $1 ctx in
-                                                    let i = $3 ctx in
-                                                    try
-                                                      Z.pow n (Z.to_int i)
-                                                    with Z.Overflow ->
-                                                      big_pow n i
-                                                  }
+  | SUBOP const_exp %prec UMINUS                  { fun ctx -> cneg ($2 ctx) }
+  | const_exp ADDOP const_exp                     { fun ctx -> cadd ($1 ctx) ($3 ctx) }
+  | const_exp SUBOP const_exp                     { fun ctx -> csub ($1 ctx) ($3 ctx) }
+  | const_exp MULOP const_exp                     { fun ctx -> cmul ($1 ctx) ($3 ctx) }
+  | const_exp POWOP const_exp                     { fun ctx -> cpow ($1 ctx) ($3 ctx) }
 ;
 
 const_exp_primary:

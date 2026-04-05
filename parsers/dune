@@ -1,6 +1,6 @@
 (library
   (name        parsers)
-  (libraries   ast str typecheck)
+  (libraries   ast str typecheck utils)
   (public_name cryptoline.parsers)
 )
 

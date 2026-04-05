@@ -11,7 +11,11 @@
 
   let raise_at_line lno msg = raise (ParseError ("Parse failure at line " ^ string_of_int lno ^ ". " ^ msg))
   let _raise_at pos msg = raise (ParseError ("Parse failure at " ^ string_of_pos pos ^ ". " ^ msg))
-
+  let const_to_z lno c =
+    match c with
+    | Cint n -> n
+    | Cfloat _ -> raise_at_line lno "Constant is expected to be an integer."
+  let const_to_int lno c = Z.to_int (const_to_z lno c)
 %}
 
 %token <string> COMMENT
@@ -110,17 +114,17 @@ instrs:
 instr:
     MOV lval atom                                 { [min_int, Imov ($2, $3)] }
   | SHL lval atom atom                            { [min_int, Ishl ($2, $3, $4)] }
-  | SHLS lval lval atom const_exp_primary         { [min_int, Ishls ($2, $3, $4, $5)] }
+  | SHLS lval lval atom const_exp_primary         { [min_int, Ishls ($2, $3, $4, const_to_z (get_line_start()) $5)] }
   | SHR lval atom atom                            { [min_int, Ishr ($2, $3, $4)] }
-  | SHRS lval lval atom const_exp_primary         { [min_int, Ishrs ($2, $3, $4, $5)] }
+  | SHRS lval lval atom const_exp_primary         { [min_int, Ishrs ($2, $3, $4, const_to_z (get_line_start()) $5)] }
   | SAR lval atom atom                            { [min_int, Isar ($2, $3, $4)] }
-  | SARS lval lval atom const_exp_primary         { [min_int, Isars ($2, $3, $4, $5)] }
-  | CSHL lval lval atom atom const_exp_primary    { [min_int, Icshl ($2, $3, $4, $5, $6)] }
+  | SARS lval lval atom const_exp_primary         { [min_int, Isars ($2, $3, $4, const_to_z (get_line_start()) $5)] }
+  | CSHL lval lval atom atom const_exp_primary    { [min_int, Icshl ($2, $3, $4, $5, const_to_z (get_line_start()) $6)] }
   | CSHLS lval lval lval atom atom const_exp_primary
-                                                  { [min_int, Icshls ($2, $3, $4, $5, $6, $7)] }
-  | CSHR lval lval atom atom const_exp_primary    { [min_int, Icshr ($2, $3, $4, $5, $6)] }
+                                                  { [min_int, Icshls ($2, $3, $4, $5, $6, const_to_z (get_line_start()) $7)] }
+  | CSHR lval lval atom atom const_exp_primary    { [min_int, Icshr ($2, $3, $4, $5, const_to_z (get_line_start()) $6)] }
   | CSHRS lval lval lval atom atom const_exp_primary
-                                                  { [min_int, Icshrs ($2, $3, $4, $5, $6, $7)] }
+                                                  { [min_int, Icshrs ($2, $3, $4, $5, $6, const_to_z (get_line_start()) $7)] }
   | ROL lval atom atom                            { [min_int, Irol ($2, $3, $4)] }
   | ROR lval atom atom                            { [min_int, Iror ($2, $3, $4)] }
   | NONDET lval                                   { [min_int, Inondet $2] }
@@ -142,8 +146,8 @@ instr:
   | MULS lcarry lval atom atom                    { [min_int, Imuls ($2, $3, $4, $5)] }
   | MULL lval lval atom atom                      { [min_int, Imull ($2, $3, $4, $5)] }
   | MULJ lval atom atom                           { [min_int, Imulj ($2, $3, $4)] }
-  | SPLIT lval lval atom const_exp_primary        { [min_int, Isplit ($2, $3, $4, $5)] }
-  | SPL lval lval atom const_exp_primary          { [min_int, Ispl ($2, $3, $4, $5)] }
+  | SPLIT lval lval atom const_exp_primary        { [min_int, Isplit ($2, $3, $4, const_to_z (get_line_start()) $5)] }
+  | SPL lval lval atom const_exp_primary          { [min_int, Ispl ($2, $3, $4, const_to_z (get_line_start()) $5)] }
   | AND lval atom atom                            { [min_int, Iand ($2, $3, $4)] }
   | OR lval atom atom                             { [min_int, Ior ($2, $3, $4)] }
   | NOT lval atom                                 { [min_int, Inot ($2, $3)] }
@@ -292,28 +296,17 @@ eexp:
   | eexp SUBOP eexp                               { esub $1 $3 }
   | eexp MULOP eexp                               { emul $1 $3 }
   | eexp POWOP const_exp_primary                  { let e = $1 in
-                                                    let i =
-                                                    match $3 with
-                                                    | Cint n -> Z.to_int n
-                                                    | Cfloat _ -> raise_at_line lno "Exponent must be an integer" 
+                                                    let i = const_to_int (get_line_start()) $3 in
                                                     match e with
-                                                    | Econst n -> Econst (Z.pow n i)
+                                                    | Econst (Cint n) -> Econst (Cint (Z.pow n i))
                                                     | _ ->
                                                       let rec helper j =
-                                                        if j = 0 then Econst Z.one
+                                                        if j = 0 then Econst (Cint Z.one)
                                                         else if j = 1 then e
                                                         else if j = 2 then esq e
                                                         else emul (helper (j - 1)) e in
                                                       helper i }
-  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
-  {
-  let n =
-    match $2 with
-    | Cint z -> Z.to_int z
-    | Cfloat _ ->raise_at_line lno "ULIMBS size must be an integer"
-  in 
-  limbs n $4
-}
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE  { limbs (const_to_int (get_line_start()) $2) $4 }
 ;
 
 eexp_no_unary:
@@ -331,18 +324,18 @@ eexp_no_unary:
   | eexp_no_unary ADDOP eexp                      { eadd $1 $3 }
   | eexp_no_unary SUBOP eexp                      { esub $1 $3 }
   | eexp_no_unary MULOP eexp                      { emul $1 $3 }
-  | eexp_no_unary POWOP const_exp_primary                     { let e = $1 in
-                                                    let i = Z.to_int $3 in
+  | eexp_no_unary POWOP const_exp_primary         { let e = $1 in
+                                                    let i = const_to_int (get_line_start()) $3 in
                                                     match e with
-                                                    | Econst n -> Econst (Z.pow n i)
+                                                    | Econst (Cint n) -> Econst (Cint (Z.pow n i))
                                                     | _ ->
                                                       let rec helper j =
-                                                        if j = 0 then Econst Z.one
+                                                        if j = 0 then Econst (Cint Z.one)
                                                         else if j = 1 then e
                                                         else if j = 2 then esq e
                                                         else emul (helper (j - 1)) e in
                                                       helper i }
-  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE            { limbs (Z.to_int $2) $4 }
+  | ULIMBS const_exp_primary LSQUARE eexps RSQUARE            { limbs (const_to_int (get_line_start()) $2) $4 }
 ;
 
 eexps:
@@ -496,14 +489,14 @@ rbexps:
 
 rexp:
     defined_var                                   { Rvar $1 }
-  | CONST const_exp_primary const_exp_primary     { Rconst (Z.to_int $2, $3) }
-  | const_exp_primary AT const_exp_primary        { Rconst (Z.to_int $3, $1) }
+  | CONST const_exp_primary const_exp_primary     { Rconst (const_to_int (get_line_start()) $2, $3) }
+  | const_exp_primary AT const_exp_primary        { Rconst (const_to_int (get_line_start()) $3, $1) }
   | UEXT rexp const_exp_primary                   { let e = $2 in
-                                                    let i = Z.to_int $3 in
+                                                    let i = const_to_int (get_line_start()) $3 in
                                                     let w = size_of_rexp e in
                                                     Ruext (w, e, i) }
   | SEXT rexp const_exp_primary                   { let e = $2 in
-                                                    let i = Z.to_int $3 in
+                                                    let i = const_to_int (get_line_start()) $3 in
                                                     let w = size_of_rexp e in
                                                     Rsext (w, e, i) }
   | LPAR rexp RPAR                                { $2 }
@@ -592,7 +585,7 @@ rexp:
                                                     | [] -> raise (Failure "No range expression is passed to bvradds.")
                                                     | hd::_tl -> rmuls (size_of_rexp hd) es }
   | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { let w = Z.to_int $2 in
+                                                  { let w = const_to_int (get_line_start()) $2 in
                                                     let es = $4 in
                                                     let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
@@ -602,13 +595,13 @@ rexp:
                                                                           Ruext (ew, e, tw - ew)) es in
                                                       let rec helper i es =
                                                         match es with
-                                                        | [] -> Rconst (tw, Z.zero)
-                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                        | [] -> Rconst (tw, Cint Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
   | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { let w = Z.to_int $2 in
+                                                  { let w = const_to_int (get_line_start()) $2 in
                                                     let es = $4 in
                                                     let tw = List.fold_left (fun w1 w2 -> max w1 w2)
                                                                               0
@@ -620,9 +613,9 @@ rexp:
                                                                             else Ruext (ew, e, tw - ew)) es in
                                                       let rec helper i es =
                                                         match es with
-                                                        | [] -> Rconst (tw, Z.zero)
-                                                        | hd::[] -> rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))
-                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Z.pow z_two (i*w)))) (helper (i+1) tl) in
+                                                        | [] -> Rconst (tw, Cint Z.zero)
+                                                        | hd::[] -> rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))
+                                                        | hd::tl -> radd tw (rmul tw hd (Rconst (tw, Cint (Z.pow z_two (i*w))))) (helper (i+1) tl) in
                                                       let res = helper 0 es in
                                                       res }
   | rexp ADDOP rexp                               { let e1 = $1 in
@@ -691,21 +684,21 @@ gvar:
 ;
 
 const_exp_list:
-    const_exp                                 { [Z.to_int $1] }
-  | const_exp COMMA const_exp_list        { (Z.to_int $1)::$3 }
+    const_exp                                 { [const_to_int (get_line_start()) $1] }
+  | const_exp COMMA const_exp_list        { (const_to_int (get_line_start()) $1)::$3 }
 ;
 
 const:
-    NUM                                           { $1 }
+    NUM                                           { Cint $1 }
 ;
 
 const_exp:
     const_exp_primary                             { $1 }
-  | SUBOP const_exp                               { Z.neg $2 }
-  | const_exp ADDOP const_exp                     { Z.add $1 $3 }
-  | const_exp SUBOP const_exp                     { Z.sub $1 $3 }
-  | const_exp MULOP const_exp                     { Z.mul $1 $3 }
-  | const_exp POWOP const_exp                     { Z.pow $1 (Z.to_int $3) }
+  | SUBOP const_exp                               { cneg $2 }
+  | const_exp ADDOP const_exp                     { cadd $1 $3 }
+  | const_exp SUBOP const_exp                     { csub $1 $3 }
+  | const_exp MULOP const_exp                     { cmul $1 $3 }
+  | const_exp POWOP const_exp                     { cpow $1 $3 }
 ;
 
 const_exp_primary:
