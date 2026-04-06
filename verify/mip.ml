@@ -11,13 +11,15 @@ let var_of_mip mv = match mv with IVar v | CVar v -> v
 (* uint0 denotes exact integers *)
 let z_pow_2 n = Z.pow (Z.of_int 2) n
 let var_range v =
-  let t_size = size_of_var v in
-  if var_is_unsigned v then
-    if t_size = 0 then []
-    else [ele (econst Cint Z.zero) (evar v); elt (evar v) (econst (z_pow_2 t_size))]
-  else
-    [ele (econst (Z.neg (z_pow_2 (pred t_size)))) (evar v);
-     elt (evar v) (econst (z_pow_2 (pred t_size)))]
+  match typ_of_var v with
+  | Tuint t_size | Tsint t_size -> 
+    if var_is_unsigned v then
+      if t_size = 0 then []
+      else [ele (econst (Cint Z.zero)) (evar v); elt (evar v) (econst (Cint (z_pow_2 t_size)))]
+    else
+      [ele (econst (Cint (Z.neg (z_pow_2 (pred t_size))))) (evar v);
+       elt (evar v) (econst (Cint (z_pow_2 (pred t_size))))]
+  | Tsingle | Tdouble -> []
 
 let new_tmp_var = Cas.mk_newvar
 
@@ -39,8 +41,12 @@ let rec is_linear_eexp e =
      let e1_const = is_const_eexp e1 in
      (e0_const && e1_const) || (e0_const && is_linear_eexp e1) ||
        (e1_const && is_linear_eexp e0)
-  | Ebinop (Epow, e0, Econst z) ->
-     z = Z.zero || is_const_eexp e0 || (z = Z.one && is_linear_eexp e0)
+  | Ebinop (Ediv, e0, e1) ->
+     let e0_const = is_const_eexp e0 in
+     let e1_const = is_const_eexp e1 in
+     (e0_const && e1_const) || (e1_const && is_linear_eexp e0)
+  | Ebinop (Epow, e0, Econst c) ->
+     eq_const (Cint Z.zero) c || is_const_eexp e0 || (eq_const (Cint Z.one) c && is_linear_eexp e0)
   | Ebinop (Epow, e0, _) -> is_const_eexp e0
 
 let is_linear_ebexp b =
@@ -94,10 +100,10 @@ let split_and_convert_eqmod vgen res ebexp ivars =
 
 let convert_post vgen pre_prog_constr post ivars  =
   match post with
-  | Etrue -> (vgen, [[eeq (econst Z.zero) (econst Z.one)]], ivars)
+  | Etrue -> (vgen, [[eeq (econst (Cint Z.zero)) (econst (Cint Z.one))]], ivars)
   | Eeq (e0, e1) ->
      let (vgen', tmp) = new_tmp_var vgen (uint_t 0) in
-     let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
+     let tmp_gt_0 = egt (evar tmp) (econst (Cint Z.zero)) in
      (vgen',
       [List.rev (eeq (eadd' e0 (evar tmp)) e1::tmp_gt_0::pre_prog_constr);
        List.rev (eeq e0 (eadd' e1 (evar tmp))::tmp_gt_0::pre_prog_constr)],
@@ -106,7 +112,7 @@ let convert_post vgen pre_prog_constr post ivars  =
      if !Options.Std.apply_rewrite_eqmod then
        let (vgen', lmods, ivars') = convert_moduli vgen ms ivars in
        let (vgen'', tmp) = new_tmp_var vgen' (uint_t 0) in
-       let tmp_gt_0 = egt (evar tmp) (econst Z.zero) in
+       let tmp_gt_0 = egt (evar tmp) (econst (Cint Z.zero)) in
        let pre_prog_tmp_constr =
          List.fold_left (fun res m -> elt (evar tmp) m::res)
            (tmp_gt_0::pre_prog_constr) ms in
@@ -132,16 +138,20 @@ let convert_post vgen pre_prog_constr post ivars  =
 let bv2mip (vgen, constrs, ivars) i =
   let eexp_atom = Cas.bv2z_atom in
   let eexp_assign v e = eeq (evar v) e in
-  let emulpow2 e n = emul' (econst (z_pow_2 n)) e in
+  let emulpow2 e n = emul' (econst (Cint (z_pow_2 n))) e in
   let emaddpow2 e0 e1 n = eadd' e0 (emulpow2 e1 n) in
   match i with
   | Imov (v, a) -> (* v == a *)
      (vgen, eexp_assign v (eexp_atom a)::constrs, ivars)
   | Ishl (v, a, n) ->
       if atom_is_const n then
-        (* v == a * 2**n *)
-        let c = Z.to_int (const_of_atom n) in
-        (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs, ivars)
+        match const_of_atom n with
+        | Cint k ->
+          (* v == a * 2**n *)
+          let c = Z.to_int k in
+          (vgen, eexp_assign v (emulpow2 (eexp_atom a) c)::constrs, ivars)
+        | Cfloat _ -> 
+          raise (UnsupportedException "An shl instruction expects a non-floatingpoint shift offset.")
       else
         (vgen, constrs, ivars)
   | Ishls (f, v, a, n) ->
@@ -151,20 +161,28 @@ let bv2mip (vgen, constrs, ivars) i =
                 (emulpow2 (eexp_atom a) (Z.to_int n)) in
      (vgen, eq::constrs, ivars)
   | Ishr (v, a, n) ->
-     if atom_is_const n then
-       (* 2**n * v == a *)
-       let c = Z.to_int (const_of_atom n) in
-       (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
-     else
-       (vgen, constrs, ivars)
+      if atom_is_const n then
+        match const_of_atom n with
+        | Cint k ->
+          (* 2**n * v == a *)
+          let c = Z.to_int k in
+          (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
+        | Cfloat _ ->
+          raise (UnsupportedException "An shr instruction expects a non-floatingpoint shift offset.")
+      else
+        (vgen, constrs, ivars)
   | Ishrs (v, f, a, n) ->
      (* f + 2**n * v == a *)
      let eq = eeq (emaddpow2 (evar f) (evar v) (Z.to_int n)) (eexp_atom a) in
      (vgen, eq::constrs, ivars)
   | Isar (v, a, n) -> (* v * 2**n == a *)
       if atom_is_const n then
-        let c = Z.to_int (const_of_atom n) in
-        (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
+        match const_of_atom n with
+        | Cint k ->
+          let c = Z.to_int k in
+          (vgen, eeq (emulpow2 (evar v) c) (eexp_atom a)::constrs, ivars)
+        | Cfloat _ ->
+          raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
       else
         (vgen, constrs, ivars)
   | Isars (v, f, a, n) ->
@@ -213,7 +231,7 @@ let bv2mip (vgen, constrs, ivars) i =
        (* v + a1 + 2**|v| * c == a0 + 2**|v| *)
        (vgen,
         eeq (eadd' (evar v) (emaddpow2 (eexp_atom a1) (evar c) sizev))
-          (eadd' (eexp_atom a0) (econst (z_pow_2 sizev)))::constrs,
+          (eadd' (eexp_atom a0) (econst (Cint (z_pow_2 sizev))))::constrs,
         c::ivars)
      else
        (* v + a1 + 2**|v| * tmp == a0 *)
@@ -236,7 +254,7 @@ let bv2mip (vgen, constrs, ivars) i =
                  (emaddpow2 (eexp_atom a0) (evar tmp) sizev)::constrs,
         tmp::b::ivars)
   | Isbc (v, a0, a1, y) -> (* v + a1 + 1 == a0 + y *)
-     (vgen, eeq (eadds' [evar v; eexp_atom a1; econst Z.one])
+     (vgen, eeq (eadds' [evar v; eexp_atom a1; econst (Cint Z.one)])
               (eadd' (eexp_atom a0) (eexp_atom y))::constrs, ivars)
   | Isbcs (c, v, a0, a1, y) ->
      let sizev = size_of_var v in
@@ -244,15 +262,15 @@ let bv2mip (vgen, constrs, ivars) i =
        (* v + a1 + 2**|v| * c + 1 == a0 + 2**|v| + y *)
        (vgen,
         eeq (eadds' [evar v; emaddpow2 (eexp_atom a1) (evar c) sizev;
-                     econst Z.one])
-          (eadds' [eexp_atom a0; econst (z_pow_2 sizev); eexp_atom y])::
+                     econst (Cint Z.one)])
+          (eadds' [eexp_atom a0; econst (Cint (z_pow_2 sizev)); eexp_atom y])::
           constrs, c::ivars)
      else
        (* v + a1 + 2**|v| * tmp + 1 == a0 + y *)
        let (vgen', tmp) = new_tmp_var vgen (int_t 2) in
        (vgen',
         eeq (eadds' [evar v; emaddpow2 (eexp_atom a1) (evar tmp) sizev;
-                     econst Z.one])
+                     econst (Cint Z.one)])
           (eadd' (eexp_atom a0) (eexp_atom y))::constrs, tmp::c::ivars)
   | Isbb (v, a0, a1, y) -> (* v + a1 + y == a0 *)
      (vgen, eeq (eadds' [evar v; eexp_atom a1; eexp_atom y])
@@ -283,10 +301,13 @@ let bv2mip (vgen, constrs, ivars) i =
      let l_tsize = size_of_var vl in
      (vgen, eeq (emaddpow2 (evar vl) (evar vh) l_tsize)
               (emul' (eexp_atom a0) (eexp_atom a1))::constrs, vh::ivars)
+  | Idiv (_, _, _) -> (* v = a0 /. a1 *) (* TODO: Shall we encode Idiv (floating-point div) here? *)
+     (vgen, constrs, ivars)
+     (* raise (UnsupportedException "Instruction div (floating-point div) is not supported in bv2mip.") *)
   | Ispl (vh, vl, a, n)
   | Isplit (vh, vl, a, n) -> (* vh * 2**n + vl == a *)
      let c = Z.to_int n in
-     let rng = elt (evar vl) (econst (z_pow_2 c)) in
+     let rng = elt (evar vl) (econst (Cint (z_pow_2 c))) in
      let eq = eeq (emaddpow2 (evar vl) (evar vh) c) (eexp_atom a) in
      (vgen, eq::rng::constrs, vh::ivars)
   | Ivpc (v, a) -> (* v == a *)
@@ -300,7 +321,7 @@ let bv2mip (vgen, constrs, ivars) i =
      (* vh * 2**(|v|-c) + vl == a0 * 2**|v| + a1, vl < 2**(|v|-c) *)
      let l_tsize = size_of_var vl in
      let c = Z.to_int n in
-     let rng = elt (evar vl) (econst (z_pow_2 (l_tsize - c))) in
+     let rng = elt (evar vl) (econst (Cint (z_pow_2 (l_tsize - c)))) in
      let eq = eeq (emaddpow2 (evar vl) (evar vh) (l_tsize - c))
                 (emaddpow2 (eexp_atom a1) (eexp_atom a0) l_tsize) in
      (vgen, eq::rng::constrs, vh::ivars)
@@ -309,7 +330,7 @@ let bv2mip (vgen, constrs, ivars) i =
         vl < 2**(|v|-c) *)
      let l_tsize = size_of_var vl in
      let c = Z.to_int n in
-     let rng = elt (evar vl) (econst (z_pow_2 (l_tsize - c))) in
+     let rng = elt (evar vl) (econst (Cint (z_pow_2 (l_tsize - c)))) in
      let eq = eeq (emaddpow2
                      (emaddpow2 (evar vl) (evar vh) (l_tsize - c))
                      (evar f) (2*l_tsize - c))
@@ -332,28 +353,36 @@ let bv2mip (vgen, constrs, ivars) i =
      (vgen, eq::constrs, vh::ivars)
   | Irol (v, a, n) ->
      if atom_is_const n then
-       (* h * 2**|a| + l == a * 2**n, v == h + l *)
-       let l_tsize = size_of_atom a in
-       let c = Z.to_int (const_of_atom n) in
-       let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
-       let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
-       let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
-                      (emulpow2 (eexp_atom a) c) in
-       let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
-       (vgen'', rotate::splita::constrs, h::ivars)
+       match const_of_atom n with
+       | Cint k ->
+         (* h * 2**|a| + l == a * 2**n, v == h + l *)
+         let l_tsize = size_of_atom a in
+         let c = Z.to_int k in
+         let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
+         let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
+         let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
+                        (emulpow2 (eexp_atom a) c) in
+         let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
+         (vgen'', rotate::splita::constrs, h::ivars)
+       | Cfloat _ ->
+         raise (UnsupportedException "An rol instruction expects a non-floatingpoint rotation offset.")
      else
        (vgen, constrs, ivars)
   | Iror (v, a, n) ->
      if atom_is_const n then
-       (* h * 2**|a| + l == a * 2**(|a|-n), v == h + l *)
-       let l_tsize = size_of_atom a in
-       let c = Z.to_int (const_of_atom n) in
-       let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
-       let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
-       let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
-                      (emulpow2 (eexp_atom a) (l_tsize - c)) in
-       let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
-       (vgen'', rotate::splita::constrs, h::ivars)
+       match const_of_atom n with
+       | Cint k ->
+         (* h * 2**|a| + l == a * 2**(|a|-n), v == h + l *)
+         let l_tsize = size_of_atom a in
+         let c = Z.to_int k in
+         let (vgen', h) = new_tmp_var vgen (uint_t l_tsize) in
+         let (vgen'', l) = new_tmp_var vgen' (uint_t l_tsize) in
+         let splita = eeq (emaddpow2 (evar l) (evar h) l_tsize)
+                        (emulpow2 (eexp_atom a) (l_tsize - c)) in
+         let rotate = eeq (evar v) (eadd (evar h) (evar l)) in
+         (vgen'', rotate::splita::constrs, h::ivars)
+       | Cfloat _ ->
+         raise (UnsupportedException "An ror instruction expects a non-floatingpoint rotation offset.")
      else
        (vgen, constrs, ivars)
   | Icmov (v, c, a0, a1) ->
@@ -361,13 +390,13 @@ let bv2mip (vgen, constrs, ivars) i =
         v - a1 <= 2**(|v|+1)*c, -2**(|v|+1)c <= v - a1 *)
      let l_tsize = size_of_atom a0 in
      let (le00, le01) =
-       let b0 = emulpow2 (esub (econst Z.one) (eexp_of_atom c)) (succ l_tsize) in
+       let b0 = emulpow2 (esub (econst (Cint Z.one)) (eexp_of_atom c)) (succ l_tsize) in
        let sub0 = esub (evar v) (eexp_of_atom a0) in
-       (ele sub0 b0, ele (econst Z.zero) (eadd sub0 b0)) in
+       (ele sub0 b0, ele (econst (Cint Z.zero)) (eadd sub0 b0)) in
      let (le10, le11) =
        let b1 = emulpow2 (eexp_of_atom c) (succ l_tsize) in
        let sub1 = esub (evar v) (eexp_of_atom a1) in
-       (ele sub1 b1, ele (econst Z.zero) (eadd sub1 b1)) in
+       (ele sub1 b1, ele (econst (Cint Z.zero)) (eadd sub1 b1)) in
      (vgen, le11::le10::le01::le00::constrs, ivars)
   | Iseteq (_, _, _) | Isetne (_, _, _)
   | Inot (_, _) | Iand (_, _, _) | Ior (_, _, _) | Ixor (_, _, _) ->
@@ -423,7 +452,8 @@ let bv2mip (vgen, constrs, ivars) i =
              | None -> new_tmp_var vgen (int_t (wa - wv + 1))
              | Some t -> (vgen, t) in
            (vgen', eeq (emaddpow2 (evar v) (evar tmp) wv) (eexp_atom a)::
-                     constrs, tmp::ivars))
+                     constrs, tmp::ivars)
+      | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "Instruction cast does not support casting to floating-point types."))
   | Icut (_::_, _) -> failwith "Internal error: Icut with algebraic properties cannot appear in a program when verifying the algebraic part."
   | Icut _ -> (vgen, constrs, ivars)
 
@@ -514,7 +544,7 @@ let safety_conditions_of_instr vgen i =
      let w = size_of_var vl in
      let a1 = eexp_of_atom a1 in
      let a2 = eexp_of_atom a2 in
-     let n = econst n in
+     let n = econst (Cint n) in
      (vgen,
       in_typ_range
         (emulpow2e (eadd (emulpow2i a1 w) a2) n) (* (a1 * 2**w + a2) * 2**n *)
@@ -525,7 +555,7 @@ let safety_conditions_of_instr vgen i =
      let w = size_of_var vl in
      let a1 = eexp_of_atom a1 in
      let a2 = eexp_of_atom a2 in
-     let n = econst n in
+     let n = econst (Cint n) in
      (vgen,
       [
         ele ezero a1; (* 0 <= a1 *)
@@ -582,6 +612,7 @@ let safety_conditions_of_instr vgen i =
   | Imuls _ -> (vgen, [])
   | Imull _
     | Imulj _ -> (vgen, [])
+  | Idiv _ -> (vgen, [])  (* TODO: check if safety condition for Idiv is needed *)
   | Isplit _ -> (vgen, [])
   | Ispl _ -> (vgen, [])
   | Iseteq _ -> (vgen, [])
@@ -607,6 +638,7 @@ let safety_conditions_of_instr vgen i =
        | Tsint wv, Tsint wa ->
           if wv >= wa then (vgen, [])
           else (vgen, in_var_range ea v)
+       | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "Instruction vpc does not support casting to floating-point types.") 
      end
   | Ijoin (_v, _ah, _al) -> (vgen, [])
   | Iassert _ -> (vgen, [])

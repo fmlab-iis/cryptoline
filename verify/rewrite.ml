@@ -39,7 +39,7 @@ let get_rewrite_pattern e =
     None
   else
     let v = VS.min_elt candidates in
-    let pat = separate v e (econst Cint Z.zero) in
+    let pat = separate v e (econst (Cint Z.zero)) in
     let pat = simplify_eexp pat in
     Some (v, pat)
 
@@ -97,7 +97,7 @@ let get_rewrite_pattern' e others =
     | [] -> None
     | hd::tl when is_candidate hd ->
        (try
-          let pat = separate hd e (econst Z.zero) in
+          let pat = separate hd e (econst (Cint Z.zero)) in
           let pat = simplify_eexp pat in
           Some (hd, pat)
         with RewriteSeparationException ->
