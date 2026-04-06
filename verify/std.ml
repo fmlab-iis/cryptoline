@@ -188,7 +188,7 @@ let write_maple_input ?comments ifile vars gen p =
     let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
     let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
     match const_gen with
-    | [] -> Econst Z.zero
+    | [] -> Econst Cint Z.zero
     | c::[] -> c
     | _ -> failwith("Multi-moduli is not supported when using maple.") in
   let input_text =
