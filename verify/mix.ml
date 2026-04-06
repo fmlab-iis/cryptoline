@@ -32,7 +32,10 @@ let rec smtlib_eexp_mix ?(expn=true) is_pvar e =
   | Evar v -> if is_pvar v
               then smtlib_bv2i v
               else string_of_var v
-  | Econst c -> string_of_z c
+  | Econst c -> 
+     match c with
+     | Cint z -> string_of_z z
+     | Cfloat f -> raise (UnsupportedException "SMT does not support floating-point.")
   | Eunop (op, e) -> Printf.sprintf
                        "(%s %s)"
                        (Smt.smtlib_eunop op)
