@@ -79,8 +79,11 @@ let cadd c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint(Z.add n m)
   | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.add f1 f2 ~rnd:Mpfr.Near)
-  | Cfloat f, Cint n | Cint n, Cfloat f ->
+  | Cfloat f, Cint n ->
     Cfloat (FloatConst.add f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+  | Cint n, Cfloat f ->
+    Cfloat (FloatConst.add (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+
 let csub c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint (Z.sub n m)
@@ -89,6 +92,7 @@ let csub c1 c2 =
     Cfloat (FloatConst.sub f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f ->
     Cfloat (FloatConst.sub (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+
 let cmul c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint (Z.mul n m)
@@ -97,6 +101,7 @@ let cmul c1 c2 =
     Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f ->
     Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+
 let cdiv c1 c2 = (*floating-point division of constants*)
   match c1, c2 with
   | Cint n, Cint m when not (Z.equal m Z.zero) -> 
@@ -108,9 +113,6 @@ let cdiv c1 c2 = (*floating-point division of constants*)
   | Cint n, Cfloat f when not (FloatConst.eq f FloatConst.zero) ->
       Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
   | _, _ -> failwith "Denominator must not be zero."
-
-
-
 
 let cpow c1 c2 =
   match c1, c2 with
@@ -135,6 +137,7 @@ let cpow c1 c2 =
     else
       Cfloat (FloatConst.pow f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
   | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+
 let cneg c =
   match c with
   | Cint n -> Cint (Z.neg n)
@@ -144,12 +147,14 @@ let sgn_const c =
   match c with
   | Cint n -> if Z.lt n Z.zero then -1 else 1
   | Cfloat f -> FloatConst.sgn f
+
 let eq_const c1 c2 =
   match c1, c2 with
   | Cint n1, Cint n2 -> Z.equal n1 n2
   | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
   | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
   | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+
 let cmp_const c1 c2 =
   match c1, c2 with
   | Cint n1, Cint n2 -> Z.compare n1 n2

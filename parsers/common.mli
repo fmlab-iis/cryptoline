@@ -1192,14 +1192,17 @@ val parse_var_expansion : lno -> string -> Z.t -> Z.t -> var list contextual
 val parse_named_constant : lno -> string -> const contextual
 (** [parse_named_constant lno cname] parses a named constant *)
 
-val parse_int_const : lno -> const contextual -> Z.t contextual
-(** [parse_int_const lno c] parses [c] into an integer constant for an instruction, raising an error if [c ctx] if not [Cint _]. *)
+val const_to_z : lno -> const -> Z.t
+(** [const_to_z lno c] parses a constant [c] into a integer, raising an error if [c] is not [Cint _]. *)
 
-val parse_int_consts : lno -> const contextual list -> Z.t contextual list
-(** [parse_int_consts lno cs] parses the list of integer constants for a (vectorized) instruction *)
+val int_of_const_ctx : lno -> const contextual -> Z.t contextual
+(** [int_of_const_ctx lno c_ctx] parses [c_ctx] into a contexual integer constant for an instruction, raising an error if [c_ctx ctx] is not [Cint _]. *)
 
-val parse_int_consts_ctx : lno -> const list contextual -> Z.t list contextual
-(** [parse_int_consts lno cs] parses the list of integer constants for an instruction, raising an error if [c ctx] if not a list of [Cint _]. *)
+val ints_of_const_ctxs : lno -> const contextual list -> Z.t contextual list
+(** [ints_of_const_ctxs lno c_ctxs] parses a list of contexual integer constants for a (vectorized) instruction *)
+
+val ints_of_const_list_ctx : lno -> const list contextual -> Z.t list contextual
+(** [ints_of_const_list_ctx lno cs_ctx] parses a contextual list of integer constants for an instruction, raising an error if [cs_ctx ctx] is not a list of [Cint _]. *)
 
 val parse_defined_var : lno -> string -> typ option -> [`AVAR of avar_prim_t]
 (** [parse_defined_var lno vname vtypopt] parses a defined variable *)

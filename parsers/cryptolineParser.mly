@@ -153,42 +153,42 @@ instr:
   | EXTRACT lval_v LSQUARE nums RSQUARE atom_vs
                                                   { (get_line_start(), `EXTRACT ($2, $4, $6)) }
   | lval EQOP atom                                { (get_line_start(), `MOV ($1, $3)) }
-  | BROADCAST lval_v const_exp_primary atom_v     { (get_line_start(), `VBROADCAST ($2, parse_int_const (get_line_start()) $3, $4)) }
+  | BROADCAST lval_v const_exp_primary atom_v     { (get_line_start(), `VBROADCAST ($2, int_of_const_ctx (get_line_start()) $3, $4)) }
   | SHL lval atom atom                            { (get_line_start(), `SHL ($2, $3, $4)) }
   | SHL lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSHL ($2, $3, $4)) }
   | lval EQOP SHL atom atom                       { (get_line_start(), `SHL ($1, $4, $5)) }
-  | SHLS lval lval atom const_exp_primary         { (get_line_start(), `SHLS ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | SHLS lval lval atom const_exp_primary         { (get_line_start(), `SHLS ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SHLS lval_v lval_v atom_v_primary const_exp_v_primary
-                                                  { (get_line_start(), `VSHLS ($2, $3, $4, parse_int_consts (get_line_start()) $5)) }
-  | lval lval EQOP SHLS atom const_exp_primary    { (get_line_start(), `SHLS ($1, $2, $5, parse_int_const (get_line_start()) $6)) }
+                                                  { (get_line_start(), `VSHLS ($2, $3, $4, ints_of_const_ctxs (get_line_start()) $5)) }
+  | lval lval EQOP SHLS atom const_exp_primary    { (get_line_start(), `SHLS ($1, $2, $5, int_of_const_ctx (get_line_start()) $6)) }
   | SHR lval atom atom                            { (get_line_start(), `SHR ($2, $3, $4)) }
   | SHR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSHR ($2, $3, $4)) }
   | lval EQOP SHR atom atom                       { (get_line_start(), `SHR ($1, $4, $5)) }
-  | SHRS lval lval atom const_exp_primary         { (get_line_start(), `SHRS ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | SHRS lval lval atom const_exp_primary         { (get_line_start(), `SHRS ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SHRS lval_v lval_v atom_v_primary const_exp_v_primary
-                                                  { (get_line_start(), `VSHRS ($2, $3, $4, parse_int_consts (get_line_start()) $5)) }
-  | lval lval EQOP SHRS atom const_exp_primary    { (get_line_start(), `SHRS ($1, $2, $5, parse_int_const (get_line_start()) $6)) }
+                                                  { (get_line_start(), `VSHRS ($2, $3, $4, ints_of_const_ctxs (get_line_start()) $5)) }
+  | lval lval EQOP SHRS atom const_exp_primary    { (get_line_start(), `SHRS ($1, $2, $5, int_of_const_ctx (get_line_start()) $6)) }
   | SAR lval atom atom                            { (get_line_start(), `SAR ($2, $3, $4)) }
   | SAR lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VSAR ($2, $3, $4)) }
   | lval EQOP SAR atom atom                       { (get_line_start(), `SAR ($1, $4, $5)) }
-  | SARS lval lval atom const_exp_primary         { (get_line_start(), `SARS ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | SARS lval lval atom const_exp_primary         { (get_line_start(), `SARS ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SARS lval_v lval_v atom_v_primary const_exp_v_primary
-                                                  { (get_line_start(), `VSARS ($2, $3, $4, parse_int_consts (get_line_start()) $5)) }
-  | lval lval EQOP SARS atom const_exp_primary    { (get_line_start(), `SARS ($1, $2, $5, parse_int_const (get_line_start()) $6)) }
-  | CSHL lval lval atom atom const_exp_primary    { (get_line_start(), `CSHL ($2, $3, $4, $5, parse_int_const (get_line_start()) $6)) }
+                                                  { (get_line_start(), `VSARS ($2, $3, $4, ints_of_const_ctxs (get_line_start()) $5)) }
+  | lval lval EQOP SARS atom const_exp_primary    { (get_line_start(), `SARS ($1, $2, $5, int_of_const_ctx (get_line_start()) $6)) }
+  | CSHL lval lval atom atom const_exp_primary    { (get_line_start(), `CSHL ($2, $3, $4, $5, int_of_const_ctx (get_line_start()) $6)) }
   | lval DOT lval EQOP CSHL atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHL ($1, $3, $6, $7, parse_int_const (get_line_start()) $8)) }
+                                                  { (get_line_start(), `CSHL ($1, $3, $6, $7, int_of_const_ctx (get_line_start()) $8)) }
   | CSHLS lval lval lval atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHLS ($2, $3, $4, $5, $6, parse_int_const (get_line_start()) $7)) }
+                                                  { (get_line_start(), `CSHLS ($2, $3, $4, $5, $6, int_of_const_ctx (get_line_start()) $7)) }
   | lval DOT lval DOT lval EQOP CSHLS atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHLS ($1, $3, $5, $8, $9, parse_int_const (get_line_start()) $10)) }
-  | CSHR lval lval atom atom const_exp_primary    { (get_line_start(), `CSHR ($2, $3, $4, $5, parse_int_const (get_line_start()) $6)) }
+                                                  { (get_line_start(), `CSHLS ($1, $3, $5, $8, $9, int_of_const_ctx (get_line_start()) $10)) }
+  | CSHR lval lval atom atom const_exp_primary    { (get_line_start(), `CSHR ($2, $3, $4, $5, int_of_const_ctx (get_line_start()) $6)) }
   | lval DOT lval EQOP CSHR atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHR ($1, $3, $6, $7, parse_int_const (get_line_start()) $8)) }
+                                                  { (get_line_start(), `CSHR ($1, $3, $6, $7, int_of_const_ctx (get_line_start()) $8)) }
   | CSHRS lval lval lval atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHRS ($2, $3, $4, $5, $6, parse_int_const (get_line_start()) $7)) }
+                                                  { (get_line_start(), `CSHRS ($2, $3, $4, $5, $6, int_of_const_ctx (get_line_start()) $7)) }
   | lval DOT lval DOT lval EQOP CSHRS atom atom const_exp_primary
-                                                  { (get_line_start(), `CSHRS ($1, $3, $5, $8, $9, parse_int_const (get_line_start()) $10)) }
+                                                  { (get_line_start(), `CSHRS ($1, $3, $5, $8, $9, int_of_const_ctx (get_line_start()) $10)) }
   | ROL lval atom atom                            { (get_line_start(), `ROL ($2, $3, $4)) }
   | ROL lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VROL ($2, $3, $4)) }
   | ROR lval atom atom                            { (get_line_start(), `ROR ($2, $3, $4)) }
@@ -248,15 +248,15 @@ instr:
   | lval EQOP MULJ atom atom                      { (get_line_start(), `MULJ ($1, $4, $5)) }
   | DIV lval atom atom                            { (get_line_start(), `DIV ($2, $3, $4)) }
   | lval EQOP DIV atom atom                       { (get_line_start(), `DIV ($1, $4, $5)) }
-  | SPLIT lval lval atom const_exp_primary        { (get_line_start(), `SPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | SPLIT lval lval atom const_exp_primary        { (get_line_start(), `SPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SPLIT lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VSPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `VSPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | lval DOT lval EQOP SPLIT atom const_exp_primary
-                                                  { (get_line_start(), `SPLIT ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
-  | SPL lval lval atom const_exp_primary          { (get_line_start(), `SPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `SPLIT ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
+  | SPL lval lval atom const_exp_primary          { (get_line_start(), `SPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SPL lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VSPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
-  | lval DOT lval EQOP SPL atom const_exp_primary { (get_line_start(), `SPL ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
+                                                  { (get_line_start(), `VSPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
+  | lval DOT lval EQOP SPL atom const_exp_primary { (get_line_start(), `SPL ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
   | SETEQ lval atom atom                          { (get_line_start(), `SETEQ ($2, $3, $4)) }
   | SETEQ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VSETEQ ($2, $3, $4)) }
   | SETNE lval atom atom                          { (get_line_start(), `SETNE ($2, $3, $4)) }
@@ -298,16 +298,16 @@ instr:
   | UMULJ lval atom atom                          { (get_line_start(), `UMULJ ($2, $3, $4)) }
   | UMULJ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VUMULJ ($2, $3, $4)) }
   | lval EQOP UMULJ atom atom                     { (get_line_start(), `UMULJ ($1, $4, $5)) }
-  | USPLIT lval lval atom const_exp_primary       { (get_line_start(), `USPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | USPLIT lval lval atom const_exp_primary       { (get_line_start(), `USPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | USPLIT lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VUSPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `VUSPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | lval DOT lval EQOP USPLIT atom const_exp_primary
-                                                  { (get_line_start(), `USPLIT ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
-  | USPL lval lval atom const_exp_primary         { (get_line_start(), `USPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `USPLIT ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
+  | USPL lval lval atom const_exp_primary         { (get_line_start(), `USPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | USPL lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VUSPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `VUSPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | lval DOT lval EQOP USPL atom const_exp_primary
-                                                  { (get_line_start(), `USPL ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
+                                                  { (get_line_start(), `USPL ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
   | SADD lval atom atom                           { (get_line_start(), `SADD ($2, $3, $4)) }
   | SADD lval_v atom_v_primary atom_v_primary     { (get_line_start(), `VSADD ($2, $3, $4)) }
   | lval EQOP SADD atom atom                      { (get_line_start(), `SADD ($1, $4, $5)) }
@@ -345,16 +345,16 @@ instr:
   | SMULJ lval atom atom                          { (get_line_start(), `SMULJ ($2, $3, $4)) }
   | SMULJ lval_v atom_v_primary atom_v_primary    { (get_line_start(), `VSMULJ ($2, $3, $4)) }
   | lval EQOP SMULJ atom atom                     { (get_line_start(), `SMULJ ($1, $4, $5)) }
-  | SSPLIT lval lval atom const_exp_primary       { (get_line_start(), `SSPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+  | SSPLIT lval lval atom const_exp_primary       { (get_line_start(), `SSPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SSPLIT lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VSSPLIT ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `VSSPLIT ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | lval DOT lval EQOP SSPLIT atom const_exp_primary
-                                                  { (get_line_start(), `SSPLIT ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
-  | SSPL lval lval atom const_exp_primary         { (get_line_start(), `SSPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `SSPLIT ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
+  | SSPL lval lval atom const_exp_primary         { (get_line_start(), `SSPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | SSPL lval_v lval_v atom_v_primary const_exp_primary
-                                                  { (get_line_start(), `VSSPL ($2, $3, $4, parse_int_const (get_line_start()) $5)) }
+                                                  { (get_line_start(), `VSSPL ($2, $3, $4, int_of_const_ctx (get_line_start()) $5)) }
   | lval DOT lval EQOP SSPL atom const_exp_primary
-                                                  { (get_line_start(), `SSPL ($1, $3, $6, parse_int_const (get_line_start()) $7)) }
+                                                  { (get_line_start(), `SSPL ($1, $3, $6, int_of_const_ctx (get_line_start()) $7)) }
   | AND lval atom atom                            { (get_line_start(), `AND ($2, $3, $4)) }
   | AND lval_v atom_v_primary atom_v_primary      { (get_line_start(), `VAND ($2, $3, $4)) }
   | lval EQOP AND atom atom                       { (get_line_start(), `AND ($1, $4, $5)) }
@@ -545,7 +545,7 @@ prove_with_specs:
 
 prove_with_spec:
     PRECONDITION                                  { fun _ -> Precondition }
-  | CUTS LSQUARE const_exp_list RSQUARE           { fun ctx -> Cuts (List.rev_map Z.to_int ((parse_int_consts_ctx (get_line_start()) $3) ctx) |> List.rev) }
+  | CUTS LSQUARE const_exp_list RSQUARE           { fun ctx -> Cuts (List.rev_map Z.to_int ((ints_of_const_list_ctx (get_line_start()) $3) ctx) |> List.rev) }
   | ALL CUTS                                      { fun _ -> AllCuts }
   | ALL ASSUMES                                   { fun _ -> AllAssumes }
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
@@ -701,9 +701,9 @@ eexp:
   | eexp SUBOP eexp                               { fun ctx -> esub ($1 ctx) ($3 ctx) }
   | eexp MULOP eexp                               { fun ctx -> emul ($1 ctx) ($3 ctx) }
   | eexp DIVOP eexp                               { fun ctx -> ediv ($1 ctx) ($3 ctx) }
-  | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 (parse_int_const (get_line_start()) $3) }
+  | eexp POWOP eexp_primary_as_const              { parse_eexp_pow (get_line_start()) $1 (int_of_const_ctx (get_line_start()) $3) }
   | ULIMBS const_exp_primary LSQUARE eexps RSQUARE
-                                                  { fun ctx -> limbs (Z.to_int ((parse_int_const (get_line_start()) $2) ctx)) ($4 ctx) }
+                                                  { fun ctx -> limbs (Z.to_int ((int_of_const_ctx (get_line_start()) $2) ctx)) ($4 ctx) }
   | POLY eexp LSQUARE eexps RSQUARE               { fun ctx -> poly ($2 ctx) ($4 ctx) }
 ;
 
@@ -743,10 +743,10 @@ veexp:
   | veexp ADDOP veexp                             { parse_veexp_add (get_line_start()) $1 $3 }
   | veexp SUBOP veexp                             { parse_veexp_sub (get_line_start()) $1 $3 }
   | veexp MULOP veexp                             { parse_veexp_mul (get_line_start()) $1 $3 }
-  | veexp POWOP eexp_primary_as_const             { parse_veexp_pow (get_line_start()) $1 (parse_int_const (get_line_start()) $3) }
-  | veexp POWOP LSQUARE const_exp_list RSQUARE    { parse_veexp_pows (get_line_start()) $1 (parse_int_consts_ctx (get_line_start()) $4) }
+  | veexp POWOP eexp_primary_as_const             { parse_veexp_pow (get_line_start()) $1 (int_of_const_ctx (get_line_start()) $3) }
+  | veexp POWOP LSQUARE const_exp_list RSQUARE    { parse_veexp_pows (get_line_start()) $1 (ints_of_const_list_ctx (get_line_start()) $4) }
   | ULIMBS const_exp_primary LSQUARE veexps RSQUARE
-                                                  { parse_veexp_limbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
+                                                  { parse_veexp_limbs (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $4 }
   | POLY eexp LSQUARE veexps RSQUARE              { parse_veexp_poly (get_line_start()) $2 $4 }
   | POLY veexp_primary LSQUARE veexps RSQUARE     { parse_veexp_polyv (get_line_start()) $2 $4 }
 ;
@@ -827,9 +827,9 @@ cmpop_prefix:
 
 rexp_primary:
     defined_var                                   { parse_rexp_defined_var (get_line_start()) $1 }
-  | CONST const_exp_primary const_exp_primary     { parse_rexp_const (get_line_start()) (parse_int_const (get_line_start()) $2) $3 }
+  | CONST const_exp_primary const_exp_primary     { parse_rexp_const (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $3 }
   | CONST typ const_exp_primary                   { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $2)) $3 }
-  | const_exp_primary AT const_exp_primary        { parse_rexp_const (get_line_start()) (parse_int_const (get_line_start()) $3) $1 }
+  | const_exp_primary AT const_exp_primary        { parse_rexp_const (get_line_start()) (int_of_const_ctx (get_line_start()) $3) $1 }
   | const_exp_primary AT typ                      { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $3)) $1 }
   | LPAR rexp RPAR                                { fun ctx -> $2 ctx }
 ;
@@ -837,8 +837,8 @@ rexp_primary:
 rexp:
     rexp_primary                                  { $1 }
   | vrexp_primary LSQUARE NUM RSQUARE             { parse_rexp_vec_elem (get_line_start()) $1 $3 }
-  | UEXT rexp_primary const_exp_primary           { parse_rexp_uext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
-  | SEXT rexp_primary const_exp_primary           { parse_rexp_sext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
+  | UEXT rexp_primary const_exp_primary           { parse_rexp_uext (get_line_start()) $2 (int_of_const_ctx (get_line_start()) $3) }
+  | SEXT rexp_primary const_exp_primary           { parse_rexp_sext (get_line_start()) $2 (int_of_const_ctx (get_line_start()) $3) }
   | NEG rexp_primary                              { parse_rexp_neg (get_line_start()) $2 }
   | NEGOP rexp_primary                            { parse_rexp_neg (get_line_start()) $2 }
   | NOT rexp_primary                              { parse_rexp_not (get_line_start()) $2 }
@@ -865,9 +865,9 @@ rexp:
   | ADDS LSQUARE rexps RSQUARE                    { parse_rexp_adds (get_line_start()) $3 }
   | MULS LSQUARE rexps RSQUARE                    { parse_rexp_muls (get_line_start()) $3 }
   | ULIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { parse_rexp_ulimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
+                                                  { parse_rexp_ulimbs (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $4 }
   | SLIMBS const_exp_primary LSQUARE rexps RSQUARE
-                                                  { parse_rexp_slimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
+                                                  { parse_rexp_slimbs (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $4 }
   | rexp ADDOP rexp                               { parse_rexp_add (get_line_start()) $1 $3 }
   | rexp SUBOP rexp                               { parse_rexp_sub (get_line_start()) $1 $3 }
   | rexp MULOP rexp                               { parse_rexp_mul (get_line_start()) $1 $3 }
@@ -898,8 +898,8 @@ vrexp_primary:
 vrexp:
     vrexp_primary                                 { $1 }
   | vrexp_primary LSQUARE ranges RSQUARE          { parse_vrexp_slices (get_line_start()) $1 $3 }
-  | UEXT vrexp_primary const_exp_primary          { parse_vrexp_uext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
-  | SEXT vrexp_primary const_exp_primary          { parse_vrexp_sext (get_line_start()) $2 (parse_int_const (get_line_start()) $3) }
+  | UEXT vrexp_primary const_exp_primary          { parse_vrexp_uext (get_line_start()) $2 (int_of_const_ctx (get_line_start()) $3) }
+  | SEXT vrexp_primary const_exp_primary          { parse_vrexp_sext (get_line_start()) $2 (int_of_const_ctx (get_line_start()) $3) }
   | NEG vrexp_primary                             { parse_vrexp_neg (get_line_start()) $2 }
   | NEGOP vrexp_primary                           { parse_vrexp_neg (get_line_start()) $2 }
   | NOT vrexp_primary                             { parse_vrexp_not (get_line_start()) $2 }
@@ -925,9 +925,9 @@ vrexp:
   | ADDS LSQUARE vrexps RSQUARE                   { parse_vrexp_adds (get_line_start()) $3 }
   | MULS LSQUARE vrexps RSQUARE                   { parse_vrexp_muls (get_line_start()) $3 }
   | ULIMBS const_exp_primary LSQUARE vrexps RSQUARE
-                                                  { parse_vrexp_ulimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
+                                                  { parse_vrexp_ulimbs (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $4 }
   | SLIMBS const_exp_primary LSQUARE vrexps RSQUARE
-                                                  { parse_vrexp_slimbs (get_line_start()) (parse_int_const (get_line_start()) $2) $4 }
+                                                  { parse_vrexp_slimbs (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $4 }
   | vrexp ADDADDOP vrexp                          { parse_vrexp_append (get_line_start()) $1 $3 }
   | vrexp ADDOP vrexp                             { parse_vrexp_add (get_line_start()) $1 $3 }
   | vrexp SUBOP vrexp                             { parse_vrexp_sub (get_line_start()) $1 $3 }
@@ -1038,19 +1038,19 @@ ranges_slicing:
 ;
 
 ranges_indices:
-  const_exp COMMA const_exp_list                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_consts_ctx (get_line_start()) $3 in [ SelSingle (fun ctx -> Z.to_int (i ctx)); SelMultiple (fun ctx -> (List.rev_map Z.to_int (j ctx) |> List.rev)) ] }
+  const_exp COMMA const_exp_list                  { let i = int_of_const_ctx (get_line_start()) $1 in let j = ints_of_const_list_ctx (get_line_start()) $3 in [ SelSingle (fun ctx -> Z.to_int (i ctx)); SelMultiple (fun ctx -> (List.rev_map Z.to_int (j ctx) |> List.rev)) ] }
 ;
 
 range_slicing:
-    const_exp COLON const_exp                     { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $3 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), None)) }
-  |               COLON const_exp                 { let i = parse_int_const (get_line_start()) $2 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), None)) }
-  | const_exp COLON                               { let i = parse_int_const (get_line_start()) $1 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, None)) }
+    const_exp COLON const_exp                     { let i = int_of_const_ctx (get_line_start()) $1 in let j = int_of_const_ctx (get_line_start()) $3 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), None)) }
+  |               COLON const_exp                 { let i = int_of_const_ctx (get_line_start()) $2 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), None)) }
+  | const_exp COLON                               { let i = int_of_const_ctx (get_line_start()) $1 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, None)) }
   | const_exp COLON const_exp COLON const_exp
-                                                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $3 in let k = parse_int_const (get_line_start()) $5 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), Some (Z.to_int (k ctx)))) }
+                                                  { let i = int_of_const_ctx (get_line_start()) $1 in let j = int_of_const_ctx (get_line_start()) $3 in let k = int_of_const_ctx (get_line_start()) $5 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)), Some (Z.to_int (k ctx)))) }
   |               COLON const_exp COLON const_exp
-                                                  { let i = parse_int_const (get_line_start()) $2 in let j = parse_int_const (get_line_start()) $4 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)))) }
+                                                  { let i = int_of_const_ctx (get_line_start()) $2 in let j = int_of_const_ctx (get_line_start()) $4 in SelRange (fun ctx -> (None, Some (Z.to_int (i ctx)), Some (Z.to_int (j ctx)))) }
   | const_exp COLON               COLON const_exp
-                                                  { let i = parse_int_const (get_line_start()) $1 in let j = parse_int_const (get_line_start()) $4 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, Some (Z.to_int (j ctx)))) }
+                                                  { let i = int_of_const_ctx (get_line_start()) $1 in let j = int_of_const_ctx (get_line_start()) $4 in SelRange (fun ctx -> (Some (Z.to_int (i ctx)), None, Some (Z.to_int (j ctx)))) }
 ;
 
 var_expansion:

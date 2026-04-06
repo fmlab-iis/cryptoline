@@ -634,20 +634,19 @@ let parse_named_constant lno cname =
   with Not_found ->
     raise_at_line lno ("Undefined constant: " ^ cname)
 
-let parse_int_const lno c =
-  fun ctx -> 
-    match c ctx with
-    | Cint n -> n
-    | Cfloat _ -> raise_at_line lno "Constant is expected to be an integer."
+let const_to_z lno c =
+  match c with
+  | Cint n -> n
+  | Cfloat _ -> raise_at_line lno "Constant is expected to be an integer."
 
-let parse_int_consts lno cs =
-  List.map (parse_int_const lno) cs
+let int_of_const_ctx lno c_ctx =
+  fun ctx -> const_to_z lno (c_ctx ctx)
 
-let parse_int_consts_ctx lno cs =
-  fun ctx ->
-    List.map
-      (fun c -> parse_int_const lno (fun _ -> c) ctx)
-      (cs ctx)
+let ints_of_const_ctxs lno c_ctxs =
+  List.map (int_of_const_ctx lno) c_ctxs
+
+let ints_of_const_list_ctx lno cs_ctx =
+  fun ctx -> List.map (const_to_z lno) (cs_ctx ctx)
 
 let resolve_var_with ?(chktyp=true) ctx lno (`AVAR {atmtyphint; atmname}) =
   let vo =

@@ -23,7 +23,7 @@ let normalize_eexp e =
     match e with
     (* X**i**j -> X**(i*j) *)
     | Ebinop (Epow, Ebinop (Epow, b, Econst i), Econst j) ->
-       merge_exponents (Ebinop (Epow, b, Econst (Z.mul i j)))
+       merge_exponents (Ebinop (Epow, b, Econst (cmul i j)))
     (* (X * Y)**i -> X**i * Y**i *)
     | Ebinop (Epow, Ebinop (Emul, b, c), i) ->
        Ebinop (Emul, merge_exponents (Ebinop (Epow, b, i)),
@@ -44,49 +44,49 @@ let normalize_eexp e =
       match e with
       (* X * X -> X**2 *)
       | Ebinop (Emul, Evar b, Evar c) ->
-         if b = c then Ebinop (Epow, Evar b, Econst (Z.of_int 2)) else e
+         if b = c then Ebinop (Epow, Evar b, Econst (Cint (Z.of_int 2))) else e
       (* X * X * f -> X**2 * f *)
       | Ebinop (Emul, Evar b, Ebinop (Emul, Evar c, f)) ->
          if b = c then
            do_merge (Ebinop (Emul,
-                             Ebinop (Epow, Evar b, Econst (Z.of_int 2)), f))
+                             Ebinop (Epow, Evar b, Econst (Cint (Z.of_int 2))), f))
          else Ebinop (Emul, Evar b, do_merge (Ebinop (Emul, Evar c, f)))
       (* X * X**i -> X**(i+1) *)
       | Ebinop (Emul, Evar b, Ebinop (Epow, Evar c, Econst i)) ->
          if b = c
-         then Ebinop (Epow, Evar b, Econst (Z.add i (Z.of_int 1)))
+         then Ebinop (Epow, Evar b, Econst (cadd i (Cint (Z.of_int 1))))
          else e
       (* X * X**i * f -> X**(i+1) * f *)
       | Ebinop (Emul, Evar b, Ebinop (Emul, Ebinop (Epow, Evar c, Econst i), f)) ->
          if b = c then
-           do_merge (Ebinop (Emul, Ebinop (Epow, Evar b, Econst (Z.add i (Z.of_int 1))), f))
+           do_merge (Ebinop (Emul, Ebinop (Epow, Evar b, Econst (cadd i (Cint (Z.of_int 1)))), f))
          else
            Ebinop (Emul, Evar b,
                    do_merge (Ebinop (Emul, Ebinop (Epow, Evar c, Econst i), f)))
       (* X**i * X -> X**(i+1) *)
       | Ebinop (Emul, Ebinop (Epow, Evar b, Econst i), Evar c) ->
          if b = c
-         then Ebinop (Epow, Evar b, Econst (Z.add i (Z.of_int 1)))
+         then Ebinop (Epow, Evar b, Econst (cadd i (Cint (Z.of_int 1))))
          else e
       (* X**i * X -> X**(i+1) * f *)
       | Ebinop (Emul, Ebinop (Epow, Evar b, Econst i), Ebinop (Emul, Evar c, f)) ->
          if b = c then
            do_merge (Ebinop (Emul, Ebinop (Epow, Evar b,
-                                           Econst (Z.add i (Z.of_int 1))), f))
+                                           Econst (cadd i (Cint (Z.of_int 1)))), f))
          else
            Ebinop (Emul, Ebinop (Epow, Evar b, Econst i),
                    do_merge (Ebinop (Emul, Evar c, f)))
       (* X**i*X**j -> X**(i+j) *)
       | Ebinop (Emul, Ebinop (Epow, Evar b, Econst i),
                 Ebinop (Epow, Evar c, Econst j)) ->
-         if b = c then Ebinop (Epow, Evar b, Econst (Z.add i j))
+         if b = c then Ebinop (Epow, Evar b, Econst (cadd i j))
          else e
       (* X**i*X**j -> X**(i+j) * f *)
       | Ebinop (Emul, Ebinop (Epow, Evar b, Econst i),
                 Ebinop (Emul, Ebinop (Epow, Evar c, Econst j),
                         f)) ->
          if b = c then
-           do_merge (Ebinop (Emul, Ebinop (Epow, Evar b, Econst (Z.add i j)), f))
+           do_merge (Ebinop (Emul, Ebinop (Epow, Evar b, Econst (cadd i j)), f))
          else
            Ebinop (Emul, Ebinop (Epow, Evar b, Econst i),
                    do_merge (Ebinop (Emul, Ebinop (Epow, Evar c, Econst j), f)))
@@ -94,8 +94,8 @@ let normalize_eexp e =
       | Ebinop (Emul, Ebinop (Epow, Econst b, Econst i),
                 Ebinop (Epow, Econst c, Econst j)) ->
          if b = c then
-           let k = Z.add i j in
-           if Z.equal Z.zero k then Econst Z.one
+           let k = cadd i j in
+           if eq_const (Cint Z.zero) k then Econst (Cint Z.one)
            else Ebinop (Epow, Econst b, Econst k)
          else e
       (* C**i*C**j -> C**(i+j) * f *)
@@ -103,8 +103,8 @@ let normalize_eexp e =
                 Ebinop (Emul, Ebinop (Epow, Econst c, Econst j),
                         f)) ->
          if b = c then
-           let k = Z.add i j in
-           if Z.equal Z.zero k
+           let k = cadd i j in
+           if eq_const (Cint Z.zero) k
            then do_merge f
            else do_merge (Ebinop (Emul, Ebinop (Epow, Econst b, Econst k), f))
          else
@@ -147,11 +147,11 @@ let simple_rewrite all_eqns l r =
     | _, Evar _ -> (r, l)::eqns
     | Ebinop (Emul, Evar v, Ebinop (Epow, Econst c, Econst i)), _
     | Ebinop (Emul, Ebinop (Epow, Econst c, Econst i), Evar v), _ ->
-       let cinv = Ebinop (Epow, Econst c, Econst (Z.neg i)) in
+       let cinv = Ebinop (Epow, Econst c, Econst (cneg i)) in
        (Evar v, Ebinop (Emul, cinv, r))::eqns
     | _, Ebinop (Emul, Evar v, Ebinop (Epow, Econst c, Econst i))
     | _, Ebinop (Emul, Ebinop (Epow, Econst c, Econst i), Evar v) ->
-       let cinv = Ebinop (Epow, Econst c, Econst (Z.neg i)) in
+       let cinv = Ebinop (Epow, Econst c, Econst (cneg i)) in
        (Evar v, Ebinop (Emul, cinv, l))::eqns
     | _, _ -> [] in
   let vardep, eqns =
