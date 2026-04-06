@@ -23,7 +23,9 @@ let normalize_eexp e =
     match e with
     (* X**i**j -> X**(i*j) *)
     | Ebinop (Epow, Ebinop (Epow, b, Econst i), Econst j) ->
-       merge_exponents (Ebinop (Epow, b, Econst (cmul i j)))
+      match i, j with
+      | Cint zi, Cint zj -> merge_exponents (Ebinop (Epow, b, Econst (Cint (Z.mul zi zj))))
+      | _ -> raise (UnsupportedException "The exponent shall not be floating-point")
     (* (X * Y)**i -> X**i * Y**i *)
     | Ebinop (Epow, Ebinop (Emul, b, c), i) ->
        Ebinop (Emul, merge_exponents (Ebinop (Epow, b, i)),
