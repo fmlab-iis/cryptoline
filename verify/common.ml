@@ -52,7 +52,10 @@ let algebra_symbol_of_ebinop op =
 let rec singular_of_eexp e =
   match e with
   | Evar v -> string_of_var v
-  | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
+  | Econst n ->
+    (match n with
+    | Cint z -> "bigint(" ^ (Z.to_string n) ^ ")"
+    | Cfloat _ -> raise (UnsupportedException "Singular does not support floating-point"))
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
   | Ebinop (Epow, e, Econst z) ->
