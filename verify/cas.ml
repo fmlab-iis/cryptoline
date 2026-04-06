@@ -38,7 +38,7 @@ let bv2z_atom a =
   | Avar v -> Evar v
   | Aconst (_ty, n) -> Econst n
 
-let emul2pow e n = emul e (econst (e2pow n))
+let emul2pow e n = emul e (econst Cint (e2pow n))
 let bv2z_assign v e = Eeq (evar v, e)
 let bv2z_join e h l p = Eeq (eadd l (emul h (econst (e2pow p))), e)
 let bv2z_split vh vl e p = bv2z_join e (evar vh) (evar vl) p
