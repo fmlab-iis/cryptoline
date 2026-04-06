@@ -9,6 +9,10 @@ type 'a round_result =
   Solved of Qfbv.Common.result
 | Unfinished of 'a list
 
+let force_const_to_int c =
+  if is_const_int c
+  then const_to_int c
+  else raise (UnsupportedException "SMT translation does not support floating-point constants.")
 
 (** Conversion from range specifications to QFBV. *)
 
@@ -19,10 +23,7 @@ let exp_const w n = Const (w, n)
 let exp_atom a =
   match a with
   | Avar v -> exp_var v
-  | Aconst (ty, n) ->
-    (match n with 
-    | Cint z -> exp_const (size_of_typ ty) z
-    | Cfloat f -> raise (UnsupportedException "SMT does not support floating-point"))
+  | Aconst (ty, n) -> exp_const (size_of_typ ty) (force_const_to_int n)
 
 let exp_carry n c =
   ZeroExtend (1, n - 1, exp_atom c)
@@ -30,7 +31,7 @@ let exp_carry n c =
 let rec exp_rexp e =
   match e with
   | Rvar v -> Var v
-  | Rconst (w, n) -> Const (w, n)
+  | Rconst (w, n) -> Const (w, force_const_to_int n)
   | Runop (w, op, e) ->
      (match op with
       | Rnegb -> Neg (w, exp_rexp e)
@@ -53,6 +54,7 @@ let rec exp_rexp e =
       | Rashr -> Ashr (w, exp_rexp e1, exp_rexp e2)
       | Rrol -> Rol (w, exp_rexp e1, exp_rexp e2)
       | Rror -> Ror (w, exp_rexp e1, exp_rexp e2)
+      | Rdiv -> raise (UnsupportedException "QFBV translation does not support floating-point division.")
      )
   | Ruext (w, e, i) -> ZeroExtend (w, i, exp_rexp e)
   | Rsext (w, e, i) -> SignExtend (w, i, exp_rexp e)
@@ -336,6 +338,7 @@ let bexp_muls c v a1 a2 =
         Eq (w,
             exp_var v,
             Low (w, w, exp_smul ~extend:true w a1 a2)))
+  | Tsingle | Tdouble -> raise (UnsupportedException "An muls instruction expects a non-floatingpoint destination.") 
 let bexp_mull vh vl a1 a2 =
   match vh.vtyp with
   | Tuint w ->
@@ -346,6 +349,7 @@ let bexp_mull vh vl a1 a2 =
      Conj
        (Eq (w, exp_var vh, High (w, w, exp_smul ~extend:true w a1 a2)),
         Eq (w, exp_var vl, Low (w, w, exp_smul ~extend:true w a1 a2)))
+  | Tsingle | Tdouble -> raise (UnsupportedException "An mull instruction expects non-floatingpoint destinations.")
 let bexp_mulj v a1 a2 =
   match v.vtyp with
   | Tuint w ->
@@ -356,6 +360,7 @@ let bexp_mulj v a1 a2 =
      Eq (w,
          exp_var v,
          exp_smul ~extend:true (w / 2) a1 a2)
+  | Tsingle | Tdouble -> raise (UnsupportedException "An mulj instruction expects a non-floatingpoint destination.")
 let bexp_split vh vl a p =
   let p = Z.to_int p in
   match vh.vtyp with
@@ -375,6 +380,7 @@ let bexp_split vh vl a p =
         Eq (w,
             exp_var vl,
             ZeroExtend (p, w - p, Low (p, w - p, exp_atom a))))
+  | Tsingle | Tdouble -> raise (UnsupportedException "An split instruction expects non-floatingpoint destinations.")
 let bexp_spl vh vl a p =
   let p = Z.to_int p in
   let w = size_of_atom a in
@@ -431,7 +437,8 @@ let bexp_cast od v a =
       | Tsint wv, Tsint wa ->
        if wv = wa then Eq (wv, exp_var v, exp_atom a)
        else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atom a))
-       else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atom a)) in
+       else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atom a))
+    | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination.") in
   let bextra =
     match od with
     | None -> None
@@ -460,7 +467,7 @@ let bexp_cast od v a =
                                SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atom a)), (* SignExtend is used to avoid overflow *)
                                ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
-       )
+        | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination."))
   in
   match bextra with
   | None -> bcast
@@ -506,6 +513,7 @@ let bexp_instr i =
   | Imuls (c, v, a1, a2) -> bexp_muls c v a1 a2
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
+  | Idiv (_, _ , _) -> raise (UnsupportedException "QFBV translation does not support floating-point division.") 
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
   | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
   | Iseteq (v, a1, a2) -> bexp_seteq v a1 a2
@@ -597,10 +605,14 @@ let bexp_atom_smul_safe w a1 a2 =
 
 let bexp_atom_ushl_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
-    Eq (n,
-        High (w - n, n, exp_atom a),
-        Const (n, Z.zero))
+    match const_of_atom p with
+    | Cint k ->
+      let n = Z.to_int k in
+        Eq (n,
+          High (w - n, n, exp_atom a),
+          Const (n, Z.zero))
+    | Cfloat _ -> 
+          raise (UnsupportedException "An shl instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
         Lshr (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
@@ -608,10 +620,14 @@ let bexp_atom_ushl_safe w a p =
 
 let bexp_atom_sshl_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
-    Eq (w,
-        SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
-        exp_atom a)
+    match const_of_atom p with
+    | Cint k ->
+      let n = Z.to_int k in
+      Eq (w,
+          SignExtend (w - n, n, Low (w - n, n, exp_atom a)),
+          exp_atom a)
+    | Cfloat _ ->
+      raise (UnsupportedException "An shl instruction expects a non-floatingpoint shift offset.")
   else
     let shifted =
       Ashr (w,
@@ -625,10 +641,14 @@ let bexp_atom_sshl_safe w a p =
 
 let bexp_atom_ushr_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
-    Eq (n,
-        Low (n, w - n, exp_atom a),
-        Const (n, Z.zero))
+    match const_of_atom p with
+    | Cint k ->
+      let n = Z.to_int k in
+      Eq (n,
+          Low (n, w - n, exp_atom a),
+          Const (n, Z.zero))
+    | Cfloat _ ->
+      raise (UnsupportedException "An shr instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
         Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
@@ -636,7 +656,7 @@ let bexp_atom_ushr_safe w a p =
 
 let bexp_atom_sshr_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
+    let n = Z.to_int (force_const_to_int (const_of_atom p)) in
     Conj
       (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
        Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
@@ -647,10 +667,14 @@ let bexp_atom_sshr_safe w a p =
 
 let bexp_atom_usar_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
-    Conj
-      (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
-       Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+    match const_of_atom p with
+    | Cint k ->
+      let n = Z.to_int k in
+      Conj
+        (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
+         Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+    | Cfloat _ -> 
+      raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
   else
     Conj
       (Eq (w, Lshr (w, exp_atom a, Const (w, Z.of_int (w - 1))), Const (w, Z.zero)),
@@ -658,10 +682,14 @@ let bexp_atom_usar_safe w a p =
 
 let bexp_atom_ssar_safe w a p =
   if atom_is_const p then
-    let n = Z.to_int (const_of_atom p) in
-    Eq (n,
-        Low (n, w - n, exp_atom a),
-        Const (n, Z.zero))
+    match const_of_atom p with
+    | Cint k ->
+      let n = Z.to_int k in
+      Eq (n,
+          Low (n, w - n, exp_atom a),
+          Const (n, Z.zero))
+    | Cfloat _ ->
+      raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
         Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
@@ -670,12 +698,12 @@ let bexp_atom_ssar_safe w a p =
 let bexp_atom_ucshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atom_ushl_safe w a1 (mkatom_const (uint_t w) n))
+     bexp_atom_ushl_safe w a1 (mkatom_const (uint_t w) (Cint n)))
 
 let bexp_atom_scshl_safe w a1 _a2 n =
   Conj
     (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     bexp_atom_sshl_safe w a1 (mkatom_const (uint_t w) n))
+     bexp_atom_sshl_safe w a1 (mkatom_const (uint_t w) (Cint n)))
 
 let bexp_atom_ucshr_safe w _a1 a2 n =
   let ni = Z.to_int n in
@@ -712,34 +740,40 @@ let bexp_vpc_safe v a =
      else Eq (wa,
               SignExtend (wv, wa - wv, Low (wv, wa - wv, exp_atom a)),
               exp_atom a)
-
+  | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) ->
+     raise (UnsupportedException "Instruction vpc does not support casting to floating-point types.")
 let bexp_instr_safe i =
   match i with
   | Imov _ -> True
   | Ishl (v, a, n) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_ushl_safe w a n
-      | Tsint w -> bexp_atom_sshl_safe w a n)
+      | Tsint w -> bexp_atom_sshl_safe w a n
+      | Tsingle | Tdouble -> assert false)
   | Ishls _ -> True
   | Ishr (v, a, n) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_ushr_safe w a n
-      | Tsint w -> bexp_atom_sshr_safe w a n)
+      | Tsint w -> bexp_atom_sshr_safe w a n
+      | Tsingle | Tdouble -> assert false)
   | Ishrs _ -> True
   | Isar (v, a, n) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_usar_safe w a n
-      | Tsint w -> bexp_atom_ssar_safe w a n)
+      | Tsint w -> bexp_atom_ssar_safe w a n
+      | Tsingle | Tdouble -> assert false)
   | Isars _ -> True
   | Icshl (vh, _, a1, a2, n) ->
      (match vh.vtyp with
       | Tuint w -> bexp_atom_ucshl_safe w a1 a2 n
-      | Tsint w -> bexp_atom_scshl_safe w a1 a2 n)
+      | Tsint w -> bexp_atom_scshl_safe w a1 a2 n
+      | Tsingle | Tdouble -> assert false)
   | Icshls _ -> True
   | Icshr (vh, _, a1, a2, n) ->
      (match vh.vtyp with
       | Tuint w -> bexp_atom_ucshr_safe w a1 a2 n
-      | Tsint w -> bexp_atom_scshr_safe w a1 a2 n)
+      | Tsint w -> bexp_atom_scshr_safe w a1 a2 n
+      | Tsingle | Tdouble -> assert false)
   | Icshrs _ -> True
   | Irol _ -> True
   | Iror _ -> True
@@ -749,36 +783,43 @@ let bexp_instr_safe i =
   | Iadd (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_uadd_safe w a1 a2
-      | Tsint w -> bexp_atom_sadd_safe w a1 a2)
+      | Tsint w -> bexp_atom_sadd_safe w a1 a2
+      | Tsingle | Tdouble -> assert false)
   | Iadds _ -> True
   | Iadc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_uadc_safe w a1 a2 y
-      | Tsint w -> bexp_atom_sadc_safe w a1 a2 y)
+      | Tsint w -> bexp_atom_sadc_safe w a1 a2 y
+      | Tsingle | Tdouble -> assert false)
   | Iadcs _ -> True
   | Isub (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_usub_safe w a1 a2
-      | Tsint w -> bexp_atom_ssub_safe w a1 a2)
+      | Tsint w -> bexp_atom_ssub_safe w a1 a2
+      | Tsingle | Tdouble -> assert false)
   | Isubc _ -> True
   | Isubb _ -> True
   | Isbc (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_usbc_safe w a1 a2 y
-      | Tsint w -> bexp_atom_ssbc_safe w a1 a2 y)
+      | Tsint w -> bexp_atom_ssbc_safe w a1 a2 y
+      | Tsingle | Tdouble -> assert false)
   | Isbcs _ -> True
   | Isbb (v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_usbb_safe w a1 a2 y
-      | Tsint w -> bexp_atom_ssbb_safe w a1 a2 y)
+      | Tsint w -> bexp_atom_ssbb_safe w a1 a2 y
+      | Tsingle | Tdouble -> assert false)
   | Isbbs _ -> True
   | Imul (v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> bexp_atom_umul_safe w a1 a2
-      | Tsint w -> bexp_atom_smul_safe w a1 a2)
+      | Tsint w -> bexp_atom_smul_safe w a1 a2
+      | Tsingle | Tdouble -> assert false)
   | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
+  | Idiv _ -> True (* TODO: Check this *)
   | Isplit _ -> True
   | Ispl _ -> True
   | Iseteq _ -> True
@@ -816,6 +857,7 @@ let smtlib_ebinop op =
   | Esub -> "-"
   | Emul -> "*"
   | Epow -> "expn"
+  | Ediv -> raise (UnsupportedException "SMT translation does not support floating-point division.")
 
 let rec smtlib_eexp ?(expn=true) e =
   let string_of_z c =
@@ -823,11 +865,13 @@ let rec smtlib_eexp ?(expn=true) e =
     else Z.to_string c in
   match e with
   | Evar v -> string_of_var v
-  | Econst c -> string_of_z c
+  | Econst c -> string_of_z (force_const_to_int c)
   | Eunop (op, e) -> String.concat "" ["("; smtlib_eunop op; " "; smtlib_eexp ~expn:expn e; ")"]
   | Ebinop (op, e1, e2) ->
      if not expn && op = Epow && is_eexp_over_const e1 && is_eexp_over_const e2 then
-       string_of_z (Z.pow (eval_eexp_const e1) (Z.to_int (eval_eexp_const e2)))
+       let c1 = force_const_to_int (eval_eexp_const e1) in
+       let c2 = force_const_to_int (eval_eexp_const e2) in
+       string_of_z (Z.pow c1 (Z.to_int c2))
      else
        String.concat "" ["("; smtlib_ebinop op; " "; smtlib_eexp ~expn:expn e1; " "; smtlib_eexp ~expn:expn e2; ")"]
 

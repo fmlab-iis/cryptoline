@@ -295,22 +295,27 @@ let parse_program file =
     raise ex
 
 let parse_initial_values vars =
-  let vals = if !initial_values_string = initial_values_string_random then List.rev_map typ_of_var vars |> List.rev_map random_value |> List.rev_map Z.to_string |> List.rev
+  let vals = if !initial_values_string = initial_values_string_random then List.rev_map typ_of_var vars |> List.rev_map random_value |> List.rev_map string_of_const |> List.rev
              else split_on_char_nonempty ',' !initial_values_string in
   List.map2 (
       fun x v ->
-      let w = size_of_var x in
-      let bs = let zv = Z.of_string v in
-               let _ = if not (is_representable (typ_of_var x) zv) then
-                         failwith (Printf.sprintf "The value %s is not representable by the type %s of variable %s."
-                                     v (string_of_typ (typ_of_var x)) (string_of_var x))
-               in
-               let bs = NBits.bits_of_num v in
-               let extlen = w - List.length bs in
-               if Z.lt zv Z.zero then NBits.sext extlen bs
-               else NBits.zext extlen bs in
-      if List.length bs <> w then failwith ("Bit width mismatch: variable " ^ string_of_var x ^ ", value " ^ v)
-      else bs
+        let w = size_of_var x in
+        let ty = typ_of_var x in
+        let c = const_of_string_for_typ v ty in
+        let _ = if not (is_representable (typ_of_var x) c) then
+                  failwith (Printf.sprintf "The value %s is not representable by the type %s of variable %s."
+                                            v (string_of_typ ty) (string_of_var x))
+        in
+        match ty, c with
+          | (Tuint _ | Tsint _), Cint zv ->
+            let bs = NBits.bits_of_num v in
+            let extlen = w - List.length bs in
+            let bs = if Z.lt zv Z.zero then NBits.sext extlen bs
+                     else NBits.zext extlen bs in
+            if List.length bs <> w then failwith ("Bit width mismatch: variable " ^ string_of_var x ^ ", value " ^ v)
+            else bs
+          | (Tsingle | Tdouble), Cfloat _ -> failwith "Floating-point initial values are not supported here yet."
+          | _ -> failwith "Type/value mismatch in parse_initial_values."
     ) vars vals
 
 let parse_simulation_dump_ranges () =

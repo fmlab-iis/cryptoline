@@ -75,6 +75,26 @@ let const_of_z n = Cint n
 let const_of_double f = Cfloat f
 (* let const_to_string = string_of_const *)
 
+let is_const_int c =
+  match c with
+  | Cint _ -> true
+  | _ -> false
+
+let is_const_float c =
+  match c with
+  | Cfloat _ -> true
+  | _ -> false
+
+let const_to_int c =
+  match c with
+  | Cint n -> n
+  | _ -> assert false
+
+let const_to_float c =
+  match c with
+  | Cfloat f -> f
+  | _ -> assert false
+
 let cadd c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint(Z.add n m)
@@ -265,6 +285,11 @@ let typ_map f ty =
   | Tsint w -> Tsint (f w)
   | Tdouble -> raise (UnsupportedException "typ_map: not defined for Tdouble")
   | Tsingle -> raise (UnsupportedException "typ_map: not defined for Tsingle")
+
+let const_of_string_for_typ s t =
+  match t with
+  | Tuint _ | Tsint _ -> Cint (Z.of_string s)
+  | Tdouble | Tsingle -> Cfloat (FloatConst.of_string s ~rnd:Mpfr.Near)
 
 let random_double_const () : FloatConst.t =
   let bits = Random.bits64 () in
@@ -1351,7 +1376,7 @@ let new_name ?prefix:prefix names =
     !name
   else prefix
 
-let e2pow n = Z.pow z_two n
+let e2pow n = Cint (Z.pow z_two n)
 
 let ezero = econst (Cint Z.zero)
 let eone = econst (Cint Z.one)

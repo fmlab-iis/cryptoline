@@ -41,6 +41,11 @@ type const =
 val const_of_z : Z.t -> const
 val const_of_double : Mpfrf.t -> const
 
+val is_const_int : const -> bool
+val is_const_float : const -> bool
+val const_to_int : const -> Z.t
+val const_to_float : const -> FloatConst.t
+
 val cadd: const -> const -> const
 val csub: const -> const -> const
 val cmul: const -> const -> const
@@ -114,6 +119,9 @@ val cmp_typ : typ -> typ -> int
 
 val typ_map : (int -> int) -> typ -> typ
 (** [typ_map f t] applies [f] to the size of [t] *)
+
+val const_of_string_for_typ : string -> typ -> const
+(** [const_of_string_for_typ s t] is the corresponding constant of string [s] of type [typ]. *)
 
 val random_value : typ -> const
 (** return a random value representable by the specified type *)
@@ -1097,7 +1105,7 @@ val range_solver_of_prove_with : prove_with_spec list -> string
 val new_name : ?prefix:string -> SS.t -> string
 (** [new_name ~prefix:s ss] suggests a new name that does not appear in [ss]. The returned name has a prefix [s]. *)
 
-val e2pow : int -> Z.t
+val e2pow : int -> const
 (** [e2pow n] is the constant 2{^n}. *)
 
 val ezero : eexp

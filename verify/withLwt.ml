@@ -214,7 +214,7 @@ let write_maple_input ?comments ifile vars gen p =
     let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
     let _ = if List.length poly_gen > 0 then failwith("Only prime modulus is supported when using maple.") in
     match const_gen with
-    | [] -> Econst Cint Z.zero
+    | [] -> Econst (Cint Z.zero)
     | c::[] -> c
     | _ -> failwith("Multi-moduli is not supported when using maple.") in
   let input_text =
@@ -1947,10 +1947,10 @@ let test_absdom_lwt options ?(safe=true) s =
   let test_var cid mgr dom s v =
     fun () ->
     let (inf, sup) = Absdom.Std.zinterval_of_var mgr dom v in
-    if Z.equal inf (min_of_typ (typ_of_var v)) && Z.equal sup (max_of_typ (typ_of_var v)) then Lwt.return (true, cid, v, inf, sup)
+    if eq_const (Cint inf) (min_of_typ (typ_of_var v)) && eq_const (Cint sup) (max_of_typ (typ_of_var v)) then Lwt.return (true, cid, v, inf, sup)
     else let op = if var_is_signed v then rsle else rule in
          let w = size_of_var v in
-         let e = rand (op w (rconst w inf) (rvar v)) (op w (rvar v) (rconst w sup)) in
+         let e = rand (op w (rconst w (Cint inf)) (rvar v)) (op w (rvar v) (rconst w (Cint sup))) in
          let%lwt res = verify_rspec_single_conjunct [] { s with rspost = [(e, [])] } None in
          Lwt.return (res, cid, v, inf, sup) in
   let delivered_helper res (resv, cid, v, inf, sup) =

@@ -4,6 +4,11 @@ open Utils.Std
 
 let smtlib_true = "true"
 
+let force_const_to_int c =
+  if is_const_int c 
+  then const_to_int c
+  else raise (UnsupportedException "SMT translation does not support floating-point constants.")
+
 (* Declare program variables and algebraic variables.
    TODO: how about ghost variables? *)
 let smtlib2_declare_vars_mix pvs avs =
@@ -32,17 +37,16 @@ let rec smtlib_eexp_mix ?(expn=true) is_pvar e =
   | Evar v -> if is_pvar v
               then smtlib_bv2i v
               else string_of_var v
-  | Econst c -> 
-     match c with
-     | Cint z -> string_of_z z
-     | Cfloat f -> raise (UnsupportedException "SMT does not support floating-point.")
+  | Econst c -> string_of_z (force_const_to_int c) 
   | Eunop (op, e) -> Printf.sprintf
                        "(%s %s)"
                        (Smt.smtlib_eunop op)
                        (smtlib_eexp_mix ~expn:expn is_pvar e)
   | Ebinop (op, e1, e2) ->
      if not expn && op = Epow && is_eexp_over_const e1 && is_eexp_over_const e2 then
-       string_of_z (Z.pow (eval_eexp_const e1) (Z.to_int (eval_eexp_const e2)))
+       let c1 = force_const_to_int (eval_eexp_const e1) in
+       let c2 = force_const_to_int (eval_eexp_const e2) in
+       string_of_z (Z.pow c1 (Z.to_int c2))
      else
        Printf.sprintf
          "(%s %s %s)"
@@ -81,8 +85,8 @@ let rec smtlib_ebexp_mix ?(expn=true) is_pvar e =
 
 let smtlib_var_range_mix v =
   let ty = typ_of_var v in
-  let min_Z = min_of_typ ty in
-  let max_Z = max_of_typ ty in
+  let min_Z = force_const_to_int (min_of_typ ty) in
+  let max_Z = force_const_to_int (max_of_typ ty) in
   let min_smtlib =
     Printf.sprintf
       "(%s %s %s)"

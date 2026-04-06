@@ -11,6 +11,11 @@ type 'a round_result = 'a Smt.round_result
 
 type poly_spec = Cas.poly_spec
 
+let force_const_to_int c =
+  if is_const_int c
+  then const_to_int c
+  else raise (UnsupportedException "CAS translation does not support floating-point constants.")
+
 let get_tags_to_be_verified ts =
   let available_tags = tagged_spec_tags ts in
   match !Options.Std.verify_tracks with
@@ -52,15 +57,12 @@ let algebra_symbol_of_ebinop op =
 let rec singular_of_eexp e =
   match e with
   | Evar v -> string_of_var v
-  | Econst n ->
-    (match n with
-    | Cint z -> "bigint(" ^ (Z.to_string n) ^ ")"
-    | Cfloat _ -> raise (UnsupportedException "Singular does not support floating-point"))
+  | Econst n -> "bigint(" ^ (Z.to_string (force_const_to_int n)) ^ ")"
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
-  | Ebinop (Epow, e, Econst z) ->
+  | Ebinop (Epow, e, Econst n) ->
      (if eexp_ebinop_open e Epow then singular_of_eexp e
-      else "(" ^ singular_of_eexp e ^ ")") ^ algebra_symbol_of_ebinop Epow ^ Z.to_string z
+      else "(" ^ singular_of_eexp e ^ ")") ^ algebra_symbol_of_ebinop Epow ^ Z.to_string (force_const_to_int n)
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then singular_of_eexp e1 else "(" ^ singular_of_eexp e1 ^ ")")
      ^ " " ^ algebra_symbol_of_ebinop op ^ " "
@@ -287,11 +289,13 @@ let redlog_of_espec es =
       | Eadd -> "+"
       | Esub -> "-"
       | Emul -> "*"
-      | Epow -> "^" in
+      | Epow -> "^" 
+      | Ediv -> raise (UnsupportedException "CAS translation does not support floating-point division.")
+    in
     let rec redlog_string_of_eexp e =
       match e with
       | Evar v -> string_of_var v
-      | Econst n -> Z.to_string n
+      | Econst n -> Z.to_string (force_const_to_int n)
       | Eunop (op, e) -> redlog_string_of_eunop op ^ " (" ^ redlog_string_of_eexp e ^ ")"
       | Ebinop (op, e1, e2) -> "(" ^ redlog_string_of_eexp e1 ^ ") " ^ redlog_string_of_ebinop op ^ " (" ^ redlog_string_of_eexp e2 ^ ")" in
     (* Change "c*(c-1)=0" to "c=0 or c=1". *)
@@ -346,13 +350,13 @@ let rec ppl_of_eexp e =
     | _ -> algebra_symbol_of_ebinop op in
   match e with
   | Evar v -> string_of_var v
-  | Econst n -> Z.to_string n
+  | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then ppl_of_eexp e
                            else " (" ^ ppl_of_eexp e ^ ")")
-  | Ebinop (Epow, e, Econst z) ->
+  | Ebinop (Epow, e, Econst n) ->
      (if eexp_ebinop_open e Epow then ppl_of_eexp e
-      else "(" ^ ppl_of_eexp e ^ ")") ^ "**" ^ Z.to_string z
+      else "(" ^ ppl_of_eexp e ^ ")") ^ "**" ^ string_of_const n
   | Ebinop (op, e1, e2) ->
      (if eexp_ebinop_open e1 op then ppl_of_eexp e1
       else "(" ^ ppl_of_eexp e1 ^ ")")
@@ -375,11 +379,11 @@ let scip_of_ebexp = ppl_of_ebexp
 
 let rec isl_of_eexp e =
   if is_eexp_over_const e then
-    Z.to_string (eval_eexp_const e)
+    string_of_const (eval_eexp_const e)
   else
     match e with
     | Evar v -> string_of_var v
-    | Econst n -> Z.to_string n
+    | Econst n -> string_of_const n
     | Eunop (op, e') ->
        symbol_of_eunop op ^ (if is_eexp_atom e' then isl_of_eexp e'
                              else " (" ^ isl_of_eexp e' ^ ")")

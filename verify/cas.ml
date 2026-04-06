@@ -38,7 +38,7 @@ let bv2z_atom a =
   | Avar v -> Evar v
   | Aconst (_ty, n) -> Econst n
 
-let emul2pow e n = emul e (econst Cint (e2pow n))
+let emul2pow e n = emul e (econst (e2pow n))
 let bv2z_assign v e = Eeq (evar v, e)
 let bv2z_join e h l p = Eeq (eadd l (emul h (econst (e2pow p))), e)
 let bv2z_split vh vl e p = bv2z_join e (evar vh) (evar vl) p
@@ -101,13 +101,15 @@ let bv2z_cast vgen aim ot v a =
             (discarded, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
+  | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> 
+      raise (UnsupportedException "CAS does not support floating-point casts.")
 
 let bv2z_vpc vgen aim v a = (vgen, aim, [Eeq (evar v, bv2z_atom a)], [])
 
 (* With c = c^2, we cannot prove c(c - 1) = 0 (mod 2^64). *)
 (* With c(c - 1) = 0, we can prove c(c - 1) = 0 (mod 2^64) but c(c - 1) will remain in the generator. *)
 let bv2z_is_bit c =
-  Eeq (emul (evar c) (esub (evar c) (econst Z.one)), econst Z.zero)
+  Eeq (emul (evar c) (esub (evar c) (econst (Cint Z.one))), econst (Cint Z.zero))
 
 (* Find the split of [a] at position [n] in [aim].
    If no split is found, generate fresh variables for the split. *)
@@ -138,12 +140,16 @@ let bv2z_instr aim vgen i =
   | Imov (v, a) -> (vgen, aim, [bv2z_assign v (bv2z_atom a)], [])
   | Ishl (v, a, n) ->
      if atom_is_const n then
-       let w = size_of_var v in
-       let ni = Z.to_int (const_of_atom n) in
-       if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
-                            let aim = AIM.add (Avar v, ni) (l, econst Z.zero) aim in
-                            (vgen, aim, extras @@ [ eeq h (econst Z.zero); eeq (evar v) (emul2pow l ni) ], [])
-       else (vgen, aim, [bv2z_assign v (emul2pow (bv2z_atom a) ni)], [])
+       match const_of_atom n with
+       | Cint k ->
+         let w = size_of_var v in
+         let ni = Z.to_int k in
+         if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
+                              let aim = AIM.add (Avar v, ni) (l, econst (Cint Z.zero)) aim in
+                              (vgen, aim, extras @@ [ eeq h (econst (Cint Z.zero)); eeq (evar v) (emul2pow l ni) ], [])
+         else (vgen, aim, [bv2z_assign v (emul2pow (bv2z_atom a) ni)], [])
+       | Cfloat _ ->
+         raise (UnsupportedException "An shl instruction expects a non-floatingpoint shift offset.")
      else
        (vgen, aim, [], [])
   | Ishls (l, v, a, n) ->
@@ -152,13 +158,14 @@ let bv2z_instr aim vgen i =
        if !track_split then
          match v.vtyp with
          | Tuint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a (w - ni) in
-                      let aim = AIM.add (Avar v, ni) (la, econst Z.zero) aim in
+                      let aim = AIM.add (Avar v, ni) (la, econst (Cint Z.zero)) aim in
                       (vgen, aim, extras @@ [ eeq (evar l) ha; eeq (evar v) (emul2pow la ni) ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a (w - ni) in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      let aim = AIM.add (Avar v, ni) ((eadd la (emul2pow (evar d) (w - ni))), econst Z.zero) aim in
+                      let aim = AIM.add (Avar v, ni) ((eadd la (emul2pow (evar d) (w - ni))), econst (Cint Z.zero)) aim in
                       (vgen, aim, extras @@ [ eeq (evar l) ha; eeq (evar v) (eadd (emul2pow la ni) (emul2pow (evar d) w)) ], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An shls instruction expects a non-floatingpoint destination.")
        else
          match v.vtyp with
          | Tuint w -> (vgen, aim, [ eeq
@@ -170,17 +177,28 @@ let bv2z_instr aim vgen i =
                                      (eadds [evar v; emul2pow (evar d) w; emul2pow (evar l) w])
                                      (emul2pow (bv2z_atom a) ni)
                       ], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An shls instruction expects a non-floatingpoint destination.")
      end
   | Ishr (v, a, n) ->
      if atom_is_const n then
-       let w = size_of_var v in
-       let ni = Z.to_int (const_of_atom n) in
-       if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) ni in
-                               (vgen, aim, [eeq (evar v) (econst a_shifted)], [])
-       else if !track_split then let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                                 let aim = AIM.add (Avar v, w - ni) (econst Z.zero, ha) aim in
-                                 (vgen, aim, extras @@ [ eeq (evar v) ha; eeq la (econst Z.zero) ], [])
-       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
+       match const_of_atom n with
+       | Cint n' ->
+         let w = size_of_var v in
+         let ni = Z.to_int n' in
+         if atom_is_const a then
+           match const_of_atom a with
+           | Cint a' ->
+              let a_shifted = Z.shift_right a' ni in
+              (vgen, aim, [eeq (evar v) (econst (Cint a_shifted))], [])
+           | Cfloat _ ->
+              raise (UnsupportedException "An shr instruction expects a non-floatingpoint shift offset.")
+         else if !track_split then 
+           let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
+           let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), ha) aim in
+           (vgen, aim, extras @@ [ eeq (evar v) ha; eeq la (econst (Cint Z.zero)) ], [])
+         else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
+       | Cfloat _ ->
+         raise (UnsupportedException "An shr instruction expects a non-floatingpoint shift offset.")
      else
        (vgen, aim, [], [])
   | Ishrs (v, l, a, n) ->
@@ -190,13 +208,14 @@ let bv2z_instr aim vgen i =
        if !track_split then
          match v.vtyp with
          | Tuint _ -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      let aim = AIM.add (Avar v, w - ni) (econst Z.zero, ha) aim in
+                      let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), ha) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) ha; eeq (evar l) la ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      let aim = AIM.add (Avar v, w - ni) (econst Z.zero, eadd ha (emul2pow (evar d) (w - ni))) aim in
+                      let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), eadd ha (emul2pow (evar d) (w - ni))) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An shrs instruction expects a non-floatingpoint destination.")
        else
          match v.vtyp with
          | Tuint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)], [])
@@ -206,17 +225,28 @@ let bv2z_instr aim vgen i =
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
                                      (bv2z_atom a)
                       ], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An shrs instruction expects a non-floatingpoint destination.")
      end
   | Isar (v, a, n) ->
      if atom_is_const n then
-       let w = size_of_var v in
-       let ni = Z.to_int (const_of_atom n) in
-       if atom_is_const a then let a_shifted = Z.shift_right (const_of_atom a) ni in
-                               (vgen, aim, [eeq (evar v) (econst a_shifted)], [])
-       else if !track_split then let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                                 let aim = AIM.add (Avar v, w - ni) (econst Z.zero, ha) aim in
-                                 (vgen, aim, extras @@ [ eeq (evar v) ha; eeq la (econst Z.zero) ], [])
-       else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
+       match const_of_atom n with
+       | Cint k ->
+         let w = size_of_var v in
+         let ni = Z.to_int k in
+         if atom_is_const a then
+           match const_of_atom n with
+           | Cint a' ->
+              let a_shifted = Z.shift_right a' ni in
+              (vgen, aim, [eeq (evar v) (econst (Cint a_shifted))], [])
+           | Cfloat _ ->
+              raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
+         else if !track_split then 
+           let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
+           let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), ha) aim in
+           (vgen, aim, extras @@ [ eeq (evar v) ha; eeq la (econst (Cint Z.zero)) ], [])
+         else (vgen, aim, [eeq (emul2pow (evar v) ni) (bv2z_atom a)], [])
+       | Cfloat _ ->
+         raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
      else
        (vgen, aim, [], [])
   | Isars (v, l, a, n) ->
@@ -228,11 +258,12 @@ let bv2z_instr aim vgen i =
          | Tuint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
                       let (d, vgen) = gen_var vgen in
                       let d = mkvar ~newvid:true d (int_t w) in
-                      let aim = AIM.add (Avar v, w - ni) (econst Z.zero, eadd ha (emul2pow (evar d) (w - ni))) aim in
+                      let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), eadd ha (emul2pow (evar d) (w - ni))) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
          | Tsint _ -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      let aim = AIM.add (Avar v, w - ni) (econst Z.zero, ha) aim in
+                      let aim = AIM.add (Avar v, w - ni) (econst (Cint Z.zero), ha) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) ha; eeq (evar l) la ], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An sars instruction expects a non-floatingpoint destination.")
        else
          match v.vtyp with
          | Tuint w -> let (d, vgen) = gen_var vgen in
@@ -241,6 +272,7 @@ let bv2z_instr aim vgen i =
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
                                      (bv2z_atom a)], [])
          | Tsint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An sars instruction expects a non-floatingpoint destination.")
      end
   | Icshl (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
@@ -249,8 +281,8 @@ let bv2z_instr aim vgen i =
      if !track_split then let (vgen, aim, h1, l1, extras1) = find_split_or_gen vgen aim a1 (w - ni) in
                           let (vgen, aim, h2, l2, extras2) = find_split_or_gen vgen aim a2 (w - ni) in
                           let aim = AIM.add (Avar vh, ni) (l1, h2) aim in
-                          let aim = AIM.add (Avar vl, ni) (l2, econst Z.zero) aim in
-                          (vgen, aim, extras1 @@ (extras2 @@ [ eeq h1 (econst Z.zero);
+                          let aim = AIM.add (Avar vl, ni) (l2, econst (Cint Z.zero)) aim in
+                          (vgen, aim, extras1 @@ (extras2 @@ [ eeq h1 (econst (Cint Z.zero));
                                                                bv2z_join (evar vh) l1 h2 ni;
                                                                eeq (evar vl) l2 ]), [])
      else (vgen, aim, [bv2z_split vh vl (eadd (emul2pow (bv2z_atom a1) w) (bv2z_atom a2)) (w - ni)], [])
@@ -264,9 +296,10 @@ let bv2z_instr aim vgen i =
                             | Tuint _ -> (limbs ni [h2; l1], vgen)
                             | Tsint _ -> let (d, vgen) = gen_var vgen in
                                          let d = mkvar ~newvid:true d (int_t ni) in
-                                         (eadd (limbs ni [h2; l1]) (emul2pow (evar d) w), vgen) in
+                                         (eadd (limbs ni [h2; l1]) (emul2pow (evar d) w), vgen)
+                            | Tsingle | Tdouble -> raise (UnsupportedException "An cshls instruction expects non-floatingpoint destinations.") in
                           let aim = AIM.add (Avar vh, ni) (l1, h2) aim in
-                          let aim = AIM.add (Avar vl, w - ni) (econst Z.zero, l2) aim in
+                          let aim = AIM.add (Avar vl, w - ni) (econst (Cint Z.zero), l2) aim in
                           (vgen, aim, extras1 @@ (extras2 @@ [ eeq (evar vh) vh_exp;
                                                                eeq (evar vl) l2;
                                                                eeq (evar l) h1 ]), [])
@@ -281,15 +314,16 @@ let bv2z_instr aim vgen i =
                       (vgen, aim, [eeq
                                      (limbs w [emul2pow (evar vl) ni; eadd (evar vh) (emul2pow (evar d) w); evar l])
                                      (emul2pow (limbs w [bv2z_atom a2; bv2z_atom a1]) ni)], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An cshls instruction expects non-floatingpoint destinations.")
        end
   | Icshr (vh, vl, a1, a2, n) ->
      let w = size_of_var vh in
      let ni = Z.to_int n in
      if !track_split then let (vgen, aim, h1, l1, extras1) = find_split_or_gen vgen aim a1 ni in
                           let (vgen, aim, h2, l2, extras2) = find_split_or_gen vgen aim a2 ni in
-                          let aim = AIM.add (Avar vh, w - ni) (econst Z.zero, h1) aim in
+                          let aim = AIM.add (Avar vh, w - ni) (econst (Cint Z.zero), h1) aim in
                           let aim = AIM.add (Avar vl, w - ni) (l1, h2) aim in
-                          (vgen, aim, extras1 @@ (extras2 @@ [ eeq l2 (econst Z.zero);
+                          (vgen, aim, extras1 @@ (extras2 @@ [ eeq l2 (econst (Cint Z.zero));
                                                                eeq (evar vh) h1;
                                                                bv2z_join (evar vl) l1 h2 (w - ni) ]), [])
      else (vgen, aim, [ eeq
@@ -305,8 +339,9 @@ let bv2z_instr aim vgen i =
                             | Tuint _ -> (h1, vgen)
                             | Tsint _ -> let (d, vgen) = gen_var vgen in
                                          let d = mkvar ~newvid:true d (int_t w) in
-                                         (eadd h1 (emul2pow (evar d) (w - ni)), vgen) in
-                          let aim = AIM.add (Avar vh, w - ni) (econst Z.zero, vh_exp) aim in
+                                         (eadd h1 (emul2pow (evar d) (w - ni)), vgen)
+                            | Tsingle | Tdouble -> raise (UnsupportedException "An cshrs instruction expects non-floatingpoint destinations.") in
+                          let aim = AIM.add (Avar vh, w - ni) (econst (Cint Z.zero), vh_exp) aim in
                           let aim = AIM.add (Avar vl, w - ni) (l1, h2) aim in
                           (vgen, aim, extras1 @@ (extras2 @@ [ eeq (evar vh) vh_exp;
                                                                bv2z_join (evar vl) l1 h2 (w - ni);
@@ -322,6 +357,7 @@ let bv2z_instr aim vgen i =
                       (vgen, aim, [eeq
                                      (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow ni)); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
                                      (limbs w [bv2z_atom a2; bv2z_atom a1])], [])
+         | Tsingle | Tdouble -> raise (UnsupportedException "An cshrs instruction expects non-floatingpoint destinations.")
        end
   | Irol (v, a, n) ->
      begin
@@ -330,7 +366,7 @@ let bv2z_instr aim vgen i =
           begin
             match n with
             | Avar _ -> (vgen, aim, [], [])
-            | Aconst (_, n) ->
+            | Aconst (_, Cint n) ->
                let ni = Z.to_int n in
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
                                     let aim = AIM.add (Avar v, ni) (l, h) aim in
@@ -338,8 +374,11 @@ let bv2z_instr aim vgen i =
                else let (h, vgen) = gen_var vgen in
                     let h = mkvar ~newvid:true h (uint_t ni) in
                     (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ], [])
+            | Aconst (_, Cfloat _) ->
+               raise (UnsupportedException "An rol instruction expects a non-floatingpoint rotation offset.")
           end
        | Tsint _ -> assert false
+       | Tsingle | Tdouble -> raise (UnsupportedException "An rol instruction expects non-floatingpoint destinations.")
      end
   | Iror (v, a, n) ->
      begin
@@ -348,7 +387,7 @@ let bv2z_instr aim vgen i =
           begin
             match n with
             | Avar _ -> (vgen, aim, [], [])
-            | Aconst (_, n) ->
+            | Aconst (_, Cint n) ->
                let ni = Z.to_int n in
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a ni in
                                     let aim = AIM.add (Avar v, w - ni) (l, h) aim in
@@ -356,8 +395,10 @@ let bv2z_instr aim vgen i =
                else let (h, vgen) = gen_var vgen in
                     let h = mkvar ~newvid:true h (uint_t ni) in
                     (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ], [])
+            | Aconst (_, Cfloat _) ->
+               raise (UnsupportedException "An ror instruction expects a non-floatingpoint rotation offset.")
           end
-       | Tsint _ -> assert false
+       | Tsint _ | Tsingle | Tdouble -> assert false
      end
   | Inondet v ->
      if var_is_bit v then (vgen, aim, carry_constr v, [])
@@ -367,7 +408,7 @@ let bv2z_instr aim vgen i =
                     v
                     (eadd
                        (emul (bv2z_atom c) (bv2z_atom a1))
-                       (emul (esub (econst Z.one) (bv2z_atom c)) (bv2z_atom a2)))], [])
+                       (emul (esub (econst (Cint Z.one)) (bv2z_atom c)) (bv2z_atom a2)))], [])
   | Inop -> (vgen, aim, [], [])
   | Iadd (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (eadd (bv2z_atom a1) (bv2z_atom a2))], [])
@@ -378,7 +419,8 @@ let bv2z_instr aim vgen i =
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An adds instruction expects a non-floatingpoint destination."))
   | Iadc (v, a1, a2, y) ->
      (vgen, aim, [bv2z_assign v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
   | Iadcs (c, v, a1, a2, y) ->
@@ -388,17 +430,19 @@ let bv2z_instr aim vgen i =
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An adcs instruction expects a non-floatingpoint destination."))
   | Isub (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (esub (bv2z_atom a1) (bv2z_atom a2))], [])
   | Isubc (c, v, a1, a2) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
+      | Tuint w -> (vgen, aim, [bv2z_join (evar v) (esub (econst (Cint Z.one)) (evar c)) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
                                @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An subc instruction expects a non-floatingpoint destination."))
   | Isubb (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_join (evar v) (evar c) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
@@ -406,18 +450,20 @@ let bv2z_instr aim vgen i =
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An subb instruction expects a non-floatingpoint destination."))
   | Isbc (v, a1, a2, y) ->
-     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], [])
+     (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst (Cint Z.one)) (bv2z_atom y)))], [])
   | Isbcs (c, v, a1, a2, y) ->
      (match v.vtyp with
       | Tuint w ->
-         (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y))) w]
+         (vgen, aim, [bv2z_join (evar v) (esub (econst (Cint Z.one)) (evar c)) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst (Cint Z.one)) (bv2z_atom y))) w]
                 @(carry_constr c), [])
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst (Cint Z.one)) (bv2z_atom y)))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An sbcs instruction expects a non-floatingpoint destination."))
   | Isbb (v, a1, a2, y) ->
      (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
   | Isbbs (c, v, a1, a2, y) ->
@@ -427,7 +473,8 @@ let bv2z_instr aim vgen i =
       | Tsint w ->
          let (d, vgen) = gen_var vgen in
          let d = mkvar ~newvid:true d (uint_t 1) in
-         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
+         (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An sbbs instruction expects a non-floatingpoint destination."))
   | Imul (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Imuls (_, v, a1, a2) ->
@@ -439,6 +486,8 @@ let bv2z_instr aim vgen i =
      (vgen, aim, [bv2z_split vh vl (emul (bv2z_atom a1) (bv2z_atom a2)) w], [])
   | Imulj (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))], [])
+  | Idiv (_, _, _) -> (* TODO: Shall we encode Idiv (floating-point div) here? *) 
+     (vgen, aim, [], [])
   | Isplit (vh, vl, a, n) ->
      let ni = Z.to_int n in
      if !track_split && AIM.mem (a, ni) aim then let (h, l) = AIM.find (a, ni) aim in
@@ -456,16 +505,16 @@ let bv2z_instr aim vgen i =
      if sv = 1 then
        let (c, vgen) = gen_var vgen in
        let c = mkvar ~newvid:true c (typ_of_atom a1) in
-       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst Z.one)));
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst (Cint Z.one))));
                     bv2z_is_bit v], [evar c])
      else
        let (c, vgen) = gen_var vgen in
        let (t, vgen) = gen_var vgen in
        let c = mkvar ~newvid:true c (typ_of_atom a1) in
        let t = mkvar ~newvid:true t bit_t in
-       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar t) (econst Z.one)));
+       (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar t) (econst (Cint Z.one))));
                     bv2z_is_bit t;
-                    eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow sv) Z.one)))], [evar c])
+                    eeq (evar v) (emul (evar t) (econst (csub (e2pow sv) (Cint Z.one))))], [evar c])
   | Isetne (v, a1, a2) ->
      let sv = size_of_var v in
      if sv = 1 then
@@ -480,14 +529,15 @@ let bv2z_instr aim vgen i =
        let t = mkvar ~newvid:true t bit_t in
        (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar t));
                     bv2z_is_bit t;
-                    eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow (size_of_var v)) Z.one)))], [evar c])
+                    eeq (evar v) (emul (evar t) (econst (csub (e2pow (size_of_var v)) (Cint Z.one))))], [evar c])
   | Iand _
     | Ior _
     | Ixor _ -> (vgen, aim, [], [])
   | Inot (v, a) ->
      (match v.vtyp with
-      | Tuint w -> (vgen, aim, [bv2z_assign v (esub (econst (Z.sub (e2pow w) Z.one)) (bv2z_atom a))], [])
-      | Tsint _w -> (vgen, aim, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst Z.one))], []))
+      | Tuint w -> (vgen, aim, [bv2z_assign v (esub (econst (csub (e2pow w) (Cint Z.one))) (bv2z_atom a))], [])
+      | Tsint _w -> (vgen, aim, [bv2z_assign v (esub (eneg (bv2z_atom a)) (econst (Cint Z.one)))], [])
+      | Tsingle | Tdouble -> raise (UnsupportedException "An not instruction expects a non-floatingpoint destination."))
   | Icast (t, v, a) ->
      bv2z_cast vgen aim t v a
   | Ivpc (v, a) ->
@@ -567,7 +617,7 @@ let rec polys_of_ebexp vgen e =
   match e with
   | Etrue -> (vgen, [], [])
   | Eeq (e1, e2) when eq_eexp e1 e2 -> (vgen, [], [])
-  | Eeq (e, Econst n) when Z.equal n Z.zero -> (vgen, [], [e])
+  | Eeq (e, Econst n) when eq_const n (Cint Z.zero) -> (vgen, [], [e])
   | Eeq (e1, e2) -> (vgen, [], [esub e1 e2])
   | Eeqmod (e1, e2, ms) ->
      let mk_tmp vgen =
