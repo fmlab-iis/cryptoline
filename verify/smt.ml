@@ -20,9 +20,9 @@ let exp_atom a =
   match a with
   | Avar v -> exp_var v
   | Aconst (ty, n) ->
-    match n with 
+    (match n with 
     | Cint z -> exp_const (size_of_typ ty) z
-    | Cfloat f -> raise (UnsupportedException "SMT does not support floating-point")
+    | Cfloat f -> raise (UnsupportedException "SMT does not support floating-point"))
 
 let exp_carry n c =
   ZeroExtend (1, n - 1, exp_atom c)
