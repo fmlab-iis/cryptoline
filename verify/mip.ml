@@ -14,7 +14,7 @@ let var_range v =
   let t_size = size_of_var v in
   if var_is_unsigned v then
     if t_size = 0 then []
-    else [ele (econst Z.zero) (evar v); elt (evar v) (econst (z_pow_2 t_size))]
+    else [ele (econst Cint Z.zero) (evar v); elt (evar v) (econst (z_pow_2 t_size))]
   else
     [ele (econst (Z.neg (z_pow_2 (pred t_size)))) (evar v);
      elt (evar v) (econst (z_pow_2 (pred t_size)))]
