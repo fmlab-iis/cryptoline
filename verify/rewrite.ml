@@ -39,7 +39,7 @@ let get_rewrite_pattern e =
     None
   else
     let v = VS.min_elt candidates in
-    let pat = separate v e (econst Z.zero) in
+    let pat = separate v e (econst Cint Z.zero) in
     let pat = simplify_eexp pat in
     Some (v, pat)
 
