@@ -784,7 +784,7 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atom_uadd_safe w a1 a2
       | Tsint w -> bexp_atom_sadd_safe w a1 a2
-      | Tsingle | Tdouble -> assert false)
+      | Tsingle | Tdouble -> True)
   | Iadds _ -> True
   | Iadc (v, a1, a2, y) ->
      (match v.vtyp with
@@ -796,7 +796,7 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atom_usub_safe w a1 a2
       | Tsint w -> bexp_atom_ssub_safe w a1 a2
-      | Tsingle | Tdouble -> assert false)
+      | Tsingle | Tdouble -> True)
   | Isubc _ -> True
   | Isubb _ -> True
   | Isbc (v, a1, a2, y) ->
@@ -815,7 +815,7 @@ let bexp_instr_safe i =
      (match v.vtyp with
       | Tuint w -> bexp_atom_umul_safe w a1 a2
       | Tsint w -> bexp_atom_smul_safe w a1 a2
-      | Tsingle | Tdouble -> assert false)
+      | Tsingle | Tdouble -> True)
   | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
