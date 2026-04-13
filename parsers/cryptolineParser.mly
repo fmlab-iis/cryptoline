@@ -16,7 +16,7 @@
 %token <Ast.Cryptoline.FloatConst.t> FLOAT
 %token <string> ID VEC_ID PATH
 %token <int> UINT SINT
-%token BIT
+%token BIT SINGLE DOUBLE
 %token LBRAC RBRAC LPAR RPAR LSQUARE RSQUARE COMMA SEMICOLON DOT DOTDOT VBAR COLON
 /* Instructions */
 %token CONST MOV EXTRACT
@@ -1125,6 +1125,8 @@ typ:
   | SINT                                          { if $1 > 0 then int_t $1
                                                     else raise_at_line (get_line_start()) ("The big-width must be positive") }
   | BIT                                           { bit_t }
+  | SINGLE                                        { single_t }
+  | DOUBLE                                        { double_t }
 ;
 
 vectyp:

@@ -258,6 +258,8 @@ token = parse
   | ("sint"|"int") ((number+) as w)
                                    { SINT (int_of_string w) }
   | "bit"                          { BIT }
+  | "single"                       { SINGLE }
+  | "double"                       { DOUBLE }
   (* Numbers *)
   | "0b" ((bin+) as bin)           { NUM (Z.of_string_base 2 bin) }
   | "0x" ((hex+) as hex)           { NUM (Z.of_string_base 16 hex) }
