@@ -75,12 +75,12 @@ let const_of_z n = Cint n
 let const_of_double f = Cfloat f
 (* let const_to_string = string_of_const *)
 
-let is_const_int c =
+let const_is_int c =
   match c with
   | Cint _ -> true
   | _ -> false
 
-let is_const_float c =
+let const_is_float c =
   match c with
   | Cfloat _ -> true
   | _ -> false
@@ -399,6 +399,10 @@ let mkvar ?(newvid=false) vn vt =
   { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx; vid = i; vhash = Hashtbl.hash vn }
 
 let var_is_bit v = v.vtyp = bit_t
+let var_is_int v = 
+  match v.vtyp with
+  | Tuint _ | Tsint _ -> true
+  | _ -> false
 let var_is_unsigned v = typ_is_unsigned v.vtyp
 let var_is_signed v = typ_is_signed v.vtyp
 

@@ -9,21 +9,66 @@ type 'a round_result =
   Solved of Qfbv.Common.result
 | Unfinished of 'a list
 
+(** Helpers that check if range specifications and instructions are over integers. *)
+
 let force_const_to_int c =
-  if is_const_int c
+  if const_is_int c
   then const_to_int c
   else raise (UnsupportedException "SMT translation does not support floating-point constants.")
+
+let is_atom_over_int a =
+  match a with
+  | Avar v -> var_is_int v
+  | Aconst (_, c) -> const_is_int c
+
+let is_instr_over_int i =
+  match i with
+  | Inondet _ | Inop | Iassert _ | Iassume _ | Icut _ | Ighost (_, _) 
+    -> true
+  | Imov (_, a) | Ishls (_, _, a, _) | Ishrs (_, _, a, _) | Isars (_, _, a, _)
+    | Inot (_, a) | Isplit (_, _, a, _) | Ispl (_, _, a, _) | Icast (_, _ , a)
+    | Ivpc (_, a) -> is_atom_over_int a
+  | Ishl (_, a1, a2) | Ishr (_, a1, a2) | Isar (_, a1, a2)
+    | Icshl (_, _, a1, a2, _) | Icshls(_, _, _, a1, a2, _) | Icshr (_, _, a1, a2, _)
+    | Icshrs(_, _, _, a1, a2, _) | Irol (_, a1, a2) | Iror (_, a1, a2) | Iadd (_, a1, a2)
+    | Iadds (_, _, a1, a2) | Isub (_, a1, a2) | Isubc (_, _, a1, a2) | Isubb (_, _, a1, a2)
+    | Imul (_, a1, a2) | Imuls (_, _, a1, a2) | Imull (_, _, a1, a2) | Imulj (_, a1, a2)
+    | Idiv (_, a1, a2) | Iseteq (_, a1, a2) | Isetne (_, a1, a2) | Iand (_, a1, a2) 
+    | Ior (_, a1, a2) | Ixor (_, a1, a2) |  Ijoin (_, a1, a2) 
+    -> is_atom_over_int a1 && is_atom_over_int a2
+  | Icmov (_, a1, a2, a3) | Iadc (_, a1, a2, a3) | Iadcs (_, _, a1, a2, a3)
+    | Isbc (_, a1, a2, a3) | Isbcs (_, _, a1, a2, a3) | Isbb (_, a1, a2, a3) | Isbbs (_, _, a1, a2, a3)
+    -> is_atom_over_int a1 && is_atom_over_int a2 && is_atom_over_int a3
+
+let rec is_rexp_over_int e =
+  match e with
+  | Rvar v -> var_is_int v
+  | Rconst (_, c) -> const_is_int c
+  | Runop (_, _, e) -> is_rexp_over_int e
+  | Rbinop (_, _, e1, e2) -> is_rexp_over_int e1 && is_rexp_over_int e2
+  | Ruext (_, e, _) | Rsext (_, e, _) -> is_rexp_over_int e
+  | Rconcat (_, _, e1, e2) -> is_rexp_over_int e1 && is_rexp_over_int e2
+
+let rec is_rbexp_over_int e =
+  match e with
+  | Rtrue -> true
+  | Req (_, e1, e2)
+    | Rcmp (_, _, e1, e2) -> is_rexp_over_int e1 && is_rexp_over_int e2
+  | Rneg e -> is_rbexp_over_int e
+  | Rand (e1, e2)
+    | Ror (e1, e2) -> is_rbexp_over_int e1 && is_rbexp_over_int e2
+
 
 (** Conversion from range specifications to QFBV. *)
 
 let exp_var v = Var v
 
-let exp_const w n = Const (w, n)
+let exp_const w n = Const (w, force_const_to_int n)
 
 let exp_atom a =
   match a with
   | Avar v -> exp_var v
-  | Aconst (ty, n) -> exp_const (size_of_typ ty) (force_const_to_int n)
+  | Aconst (ty, c) -> exp_const (size_of_typ ty) c
 
 let exp_carry n c =
   ZeroExtend (1, n - 1, exp_atom c)
@@ -262,7 +307,7 @@ let bexp_ror v a n =
 
 let bexp_cmov v c a1 a2 =
   let w = size_of_var v in
-  let cond = Eq (1, exp_atom c, exp_const 1 Z.one) in
+  let cond = Eq (1, exp_atom c, exp_const 1 (Cint Z.one)) in
   Eq (w, exp_var v, Ite (w, cond, exp_atom a1, exp_atom a2))
 let bexp_add v a1 a2 =
   let w = size_of_var v in

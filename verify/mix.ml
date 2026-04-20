@@ -5,7 +5,7 @@ open Utils.Std
 let smtlib_true = "true"
 
 let force_const_to_int c =
-  if is_const_int c 
+  if const_is_int c 
   then const_to_int c
   else raise (UnsupportedException "SMT translation does not support floating-point constants.")
 

@@ -41,8 +41,8 @@ type const =
 val const_of_z : Z.t -> const
 val const_of_double : Mpfrf.t -> const
 
-val is_const_int : const -> bool
-val is_const_float : const -> bool
+val const_is_int : const -> bool
+val const_is_float : const -> bool
 val const_to_int : const -> Z.t
 val const_to_float : const -> FloatConst.t
 
@@ -167,6 +167,9 @@ val mkvar : ?newvid:bool -> string -> typ -> var
 
 val var_is_bit : var -> bool
 (** [var_is_bit v] is [true] if the type of [v] is {!bit_t}. *)
+
+val var_is_int : var -> bool
+(** [var_is_int v] is [true] if the type of [v] is [Tuint _] or [Tsint _]. *)
 
 val var_is_unsigned :  var -> bool
 (** [var_is_unsigned v] is [true] if [v] is unsigned. *)

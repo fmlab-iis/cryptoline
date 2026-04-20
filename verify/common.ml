@@ -12,7 +12,7 @@ type 'a round_result = 'a Smt.round_result
 type poly_spec = Cas.poly_spec
 
 let force_const_to_int c =
-  if is_const_int c
+  if const_is_int c
   then const_to_int c
   else raise (UnsupportedException "CAS translation does not support floating-point constants.")
 
