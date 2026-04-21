@@ -20,6 +20,9 @@ val veri_proc_name : (string option) ref
 val apply_slicing : bool ref
 (** [true] to apply slicing in verifying specifications *)
 
+val check_wf : bool ref
+(** [true] to apply wellformedness checking. Default is [true]. *)
+
 val verify_program_safety : bool ref
 (** [true] to verify program safety *)
 

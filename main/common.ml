@@ -107,6 +107,9 @@ let args_verifier =
     ("-enable_rewriting:eqmod", Set apply_rewrite_eqmod,
      mk_arg_desc(["";
                   "Enable rewriting eqmod"]));
+    ( "-disable_wf",
+      Unit (fun _ -> Options.Std.check_wf := false),
+      mk_arg_desc([""; "Disable wellformedness checking"]) );
     ("-expand-poly", Set Options.Std.expand_poly,
      mk_arg_desc([
            "";
@@ -313,8 +316,13 @@ let parse_and_check_all file =
       | _ -> () in
     wf in
   let specs = parse_specs file in
-  if check_well_formedness specs then SM.map (fun (vs, s) -> (vs, from_typecheck_tagged_spec s)) specs
-  else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+  if not !Options.Std.check_wf || check_well_formedness specs then
+    SM.map (
+      fun (vs, s) ->
+        (vs, from_typecheck_tagged_spec s)
+    ) specs
+  else if not !verbose then
+    failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
   else exit 1
 
 let parse_and_check ?(proc = main_proc_name) file =
@@ -350,9 +358,12 @@ let parse_and_check ?(proc = main_proc_name) file =
       | _ -> () in
     wf in
   let ((ivs, ovs), s) = parse_spec file in
-  if check_well_formedness (VS.of_list ivs) s then ((ivs, ovs), from_typecheck_tagged_spec s)
-  else if not !verbose then failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
-  else exit 1
+  if not !Options.Std.check_wf || check_well_formedness (VS.of_list ivs) s then
+    ((ivs, ovs), from_typecheck_tagged_spec s)
+  else if not !verbose then
+    failwith ("The program is not well-formed. Run again with \"-v\" to see the detailed error.")
+  else
+    exit 1
 
 let find_output_vars p vnames =
   let p = List.rev p in

@@ -14,6 +14,8 @@ let veri_proc_name = ref None
 
 let apply_slicing = ref false
 
+let check_wf = ref true
+
 let verify_program_safety = ref true
 let verify_epost = ref true
 let verify_rpost = ref true
