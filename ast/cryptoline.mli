@@ -92,11 +92,13 @@ val is_representable : typ -> Z.t -> bool
 
 type var =
   {
-    vname : string;        (** name of the variable *)
-    vtyp  : typ;           (** type of the variable *)
-    vsidx : int;           (** SSA index of the variable *)
-    mutable vid : int;     (** variable ID, which is set after {!normalize_spec}, {!normalize_espec}, or {!normalize_rspec} *) (* *)
-    vhash : int;           (** hash value of vname *)
+    vname                     : string; (** name of the variable *)
+    vtyp                      : typ;    (** type of the variable *)
+    vsidx                     : int;    (** SSA index of the variable *)
+    mutable vid               : int;    (** variable ID *)
+    vhash                     : int;    (** hash value of vname *)
+    mutable cached_name       : string; (** cached name *)
+    mutable cached_typed_name : string; (** cached name with type *)
   }
 (** variables *)
 
@@ -1147,6 +1149,111 @@ val rspec_of_spec : spec -> rspec
 (** extract the range specification from a specification *)
 
 
+(** {1 Buffered String Outputs} *)
+
+val bprint_list : Buffer.t -> string -> (Buffer.t -> 'a -> unit) -> 'a list -> unit
+(** [bprint_list buf sep fn xs] prints a list of items [xs] to a
+    buffer [buf]. Each item is printed by the function [fn]. A
+    separator [sep] is printed between two consecutive items. *)
+
+val bprint_int : Buffer.t -> int -> unit
+(** Print the string representation of an integer. *)
+
+val bprint_z : Buffer.t -> Z.t -> unit
+(** Print the string representation of a Z.t. *)
+
+val bprint_const : Buffer.t -> Z.t -> unit
+(** Print the string representation of a constant to a buffer.
+    Negative numbers are enclosed in parentheses. *)
+
+val bprint_typ : Buffer.t -> typ -> unit
+(** Print string representation of a type to a buffer. *)
+
+val bprint_var : ?typ:bool -> Buffer.t -> var -> unit
+(** Print the string representation of a variable to a buffer. By default,
+    type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_vs : ?typ:bool -> Buffer.t -> VS.t -> unit
+(** Print the string representation of a set of variables to a buffer.
+    By default, type infomation is not printed unless the tag [typ]
+    is [true]. *)
+
+val bprint_eunop : Buffer.t -> eunop -> unit
+(** Print an algebraic unary operator to a buffer. *)
+
+val bprint_ebinop : Buffer.t -> ebinop -> unit
+(** Print an algebraic binary operator to a buffer. *)
+
+val bprint_rcmpop : Buffer.t -> rcmpop -> unit
+(** Print a range comparison operator to a buffer. *)
+
+val bprint_runop : Buffer.t -> runop -> unit
+(** Print a range unary operator to a buffer. *)
+
+val bprint_rbinop : Buffer.t -> rbinop -> unit
+(** Print a range binary operator to a buffer. *)
+
+val bprint_eexp : ?typ:bool -> Buffer.t -> eexp -> unit
+(** Print the string representation of an algebraic expression to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_rexp : ?typ:bool -> Buffer.t -> rexp -> unit
+(** Print the string representation of a range expression to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_ebexp : ?typ:bool -> Buffer.t -> ebexp -> unit
+(** Print the string representation of an algebraic predicate to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_rbexp : ?typ:bool -> Buffer.t -> rbexp -> unit
+(** Print the string representation of a range predicate to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_bexp : ?typ:bool -> Buffer.t -> bexp -> unit
+(** Print the string representation of a predicate to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_ebexp_prove_with : ?typ:bool -> Buffer.t -> ebexp_prove_with -> unit
+(** Print the string representation of an algebraic predicate associated
+    with prove-with clauses to a buffer. Type information is not printed
+    unless the tag [typ] is [true]. *)
+
+val bprint_rbexp_prove_with : ?typ:bool -> Buffer.t -> rbexp_prove_with -> unit
+(** Print the string representation of a range predicate associated with
+    prove-with clauses to a buffer. Type information is not printed unless
+    the tag [typ] is [true]. *)
+
+val bprint_bexp_prove_with : ?typ:bool -> Buffer.t -> bexp_prove_with -> unit
+(** Print the string representation of a predicate associated with
+    prove-with clauses to a buffer. Type information is not printed
+    unless the tag [typ] is [true]. *)
+
+val bprint_atom : ?typ:bool -> Buffer.t -> atom -> unit
+(** Print the string representation of an atom to a buffer. Type
+    information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_instr : ?semicolon:bool -> ?typ:bool -> Buffer.t -> instr -> unit
+(** Print the string representation of an instruction to a buffer. If the tag
+    [semicolon] is [true], the ending semicolon will be printed. Type
+    information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_program : ?insert_nop:bool -> ?typ:bool -> Buffer.t -> program -> unit
+(** Print the string representation of a program to a buffer. Type
+    information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_spec : ?typ:bool -> Buffer.t -> spec -> unit
+(** Print the string representation of a specification to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_espec : ?typ:bool -> Buffer.t -> espec -> unit
+(** Print the string representation of an algebraic specification to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+val bprint_rspec : ?typ:bool -> Buffer.t -> rspec -> unit
+(** Print the string representation of a range specification to a buffer.
+    Type information is not printed unless the tag [typ] is [true]. *)
+
+
 (** {1 String Outputs} *)
 
 val string_of_const : Z.t -> string
@@ -1157,6 +1264,10 @@ val string_of_typ : typ -> string
 
 val string_of_var : ?typ:bool -> var -> string
 (** [string_of_var ~typ:b v] is the string representation of a variable [v]. By default, type information is not included unless [b] is [true].  *)
+
+val cache_var_name : var -> string * string
+(** Cache the string representation of a variable and return the untyped
+    representation and the typed representation. *)
 
 val string_of_vs : ?typ:bool -> VS.t -> string
 (** [string_of_vs ~typ:b vs] is the string representation of a set of variables [vs]. By default, type infomation is not included unless [b] is [true]. *)

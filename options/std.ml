@@ -434,6 +434,22 @@ let propose_logfile fnopt =
                   else (!logfile, ".log") in
   fn ^ fnstr ^ ext
 
+let run ?ofile cmd_array =
+  let (out, err) =
+    match ofile with
+    | None -> (Unix.stdout, Unix.stderr)
+    | Some file ->
+      let out_fd = Unix.openfile file [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, out_fd) in
+  let pid =
+    Unix.create_process cmd_array.(0) cmd_array
+      Unix.stdin out err in
+  let (_, status) = Unix.waitpid [] pid in
+  match status with
+  | Unix.WSIGNALED n when n = Sys.sigkill ->
+    raise Tasks.TimeoutException
+  | _ -> status
+
 let unix cmd =
   let r = Unix.system cmd in
   if r = r then ()
@@ -453,7 +469,19 @@ let trace_file ?log:(lf=(!logfile)) file =
 
 let fail s = trace s; failwith s
 
-let string_of_running_time st ed = (Printf.sprintf "%.4f" (ed -. st)) ^ " seconds"
+let string_of_running_time st ed =
+  (Printf.sprintf "%.4f" (ed -. st)) ^ " seconds"
+
+let profile_running_time ?out f =
+  let t1 = Unix.gettimeofday() in
+  let res = f () in
+  let t2 = Unix.gettimeofday() in
+  let ti = t2 -. t1 in
+  let _ =
+    match out with
+    | None -> ()
+    | Some o -> o ti in
+  (res, ti)
 
 let vprint msg = if !verbose then print_string msg; flush stdout
 

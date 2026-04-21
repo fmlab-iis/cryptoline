@@ -497,7 +497,9 @@ let anon file =
                            vtyp = Tuint 64;
                            vsidx = v.vsidx;
                            vid = v.vid;
-                           vhash = v.vhash } in
+                           vhash = v.vhash;
+                           cached_name = "";
+                           cached_typed_name = "" } in
                        vars_spec os |> (if !save_rep_uniform_types then VS.map uniform_vtyp else Fun.id) |> VS.elements in
      let str_of_spec os =
        let vs = vs_of_os os in

@@ -14,13 +14,37 @@ let gen_var gen =
 
 let rec make_vgen v i = fun () -> More (v ^ "_" ^ string_of_int i, make_vgen v (i + 1))
 
-let vgen_of_spec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_spec s) SS.empty)) 0
-let vgen_of_rspec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_rspec s) SS.empty)) 0
-let vgen_of_espec s =  make_vgen (new_name (VS.fold (fun v vs -> SS.add (string_of_var v) vs) (vars_espec s) SS.empty)) 0
+let vgen_of_spec s =
+  make_vgen (
+    new_name (
+      VS.fold
+        (fun v vs -> SS.add v.cached_name vs)
+        (vars_spec s) SS.empty
+    )
+  ) 0
+let vgen_of_rspec s =
+  make_vgen (
+    new_name (
+      VS.fold
+        (fun v vs -> SS.add v.cached_name vs)
+        (vars_rspec s) SS.empty
+    )
+  ) 0
+let vgen_of_espec s =
+  make_vgen (
+    new_name (
+      VS.fold
+        (fun v vs -> SS.add v.cached_name vs)
+        (vars_espec s)
+        SS.empty
+    )
+  ) 0
 
 let mk_newvar vgen ty =
   let (tmp, vgen) = gen_var vgen in
-  (vgen, mkvar ~newvid:true tmp ty)
+  let v = mkvar ~newvid:true tmp ty in
+  let _ = cache_var_name v in
+  (vgen, v)
 
 (* Remember how an atom is split. *)
 module AtomIndex : OrderedType with type t = (atom * int) =
@@ -52,9 +76,8 @@ let bv2z_cast vgen aim ot v a =
        let (discarded, vgen) =
          match ot with
          | None ->
-            let (discarded, vgen) = gen_var vgen in
-            let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv)) in
-            (discarded, vgen)
+           let (vgen, discarded) = mk_newvar vgen (uint_t (wa - wv)) in
+           (discarded, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tuint wv, Tsint wa ->
@@ -63,18 +86,16 @@ let bv2z_cast vgen aim ot v a =
        let (a_sign, vgen) =
          match ot with
          | None ->
-            let (a_sign, vgen) = gen_var vgen in
-            let a_sign = mkvar ~newvid:true a_sign bit_t in
-            (a_sign, vgen)
+           let (vgen, a_sign) = mk_newvar vgen bit_t in
+           (a_sign, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_join (evar v) (evar a_sign) (bv2z_atom a) wv], [])
      else
        let (discarded, vgen) =
          match ot with
          | None ->
-            let (discarded, vgen) = gen_var vgen in
-            let discarded = mkvar ~newvid:true discarded (int_t (wa - wv)) in
-            (discarded, vgen)
+           let (vgen, discarded) = mk_newvar vgen (int_t (wa - wv)) in
+           (discarded, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tsint wv, Tuint wa ->
@@ -84,9 +105,8 @@ let bv2z_cast vgen aim ot v a =
        let (discarded, vgen) =
          match ot with
          | None ->
-            let (discarded, vgen) = gen_var vgen in
-            let discarded = mkvar ~newvid:true discarded (uint_t (wa - wv + 1)) in
-            (discarded, vgen)
+           let (vgen, discarded) = mk_newvar vgen (uint_t (wa - wv + 1)) in
+           (discarded, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
   | Tsint wv, Tsint wa ->
@@ -96,9 +116,8 @@ let bv2z_cast vgen aim ot v a =
        let (discarded, vgen) =
          match ot with
          | None	->
-            let (discarded, vgen) = gen_var vgen in
-            let discarded = mkvar ~newvid:true discarded (int_t (wa - wv + 1)) in
-            (discarded, vgen)
+           let (vgen, discarded) = mk_newvar vgen (int_t (wa - wv + 1)) in
+           (discarded, vgen)
          | Some t -> (t, vgen) in
        (vgen, aim, [bv2z_split discarded v (bv2z_atom a) wv], [])
 
@@ -113,14 +132,15 @@ let bv2z_is_bit c =
    If no split is found, generate fresh variables for the split. *)
 let find_split_or_gen vgen aim a n =
   let w = size_of_atom a in
-  if AIM.mem (a, n) aim then let (h, l) = AIM.find (a, n) aim in
-                             (vgen, aim, h, l, [])
-  else let (h, vgen) = gen_var vgen in
-       let (l, vgen) = gen_var vgen in
-       let h = evar (mkvar ~newvid:true h (uint_t (w - n))) in
-       let l = evar (mkvar ~newvid:true l (uint_t n)) in
-       let aim = AIM.add (a, n) (h, l) aim in
-       (vgen, aim, h, l, [ eeq (bv2z_atom a) (eadd l (emul2pow h n)) ])
+  if AIM.mem (a, n) aim then
+    let (h, l) = AIM.find (a, n) aim in
+    (vgen, aim, h, l, [])
+  else
+    let (vgen, h) = mk_newvar vgen (uint_t (w - n)) in
+    let (vgen, l) = mk_newvar vgen (uint_t n) in
+    let (h, l) = (evar h, evar l) in
+    let aim = AIM.add (a, n) (h, l) aim in
+    (vgen, aim, h, l, [ eeq (bv2z_atom a) (eadd l (emul2pow h n)) ])
 
 (*
   Returns (vgen, aim, bexps, exps) where
@@ -155,8 +175,7 @@ let bv2z_instr aim vgen i =
                       let aim = AIM.add (Avar v, ni) (la, econst Z.zero) aim in
                       (vgen, aim, extras @@ [ eeq (evar l) ha; eeq (evar v) (emul2pow la ni) ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a (w - ni) in
-                      let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t w) in
+                      let (vgen, d) = mk_newvar vgen (int_t w) in
                       let aim = AIM.add (Avar v, ni) ((eadd la (emul2pow (evar d) (w - ni))), econst Z.zero) aim in
                       (vgen, aim, extras @@ [ eeq (evar l) ha; eeq (evar v) (eadd (emul2pow la ni) (emul2pow (evar d) w)) ], [])
        else
@@ -164,8 +183,7 @@ let bv2z_instr aim vgen i =
          | Tuint w -> (vgen, aim, [ eeq
                                       (eadd (evar v) (emul2pow (evar l) w))
                                       (emul2pow (bv2z_atom a) ni) ], [])
-         | Tsint w -> let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t w) in
+         | Tsint w -> let (vgen, d) = mk_newvar vgen (int_t w) in
                       (vgen, aim, [eeq
                                      (eadds [evar v; emul2pow (evar d) w; emul2pow (evar l) w])
                                      (emul2pow (bv2z_atom a) ni)
@@ -193,15 +211,13 @@ let bv2z_instr aim vgen i =
                       let aim = AIM.add (Avar v, w - ni) (econst Z.zero, ha) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) ha; eeq (evar l) la ], [])
          | Tsint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t w) in
+                      let (vgen, d) = mk_newvar vgen (int_t w) in
                       let aim = AIM.add (Avar v, w - ni) (econst Z.zero, eadd ha (emul2pow (evar d) (w - ni))) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
        else
          match v.vtyp with
          | Tuint _ -> (vgen, aim, [eeq (limbs ni [evar l; evar v]) (bv2z_atom a)], [])
-         | Tsint w -> let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t ni) in
+         | Tsint w -> let (vgen, d) = mk_newvar vgen (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
                                      (bv2z_atom a)
@@ -226,8 +242,7 @@ let bv2z_instr aim vgen i =
        if !track_split then
          match v.vtyp with
          | Tuint w -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
-                      let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t w) in
+                      let (vgen, d) = mk_newvar vgen (int_t w) in
                       let aim = AIM.add (Avar v, w - ni) (econst Z.zero, eadd ha (emul2pow (evar d) (w - ni))) aim in
                       (vgen, aim, extras @@ [ eeq (evar v) (eadd ha (emul2pow (evar d) (w - ni))); eeq (evar l) la ], [])
          | Tsint _ -> let (vgen, aim, ha, la, extras) = find_split_or_gen vgen aim a ni in
@@ -235,8 +250,7 @@ let bv2z_instr aim vgen i =
                       (vgen, aim, extras @@ [ eeq (evar v) ha; eeq (evar l) la ], [])
        else
          match v.vtyp with
-         | Tuint w -> let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t ni) in
+         | Tuint w -> let (vgen, d) = mk_newvar vgen (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadd (limbs ni [evar l; evar v]) (emul2pow (evar d) w))
                                      (bv2z_atom a)], [])
@@ -262,8 +276,7 @@ let bv2z_instr aim vgen i =
                           let (vh_exp, vgen) =
                             match vh.vtyp with
                             | Tuint _ -> (limbs ni [h2; l1], vgen)
-                            | Tsint _ -> let (d, vgen) = gen_var vgen in
-                                         let d = mkvar ~newvid:true d (int_t ni) in
+                            | Tsint _ -> let (vgen, d) = mk_newvar vgen (int_t ni) in
                                          (eadd (limbs ni [h2; l1]) (emul2pow (evar d) w), vgen) in
                           let aim = AIM.add (Avar vh, ni) (l1, h2) aim in
                           let aim = AIM.add (Avar vl, w - ni) (econst Z.zero, l2) aim in
@@ -276,8 +289,7 @@ let bv2z_instr aim vgen i =
          | Tuint w -> (vgen, aim, [eeq
                                      (limbs w [emul2pow (evar vl) ni; evar vh; evar l])
                                      (emul2pow (limbs w [bv2z_atom a2; bv2z_atom a1]) ni)], [])
-         | Tsint w -> let (d, vgen) = gen_var vgen in
-                      let d = mkvar ~newvid:true d (int_t w) in
+         | Tsint w -> let (vgen, d) = mk_newvar vgen (int_t w) in
                       (vgen, aim, [eeq
                                      (limbs w [emul2pow (evar vl) ni; eadd (evar vh) (emul2pow (evar d) w); evar l])
                                      (emul2pow (limbs w [bv2z_atom a2; bv2z_atom a1]) ni)], [])
@@ -303,8 +315,7 @@ let bv2z_instr aim vgen i =
                           let (vh_exp, vgen) =
                             match vh.vtyp with
                             | Tuint _ -> (h1, vgen)
-                            | Tsint _ -> let (d, vgen) = gen_var vgen in
-                                         let d = mkvar ~newvid:true d (int_t w) in
+                            | Tsint _ -> let (vgen, d) = mk_newvar vgen (int_t w) in
                                          (eadd h1 (emul2pow (evar d) (w - ni)), vgen) in
                           let aim = AIM.add (Avar vh, w - ni) (econst Z.zero, vh_exp) aim in
                           let aim = AIM.add (Avar vl, w - ni) (l1, h2) aim in
@@ -317,8 +328,7 @@ let bv2z_instr aim vgen i =
          | Tuint w -> (vgen, aim, [eeq
                                      (eadd (emul (limbs w [evar vl; evar vh]) (econst (e2pow ni))) (evar l))
                                      (limbs w [bv2z_atom a2; bv2z_atom a1])], [])
-         | Tsint w -> let (discarded, vgen) = gen_var vgen in
-                      let discarded = mkvar ~newvid:true discarded (int_t ni) in
+         | Tsint w -> let (vgen, discarded) = mk_newvar vgen (int_t ni) in
                       (vgen, aim, [eeq
                                      (eadds [emul (limbs w [evar vl; evar vh]) (econst (e2pow ni)); evar l; emul (evar discarded) (econst (e2pow (w + w)))])
                                      (limbs w [bv2z_atom a2; bv2z_atom a1])], [])
@@ -335,8 +345,7 @@ let bv2z_instr aim vgen i =
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a (w - ni) in
                                     let aim = AIM.add (Avar v, ni) (l, h) aim in
                                     (vgen, aim, extras @@ [ bv2z_join (evar v) l h ni], [])
-               else let (h, vgen) = gen_var vgen in
-                    let h = mkvar ~newvid:true h (uint_t ni) in
+               else let (vgen, h) = mk_newvar vgen (uint_t ni) in
                     (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) ni) (emul2pow (evar h) w)) (evar h)) ], [])
           end
        | Tsint _ -> assert false
@@ -353,8 +362,7 @@ let bv2z_instr aim vgen i =
                if !track_split then let (vgen, aim, h, l, extras) = find_split_or_gen vgen aim a ni in
                                     let aim = AIM.add (Avar v, w - ni) (l, h) aim in
                                     (vgen, aim, extras @@ [ bv2z_join (evar v) l h (w - ni)], [])
-               else let (h, vgen) = gen_var vgen in
-                    let h = mkvar ~newvid:true h (uint_t ni) in
+               else let (vgen, h) = mk_newvar vgen (uint_t ni) in
                     (vgen, aim, [ eeq (evar v) (eadd (esub (emul2pow (bv2z_atom a) (w - ni)) (emul2pow (evar h) w)) (evar h)) ], [])
           end
        | Tsint _ -> assert false
@@ -376,8 +384,7 @@ let bv2z_instr aim vgen i =
       | Tuint w -> (vgen, aim, [bv2z_split c v (eadd (bv2z_atom a1) (bv2z_atom a2)) w]
                                @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (bv2z_atom a1) (bv2z_atom a2))], []))
   | Iadc (v, a1, a2, y) ->
      (vgen, aim, [bv2z_assign v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
@@ -386,8 +393,7 @@ let bv2z_instr aim vgen i =
       | Tuint w -> (vgen, aim, [bv2z_split c v (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) w]
                                @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (eadd (eadd (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
   | Isub (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (esub (bv2z_atom a1) (bv2z_atom a2))], [])
@@ -396,16 +402,14 @@ let bv2z_instr aim vgen i =
       | Tuint w -> (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
                                @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
   | Isubb (c, v, a1, a2) ->
      (match v.vtyp with
       | Tuint w -> (vgen, aim, [bv2z_join (evar v) (evar c) (esub (bv2z_atom a1) (bv2z_atom a2)) w]
                                @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (bv2z_atom a1) (bv2z_atom a2))], []))
   | Isbc (v, a1, a2, y) ->
      (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], [])
@@ -415,8 +419,7 @@ let bv2z_instr aim vgen i =
          (vgen, aim, [bv2z_join (evar v) (esub (econst Z.one) (evar c)) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y))) w]
                 @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (esub (econst Z.one) (bv2z_atom y)))], []))
   | Isbb (v, a1, a2, y) ->
      (vgen, aim, [bv2z_assign v (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], [])
@@ -425,14 +428,12 @@ let bv2z_instr aim vgen i =
       | Tuint w -> (vgen, aim, [bv2z_join (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y)) (eneg (evar c)) (evar v) w]
                                @(carry_constr c), [])
       | Tsint w ->
-         let (d, vgen) = gen_var vgen in
-         let d = mkvar ~newvid:true d (uint_t 1) in
+         let (vgen, d) = mk_newvar vgen (uint_t 1) in
          (vgen, aim, [eeq (limbs w [evar v; evar d]) (esub (esub (bv2z_atom a1) (bv2z_atom a2)) (bv2z_atom y))], []))
   | Imul (v, a1, a2) ->
      (vgen, aim, [bv2z_assign v (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Imuls (_, v, a1, a2) ->
-     let (d, vgen) = gen_var vgen in
-     let d = mkvar ~newvid:true d (typ_of_var v) in
+     let (vgen, d) = mk_newvar vgen (typ_of_var v) in
      (vgen, aim, [eeq (limbs (size_of_var v) [evar v; evar d]) (emul (bv2z_atom a1) (bv2z_atom a2))], [])
   | Imull (vh, vl, a1, a2) ->
      let w = size_of_var vl in
@@ -454,30 +455,24 @@ let bv2z_instr aim vgen i =
   | Iseteq (v, a1, a2) ->
      let sv = size_of_var v in
      if sv = 1 then
-       let (c, vgen) = gen_var vgen in
-       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       let (vgen, c) = mk_newvar vgen (typ_of_atom a1) in
        (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar v) (econst Z.one)));
                     bv2z_is_bit v], [evar c])
      else
-       let (c, vgen) = gen_var vgen in
-       let (t, vgen) = gen_var vgen in
-       let c = mkvar ~newvid:true c (typ_of_atom a1) in
-       let t = mkvar ~newvid:true t bit_t in
+       let (vgen, c) = mk_newvar vgen (typ_of_atom a1) in
+       let (vgen, t) = mk_newvar vgen bit_t in
        (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (esub (evar t) (econst Z.one)));
                     bv2z_is_bit t;
                     eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow sv) Z.one)))], [evar c])
   | Isetne (v, a1, a2) ->
      let sv = size_of_var v in
      if sv = 1 then
-       let (c, vgen) = gen_var vgen in
-       let c = mkvar ~newvid:true c (typ_of_atom a1) in
+       let (vgen, c) = mk_newvar vgen (typ_of_atom a1) in
        (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar v));
                     bv2z_is_bit v], [evar c])
      else
-       let (c, vgen) = gen_var vgen in
-       let (t, vgen) = gen_var vgen in
-       let c = mkvar ~newvid:true c (typ_of_atom a1) in
-       let t = mkvar ~newvid:true t bit_t in
+       let (vgen, c) = mk_newvar vgen (typ_of_atom a1) in
+       let (vgen, t) = mk_newvar vgen bit_t in
        (vgen, aim, [eeq (esub (bv2z_atom a1) (bv2z_atom a2)) (emul (evar c) (evar t));
                     bv2z_is_bit t;
                     eeq (evar v) (emul (evar t) (econst (Z.sub (e2pow (size_of_var v)) Z.one)))], [evar c])
@@ -571,8 +566,7 @@ let rec polys_of_ebexp vgen e =
   | Eeq (e1, e2) -> (vgen, [], [esub e1 e2])
   | Eeqmod (e1, e2, ms) ->
      let mk_tmp vgen =
-       let (tmp, vgen) = gen_var vgen in
-       let tmp = mkvar ~newvid:true tmp (Tuint 0) (* The variable type does not matter *) in
+       let (vgen, tmp) = mk_newvar vgen (Tuint 0) (* The variable type does not matter *) in
        (vgen, tmp) in
      let helper (vgen, tmps, res) m =
        let (vgen, tmp) = mk_tmp vgen in
@@ -730,7 +724,7 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
                                                     | Ighost (_, e) -> let vids = vids_ebexp (eqn_bexp e) in
                                                                        (vids, vids)
                                                   | _ -> (lvids_instr i, vids_instr i) in
-						(*						  
+						(*
 						(vgen', List.fold_left (fun p -> (p, (i, vids_to_check, vids_to_add))::ret) res_aps_rev ps) in
 						*)
                                                 let aps = List.rev_map (fun p -> (p, (i, vids_to_check, vids_to_add))) (List.rev ps) in
@@ -812,6 +806,58 @@ let polys_of_espec_two_phase ?(sliced=false) vgen s =
 
 (* Prepare output to computer algebra systems *)
 
+let bprint_ebinop_algebra_symbol buf op =
+  match op with
+  | Epow -> Buffer.add_char buf '^'
+  | _ -> bprint_ebinop buf op
+
+let rec bprint_eexp_singular buf e =
+  match e with
+  | Evar v -> Buffer.add_string buf v.cached_name
+  | Econst n ->
+    Buffer.add_string buf "bigint(";
+    bprint_z buf n;
+    Buffer.add_char buf ')'
+  | Eunop (op, e) ->
+    bprint_eunop buf op;
+    if is_eexp_atom e then
+      bprint_eexp_singular buf e
+    else (
+      Buffer.add_string buf " (";
+      bprint_eexp_singular buf e;
+      Buffer.add_char buf ')'
+    )
+  | Ebinop (Epow, e, Econst z) ->
+    (if eexp_ebinop_open e Epow then
+       bprint_eexp_singular buf e
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_singular buf e;
+       Buffer.add_char buf ')';
+     )
+    );
+    bprint_ebinop_algebra_symbol buf Epow;
+    bprint_z buf z
+  | Ebinop (op, e1, e2) ->
+    (if eexp_ebinop_open e1 op then
+       bprint_eexp_singular buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_singular buf e1;
+       Buffer.add_char buf ')'
+     ));
+    Buffer.add_char buf ' ';
+    bprint_ebinop_algebra_symbol buf op;
+    Buffer.add_char buf ' ';
+    (if ebinop_eexp_open op e2 then
+       bprint_eexp_singular buf e2
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_singular buf e2;
+       Buffer.add_char buf ')'
+     ))
+
+
 let algebra_symbol_of_ebinop op =
   match op with
   | Epow -> "^"
@@ -819,7 +865,7 @@ let algebra_symbol_of_ebinop op =
 
 let rec singular_of_eexp e =
   match e with
-  | Evar v -> string_of_var v
+  | Evar v -> v.cached_name
   | Econst n -> "bigint(" ^ (Z.to_string n) ^ ")"
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then singular_of_eexp e else " (" ^ singular_of_eexp e ^ ")")
@@ -833,7 +879,7 @@ let rec singular_of_eexp e =
 
 let rec sage_of_eexp e =
   match e with
-  | Evar v -> string_of_var v
+  | Evar v -> v.cached_name
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then sage_of_eexp e else " (" ^ sage_of_eexp e ^ ")")
@@ -844,7 +890,7 @@ let rec sage_of_eexp e =
 
 let rec magma_of_eexp e =
   match e with
-  | Evar v -> string_of_var v
+  | Evar v -> v.cached_name
   | Econst n -> string_of_const n
   | Eunop (op, e) ->
      symbol_of_eunop op ^ (if is_eexp_atom e then magma_of_eexp e else " (" ^ magma_of_eexp e ^ ")")
@@ -857,7 +903,7 @@ let maple_of_eexp e = magma_of_eexp e
 
 (* Underscore is not allowed in variable names in Mathematica. *)
 let mathematica_of_var v =
-  "v[\"" ^ string_of_var v ^ "\"]"
+  "v[\"" ^ v.cached_name ^ "\"]"
 let rec mathematica_of_eexp e =
   match e with
   | Evar v -> mathematica_of_var v
@@ -879,7 +925,7 @@ let rec mathematica_of_eexp e =
 let macaulay2_of_var v =
   String.map (fun c -> if c = '_'
                        then '\''
-                       else c) (string_of_var v)
+                       else c) v.cached_name
 let rec macaulay2_of_eexp e =
   match e with
   | Evar v -> macaulay2_of_var v
@@ -908,11 +954,53 @@ let get_mon_ord order solver =
      raise (Failure msg)
   | Some ord -> ord
 
+let bprint_singular_input ?comments buf vars gen p =
+  let bprint_varseq () =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let bprint_generator () =
+    if List.length gen = 0
+    then Buffer.add_char buf '0'
+    else (bprint_list buf ",\n  " bprint_eexp_singular gen) in
+  let bprint_poly () = bprint_eexp_singular buf p in
+  let bprint_comment () =
+    if !debug then
+      match comments with
+      | None -> ()
+      | Some comments ->
+        bprint_list buf "\n" (
+          fun buf c ->
+            Buffer.add_string buf "// ";
+            Buffer.add_string buf c
+        ) comments
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Singular in
+  bprint_comment(); Buffer.add_char buf '\n';
+  Buffer.add_string buf "proc is_generator(poly p, ideal I) {"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  int idx;"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  for (idx=1; idx<=size(I); idx++) {"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "    if (p == I[idx]) { return (0==0); }"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  }"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  return (0==1);"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "}"; Buffer.add_char buf '\n';
+  Buffer.add_string buf ""; Buffer.add_char buf '\n';
+  Buffer.add_string buf "ring r = integer, ("; bprint_varseq(); Buffer.add_string buf "), "; Buffer.add_string buf mon_ord; Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+  Buffer.add_string buf "ideal gs = "; bprint_generator(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+  Buffer.add_string buf "poly p = "; bprint_poly(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+  Buffer.add_string buf "if (is_generator(p, gs) || reduce(p, gs) == 0) {"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  0;"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "} else {"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  ideal I = groebner(gs);"; Buffer.add_char buf '\n';
+  Buffer.add_string buf "  reduce(p, I);"; Buffer.add_char buf '\n';
+  Buffer.add_char buf '}'; Buffer.add_char buf '\n';
+  Buffer.add_string buf "exit;"; Buffer.add_char buf '\n'
+
 let generate_singular_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
-    | _ -> String.concat "," (tmap string_of_var vars) in
+    | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
   let generator =
     if List.length gen = 0
     then "0"
@@ -949,7 +1037,7 @@ let generate_sage_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
-    | _ -> String.concat "," (tmap string_of_var vars) in
+    | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
   let generator =
     if List.length gen = 0
     then "0"
@@ -976,7 +1064,7 @@ let generate_magma_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
-    | _ -> String.concat "," (tmap string_of_var vars) in
+    | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
   let varlen = max 1 (List.length vars) in
   let generator =
     if List.length gen = 0
@@ -1046,6 +1134,7 @@ let generate_macaulay2_input ?comments vars gen p =
         ~newvid:true
         "cryptoline'dummy'variable"
         (Tuint 0) (* The variable type does not matter *) in
+    let _ = cache_var_name dummy_var in
     let no_var_in_generator =
       VS.is_empty
         (List.fold_left
@@ -1054,7 +1143,7 @@ let generate_macaulay2_input ?comments vars gen p =
       (dummy_var::vars,
        List.map (fun e -> emul (evar dummy_var) e) gen,
        emul (evar dummy_var) p,
-       string_of_var dummy_var ^ "*0")
+       dummy_var.cached_name ^ "*0")
     else
       (vars, gen, p, "0") in
   let varseq =
@@ -1097,7 +1186,7 @@ let generate_maple_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
-    | _ -> String.concat "," (tmap string_of_var vars) in
+    | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
   let poly = magma_of_eexp p in
   let comment =
     if !debug

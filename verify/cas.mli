@@ -95,6 +95,15 @@ val polys_of_espec_two_phase :
  *)
 
 
+val bprint_eexp_singular : Buffer.t -> Ast.Cryptoline.eexp -> unit
+(** Print an algebraic expression in Singular format to a buffer. *)
+
+val bprint_singular_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Singular for ideal membership query. *)
+
+
 val algebra_symbol_of_ebinop : Ast.Cryptoline.ebinop -> string
 (** return the symbol for a binary operator *)
 

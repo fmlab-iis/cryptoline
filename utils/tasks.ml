@@ -100,8 +100,8 @@ let exec ?timeout ?env ?cwd ?stdin ?stdout ?stderr cmd =
   in
   let%lwt _ =
     match st with
-    | WSIGNALED n -> if n = Sys.sigkill then raise TimeoutException
-                     else Lwt.return_unit
+    | WSIGNALED n when n = Sys.sigkill ->
+      raise TimeoutException
     | _ -> Lwt.return_unit
   in
   Lwt.return st

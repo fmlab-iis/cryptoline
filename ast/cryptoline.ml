@@ -155,11 +155,13 @@ let is_representable ty v =
 
 type var =
   {
-    vname : string;     (** name of the variable *)
-    vtyp  : typ;        (** type of the variable *)
-    vsidx : int;        (** SSA index of the variable *)
-    mutable vid : int;  (** variable ID *)
-    vhash : int;        (** hash value of vname *)
+    vname                     : string; (** name of the variable *)
+    vtyp                      : typ;    (** type of the variable *)
+    vsidx                     : int;    (** SSA index of the variable *)
+    mutable vid               : int;    (** variable ID *)
+    vhash                     : int;    (** hash value of vname *)
+    mutable cached_name       : string; (** cached name *)
+    mutable cached_typed_name : string; (** cached name with type *)
   }
 
 let uninitialized_vid = -1
@@ -198,7 +200,13 @@ let mem_var v vs = List.exists (fun u -> eq_var u v) vs
 let mkvar ?(newvid=false) vn vt =
   let i = if newvid then incr_global_next_vid ()
           else uninitialized_vid in
-  { vname = vn; vtyp = vt; vsidx = default_non_ssa_idx; vid = i; vhash = Hashtbl.hash vn }
+  { vname = vn;
+    vtyp = vt;
+    vsidx = default_non_ssa_idx;
+    vid = i;
+    vhash = Hashtbl.hash vn;
+    cached_name = "";
+    cached_typed_name = "" }
 
 let var_is_bit v = v.vtyp = bit_t
 let var_is_unsigned v = typ_is_unsigned v.vtyp
@@ -1315,10 +1323,605 @@ let rspec_of_spec s =
     rspost = snd s.spost }
 
 
+
+(** Buffered string outputs *)
+
+let rec bprint_list buf sep print_fn xs =
+  match xs with
+  | [] -> ()
+  | [x] -> print_fn buf x
+  | y :: ys ->
+    (print_fn buf y;
+     Buffer.add_string buf sep;
+     bprint_list buf sep print_fn ys)
+
+let bprint_int buf i =
+  Buffer.add_string buf (string_of_int i)
+
+let bprint_z buf z =
+  Z.bprint buf z
+
+(* Output the string representation of a constant. Negative numbers are
+   enclosed in parentheses. *)
+let bprint_const buf n =
+  if Z.lt n Z.zero then (
+    Buffer.add_char buf '(';
+    bprint_z buf n;
+    Buffer.add_char buf ')'
+  ) else
+    bprint_z buf n
+
+let bprint_typ buf ty =
+  match ty with
+  | Tuint w -> (
+      Buffer.add_string buf "uint";
+      bprint_int buf w
+    )
+  | Tsint w -> (
+      Buffer.add_string buf "int";
+      bprint_int buf w
+    )
+
+(* The string representation of a variable with SSA index taken into
+   consideration If the labeled argument [typ] is true, the variable
+   type is also printed. *)
+let bprint_var ?typ:(typ=false) buf v =
+  if v.cached_name <> "" then
+    if typ then Buffer.add_string buf v.cached_typed_name
+    else Buffer.add_string buf v.cached_name
+  else (
+    (if invalid_sidx v.vsidx then
+       Buffer.add_string buf v.vname
+     else (
+       Buffer.add_string buf v.vname;
+       Buffer.add_char buf '_';
+       bprint_int buf v.vsidx
+     )
+    );
+    if typ then (
+      Buffer.add_string buf typ_delim;
+      bprint_typ buf v.vtyp
+    )
+  )
+
+let bprint_vs ?typ:(typ=false) buf vs =
+  VS.iter (bprint_var ~typ buf) vs
+
+let bprint_eunop buf op =
+  match op with
+  | Eneg -> Buffer.add_char buf '-'
+
+let bprint_ebinop buf op =
+  match op with
+  | Eadd -> Buffer.add_char buf '+'
+  | Esub -> Buffer.add_char buf '-'
+  | Emul -> Buffer.add_char buf '*'
+  | Epow -> Buffer.add_string buf "**"
+
+let bprint_rcmpop buf op =
+  match op with
+  | Rult -> Buffer.add_string buf ult_symbol
+  | Rule -> Buffer.add_string buf ule_symbol
+  | Rugt -> Buffer.add_string buf ugt_symbol
+  | Ruge -> Buffer.add_string buf uge_symbol
+  | Rslt -> Buffer.add_string buf slt_symbol
+  | Rsle -> Buffer.add_string buf sle_symbol
+  | Rsgt -> Buffer.add_string buf sgt_symbol
+  | Rsge -> Buffer.add_string buf sge_symbol
+
+let bprint_runop buf op =
+  match op with
+  | Rnegb -> Buffer.add_string buf "neg"
+  | Rnotb -> Buffer.add_string buf "not"
+
+let bprint_rbinop buf op =
+  match op with
+  | Radd -> Buffer.add_string buf "add"
+  | Rsub -> Buffer.add_string buf "sub"
+  | Rmul -> Buffer.add_string buf "mul"
+  | Rudiv -> Buffer.add_string buf "udiv"
+  | Rumod -> Buffer.add_string buf "umod"
+  | Rsdiv -> Buffer.add_string buf "sdiv"
+  | Rsrem -> Buffer.add_string buf "srem"
+  | Rsmod -> Buffer.add_string buf "smod"
+  | Randb -> Buffer.add_string buf "and"
+  | Rorb -> Buffer.add_string buf "or"
+  | Rxorb -> Buffer.add_string buf "xor"
+  | Rshl -> Buffer.add_string buf "shl"
+  | Rlshr -> Buffer.add_string buf "lshr"
+  | Rashr -> Buffer.add_string buf "ashr"
+  | Rrol -> Buffer.add_string buf "rol"
+  | Rror -> Buffer.add_string buf "ror"
+
+let rec bprint_eexp ?typ:(typ=false) buf e =
+  match e with
+  | Evar v -> bprint_var ~typ buf v
+  | Econst n -> bprint_const buf n
+  | Eunop (op, e) ->
+    bprint_eunop buf op;
+    if is_eexp_atom e then
+      bprint_eexp ~typ buf e
+    else (
+      Buffer.add_string buf " (";
+      bprint_eexp ~typ buf e;
+      Buffer.add_char buf ')'
+    )
+  | Ebinop (op, e1, e2) ->
+    (if eexp_ebinop_open e1 op then
+       bprint_eexp ~typ buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp ~typ buf e1;
+       Buffer.add_char buf  ')'
+     )
+    );
+    Buffer.add_char buf ' ';
+    bprint_ebinop buf op;
+    Buffer.add_char buf ' ';
+    if ebinop_eexp_open op e2 then
+      bprint_eexp ~typ buf e2
+    else (
+      Buffer.add_char buf '(';
+      bprint_eexp ~typ buf e2;
+      Buffer.add_char buf ')'
+    )
+
+let rec bprint_rexp ?typ:(typ=false) buf e =
+  let se e =
+    if is_rexp_atom e then
+      bprint_rexp ~typ buf e
+    else (
+      Buffer.add_char buf '(';
+      bprint_rexp ~typ buf e;
+      Buffer.add_char buf  ')'
+    ) in
+  match e with
+  | Rvar v -> bprint_var ~typ buf v
+  | Rconst (w, n) -> (
+      bprint_const buf n;
+      Buffer.add_char buf '@';
+      bprint_int buf w
+    )
+  | Runop (_, op, e) -> (
+      bprint_runop buf op;
+      Buffer.add_char buf ' ';
+      se e
+    )
+  | Rbinop (_, op, e1, e2) -> (
+      bprint_rbinop buf op;
+      Buffer.add_char buf ' ';
+      se e1;
+      Buffer.add_char buf ' ';
+      se e2
+    )
+  | Ruext (_, e, i) -> (
+      Buffer.add_string buf "uext ";
+      se e;
+      Buffer.add_char buf ' ';
+      bprint_int buf i
+    )
+  | Rsext (_, e, i) -> (
+      Buffer.add_string buf "sext ";
+      se e;
+      Buffer.add_char buf ' ';
+      bprint_int buf i
+    )
+  | Rconcat (_, _, e1, e2) -> (
+      Buffer.add_string buf "concat ";
+      se e1;
+      Buffer.add_char buf ' ';
+      se e2
+    )
+
+let rec bprint_ebexp ?typ:(typ=false) buf e =
+  match e with
+  | Etrue -> Buffer.add_string buf "true"
+  | Eeq (e1, e2) ->
+    (bprint_eexp ~typ buf e1;
+     Buffer.add_string buf " = ";
+     bprint_eexp ~typ buf e2)
+  | Eeqmod (e1, e2, ms) ->
+    (bprint_eexp ~typ buf e1;
+     Buffer.add_string buf " = ";
+     bprint_eexp ~typ buf e2);
+    (match ms with
+     | [] -> ()
+     | [m] -> (
+         Buffer.add_string buf " (mod ";
+         bprint_eexp ~typ buf m;
+         Buffer.add_char buf ')'
+       )
+     | _ -> (
+         Buffer.add_string buf " (mod [";
+         (bprint_list buf ", " (bprint_eexp ~typ) ms);
+         Buffer.add_string buf "])"
+       )
+    )
+  | Ecmp (op, e1, e2) ->
+     let string_of_op op =
+       match op with
+       | Elt -> " < " | Ele -> " <= " | Egt -> " > " | Ege -> " >= " in
+     (bprint_eexp ~typ buf e1;
+      Buffer.add_string buf (string_of_op op);
+      bprint_eexp ~typ buf e2)
+  | Eand (e1, e2) ->
+     let es = split_eand e in
+     match es with
+     | _::_::[] -> (
+         bprint_ebexp ~typ buf e1;
+         Buffer.add_string buf " /\\ ";
+         bprint_ebexp ~typ buf e2
+       )
+     | _ -> (
+         Buffer.add_string buf "and [";
+         bprint_list buf ", " (bprint_ebexp ~typ) es;
+         Buffer.add_char buf ']'
+       )
+
+let rec bprint_rbexp ?typ:(typ=false) buf e =
+  match e with
+  | Rtrue ->
+    Buffer.add_string buf "true"
+  | Req (_w, e1, e2) -> (
+      bprint_rexp ~typ buf e1;
+      Buffer.add_string buf " = ";
+      bprint_rexp ~typ buf e2
+    )
+  | Rcmp (_w, op, e1, e2) -> (
+      bprint_rexp ~typ buf e1;
+      Buffer.add_char buf ' ';
+      bprint_rcmpop buf op;
+      Buffer.add_char buf ' ';
+      bprint_rexp ~typ buf e2
+    )
+  | Rneg e -> (
+      Buffer.add_string buf "~ (";
+      bprint_rbexp ~typ buf e;
+      Buffer.add_char buf ')'
+    )
+  | Rand (e1, e2) ->
+    let es = split_rand e in
+    (match es with
+     | _::_::[] -> (
+         (if rbexp_is_ror e1 then (
+             Buffer.add_char buf '(';
+             bprint_rbexp ~typ buf e1;
+             Buffer.add_char buf ')'
+           ) else (
+            bprint_rbexp ~typ buf e1
+          )
+         );
+         Buffer.add_string buf " /\\ ";
+         (if rbexp_is_ror e2 then (
+             Buffer.add_char buf '(';
+             bprint_rbexp ~typ buf e2;
+             Buffer.add_char buf ')'
+           ) else
+            bprint_rbexp ~typ buf e2
+         )
+       )
+     | _ -> (
+         Buffer.add_string buf "and [";
+         bprint_list buf ", " (bprint_rbexp ~typ) es;
+         Buffer.add_char buf  ']'
+       )
+    )
+  | Ror (e1, e2) ->
+    let es = split_ror e in
+    match es with
+    | _::_::[] -> (
+        bprint_rbexp ~typ buf e1;
+        Buffer.add_string buf " \\/ ";
+        bprint_rbexp ~typ buf e2
+      )
+    | _ -> (
+        Buffer.add_string buf "or [";
+        bprint_list buf ", " (bprint_rbexp ~typ) es;
+        Buffer.add_char buf ']'
+      )
+
+let bprint_bexp ?typ:(typ=false) buf (e, r) =
+  bprint_ebexp ~typ buf e;
+  Buffer.add_char buf ' ';
+  Buffer.add_string buf bexp_separator;
+  Buffer.add_char buf ' ';
+  bprint_rbexp ~typ buf r
+
+let bprint_prove_with_spec buf ps =
+  match ps with
+    Precondition -> Buffer.add_string buf "precondition"
+  | Cuts idxs -> (
+      Buffer.add_string buf "cuts [";
+      bprint_list buf ", " bprint_int idxs;
+      Buffer.add_char buf ']'
+    )
+  | AllCuts ->
+    Buffer.add_string buf "all cuts"
+  | AllAssumes ->
+    Buffer.add_string buf "all assumes"
+  | AllGhosts ->
+    Buffer.add_string buf "all ghosts"
+  | AlgebraSolver s -> (
+      Buffer.add_string buf "algebra solver ";
+      Buffer.add_string buf (Options.Std.string_of_algebra_solver s)
+    )
+  | RangeSolver s -> (
+      Buffer.add_string buf "qfbv solver ";
+      Buffer.add_string buf s
+    )
+
+let bprint_prove_with_specs buf pss =
+  bprint_list buf ", " bprint_prove_with_spec pss
+
+let bprint_epwss ?typ:(typ=false) buf (e, pwss) =
+  bprint_ebexp ~typ buf e;
+  if pwss <> [] then (
+    Buffer.add_string buf " prove with [";
+    bprint_prove_with_specs buf pwss;
+    Buffer.add_char buf ']'
+  )
+
+let bprint_rpwss ?typ:(typ=false) buf (r, pwss) =
+  bprint_rbexp ~typ buf r;
+  if pwss <> [] then (
+    Buffer.add_string buf " prove with [";
+    bprint_prove_with_specs buf pwss;
+    Buffer.add_char buf ']'
+  )
+
+let bprint_ebexp_prove_with ?typ:(typ=false) buf es =
+  match es with
+  | [] ->
+    Buffer.add_string buf "true"
+  | _ ->
+    bprint_list buf ", " (bprint_epwss ~typ) es
+
+let bprint_rbexp_prove_with ?typ:(typ=false) buf rs =
+  match rs with
+  | [] ->
+    Buffer.add_string buf "true"
+  | _ ->
+    bprint_list buf ", " (bprint_rpwss ~typ) rs
+
+let bprint_bexp_prove_with ?typ:(typ=false) buf (es, rs) =
+  bprint_ebexp_prove_with ~typ buf es;
+  Buffer.add_char buf ' ';
+  Buffer.add_string buf bexp_separator;
+  Buffer.add_char buf ' ';
+  bprint_rbexp_prove_with ~typ buf rs
+
+let bprint_atom ?typ:(typ=false) buf a =
+  match a with
+  | Avar v ->
+    bprint_var ~typ buf v
+  | Aconst (ty, n) -> (
+      bprint_const buf n;
+      Buffer.add_string buf typ_delim;
+      bprint_typ buf ty
+    )
+
+let bprint_instr_no_semicolon ?typ:(typ=false) buf i =
+  match i with
+  | Imov (v, a) -> (
+      Buffer.add_string buf "mov "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a
+    )
+  | Ishl (v, a1, a2) -> (
+      Buffer.add_string buf "shl "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Ishls (l, v, a, n) -> (
+      Buffer.add_string buf "shls "; bprint_var ~typ buf l; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Ishr (v, a1, a2) -> (
+      Buffer.add_string buf "shr "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Ishrs (v, l, a, n) -> (
+      Buffer.add_string buf "shrs "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_var ~typ buf l; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Isar (v, a1, a2) -> (
+      Buffer.add_string buf "sar "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isars (v, l, a, n) -> (
+      Buffer.add_string buf "sars "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_var ~typ buf l; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Icshl (vh, vl, a1, a2, n) -> (
+      Buffer.add_string buf "cshl "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Icshls (l, vh, vl, a1, a2, n) -> (
+      Buffer.add_string buf "cshls "; bprint_var ~typ buf l; Buffer.add_char buf ' '; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Icshr (vh, vl, a1, a2, n) -> (
+      Buffer.add_string buf "cshr "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Icshrs (vh, vl, l, a1, a2, n) -> (
+      Buffer.add_string buf "cshrs "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' '; bprint_var ~typ buf l; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Irol (v, a, n) -> (
+      Buffer.add_string buf "rol "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_atom ~typ buf n
+    )
+  | Iror (v, a, n) -> (
+      Buffer.add_string buf "ror "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_atom ~typ buf n
+    )
+  | Inondet v -> (
+      Buffer.add_string buf "nondet "; bprint_var ~typ:true buf v
+    )
+  | Icmov (v, c, a1, a2) -> (
+      Buffer.add_string buf "cmov "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf c; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Inop -> Buffer.add_string buf "nop"
+  | Iadd (v, a1, a2) -> (
+      Buffer.add_string buf "add "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Iadds (c, v, a1, a2) -> (
+      Buffer.add_string buf "adds "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Iadc (v, a1, a2, y) -> (
+      Buffer.add_string buf "adc "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Iadcs (c, v, a1, a2, y) -> (
+      Buffer.add_string buf "adcs "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Isub (v, a1, a2) -> (
+      Buffer.add_string buf "sub "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isubc (c, v, a1, a2) -> (
+      Buffer.add_string buf "subc "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isubb (c, v, a1, a2) -> (
+      Buffer.add_string buf "subb "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isbc (v, a1, a2, y) -> (
+      Buffer.add_string buf "sbc "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Isbcs (c, v, a1, a2, y) -> (
+      Buffer.add_string buf "sbcs "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Isbb (v, a1, a2, y) -> (
+      Buffer.add_string buf "sbb "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Isbbs (c, v, a1, a2, y) -> (
+      Buffer.add_string buf "sbbs "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' ';
+      bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2; Buffer.add_char buf ' '; bprint_atom ~typ buf y
+    )
+  | Imul (v, a1, a2) -> (
+      Buffer.add_string buf "mul "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Imuls (c, v, a1, a2) -> (
+      Buffer.add_string buf "muls "; bprint_var ~typ buf c; Buffer.add_char buf ' '; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Imull (vh, vl, a1, a2) -> (
+      Buffer.add_string buf "mull "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Imulj (v, a1, a2) -> (
+      Buffer.add_string buf "mulj "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isplit (vh, vl, a, n) -> (
+      Buffer.add_string buf "split "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  | Ispl (vh, vl, a, n) -> (
+      Buffer.add_string buf "spl "; bprint_var ~typ buf vh; Buffer.add_char buf ' '; bprint_var ~typ buf vl; Buffer.add_char buf ' '; bprint_atom ~typ buf a; Buffer.add_char buf ' '; bprint_z buf n
+    )
+  (* Comparison *)
+  | Iseteq (v, a1, a2) -> (
+      Buffer.add_string buf "seteq "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Isetne (v, a1, a2) -> (
+      Buffer.add_string buf "setne "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  (* Instructions that cannot be translated to polynomials *)
+  | Iand (v, a1, a2) -> (
+      Buffer.add_string buf "and "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Ior (v, a1, a2) -> (
+      Buffer.add_string buf "or "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Ixor (v, a1, a2) -> (
+      Buffer.add_string buf "xor "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a1; Buffer.add_char buf ' '; bprint_atom ~typ buf a2
+    )
+  | Inot (v, a) -> (
+      Buffer.add_string buf "not "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a
+    )
+  (* Type conversions *)
+  | Icast (od, v, a) ->
+    (match od with
+     | None -> (
+         Buffer.add_string buf "cast "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a
+       )
+     | Some d -> (
+         Buffer.add_string buf "cast [ "; bprint_var ~typ:true buf d; Buffer.add_string buf " ] "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a
+       )
+    )
+  | Ivpc (v, a) -> (
+      Buffer.add_string buf "vpc "; bprint_var ~typ:true buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf a
+    )
+  | Ijoin (v, ah, al) -> (
+      Buffer.add_string buf "join "; bprint_var ~typ buf v; Buffer.add_char buf ' '; bprint_atom ~typ buf ah; Buffer.add_char buf ' '; bprint_atom ~typ buf al
+    )
+  (* Specifications *)
+  | Iassert (es, rs) ->
+     (match es, rs with
+      | [], [] -> Buffer.add_string buf "nop"
+      | [], _ -> (
+          Buffer.add_string buf "rassert "; bprint_rbexp_prove_with ~typ buf rs
+        )
+      | _, [] -> (
+          Buffer.add_string buf "eassert "; bprint_ebexp_prove_with ~typ buf es
+        )
+      | _, _ -> (
+          Buffer.add_string buf "assert "; bprint_bexp_prove_with ~typ buf (es, rs)
+        )
+     )
+  | Iassume e -> (
+      Buffer.add_string buf "assume "; bprint_bexp ~typ buf e
+    )
+  | Icut (ecuts, rcuts) ->
+     (match ecuts, rcuts with
+      | [], [] -> Buffer.add_string buf "nop"
+      | [], _ -> (
+          Buffer.add_string buf "rcut "; bprint_rbexp_prove_with ~typ buf rcuts
+        )
+      | _, [] -> (
+          Buffer.add_string buf "ecut "; bprint_ebexp_prove_with ~typ buf ecuts
+        )
+      | _, _ -> (
+          Buffer.add_string buf "cut "; bprint_bexp_prove_with ~typ buf (ecuts, rcuts)
+        )
+     )
+  | Ighost (vs, e) -> (
+      Buffer.add_string buf "ghost "; bprint_list buf ", " (bprint_var ~typ:true) (VS.elements vs)
+    ); Buffer.add_string buf ": "; bprint_bexp ~typ buf e
+
+let bprint_instr ?semicolon:(semicolon=true) ?typ:(typ=false) buf i =
+  bprint_instr_no_semicolon ~typ buf i;
+  if semicolon then Buffer.add_char buf ';'
+
+let bprint_program ?insert_nop:(insert=true) ?typ:(typ=false) buf p =
+  let p =
+    if insert && p = [] then [Inop]
+    else p in
+  bprint_list buf "\n" (bprint_instr ~semicolon:true ~typ) p
+
+let bprint_spec ?typ:(typ=false) buf s =
+  Buffer.add_string buf "{ ";
+  bprint_bexp ~typ buf s.spre;
+  Buffer.add_string buf " }\n";
+  bprint_program ~insert_nop:true ~typ buf s.sprog;
+  Buffer.add_string buf "\n{ ";
+  bprint_bexp_prove_with ~typ buf s.spost;
+  Buffer.add_string buf " }"
+
+let bprint_espec ?typ:(typ=false) buf s =
+  Buffer.add_string buf "{ ";
+  bprint_ebexp ~typ buf s.espre;
+  Buffer.add_string buf " }\n";
+  bprint_program ~insert_nop:true ~typ buf s.esprog;
+  Buffer.add_string buf "\n{ ";
+  bprint_ebexp_prove_with ~typ buf s.espost;
+  Buffer.add_string buf " }"
+
+let bprint_rspec ?typ:(typ=false) buf s =
+  Buffer.add_string buf "{ ";
+  bprint_rbexp ~typ buf s.rspre;
+  Buffer.add_string buf " }\n";
+  bprint_program ~insert_nop:true ~typ buf s.rsprog;
+  Buffer.add_string buf "\n{ ";
+  bprint_rbexp_prove_with ~typ buf s.rspost;
+  Buffer.add_string buf " }"
+
+
+
 (** String Outputs *)
 
 (* Output the string representation of a constant. Negative numbers are enclosed in parentheses. *)
-let string_of_const n = if Z.lt n Z.zero then "(" ^ Z.to_string n ^ ")" else Z.to_string n
+let string_of_const n =
+  if Z.lt n Z.zero then
+    "(" ^ Z.to_string n ^ ")"
+  else
+    Z.to_string n
 
 let string_of_typ ty =
   match ty with
@@ -1336,8 +1939,18 @@ let string_of_var ?typ:(typ=false) v =
   if typ then str ^ typ_delim ^ string_of_typ v.vtyp
   else str
 
+let cache_var_name v =
+  let base =
+    if invalid_sidx v.vsidx then v.vname
+    else v.vname ^ "_" ^ string_of_int v.vsidx in
+  let typed = base ^ typ_delim ^ string_of_typ v.vtyp in
+  let _ = v.cached_name <- base in
+  let _ = v.cached_typed_name <- typed in
+  (base, typed)
+
 let string_of_vs ?typ:(typ=false) vs =
   String.concat ", " (tmap (fun v -> string_of_var ~typ:typ v) (VS.elements vs))
+
 
 let string_of_eunop op =
   match op with
@@ -2662,7 +3275,13 @@ let upd_sidx v m =
 let mksvar ?(newvid=false) vn vt vi =
   let i = if newvid then incr_global_next_vid ()
           else uninitialized_vid in
-  { vname = vn; vtyp = vt; vsidx = vi; vid = i; vhash = Hashtbl.hash vn }
+  { vname = vn;
+    vtyp = vt;
+    vsidx = vi;
+    vid = i;
+    vhash = Hashtbl.hash vn;
+    cached_name = "";
+    cached_typed_name = "" }
 
 let ssa_var m v = mksvar v.vname v.vtyp (get_sidx v m)
 
@@ -5873,10 +6492,13 @@ let spec_to_bvcryptoline s =
 (** Normalization *)
 
 let update_variable_id_var m v =
-  let (m', i) = try (m, VM.find v m)
-                with Not_found -> let i = incr_global_next_vid () in
-                                  let m' = VM.add v i m in
-                                  (m', i) in
+  let _ = cache_var_name v in
+  let (m', i) =
+    try (m, VM.find v m)
+    with Not_found ->
+      let i = incr_global_next_vid () in
+      let m' = VM.add v i m in
+      (m', i) in
   let _ = v.vid <- i in
   m'
 

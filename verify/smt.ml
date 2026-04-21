@@ -819,7 +819,7 @@ let rec smtlib_eexp ?(expn=true) e =
     if Z.lt c Z.zero then "(- " ^ Z.to_string (Z.abs c) ^ ")"
     else Z.to_string c in
   match e with
-  | Evar v -> string_of_var v
+  | Evar v -> v.cached_name
   | Econst c -> string_of_z c
   | Eunop (op, e) -> String.concat "" ["("; smtlib_eunop op; " "; smtlib_eexp ~expn:expn e; ")"]
   | Ebinop (op, e1, e2) ->
@@ -901,7 +901,12 @@ let rec translate_eeqmod vgen e =
   | Eeqmod (e1, e2, ms) ->
      let (vgen, ks_rev) = List.fold_left (fun (vgen, ks_rev) _ ->
          let (k, vgen) = Cas.gen_var vgen in (vgen, k::ks_rev)) (vgen, []) ms in
-     let ks = List.rev_map (fun k -> evar (mkvar ~newvid:true k bit_t)) ks_rev in
+     let ks = List.rev_map (
+         fun k ->
+           let v = mkvar ~newvid:true k bit_t in
+           let _ = cache_var_name v in
+           evar v
+       ) ks_rev in
      (vgen, eeq (esub e1 e2) (eadds (List.map2 (fun k m -> emul k m) ks ms)))
   | Eand (e1, e2) ->
      let (vgen, e1) = translate_eeqmod vgen e1 in
@@ -937,7 +942,7 @@ let smtlib_ebexps_lia ?(expn=true) vgen es =
   (vgen,
    String.concat "\n" [
        "(set-logic LIA)";
-       String.concat "\n" (List.map smtlib_declare_int (List.map string_of_var vars));
+       String.concat "\n" (List.map smtlib_declare_int (List.map (fun v -> v.cached_name) vars));
        String.concat "\n" (List.map smtlib_assert smtlibs);
        "(check-sat)"
   ])
@@ -970,7 +975,7 @@ let smtlib_espec ?(expn=true) vgen es =
    String.concat "\n" [
        "(set-logic NIA)";
        smtlib_define_expn();
-       String.concat "\n" (List.map smtlib_declare_int (List.map string_of_var vars));
+       String.concat "\n" (List.map smtlib_declare_int (List.map (fun v -> v.cached_name) vars));
        String.concat "\n" (List.map smtlib_assert var_ranges);
        smtlib_assert f;
        String.concat "\n" (List.map smtlib_assert p);

@@ -66,9 +66,10 @@ let write_header_to_log header =
 
 let write_singular_input ?comments ifile vars gen p =
   let input_text = Cas.generate_singular_input ?comments vars gen p in
-  let%lwt ifd = Lwt_unix.openfile ifile
-                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
-                  0o600 in
+  let%lwt ifd =
+    Lwt_unix.openfile ifile
+      [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+      0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
   let%lwt _ = Lwt_io.write ch input_text in
   let%lwt _ = Lwt_io.close ch in
@@ -126,8 +127,14 @@ let write_maple_input ?comments ifile vars gen p =
 
 let run_singular header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ =
-    Options.WithLwt.unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let cmd_array =
+    let extra_args =
+      String.split_on_char ' ' !Options.Std.algebra_solver_args
+      |> List.filter (fun s -> s <> "")
+    in
+    let cmd_list = [!singular_path; "-q"] @ extra_args @ [ifile] in
+    Array.of_list cmd_list in
+  let%lwt _ = Options.WithLwt.run ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -299,7 +306,11 @@ let write_ppl_input ?comments ifile mipvars constr =
         (0, []) mipvars in
     String.concat delimiter rev_ppl_cmds in
   let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
     let (rev_ivars, rev_cvars) = partition_variables mipvars in
     let (nivars, icvars) = (List.length rev_ivars, List.length rev_cvars) in
     let ordered_mipvars = List.rev_append rev_ivars (List.rev rev_cvars) in
@@ -344,7 +355,11 @@ let write_scip_input ?comments ifile mipvars constr =
       (List.map (fun c -> mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")")
          constr) in
   let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
     comment
     ^ "from pyscipopt import Model\n"
     ^ "mip = Model('SCIP Solver')\n"
@@ -372,7 +387,11 @@ let write_isl_input ?comments ifile mipvars constr =
     String.concat " and '\\\n"
       (tmap (fun eb -> "'" ^ isl_of_ebexp eb) constr) in
   let input_text =
-    let comment = if !debug then Option.value (Option.map (make_line_comments "#") comments) ~default:"" else "" in
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
     comment
     ^ "from islpy import Space, BasicSet, DEFAULT_CONTEXT\n"
     ^ "variables = [" ^ isl_variables mipvars ^ "]\n"
@@ -478,7 +497,11 @@ let is_in_ideal
   let p = if expand then expand_eexp p else p in
   let ifile = tmpfile "inputfgb_" "" in
   let ofile = tmpfile "outputfgb_" "" in
-  let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+  let comments =
+    if !debug then
+      rcons_comments_option comments ("Output file: " ^ ofile)
+    else
+      [] in
   let res =
     match solver with
     | Singular ->
@@ -529,12 +552,20 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
   let gen_files_py () =
     let ifile = tmpfile "inputfmip_" ".py" in
     let ofile = tmpfile "outputfmip_" ".log" in
-    let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+    let comments =
+      if !debug then
+        rcons_comments_option comments ("Output file: " ^ ofile)
+      else
+        [] in
     (ifile, ofile, comments) in
   let gen_files_smt () =
     let ifile = tmpfile "inputfgb_" ".smt2" in
     let ofile = tmpfile "outputfgb_" ".log" in
-    let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
+    let comments =
+      if !debug then
+        rcons_comments_option comments ("Output file: " ^ ofile)
+      else
+        [] in
     (ifile, ofile, comments) in
   match solver with
   | PPL ->
@@ -566,16 +597,18 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
                          [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                          0o600 in
          let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-         let%lwt _ = if !debug then Lwt_io.write ch (make_line_comments ";" comments) else Lwt.return_unit in
+         let%lwt _ =
+           if !debug then
+             Lwt_io.write ch (make_line_comments ";" comments)
+           else
+             Lwt.return_unit in
          let%lwt _ = Lwt_io.write ch smtlib in
          let%lwt _ = Lwt_io.close ch in
-         let%lwt _ =
-           let%lwt _ = Options.WithLwt.log_lock () in
-           let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
-           let%lwt _ = Options.WithLwt.trace_file ifile in
-           let%lwt _ = Options.WithLwt.trace "" in
-           let%lwt _ = Options.WithLwt.log_unlock () in
-           Lwt.return_unit in
+         let%lwt _ = Options.WithLwt.log_lock () in
+         let%lwt _ = Options.WithLwt.trace "INPUT TO SMT Solver:" in
+         let%lwt _ = Options.WithLwt.trace_file ifile in
+         let%lwt _ = Options.WithLwt.trace "" in
+         let%lwt _ = Options.WithLwt.log_unlock () in
          Lwt.return_unit in
        let%lwt _ =
          let t1 = Unix.gettimeofday() in
@@ -609,13 +642,18 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
     let fp = safety_assumptions f p q hashopt in
     let%lwt res =
       try%lwt
-            match%lwt solve_simp
-                    ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
-                                                                 "Instruction: " ^ string_of_instr i ])
+        match%lwt solve_simp
+                    ~comments:(
+                      if !debug then
+                        append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
+                                                          "Instruction: " ^ string_of_instr i ]
+                      else
+                        []
+                    )
                     ~timeout:timeout ~header:[] (rcons fp q) with
-            | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
-            | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
-            | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
+        | Sat -> Lwt.return (id, i, q, "[FAILED]", Solved Sat)
+        | Unknown -> Lwt.return (id, i, q, "[FAILED]", Solved Unknown)
+        | Unsat -> Lwt.return (id, i, q, "[OK]", Solved Unsat)
       with TimeoutException ->
         Lwt.return (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
     Lwt.return res in
@@ -725,15 +763,20 @@ let verify_safety_inc_lwt options ?comments s hashopt =
   let make_promise (cid, timeout, header, id, i, q) () =
     let%lwt res =
       try%lwt
-            match%lwt solve_simp
-                    ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
-                                                                 "Cut: #" ^ string_of_int cid;
-                                                                 "Safety condition: #" ^ string_of_int id;
-                                                                 "Instruction: " ^ string_of_instr i ])
+        match%lwt solve_simp
+                    ~comments:(
+                      if !debug then
+                        append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                          "Cut: #" ^ string_of_int cid;
+                                                          "Safety condition: #" ^ string_of_int id;
+                                                          "Instruction: " ^ string_of_instr i ]
+                      else
+                        []
+                    )
                     ~timeout ~header q with
-            | Sat -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
-            | Unknown -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
-            | Unsat -> Lwt.return (cid, timeout, header, id, i, q, "[OK]", false, true)
+        | Sat -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+        | Unknown -> Lwt.return (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+        | Unsat -> Lwt.return (cid, timeout, header, id, i, q, "[OK]", false, true)
       with TimeoutException ->
         Lwt.return (cid, timeout, header, id, i, q, "[TIMEOUT]", true, true) in
     Lwt.return res in
@@ -794,16 +837,21 @@ let verify_safety_inc_lwt options ?comments s hashopt =
 let verify_safety_all_lwt options ?comments s hashopt =
   let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
   let verify_cut cid header ((res, sid), pending) (_, s) =
-    if res then if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
-                then let comments = append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
-                                                                      "Cut: #" ^ string_of_int cid;
-                                                                      "Target: all instructions in this cut" ] in
-                     let promise () = let g = bexp_program_safe s.rsprog in
-                                      let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-                                      let%lwt res = solve_simp ~comments ~header (fp@[g]) in
-                                      Lwt.return (res = Unsat) in
-                     add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
-                else ((res, sid + 1), pending)
+    if res then
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid then
+        let comments =
+          if !debug then
+            append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                              "Cut: #" ^ string_of_int cid;
+                                              "Target: all instructions in this cut" ]
+          else
+            [] in
+        let promise () = let g = bexp_program_safe s.rsprog in
+          let fp = safety_assumptions s.rspre s.rsprog g hashopt in
+          let%lwt res = solve_simp ~comments ~header (fp@[g]) in
+          Lwt.return (res = Unsat) in
+        add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
+      else ((res, sid + 1), pending)
     else ((res, sid), pending) in
   let (res, _) = apply_to_cuts_lwt options.st_verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
   res
@@ -817,18 +865,28 @@ let verify_safety_lwt options ?comments s hashopt =
 let verify_safety_mip_conditions ?comments _timeout indexed_infos vgen _hashopt =
   let headers = [] in
   let mip_verifier ?comments (mipvars, constr) =
-    is_constr_feasible ~comments:(append_comments_option comments []) headers ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
+    is_constr_feasible ~comments:(
+      if !debug then
+        append_comments_option comments []
+      else
+        []
+    ) headers ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let mk_promise (id, info) =
     let%lwt res =
       try%lwt
-            if%lwt mip_verifier
-                 ~comments:(append_comments_option comments [ Printf.sprintf "Safety condition: #%d" id;
-                                                              Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
-                                                              Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
-                                                              Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ])
-                 (*~timeout:timeout*) info.mip_sndcond_constrs
-            then Lwt.return (id, info, "[OK]", Solved Unsat)
-            else Lwt.return (id, info, "[FAILED]", Solved Sat)
+        if%lwt mip_verifier
+            ~comments:(
+              if !debug then
+                append_comments_option comments [ Printf.sprintf "Safety condition: #%d" id;
+                                                  Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                  Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                  Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ]
+              else
+                []
+            )
+            (*~timeout:timeout*) info.mip_sndcond_constrs
+        then Lwt.return (id, info, "[OK]", Solved Unsat)
+        else Lwt.return (id, info, "[FAILED]", Solved Sat)
       with TimeoutException ->
         Lwt.return (id, info, "[TIMEOUT]", Unfinished [(id, info)]) in
     Lwt.return res in
@@ -870,7 +928,12 @@ let verify_safety_mip_conditions ?comments _timeout indexed_infos vgen _hashopt 
 let verify_safety_mip_cross_cuts_lwt options ?comments vgen s _hashopt =
   let assoc_safety_ids base i info = (base + i, info) in
   let mip_verifier ?comments header (mipvars, constr) =
-    is_constr_feasible ~comments:(append_comments_option comments []) header ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
+    is_constr_feasible ~comments:(
+      if !debug then
+        append_comments_option comments []
+      else
+        []
+    ) header ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let continue_helper ((res, _), _) = res in
   let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, info, res_str, timedout, safe) =
     let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
@@ -878,16 +941,21 @@ let verify_safety_mip_cross_cuts_lwt options ?comments vgen s _hashopt =
   let make_promise (cid, timeout, header, id, info) () =
     let%lwt res =
       try%lwt
-            if%lwt mip_verifier
-                    ~comments:(append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
-                                                                 Printf.sprintf "Cut: #%d" cid;
-                                                                 Printf.sprintf "Safety condition: #%d" id;
-                                                                 Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
-                                                                 Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
-                                                                 Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ])
-                    (*~timeout*) header info.mip_sndcond_constrs
-            then Lwt.return (cid, timeout, header, id, info, "[OK]", false, true)
-            else Lwt.return (cid, timeout, header, id, info, "[FAILED]", false, false)
+        if%lwt mip_verifier
+            ~comments:(
+              if !debug then
+                append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                  Printf.sprintf "Cut: #%d" cid;
+                                                  Printf.sprintf "Safety condition: #%d" id;
+                                                  Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                  Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                  Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ]
+              else
+                []
+            )
+            (*~timeout*) header info.mip_sndcond_constrs
+        then Lwt.return (cid, timeout, header, id, info, "[OK]", false, true)
+        else Lwt.return (cid, timeout, header, id, info, "[FAILED]", false, false)
       with TimeoutException ->
         Lwt.return (cid, timeout, header, id, info, "[TIMEOUT]", true, true) in
     Lwt.return res in
@@ -931,11 +999,17 @@ let verify_rspec_single_conjunct ?comments header s hashopt =
     let f = bexp_rbexp s.rspre in
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
-    let%lwt r = solve_simp
-                  ~comments:(rcons_comments_option comments ("Range condition: " ^ string_of_bexp g))
-                  ~solver:solver
-                  ~header:header
-                  (f::(rcons p g)) in
+    let%lwt r =
+      solve_simp
+        ~comments:(
+          if !debug then
+            rcons_comments_option comments ("Range condition: " ^ string_of_bexp g)
+          else
+            []
+        )
+        ~solver:solver
+        ~header:header
+        (f::(rcons p g)) in
     Lwt.return (r = Unsat) in
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res = if is_rspec_trivial s then Lwt.return_true
@@ -1015,18 +1089,30 @@ let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
 let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in
   let%lwt r =
-    if !Options.Std.check_eq_first
-    then is_in_ideal
-           ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
-                                                        "Try: #0 (pure equality)" ])
-           ~solver:solver headers vars [] p
-    else Lwt.return_false in
+    if !Options.Std.check_eq_first then
+      is_in_ideal
+        ~comments:(
+          if !debug then
+            append_comments_option comments [ "Algebraic condition: " ^ poststr;
+                                              "Try: #0 (pure equality)" ]
+          else
+            []
+        )
+        ~solver:solver headers vars [] p
+    else
+      Lwt.return_false in
   if r then Lwt.return_true
-  else let%lwt r = is_in_ideal
-                     ~comments:(append_comments_option comments [ "Algebraic condition: " ^ poststr;
-                                                                  "Try: #1 (modular equality)" ])
-                     ~solver:solver headers vars ideal p in
-       Lwt.return r
+  else let%lwt r =
+         is_in_ideal
+           ~comments:(
+             if !debug then
+               append_comments_option comments [ "Algebraic condition: " ^ poststr;
+                                                 "Try: #1 (modular equality)" ]
+             else
+               []
+           )
+           ~solver:solver headers vars ideal p in
+    Lwt.return r
 
 (* Verify an algebraic specification using a computer algebra system. *)
 let verify_espec_single_conjunct_ideal ?comments headers vgen s =
@@ -1039,8 +1125,12 @@ let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
   let verify_one_smtlib smtlib =
     let ifile = tmpfile "inputfgb_" ".smt2" in
     let ofile = tmpfile "outputfgb_" "" in
-    let comments = append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
-                                                     "Output file: " ^ ofile ] |> make_line_comments ";" in
+    let comments =
+      if !debug then
+        append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                          "Output file: " ^ ofile ] |> make_line_comments ";"
+      else
+        "" in
     let%lwt _ =
       let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
       let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
@@ -1084,7 +1174,12 @@ let verify_espec_single_conjunct_mip ?comments headers vgen s =
     algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   let helper (mipvars, constr) =
     let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
-    is_constr_feasible ~comments:(append_comments_option comments [ "Algebraic condition: " ^ epoststr ]) ~solver:solver headers vgen mipvars constr in
+    is_constr_feasible ~comments:(
+      if !debug then
+        append_comments_option comments [ "Algebraic condition: " ^ epoststr ]
+      else
+        []
+    ) ~solver:solver headers vgen mipvars constr in
   Lwt_list.for_all_p helper mipvars_constrs
 
 (*
@@ -1139,9 +1234,15 @@ let verify_eassert options vgen s hashopt =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers (sid, s) =
-    let tasks = verify_espec_no_ecut
-                  ~comments:(rcons_comments_option comments ("Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost))
-                  headers vgen s hashopt in
+    let tasks =
+      verify_espec_no_ecut
+        ~comments:(
+          if !debug then
+            rcons_comments_option comments ("Algebraic assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_ebexp_prove_with s.espost)
+          else
+            []
+        )
+        headers vgen s hashopt in
     tasks in
   let rec verify_spec ?comments cut_headers (res, pending) s =
     if List.length pending < !jobs then
@@ -1152,12 +1253,17 @@ let verify_eassert options vgen s hashopt =
       verify_spec ?comments cut_headers (res', pending') s in
   (* Check previous result *)
   let verify cid cut_headers (res, pending) (sid, s) =
-    if res && Options.Std.mem_hashset_opt options.st_verify_eassert_ids sid
-    then verify_spec
-           ~comments:[ "Verify: algebraic assertions";
-                       Printf.sprintf "Track: %s" options.st_tag;
-                       "Cut: #" ^ string_of_int cid ]
-           cut_headers (res, pending) (sid, s)
+    if res && Options.Std.mem_hashset_opt options.st_verify_eassert_ids sid then
+      verify_spec
+        ~comments:(
+          if !debug then
+            [ "Verify: algebraic assertions";
+              Printf.sprintf "Track: %s" options.st_tag;
+              "Cut: #" ^ string_of_int cid ]
+          else
+            []
+        )
+        cut_headers (res, pending) (sid, s)
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_eacuts verify delivered_helper true [] (cut_eassert (espec_of_spec s))
 
@@ -1166,9 +1272,15 @@ let verify_rassert options s hashopt =
   let _ = safe_trace "===== Verifying range assertions =====" in
   let delivered_helper = (&&) in
   let mk_tasks ?comments headers (sid, s) =
-    let tasks = verify_rspec_no_rcut
-                  ~comments:(rcons_comments_option comments ("Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost))
-                  headers s hashopt in
+    let tasks =
+      verify_rspec_no_rcut
+        ~comments:(
+          if !debug then
+            rcons_comments_option comments ("Range assertion #" ^ string_of_int sid ^ ": " ^ Ast.Cryptoline.string_of_rbexp_prove_with s.rspost)
+          else
+            []
+        )
+        headers s hashopt in
     tasks in
   let rec verify_spec ?comments headers (res, pending) s =
     if List.length pending < !jobs then
@@ -1180,11 +1292,17 @@ let verify_rassert options s hashopt =
   (* Check previous result *)
   let verify cid headers (res, pending) (sid, s) =
     if res && Options.Std.mem_hashset_opt options.st_verify_rassert_ids sid
-    then verify_spec
-           ~comments:[ "Verify: range assertions";
-                       Printf.sprintf "Track: %s" options.st_tag;
-                       "Cut: #" ^ string_of_int cid ]
-           headers (res, pending) (sid, s)
+    then
+      verify_spec
+        ~comments:(
+          if !debug then
+            [ "Verify: range assertions";
+              Printf.sprintf "Track: %s" options.st_tag;
+              "Cut: #" ^ string_of_int cid ]
+          else
+            []
+        )
+        headers (res, pending) (sid, s)
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_racuts verify delivered_helper true [] (cut_rassert (rspec_of_spec s))
 
@@ -1196,12 +1314,18 @@ let verify_rspec options s hashopt =
   let verify_ands ?comments headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks ?comments headers s) in
   (* Check previous result *)
   let verify cid headers (res, pending) (sid, s) =
-    if res then verify_ands
-                  ~comments:[ "Verify: range specifications";
-                              Printf.sprintf "Track: %s" options.st_tag;
-                              "Cut: #" ^ string_of_int cid;
-                              "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ]
-                  headers (res, pending) s
+    if res then
+      verify_ands
+        ~comments:(
+          if !debug then
+            [ "Verify: range specifications";
+              Printf.sprintf "Track: %s" options.st_tag;
+              "Cut: #" ^ string_of_int cid;
+              "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ]
+          else
+            []
+        )
+        headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_rcuts verify delivered_helper true [] (cut_rspec s)
 
@@ -1219,12 +1343,18 @@ let verify_espec options vgen s hashopt =
   let verify_ands ?comments headers (res, pending) s = add_to_pending Fun.id delivered_helper res pending (mk_tasks ?comments headers s) in
   (* Check previous result *)
   let verify cid headers (res, pending) (sid, s) =
-    if res then verify_ands
-                  ~comments:[ "Verify: algebraic specifications";
-                              Printf.sprintf "Track: %s" options.st_tag;
-                              Printf.sprintf "Cut: #%d" cid;
-                              Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ]
-                  headers (res, pending) s
+    if res then
+      verify_ands
+        ~comments:(
+          if !debug then
+            [ "Verify: algebraic specifications";
+              Printf.sprintf "Track: %s" options.st_tag;
+              Printf.sprintf "Cut: #%d" cid;
+              Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ]
+          else
+            []
+        )
+        headers (res, pending) s
     else (res, pending) in
   apply_to_cuts_lwt options.st_verify_ecuts verify (&&) true [] (cut_espec s)
 
@@ -1322,9 +1452,10 @@ let run_cli_vsafety ?comments id s =
   let ifile = tmpfile "safety_input_" "" in
   (* Write input *)
   let ch = open_out ifile in
-  let _ = if !debug then
-            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
-            output_string ch comments in
+  let _ =
+    if !debug then
+      let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+      output_string ch comments in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = s.rspre; rsprog = s.rsprog; rspost = [(Rtrue, [])]}); close_out ch in
   (* Run CLI *)
   let cmd = String.concat " "
@@ -1383,9 +1514,10 @@ let run_cli_vsafety ?comments id s =
 let verify_safety_conditions_cli options ?comments sid f p =
   let ifile = tmpfile "safety_input_" "" in
   let ch = open_out ifile in
-  let _ = if !debug then
-            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
-            output_string ch comments in
+  let _ =
+    if !debug then
+      let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+      output_string ch comments in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = [(Rtrue, [])]}); close_out ch in
   let add_unsolved q res =
     match res with
@@ -1448,11 +1580,21 @@ let verify_safety_conditions_cli options ?comments sid f p =
 let verify_spec_cli s run_cli_verify comments_gen header_gen flatten_spec cut_spec verify_cuts verify_ids =
   let delivered_helper = (&&) in
   let verify_ands cid cut_headers (res, pending) (sid, s) =
-    let header = header_gen cid (sid, s) (String.concat "" cut_headers) in
-    let comments = comments_gen cid (sid, s) in
-    let mk_task atom_s = fun () -> run_cli_verify ?comments header atom_s in
     (* Check previous result *)
     if res && Options.Std.mem_hashset_opt verify_ids sid then
+      let header =
+        if !Options.Std.debug then
+          header_gen cid (sid, s) (String.concat "" cut_headers)
+        else
+          ""
+      in
+      let comments =
+        if !Options.Std.debug then
+          comments_gen cid (sid, s)
+        else
+          None
+      in
+      let mk_task atom_s = fun () -> run_cli_verify ?comments header atom_s in
       let tasks = tmap mk_task (flatten_spec s) in
       add_to_pending Fun.id delivered_helper res pending tasks
     else
@@ -1464,82 +1606,101 @@ let run_cli_vespec ?comments header s =
   let ifile = tmpfile "espec_input_" "" in
   let ofile = tmpfile "espec_output_" "" in
   let lfile = tmpfile "espec_log_" "" in
-  (* Write the input to CLI *)
-  let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let%lwt _ = if !debug then let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
-                             Lwt_io.write ch comments
-              else Lwt.return_unit in
-  let%lwt _ = Lwt_io.write ch (string_of_espec ~typ:true s) in
-  let%lwt _ = Lwt_io.close ch in
-  (* Run CLI *)
-  let cmd = String.concat " "
-                          [!cli_path;
-                           if !debug then "-debug" else "";
-                           (match !tmpdir with
-                            | None -> ""
-                            | Some d -> "-tmpdir \"" ^ d ^ "\"");
-                           if !keep_temp_files then "-keep" else "";
-                           "-c vespec";
-                           if !debug then "-debug" else "";
-                           ("-qfbv_solver " ^ !Options.Std.range_solver);
-                           (if !Options.Std.range_solver_args = "" then "" else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
-                           (if !Options.Std.use_btor then "-btor" else "");
-                           (if !Options.Std.incremental_safety then "-isafety" else "");
-                           (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int !Options.Std.incremental_safety_timeout else "");
-                           (match !Options.Std.algebra_solver with
-                            | Options.Std.Singular -> "-singular " ^ !Options.Std.singular_path
-                            | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
-                            | Options.Std.Sage -> "-sage " ^ !Options.Std.sage_path
-                            | Options.Std.Mathematica -> "-mathematica " ^ !Options.Std.mathematica_path
-                            | Options.Std.Macaulay2 -> "-macaulay2 " ^ !Options.Std.macaulay2_path
-                            | Options.Std.SMTSolver solver -> "smt:" ^ solver.algsmt_path
-                            | _ -> "");
-                           (if !Options.Std.algebra_solver_args = "" then ""
-                            else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");
-                           (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov" else "");
-                           (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc" else "");
-                           (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly" else "");
-                           (if !Options.Std.carry_constraint then ""
-                            else "-no_carry_constraint");
-                           "-vo " ^ string_of_variable_ordering !Options.Std.variable_ordering;
-                           (if !Options.Std.polys_rewrite_replace_eexp then "-re" else "");
-                           (if !Options.Std.apply_slicing then "-slicing" else "");
-                           (if !Options.Std.rename_local then "-rename_local" else "");
-                           (if !Options.Std.two_phase_rewriting then "-two_phase_rewriting" else "");
-                           (if !Options.Std.track_split then "-track-split" else "");
-                           (if !Options.Std.apply_rewrite_eqmod then "-enable_rewriting:eqmod" else "");
-                           "-o \"" ^ lfile ^ "\"";
-                           "\"" ^ ifile ^ "\"";
-                           "1> \"" ^ ofile ^ "\" 2>&1"
-                          ] in
-  let%lwt _ = Options.WithLwt.unix cmd in
-  (* Read the output of CLI *)
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt line = try%lwt Lwt_io.read_line ch
-                 with _ -> let%lwt _ = Lwt_io.printl "Failed to read the output file" in raise (Failure "Failed to read the output file") in
-  let line = String.trim line in
-  let%lwt _ = Lwt_io.close ch in
-  (* Write to the log file *)
-  let%lwt _ = Options.WithLwt.log_lock () in
-  let%lwt _ = Options.WithLwt.trace header in
-  let%lwt _ = Options.WithLwt.trace (Printf.sprintf "Algebraic condition: %s" (string_of_ebexp_prove_with s.espost)) in
-  let%lwt _ = Options.WithLwt.trace_file lfile in
-  let _ =
-    (* Log abnormal outputs *)
-    if line <> "true" && line <> "false" then
-      let _ = Options.WithLwt.trace ("Got abnormal output:") in
-      let _ = Options.WithLwt.trace line in
-      let _ = Options.WithLwt.trace ("From the input:") in
-      let _ = Options.WithLwt.trace_file ifile in
-      ()
+  let cmd_args =
+    [!cli_path;
+     if !debug then "-debug" else "";
+     (match !tmpdir with
+      | None -> ""
+      | Some d -> "-tmpdir \"" ^ d ^ "\"");
+     if !keep_temp_files then "-keep" else "";
+     "-c vespec";
+     if !debug then "-debug" else "";
+     ("-qfbv_solver " ^ !Options.Std.range_solver);
+     (if !Options.Std.range_solver_args = "" then "" else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
+     (if !Options.Std.use_btor then "-btor" else "");
+     (if !Options.Std.incremental_safety then "-isafety" else "");
+     (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int !Options.Std.incremental_safety_timeout else "");
+     (match !Options.Std.algebra_solver with
+      | Options.Std.Singular -> "-singular " ^ !Options.Std.singular_path
+      | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
+      | Options.Std.Sage -> "-sage " ^ !Options.Std.sage_path
+      | Options.Std.Mathematica -> "-mathematica " ^ !Options.Std.mathematica_path
+      | Options.Std.Macaulay2 -> "-macaulay2 " ^ !Options.Std.macaulay2_path
+      | Options.Std.SMTSolver solver -> "smt:" ^ solver.algsmt_path
+      | _ -> "");
+     (if !Options.Std.algebra_solver_args = "" then ""
+      else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");
+     (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov" else "");
+     (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc" else "");
+     (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly" else "");
+     (if !Options.Std.carry_constraint then ""
+      else "-no_carry_constraint");
+     "-vo " ^ string_of_variable_ordering !Options.Std.variable_ordering;
+     (if !Options.Std.polys_rewrite_replace_eexp then "-re" else "");
+     (if !Options.Std.apply_slicing then "-slicing" else "");
+     (if !Options.Std.rename_local then "-rename_local" else "");
+     (if !Options.Std.two_phase_rewriting then "-two_phase_rewriting" else "");
+     (if !Options.Std.track_split then "-track-split" else "");
+     (if !Options.Std.apply_rewrite_eqmod then "-enable_rewriting:eqmod" else "");
+     "-o \"" ^ lfile ^ "\"";
+     "\"" ^ ifile ^ "\""
+    ] in
+  let write_input () =
+    (* Write the input to CLI *)
+    Lwt_io.with_file ~mode:Lwt_io.output ifile (fun ch ->
+        let%lwt _ =
+          if !debug then
+            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+            Lwt_io.write ch comments
+          else
+            Lwt.return_unit in
+        let buf = Buffer.create 1024 in
+        let _ = bprint_espec ~typ:true buf s in
+        let oc = open_out_bin ifile in
+        Buffer.output_buffer oc buf;
+        close_out oc;
+        Lwt.return_unit
+      ) in
+  let run_and_read () =
+    (* Run CLI command *)
+    let cmd = String.concat " " (List.filter (fun s -> s <> "") cmd_args) in
+    try%lwt
+      let%lwt output = Lwt_process.pread (Lwt_process.shell cmd) in
+      Lwt.return (String.trim output)
+    with _ ->
+      let%lwt () = Lwt_io.printl "Failed to run CLI or read output" in
+      Lwt.fail (Failure "Failed to run CLI or read output") in
+  let log line =
+    (* Check the debug flag again to prevent constructing useless strings. *)
+    if !Options.Std.debug then
+      (* Write to the log file *)
+      let%lwt _ = Options.WithLwt.log_lock () in
+      let%lwt _ = Options.WithLwt.trace header in
+      let%lwt _ = Options.WithLwt.trace (Printf.sprintf "Algebraic condition: %s" (string_of_ebexp_prove_with s.espost)) in
+      let%lwt _ = Options.WithLwt.trace_file lfile in
+      let%lwt _ =
+        (* Log abnormal outputs *)
+        if line <> "true" && line <> "false" then
+          let%lwt _ = Options.WithLwt.trace ("Got abnormal output:") in
+          let%lwt _ = Options.WithLwt.trace line in
+          let%lwt _ = Options.WithLwt.trace ("From the input:") in
+          Options.WithLwt.trace_file ifile
+        else
+          Lwt.return_unit in
+      Options.WithLwt.log_unlock ()
+    else
+      Lwt.return_unit
   in
-  let%lwt _ = Options.WithLwt.log_unlock () in
-  (* Remove temporary files *)
-  let%lwt _ = cleanup_lwt [ifile; ofile; lfile] in
-  (* Return the result *)
-  Lwt.return (String.trim line = "true")
+  let run_cli () =
+    let%lwt _ = write_input() in
+    let%lwt line = run_and_read() in
+    let%lwt _ = log line in
+    (* Return the result *)
+    Lwt.return (String.trim line = "true") in
+  let cleanup () =
+    (* Remove temporary files *)
+    cleanup_lwt [ifile; ofile; lfile] in
+  Lwt.finalize run_cli cleanup
 
 (*
  * Run CLI to verify an espec (no conjunction in the postcondition, no cut).
@@ -1548,6 +1709,10 @@ let run_cli_vespec ?comments header s =
 let run_cli_vespec ?comments header s =
   (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
   let%lwt res =
+    (* [is_espec_trivial s || Deduce.espec_prover s] is also checked
+       in [verify_espec_single_conjunct] invoked by CLI mode.
+       Put the checks here may reduce the time in forking processes for
+       verifying trivial specifications given the overheads of the checks. *)
     if is_espec_trivial s || Deduce.espec_prover s then Lwt.return_true
     else run_cli_vespec ?comments header s in
   Lwt.return res
@@ -1556,15 +1721,30 @@ let run_cli_vespec ?comments header s =
 let verify_espec_cli options s =
   let _ = safe_trace "===== Verifying algebraic specifications =====" in
   verify_spec_cli
+    (* specification *)
     s
+    (* verification function *)
     run_cli_vespec
+    (* comments generator *)
     (fun cid (sid, s) ->
-      Some [ "Verify: algebraic specifications";
-             Printf.sprintf "Track: %s" options.st_tag;
-             Printf.sprintf "Cut: #%d" cid;
-             Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ])
+       if !Options.Std.debug then
+         Some [ "Verify: algebraic specifications";
+                Printf.sprintf "Track: %s" options.st_tag;
+                Printf.sprintf "Cut: #%d" cid;
+                Printf.sprintf "Algebraic specification #%d: %s" sid (string_of_ebexp_prove_with s.espost) ]
+       else
+         None
+    )
+    (* header generator *)
     (fun _ _ cut_header -> cut_header)
-    split_espec_post cut_espec options.st_verify_ecuts None
+    (* convert specification into specifications with atomic postcondition *)
+    split_espec_post
+    (* function that cuts algebraic specifications *)
+    cut_espec
+    (* which cuts need to be verified *)
+    options.st_verify_ecuts
+    (* which IDs of algebraic specifications need to be verified *)
+    None
 
 (* Run CLI to verify a rspec (no conjunction in the postcondition, no cut). *)
 let run_cli_vrspec ?comments header s =
@@ -1574,9 +1754,11 @@ let run_cli_vrspec ?comments header s =
   (* Write the input to CLI *)
   let%lwt ifd = Lwt_unix.openfile ifile [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
-  let _ = if !debug then let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
-                         Lwt_io.write ch comments
-          else Lwt.return_unit in
+  let _ =
+    if !debug then
+      let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+      Lwt_io.write ch comments
+    else Lwt.return_unit in
   let%lwt _ = Lwt_io.write ch (string_of_rspec ~typ:true s) in
   let%lwt _ = Lwt_io.close ch in
   (* Run CLI *)
@@ -1648,26 +1830,36 @@ let run_cli_vrspec ?comments header s =
 (* The top function of verifying range specifications when !jobs > 1 and CLI is enabled. *)
 let verify_rspec_cli options s _ =
   let _ = safe_trace "===== Verifying range specifications =====" in
+  let track_msg = Printf.sprintf "Track: %s" options.st_tag in
   verify_spec_cli
     s
     run_cli_vrspec
-    (fun cid (sid, s) -> Some [ "Verify: range specifications";
-                                Printf.sprintf "Track: %s" options.st_tag;
-                                "Cut: #" ^ string_of_int cid;
-                                "Range specification #" ^ string_of_int sid ^ ": " ^ string_of_rbexp_prove_with s.rspost ])
+    (fun cid (sid, s) ->
+       Some [ "Verify: range specifications";
+              track_msg;
+              "Cut: #" ^ string_of_int cid;
+              "Range specification #"
+              ^ string_of_int sid
+              ^ ": "
+              ^ string_of_rbexp_prove_with s.rspost ])
     (fun _ _ cut_header -> cut_header)
     split_rspec_post cut_rspec options.st_verify_rcuts None
 
 (* The top function of verifying algebraic assertions when !jobs > 1 and CLI is enabled. *)
 let verify_eassert_cli options s =
   let _ = safe_trace "===== Verifying algebraic assertions =====" in
+  let track_msg = Printf.sprintf "Track: %s" options.st_tag in
   verify_spec_cli
     (espec_of_spec s)
     run_cli_vespec
-    (fun cid (sid, s) -> Some [ "Verify: algebraic assertions";
-                                Printf.sprintf "Track: %s" options.st_tag;
-                                "Cut: #" ^ string_of_int cid;
-                                "Algebraic assertion #" ^ string_of_int sid ^ ": " ^ string_of_ebexp_prove_with s.espost ])
+    (fun cid (sid, s) ->
+       Some [ "Verify: algebraic assertions";
+              track_msg;
+              "Cut: #" ^ string_of_int cid;
+              "Algebraic assertion #"
+              ^ string_of_int sid
+              ^ ": "
+              ^ string_of_ebexp_prove_with s.espost ])
     (fun _ _ cut_header -> cut_header)
     split_espec_post cut_eassert options.st_verify_eacuts options.st_verify_eassert_ids
 
@@ -1695,9 +1887,10 @@ let verify_safety_inc_cli options ?comments s _hashopt =
       let ifile =
         let ifile = tmpfile "safety_input_" "" in
         let ch = open_out ifile in
-        let _ = if !debug then
-                  let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
-                  output_string ch comments in
+        let _ =
+          if !debug then
+            let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
+            output_string ch comments in
         let _ = output_string ch (string_of_rspec ~typ:true {rspre = s.rspre; rsprog = s.rsprog; rspost = [(Rtrue, [])]}); close_out ch in
         ifile in
       let add_instr_index = fun p -> List.mapi (fun idx i -> (!Options.Std.incremental_safety_timeout, idx, i)) p in
@@ -1723,12 +1916,17 @@ let verify_safety_inc_cli options ?comments s _hashopt =
 let verify_safety_all_cli options ?comments s _hashopt =
   let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
   let verify_cut cid _header ((res, sid), pending) (_, s) =
-    if res then if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid
-                then let comments = append_comments_option comments [ "Cut: #" ^ string_of_int cid;
-                                                                      "Target: all instructions in this cut" ] in
-                     let promise () = run_cli_vsafety ~comments sid s in
-                     add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
-                else ((res, sid + 1), pending)
+    if res then
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid then
+        let comments =
+          if !debug then
+            append_comments_option comments [ "Cut: #" ^ string_of_int cid;
+                                              "Target: all instructions in this cut" ]
+          else
+            [] in
+        let promise () = run_cli_vsafety ~comments sid s in
+        add_to_pending fst delivered_helper (res, sid + 1) pending [promise]
+      else ((res, sid + 1), pending)
     else ((res, sid), pending) in
   let (res, _) = apply_to_cuts_lwt options.st_verify_scuts verify_cut delivered_helper (true, 0) [] (cut_safety (rspec_of_spec s)) in
   res

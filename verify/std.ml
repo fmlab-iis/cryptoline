@@ -25,13 +25,14 @@ let apply_to_cuts ids f res ss =
   let rec helper i res ss =
     match ss with
     | [] -> res
-    | hd::tl -> if Options.Std.mem_hashset_opt ids i then
-                  let _ = Options.Std.trace ("=== Cut #" ^ string_of_int i ^ " ===") in
-                  let res = List.fold_left (f i) res hd in
-                  helper (i+1) res tl
-                else
-                  let _ = Options.Std.trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
-                  helper (i+1) res tl in
+    | hd::tl ->
+      if Options.Std.mem_hashset_opt ids i then
+        let _ = Options.Std.trace ("=== Cut #" ^ string_of_int i ^ " ===") in
+        let res = List.fold_left (f i) res hd in
+        helper (i+1) res tl
+      else
+        let _ = Options.Std.trace ("=== Skip Cut #" ^ string_of_int i ^ " ===") in
+        helper (i+1) res tl in
   helper 0 res ss
 
 
@@ -43,9 +44,13 @@ let apply_to_cuts ids f res ss =
  * reduce: https://www.singular.uni-kl.de/Manual/4-3-2/sing_337.htm#SEC377
  *)
 let write_singular_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_singular_input ?comments vars gen p in
-  let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_singular_input ?comments buf vars gen p in
+  let _ =
+    Out_channel.with_open_bin ifile (
+      fun ch ->
+        Buffer.output_buffer ch buf
+    ) in
   Options.Std.trace "INPUT TO SINGULAR:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""
@@ -56,7 +61,12 @@ let write_singular_input ?comments ifile vars gen p =
 let write_sage_input ?comments ifile vars gen p =
   let input_text = Cas.generate_sage_input ?comments vars gen p in
   let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let _ =
+    try
+      let _ = output_string ch input_text in
+      close_out ch
+    with e ->
+      close_out_noerr ch; raise e in
   Options.Std.trace "INPUT TO SAGE:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""
@@ -67,7 +77,12 @@ let write_sage_input ?comments ifile vars gen p =
 let write_magma_input ?comments ifile vars gen p =
   let input_text = Cas.generate_magma_input ?comments vars gen p in
   let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let _ =
+    try
+      let _ = output_string ch input_text in
+      close_out ch
+    with e ->
+      close_out_noerr ch; raise e in
   Options.Std.trace "INPUT TO MAGMA:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""
@@ -75,7 +90,12 @@ let write_magma_input ?comments ifile vars gen p =
 let write_mathematica_input ?comments ifile vars gen p =
   let input_text = Cas.generate_mathematica_input ?comments vars gen p in
   let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let _ =
+    try
+      let _ = output_string ch input_text in
+      close_out ch
+    with e ->
+      close_out_noerr ch; raise e in
   Options.Std.trace "INPUT TO MATHEMATICA:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""
@@ -83,7 +103,12 @@ let write_mathematica_input ?comments ifile vars gen p =
 let write_macaulay2_input ?comments ifile vars gen p =
   let input_text = Cas.generate_macaulay2_input ?comments vars gen p in
   let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let _ =
+    try
+      let _ = output_string ch input_text in
+      close_out ch
+    with e ->
+      close_out_noerr ch; raise e in
   Options.Std.trace "INPUT TO MACAULAY2:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""
@@ -91,7 +116,12 @@ let write_macaulay2_input ?comments ifile vars gen p =
 let write_maple_input ?comments ifile vars gen p =
   let input_text = Cas.generate_maple_input ?comments vars gen p in
   let ch = open_out ifile in
-  let _ = output_string ch input_text; close_out ch in
+  let _ =
+    try
+      let _ = output_string ch input_text in
+      close_out ch
+    with e ->
+      close_out_noerr ch; raise e in
   Options.Std.trace "INPUT TO MAPLE:";
   Options.Std.trace_file ifile;
   Options.Std.trace ""

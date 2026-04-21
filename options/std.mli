@@ -323,8 +323,11 @@ val propose_logfile : string option -> string
 (** [propose_logfile fnopt] proposes a file name for a log.
     [fnopt] is an optional procedure name. *)
 
+val run : ?ofile:string -> string array -> Unix.process_status
+(** Run a Unix command by Unix.create_process *)
+
 val unix : string -> unit
-(** run an Unix command *)
+(** run a Unix command by Unix.system *)
 
 val trace : ?log:string -> string -> unit
 (** write a message and an ending newline to the log file *)
@@ -336,7 +339,12 @@ val fail : string -> 'a
 (** write a message to the log file and then fail with the message *)
 
 val string_of_running_time : float -> float -> string
-(** [string_of_running_time st ed] returns the string representation of the running time from the starting time [st] to the stop time [ed]. *)
+(** [string_of_running_time st ed] returns the string representation of the
+    running time from the starting time [st] to the stop time [ed]. *)
+
+val profile_running_time : ?out:(float -> unit) -> (unit -> 'a) -> 'a * float
+(** Return the result of a function together with the running time of the
+    function execution. *)
 
 val vprint : string -> unit
 (** [vprint s] prints the string [s] if {!verbose} is [true] *)
