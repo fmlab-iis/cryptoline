@@ -41,7 +41,8 @@ RUN git clone https://github.com/berkeley-abc/abc.git abc \
     && cp `ocamlc -where`/caml/camlidlruntime.h $OCAMLPATH/camlidl/caml/ \
     && cp `ocamlc -where`/METAS/META.camlidl $OCAMLPATH/camlidl/META \
     && export OCAMLPATH=`ocamlfind query apron`/.. \
-    && dune build && dune install \
+    && echo 'export OCAMLPATH=`ocamlfind query apron`/..' >> /home/ubuntu/.bashrc \
+    && dune build && dune install --prefix /home/ubuntu/.local \
 # Install Boolector and Singular
     && ./scripts/install-boolector.sh \
     && ./scripts/install-singular.sh \
@@ -51,7 +52,7 @@ RUN git clone https://github.com/berkeley-abc/abc.git abc \
     && pip3 install islpy pplpy pyscipopt pyparsing \
 # Set up user account
     && passwd -d ubuntu \
-    && echo 'export PATH=$HOME/.local/bin:$PATH' >> .bashrc \
+    && echo 'export PATH=$HOME/.local/bin:$PATH' >> /home/ubuntu/.bashrc \
     && chown -R ubuntu:ubuntu /home/ubuntu
 
 USER ubuntu
