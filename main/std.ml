@@ -91,10 +91,12 @@ let args = [
      Common.mk_arg_desc([" Automatically cast variables when parsing untyped programs."]));
     ("-autovpc", Unit (fun () -> Options.Std.auto_cast := true; Options.Std.auto_cast_preserve_value := true),
      Common.mk_arg_desc(["  Automatically cast variables when parsing untyped programs."]));
-    ("-cli", Set Options.Std.use_cli,
-     Common.mk_arg_desc(["\t     Use CLI to run verification tasks (when # of jobs > 1)."]));
+    ("-cli", Unit (fun () -> Options.Std.parallel_model := Options.Std.WithCli),
+     Common.mk_arg_desc(["\t     Use CLI to run verification tasks parallelly (when # of jobs > 1)."]));
     ("-cli_path", String (fun str -> Options.Std.cli_path := str),
      Common.mk_arg_desc(["PATH"; "Set the path to CLI."]));
+    ("-domains", Unit (fun () -> Options.Std.parallel_model := Options.Std.WithDomains),
+     Common.mk_arg_desc(["  Use Domainslib to run verification tasks parallelly (when # of "; "jobs > 1)."]));
     ("-disable_algebra", Unit (fun () -> verify_eassertion := false; verify_epost := false),
      Common.mk_arg_desc([""; "Disable verification of all algebra properties."]));
     ("-disable_range", Unit (fun () -> verify_rassertion := false; verify_rpost := false),

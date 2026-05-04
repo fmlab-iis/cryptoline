@@ -126,7 +126,12 @@ let cross_cuts = ref false
 
 let jobs = Utils.Tasks.jobs
 
-let use_cli = ref false
+type parallel_model =
+    WithLwt
+  | WithCli
+  | WithDomains
+
+let parallel_model = ref WithLwt
 
 let cli_path = ref "cv_cli"
 
@@ -423,6 +428,8 @@ let safety_by_mip = ref false
 
 let verbose = ref false
 
+let logfile_base = ref "cryptoline.log"
+
 let logfile = ref "cryptoline.log"
 
 let propose_logfile fnopt =
@@ -430,8 +437,11 @@ let propose_logfile fnopt =
     match fnopt with
     | None -> ""
     | Some fn -> "." ^ fn in
-  let (fn, ext) = if Str.string_match (Str.regexp "^\\(.*\\)\\(\\.log\\|\\.txt\\)$") !logfile 0 then (Str.matched_group 1 !logfile, Str.matched_group 2 !logfile)
-                  else (!logfile, ".log") in
+  let (fn, ext) =
+    if Str.string_match (Str.regexp "^\\(.*\\)\\(\\.log\\|\\.txt\\)$") !logfile_base 0 then
+      (Str.matched_group 1 !logfile_base, Str.matched_group 2 !logfile_base)
+    else
+      (!logfile_base, ".log") in
   fn ^ fnstr ^ ext
 
 let run ?ofile cmd_array =

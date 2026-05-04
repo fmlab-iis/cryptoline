@@ -30,7 +30,7 @@ let args_io =
            "";
            "Keep temporary files."
     ]));
-    ("-o", String (fun str -> logfile := str),
+    ("-o", String (fun str -> logfile := str; logfile_base := str),
      mk_arg_desc([
            "FILE";
            "Save log messages to files with the specified prefix. The log";

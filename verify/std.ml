@@ -682,14 +682,25 @@ let verify_safety_cut_by_cut options s hashopt =
                  "Cut: #" ^ string_of_int cid ] in
     if !Options.Std.incremental_safety then
       let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
-      if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_conditions_cli options ~comments:msgs sid s.rspre s.rsprog
-      else verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
+      if !Options.Std.jobs > 1 then
+        match !Options.Std.parallel_model with
+        | WithCli ->
+          WithLwt.verify_safety_conditions_cli
+            options ~comments:msgs sid s.rspre s.rsprog
+        | WithLwt ->
+          verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
+        | WithDomains ->
+          failwith("To be supported")
+      else
+        verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
     else verify_safety_of_cut options ~comments:msgs sid s hashopt in
   (* Check previous result, cid: cut id, sid: id of the next safety condition *)
   let verify_safety_without_cuts cid (res, sid) (_, s) =
     if res then verify_safety_without_cuts cid (res, sid) s
     else (res, sid) in
-  let (res, _) = apply_to_cuts options.st_verify_scuts verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
+  let (res, _) =
+    apply_to_cuts options.st_verify_scuts
+      verify_safety_without_cuts (true, 0) (cut_safety (rspec_of_spec s)) in
   let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall\t\t\t\t\t" in
   res
 
@@ -703,9 +714,15 @@ let verify_safety_across_cuts options s hashopt =
   let comments = [ "Verify: safety" ] in
   let res =
     if !Options.Std.jobs > 1 then
-      if !Options.Std.use_cli then WithLwt.verify_safety_cli options ~comments s hashopt
-      else WithLwt.verify_safety_lwt options ~comments s hashopt
-    else verify_safety_cut_by_cut options s hashopt in
+      match !Options.Std.parallel_model with
+      | WithCli ->
+        WithLwt.verify_safety_cli options ~comments s hashopt
+      | WithLwt ->
+        WithLwt.verify_safety_lwt options ~comments s hashopt
+      | WithDomains ->
+        failwith("To be supported")
+    else
+      verify_safety_cut_by_cut options s hashopt in
   let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall safety\t\t\t\t" in
   res
 
@@ -797,8 +814,18 @@ let verify_safety_mip_cut_by_cut options vgen s hashopt =
                  Printf.sprintf "Track: %s" options.st_tag;
                  "Cut: #" ^ string_of_int cid ] in
     let _ = Options.Std.vprintln ("\tCut " ^ string_of_int cid) in
-    if !Options.Std.jobs > 1 && !Options.Std.use_cli then WithLwt.verify_safety_mip_conditions_cli options ~comments:msgs vgen sid s
-    else verify_safety_mip_of_cut_inc options ~comments:msgs vgen sid s hashopt in
+    if !Options.Std.jobs > 1 then
+      match !Options.Std.parallel_model with
+      | WithCli ->
+        WithLwt.verify_safety_mip_conditions_cli
+          options ~comments:msgs vgen sid s
+      | WithLwt ->
+        verify_safety_mip_of_cut_inc
+          options ~comments:msgs vgen sid s hashopt
+      | WithDomains ->
+        failwith("To be supported")
+    else
+      verify_safety_mip_of_cut_inc options ~comments:msgs vgen sid s hashopt in
   (* Check previous result, cid: cut id, sid: id of the next safety condition *)
   let verify_safety_without_cuts cid (res, sid) (_, s) =
     if res then verify_safety_without_cuts cid (res, sid) s
@@ -817,9 +844,16 @@ let verify_safety_mip_across_cuts options vgen s hashopt =
   let comments = [ "Verify: safety" ] in
   let res =
     if !Options.Std.jobs > 1 then
-      if !Options.Std.use_cli then WithLwt.verify_safety_mip_cross_cuts_cli options ~comments vgen s
-      else WithLwt.verify_safety_mip_cross_cuts_lwt options ~comments vgen s hashopt
-    else verify_safety_mip_cut_by_cut options vgen s hashopt in
+      match !Options.Std.parallel_model with
+      | WithCli ->
+        WithLwt.verify_safety_mip_cross_cuts_cli options ~comments vgen s
+      | WithLwt ->
+        WithLwt.verify_safety_mip_cross_cuts_lwt
+          options ~comments vgen s hashopt
+      | WithDomains ->
+        failwith("To be supported")
+    else
+      verify_safety_mip_cut_by_cut options vgen s hashopt in
   let _ = Options.Std.vprint "\tOverall safety\t\t\t\t" in
   res
 
@@ -833,25 +867,29 @@ let verify_safety_mip options s hashopt =
  *
  * if verify_safety_mip then:
  *
- * cross_cuts? -- verify_safety_mip_across_cuts -- jobs > 1? -- use_cli? -- WithLwt.verify_safety_mip_cross_cuts_cli
- *             |                                         |               |- WithLwt.verify_safety_mip_cross_cuts_lwt
- *             |                                         |- verify_safety_mip_cut_by_cut
- *             |- verify_safety_mip_cut_by_cut -- jobs > 1? && use_cli? -- WithLwt.verify_safety_mip_conditions_cli
- *                                                                      |- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
+ * cross_cuts? -- verify_safety_mip_across_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_mip_cross_cuts_cli
+ *             |                                             |                 |- WithLwt -- WithLwt.verify_safety_mip_cross_cuts_lwt
+ *             |                                             |                 |- WithDomains -- To be supported
+ *             |                                             |- verify_safety_mip_cut_by_cut
+ *             |- verify_safety_mip_cut_by_cut -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_mip_conditions_cli
+ *                                                          |                 |- WithLwt -- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
+ *                                                          |                 |- WithDomains -- To be supported
+ *                                                          |- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
  *
  * else:
  *
- * cross_cuts? -- verify_safety_across_cuts -- jobs > 1? -- use_cli? -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
- *             |           (dispatch)                    |           |                                                   |
- *             |                                         |           |                                                   |- WithLiwt.verify_safety_all_cli
- *             |                                         |           |- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
- *             |                                         |                                                               |- WithLwt.verify_safety_all_lwt
+ * cross_cuts? -- verify_safety_across_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
+ *             |                                         |                 |                                                              |- WithLiwt.verify_safety_all_cli
+ *             |                                         |                 |- WithLwt -- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
+ *             |                                         |                 |                                                              |- WithLwt.verify_safety_all_lwt
+ *             |                                         |                 |- WithDomains -- To be supported
  *             |                                         |- verify_safety_cut_by_cut (same as cross_cuts = false)
  *             |
- *             |- verify_safety_cut_by_cut -- incremental_safety? -- jobs > 1? && use_cli? -- WithLwt.verify_safety_conditions_cli
- *                     (cut specs)                                |                        |
- *                                                                |                        |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
- *                                                                |                               (Verify safety of each instruction in a cut)
+ *             |- verify_safety_cut_by_cut -- incremental_safety? -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_conditions_cli
+ *                     (cut specs)                                |            |                 |- WithLwt -- verify_safety_of_cut_inc (sequential or parallel with Lwt)
+ *                                                                |            |                 |             (Verify safety of each instruction in a cut)
+ *                                                                |            |                 |- WithDomains -- To be supported
+ *                                                                |            |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
  *                                                                |- verify_safety_of_cut
  *                                                              (verify safety of a whole cut)
  *)
@@ -1139,47 +1177,76 @@ let verify_spec options s =
   let valid_eassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = Options.Std.vprint "Verifying algebraic assertions:\t\t\t" in
-    let b = if !Options.Std.jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_eassert_cli options s
-               else WithLwt.verify_eassert options vgen s hashopt)
-            else
-              verify_eassert options vgen s hashopt in
+    let b =
+      if !Options.Std.jobs > 1 then
+        match !Options.Std.parallel_model with
+        | WithCli ->
+          WithLwt.verify_eassert_cli options s
+        | WithLwt ->
+          WithLwt.verify_eassert options vgen s hashopt
+        | WithDomains ->
+          WithDomains.verify_eassert_domains options vgen s hashopt
+      else
+        verify_eassert options vgen s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_rassert (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = Options.Std.vprint "Verifying range assertions:\t\t\t" in
-    let b = if !Options.Std.jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_rassert_cli options s
-               else WithLwt.verify_rassert options s hashopt)
-            else
-              verify_rassert options s hashopt in
+    let b =
+      if !Options.Std.jobs > 1 then
+        match !Options.Std.parallel_model with
+        | WithCli ->
+          WithLwt.verify_rassert_cli options s
+        | WithLwt ->
+          WithLwt.verify_rassert options s hashopt
+        | WithDomains ->
+          failwith("To be supported")
+      else
+        verify_rassert options s hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_rspec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = Options.Std.vprint "Verifying range specification:\t\t\t" in
-    let b = if !Options.Std.jobs > 1 then
-              (if !Options.Std.use_cli
-               then WithLwt.verify_rspec_cli else WithLwt.verify_rspec)
-                options (rspec_of_spec s) hashopt
-            else
-              verify_rspec options (rspec_of_spec s) hashopt in
+    let rs = rspec_of_spec s in
+    let b =
+      if !Options.Std.jobs > 1 then
+        match !Options.Std.parallel_model with
+        | WithCli ->
+          WithLwt.verify_rspec_cli options rs hashopt
+        | WithLwt ->
+          WithLwt.verify_rspec options rs hashopt
+        | WithDomains ->
+          failwith("To be supported")
+      else
+        verify_rspec options rs hashopt in
     let t2 = Unix.gettimeofday() in
     let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let valid_espec (s, hashopt) =
     let t1 = Unix.gettimeofday() in
     let _ = Options.Std.vprint "Verifying algebraic specification:\t\t" in
-    let b = if !Options.Std.jobs > 1 then
-              (if !Options.Std.use_cli then WithLwt.verify_espec_cli options (espec_of_spec s)
-               else WithLwt.verify_espec options vgen (espec_of_spec s) hashopt)
-            else
-              verify_espec options vgen (espec_of_spec s) hashopt in
+    let es = espec_of_spec s in
+    let b =
+      if !Options.Std.jobs > 1 then
+        match !Options.Std.parallel_model with
+        | WithCli ->
+          WithLwt.verify_espec_cli options es
+        | WithLwt ->
+           WithLwt.verify_espec options vgen es hashopt
+        | WithDomains ->
+          WithDomains.verify_espec_domains options vgen es hashopt
+      else
+        verify_espec options vgen es hashopt in
     let t2 = Unix.gettimeofday() in
-    let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
+    let _ =
+      Options.Std.vprintln (
+        (if b then "[OK]\t" else "[FAILED]")
+        ^ "\t"
+        ^ Options.Std.string_of_running_time t1 t2) in
     (b, s, hashopt) in
   let verifiers : (Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option
                    -> bool * Ast.Cryptoline.spec * VS.t Ast.Cryptoline.atomhash_t option) list =
@@ -1193,32 +1260,47 @@ let verify_spec options s =
     @(if !apply_rewrite_vpc then [rewrite_vpc] else [])
     @(if !Options.Std.verify_eassertion && has_assert s.sprog then [valid_eassert] else [])
     @(if !Options.Std.verify_epost then [valid_espec] else []) in
-  let (result, _, _) = List.fold_left
-                         (fun (res, s, hashopt) verifier ->
-                           if res then verifier (s, hashopt)
-                           else (res, s, hashopt))
-                         (true, s, None)
-                         verifiers in
+  let _ =
+    if !Options.Std.parallel_model = WithDomains then
+      DomainsTasks.startup !Options.Std.logfile in
+  let (result, _, _) =
+    List.fold_left
+      (fun (res, s, hashopt) verifier ->
+         if res then verifier (s, hashopt)
+         else (res, s, hashopt))
+      (true, s, None)
+      verifiers in
+  let _ =
+    if !Options.Std.parallel_model = WithDomains then
+      DomainsTasks.shutdown() in
   result
 
 (* The main verification process for a tagged specification *)
 let verify_tagged_spec options ts =
   let vprintln_title title =
     let _ = Options.Std.vprintln ("\n" ^ title) in
-    let _ = Options.Std.vprintln (String.concat "" (List.init (String.length title) (fun _ -> "-"))) in
+    let _ =
+      Options.Std.vprintln (
+        String.concat "" (
+          List.init (String.length title) (fun _ -> "-")
+        )
+      ) in
     () in
   let tags = Common.get_tags_to_be_verified ts in
   let n_tags = SS.cardinal tags in
-  if n_tags = 0 then failwith ("No tag is specified")
-  else if n_tags = 1 then let tag = SS.choose tags in
-                          verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts)
-  else SS.for_all (
-           fun tag ->
-           let t1 = Unix.gettimeofday() in
-           let _ = vprintln_title ("Track " ^ tag) in
-           let b = verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts) in
-           let t2 = Unix.gettimeofday() in
-           let _ = Options.Std.vprint("Track verification:\t\t\t\t") in
-           let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
-           b
-         ) tags
+  if n_tags = 0 then
+    failwith ("No tag is specified")
+  else if n_tags = 1 then
+    let tag = SS.choose tags in
+    verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts)
+  else
+    SS.for_all (
+      fun tag ->
+        let t1 = Unix.gettimeofday() in
+        let _ = vprintln_title ("Track " ^ tag) in
+        let b = verify_spec (st_options_of_tag tag options) (spec_of_tag tag ts) in
+        let t2 = Unix.gettimeofday() in
+        let _ = Options.Std.vprint("Track verification:\t\t\t\t") in
+        let _ = Options.Std.vprintln ((if b then "[OK]\t" else "[FAILED]") ^ "\t" ^ Options.Std.string_of_running_time t1 t2) in
+        b
+    ) tags

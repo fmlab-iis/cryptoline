@@ -110,8 +110,13 @@ val cross_cuts : bool ref
 val jobs : int ref
 (** number of concurrent jobs to be used *)
 
-val use_cli : bool ref
-(** [true] to use fork and the command-line interface of CryptoLine instead of Lwt *)
+type parallel_model =
+    WithLwt
+  | WithCli
+  | WithDomains
+
+val parallel_model : parallel_model ref
+(** The model used for parallel computation. *)
 
 val cli_path : string ref
 (** the path to the command-line interface of CryptoLine *)
@@ -316,8 +321,11 @@ val abs_interp : bool ref
 val verbose : bool ref
 (** [true] to print verbose messages *)
 
+val logfile_base : string ref
+(** the original file name for logging *)
+
 val logfile : string ref
-(** the file to write log messages to *)
+(** the current file to write log messages to *)
 
 val propose_logfile : string option -> string
 (** [propose_logfile fnopt] proposes a file name for a log.
