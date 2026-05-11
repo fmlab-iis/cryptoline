@@ -247,7 +247,7 @@ There are numerous \emph{instructions} supported by \cryptoline.
 \item $\iadc\ x\ a_1\ a_2\ y$ assigns $x$ by the addition of the carry
   bit $y$ and the source atoms $a_1$ and $a_2$.
 \item $\iadcs$ is the same as $\iadc$ except the carry bit is set.
-\item There are also instructions $\isub$ for subtraction; $\isubc$,
+\item There are also instructions $\isub$ for subtraction; $\isubs$, $\isubc$,
   $\isbc$ and $\isbcs$ for subtraction with carry; $\isubb$, $\isbb$,
   and $\isbbs$ for subtraction with borrow.
 \item $\imul$ and $\imuls$ are half multiplication operations.
@@ -256,7 +256,7 @@ There are numerous \emph{instructions} supported by \cryptoline.
 \item $\imull$ is full multiplication with results split into high
   part and low part.
 \item $\imulj$ is also full multiplication without splitting the
-  results.
+  results. $\ismulj$ is the signed variant of $\imulj$.
 \item $\inondet$ assigns a variable by a nondeterministic value.
 \item $\iset\ x$ assigns the bit variable $x$ by $1$ while $\iclear\
   x$ assigns the bit variable $x$ by $0$.
@@ -286,9 +286,12 @@ There are numerous \emph{instructions} supported by \cryptoline.
   in $x_o$.
 \item $\ispl\ x_h\ x_l\ a\ n$ splits the source atom $a$ at position
   $n$, stores the high bits in $x_h$, and stores the low bits in
-  $x_l$.
+  $x_l$. $\isspl$ is the signed variant of $\ispl$. It splits the
+  signed source atom, stores the signed high bits in $x_h$ and the
+  unsigned low bits in $x_l$.
 \item $\isplit$ is the same as $\ispl$ except that the high bits and
-  the low bits are extended to the size of $a$.
+  the low bits are extended to the size of $a$. $\issplit$ is the
+  signed variant of $\isplit$.
   While the low bits are always zero extended, the high bits are sign
   extended if $a$ is signed and otherwise zero extended.
 \item $\ijoin\ x\ a_1\ a_2$ assigns $x$ by the concatenation of the
@@ -345,7 +348,8 @@ There are numerous \emph{instructions} supported by \cryptoline.
          & \mid & \pmb\iadds\ \lval\ \lval\ \atom\ \atom \\
          & \mid & \pmb\iadc\ \lval\ \atom\ \atom\ \var
          & \mid & \pmb\iadcs\ \lval\ \lval\ \atom\ \atom\ \var \\
-         & \mid & \pmb\isub\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\isub\ \lval\ \atom\ \atom 
+         & \mid & \pmb\isubs\ \lval\ \lval\ \atom\ \atom \\
          & \mid & \pmb\isubc\ \lval\ \lval\ \atom\ \atom
          & \mid & \pmb\isubb\ \lval\ \lval\ \atom\ \atom \\
          & \mid & \pmb\isbc\ \lval\ \atom\ \atom\ \var
@@ -356,6 +360,7 @@ There are numerous \emph{instructions} supported by \cryptoline.
          & \mid & \pmb\imuls\ \lval\ \lval\ \atom\ \atom \\
          & \mid & \pmb\imull\ \lval\ \lval\ \atom\ \atom
          & \mid & \pmb\imulj\ \lval\ \atom\ \atom \\
+         & \mid & \pmb\ismulj\ \lval\ \atom\ \atom
          & \mid & \pmb\inondet\ \lval \\
          & \mid & \pmb\iset\ \lval
          & \mid & \pmb\iclear\ \lval \\
@@ -370,7 +375,9 @@ There are numerous \emph{instructions} supported by \cryptoline.
          & \mid & \pmb\icshr\ \lval\ \lval\ \atom\ \atom\ \const
          & \mid & \pmb\icshrs\ \lval\ \lval\ \lval\ \atom\ \atom\ \const \\
          & \mid & \pmb\ispl\ \lval\ \lval\ \atom\ \const
-         & \mid & \pmb\isplit\ \lval\ \lval\ \atom\ \const \\
+         & \mid & \pmb\isspl\ \lval\ \lval\ \atom\ \const \\
+         & \mid & \pmb\isplit\ \lval\ \lval\ \atom\ \const 
+         & \mid & \pmb\issplit\ \lval\ \lval\ \atom\ \const \\
          & \mid & \pmb\ijoin\ \lval\ \lval\ \atom\ \const \\
          & \mid & \pmb\iseteq\ \lval\ \atom\ \atom
          & \mid & \pmb\isetne\ \lval\ \atom\ \atom \\
