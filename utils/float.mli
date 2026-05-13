@@ -1,6 +1,26 @@
 
 type prec = Single | Double
 
+type fp_format = {
+  total_bits: int;
+  exp_bits: int;
+  mant_bits: int;
+  emin_norm: int;
+  emax_norm: int;
+}
+
+type mpfr_format = {
+  precision : int;
+  emin : int;
+  emax : int;
+}
+
+val get_fmt: prec -> fp_format
+val get_mpfr_fmt: prec -> mpfr_format
+
+val prec_of_size: int -> prec
+val size_of_prec: prec -> int
+
 module type FloatType = sig
   type t
 

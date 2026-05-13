@@ -2,6 +2,8 @@ open Std
 
 type prec = Single | Double
 type fp_format = {
+  total_bits: int;
+  exp_bits: int;
   mant_bits: int;
   emin_norm: int;
   emax_norm: int;
@@ -19,8 +21,8 @@ let to_mpfr_fmt (fmt: fp_format) =
     emax = fmt.emax_norm + 1;
   }
 
-let double_fmt: fp_format = {mant_bits = 52; emin_norm = -1022; emax_norm = 1023}
-let single_fmt: fp_format = {mant_bits = 23; emin_norm = -126; emax_norm = 127}
+let double_fmt: fp_format = {total_bits = 64; exp_bits = 11; mant_bits = 52; emin_norm = -1022; emax_norm = 1023}
+let single_fmt: fp_format = {total_bits = 32; exp_bits = 8; mant_bits = 23; emin_norm = -126; emax_norm = 127}
 let double_mpfr_fmt: mpfr_format = to_mpfr_fmt double_fmt
 let single_mpfr_fmt: mpfr_format = to_mpfr_fmt single_fmt
 
@@ -34,6 +36,16 @@ let get_mpfr_fmt (p: prec) =
   | Double -> double_mpfr_fmt
   | Single -> single_mpfr_fmt
 
+let prec_of_size (w: int) =
+  match w with
+  | 64 -> Double
+  | 32 -> Single
+  | _ -> raise (UnsupportedException ("Unknown floating-point size: " ^ string_of_int w))
+
+let size_of_prec (p: prec) =
+  match p with
+  | Double -> 64
+  | Single -> 32
 
 module type FloatType = sig
   type t
