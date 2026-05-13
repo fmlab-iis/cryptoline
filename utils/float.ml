@@ -169,20 +169,20 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
   type t = Mpfrf.t
 
   let of_string s ~rnd =
-    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
+    let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
     let _ = Mpfr.set_str x s ~base:10 rnd in
     Mpfrf.of_mpfr x
   let to_string = Mpfrf.to_string
   let of_z n ~rnd =
-    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
+    let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
     let _ = Mpfr.set_str x (Z.to_string n) ~base:10 rnd in
     Mpfrf.of_mpfr x
   let of_int n ~rnd =
-    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
+    let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
     let _ = Mpfr.set_si x n rnd in
     Mpfrf.of_mpfr x
   let of_float f ~rnd =
-    let x = (Mpfr.init2 (double_mpfr_fmt.precision + 1): Mpfr.t) in
+    let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
     let _ = Mpfr.set_d x f rnd in
     Mpfrf.of_mpfr x
   let to_mpq x = Mpqf.to_mpq (Mpfrf.to_mpqf x)
