@@ -294,12 +294,14 @@ let const_of_string_for_typ s t =
 let random_double_const () : FloatConst.t =
   let bits = Random.bits64 () in
   let f = Int64.float_of_bits bits in
-  FloatConst.of_float f ~rnd:Mpfr.Near
+  let ff = FloatConst.of_float f ~rnd:Mpfr.Near in
+  FloatConst.round_to Float.Double ~rnd:Mpfr.Near ff
 
 let random_single_const () : FloatConst.t =
   let bits = Random.bits32 () in
   let f = Int32.float_of_bits bits in
-  FloatConst.of_float f ~rnd:Mpfr.Near
+  let ff = FloatConst.of_float f ~rnd:Mpfr.Near in
+  FloatConst.round_to Float.Single ~rnd:Mpfr.Near ff
 
 
 [%%import "config.mlh"]
