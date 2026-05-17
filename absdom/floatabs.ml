@@ -189,4 +189,120 @@ module FloatAbsDomain = struct
     if a.bot || b.bot then fp_bottom ()
     else
       fp_add a (fp_neg b)
+      
+  (* Multiplication of intervals *)
+  let interval_mul (i1: Interval.t option) (i2: Interval.t option) =
+    match i1, i2 with
+    | Some iv1, Some iv2 ->
+
+        let scalar_mul x y =
+          match x,y with
+          | Float a, Float b -> Scalar.of_float (a *. b)
+          | Mpqf a, Mpqf b   -> Scalar.of_mpqf (Mpqf.mul a b)
+          | Mpfrf a, Mpfrf b -> Scalar.of_mpfrf (Mpfrf.mul a b Mpfr.Near)
+          | _ -> failwith "Operands of mul must be same type"
+        in
+
+        let a = iv1.inf in
+        let b = iv1.sup in
+        let c = iv2.inf in
+        let d = iv2.sup in
+        (* [a, b] * [c, d] *)
+        (* a, b > 0 & c, d > 0 *)
+        if Scalar.cmp a (Scalar.of_int 0) >= 0 &&
+           Scalar.cmp c (Scalar.of_int 0) >= 0 then
+          Some (Interval.of_scalar
+            (scalar_mul a c)
+            (scalar_mul b d))
+
+        (* a, b > 0 & c, d < 0 *)
+        else if Scalar.cmp a (Scalar.of_int 0) >= 0 &&
+                Scalar.cmp d (Scalar.of_int 0) <= 0 then
+          Some (Interval.of_scalar
+            (scalar_mul b c)
+            (scalar_mul a d))
+            
+        (* a, b < 0 & c, d > 0 *)
+        else if Scalar.cmp a (Scalar.of_int 0) >= 0 &&
+                Scalar.cmp d (Scalar.of_int 0) <= 0 then
+          Some (Interval.of_scalar
+            (scalar_mul a d)
+            (scalar_mul b c))
+
+        (* a, b < 0 & c, d < 0 *)
+        else if Scalar.cmp b (Scalar.of_int 0) <= 0 &&
+                Scalar.cmp d (Scalar.of_int 0) <= 0 then
+          Some (Interval.of_scalar
+            (scalar_mul b d)
+            (scalar_mul a c))
+
+        else None
+    | _ -> None
+  (* Multiplication *)
+  let fp_mul a b =
+    if a.bot || b.bot then fp_bottom ()
+    else
+      let pos_candidates = [
+        interval_mul a.pos b.pos;
+        interval_mul a.neg b.neg;
+      ] in
+      let neg_candidates = [
+        interval_mul a.pos b.neg;
+        interval_mul a.neg b.pos;
+      ] in
+      let pos_interval =
+        match interval_hull pos_candidates with
+        | Some iv ->
+            if Scalar.cmp iv.inf scalar_min < 0 then
+              Some (Interval.of_scalar scalar_min iv.sup)
+            else Some iv
+        | None -> None
+      in
+      let neg_interval =
+        match interval_hull neg_candidates with
+        | Some iv ->
+            if Scalar.cmp iv.sup (Scalar.neg scalar_min) > 0 then
+              Some (Interval.of_scalar iv.inf (Scalar.neg scalar_min))
+            else Some iv
+        | None -> None
+      in
+      let zero_possible =
+        a.zero || b.zero
+      in
+      check_float_result pos_interval neg_interval zero_possible
+  (* Reciprocal of the interval *)
+  let interval_recip (iv: Interval.t option) =
+    match iv with
+    | None -> None
+    | Some i ->
+        let scalar_div x y =
+          match x,y with
+          | Float a, Float b -> Scalar.of_float (a /. b)
+          | Mpqf a, Mpqf b   ->
+              let r = Mpq.init () in
+              Mpq.div r a b;
+              Scalar.of_mpqf r
+          | Mpfrf a, Mpfrf b ->
+              Scalar.of_mpfrf (Mpfrf.div a b Mpfr.Near)
+          | _ -> failwith "Operands of div must be same type"
+        in
+        let one = Scalar.of_int 1 in
+        Some (Interval.of_scalar
+          (scalar_div one i.sup)
+          (scalar_div one i.inf))
+  (* Reciprocal *)
+  let fp_recip a =
+    if a.bot then fp_bottom ()
+    else if a.zero then fp_bottom ()
+    else
+      let pos_interval = interval_recip a.pos in
+      let neg_interval = interval_recip a.neg in
+      check_float_result pos_interval neg_interval false
+  (* Division *)
+  let fp_div a b =
+    if a.bot || b.bot then fp_bottom ()
+    else
+      fp_mul a (fp_recip b)
 end
+
+
