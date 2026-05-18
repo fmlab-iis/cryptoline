@@ -2178,7 +2178,7 @@ let unpack_vinstr_1 mapper ctx lno dest_tok =
 let unpack_vinstr_11 ?(fix_dst_ty=true) mapper ctx lno dest_tok src_tok =
   let (relmtyp, src) = resolve_vec_with ctx lno src_tok in
   let src_vectyp = (relmtyp, List.length src) in
-  let (_, dest_names) = resolve_lv_vec_with ctx lno dest_tok
+  let (dest_typ, dest_names) = resolve_lv_vec_with ctx lno dest_tok
                           (if fix_dst_ty then Some src_vectyp else None) in
 
   let _ = if (List.length dest_names) <> (List.length src) then
@@ -2188,7 +2188,7 @@ let unpack_vinstr_11 ?(fix_dst_ty=true) mapper ctx lno dest_tok src_tok =
   let rwpairs = List.map2 (fun d s -> ([d], s)) dest_names src in
   let (aliasing_instrs, tmp_names, src_safe) = gen_tmp_movs ctx lno rwpairs relmtyp in
 
-  let map_func (lvname, rv) = mapper ctx lno {lvname; lvtyphint=None} rv in
+  let map_func (lvname, rv) = mapper ctx lno {lvname; lvtyphint=Some dest_typ} rv in
   let iss = List.rev (List.rev_map map_func (List.combine dest_names src_safe)) in
   (* FIXME: if we are not writing phony variables to vm, it fails when reading a vector. *)
   (* Clean up temp. names so that they are invisible to latter parts of the source *)
