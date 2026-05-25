@@ -3,6 +3,7 @@ open Set
 open Options.Std
 open Ast.Cryptoline
 open Utils.Std
+open Utils
 
 (** Utility functions *)
 
@@ -13,7 +14,7 @@ type result = Sat | Unsat | Unknown
 
 type exp =
   | Var of var
-  | Const of size * Z.t                 (* Const (w, n) is a bit-vector with width w and unsigned value `n % (2^w)` *)
+  | Const of size * const (* Const (w, Cint n) is a bit-vector with width w and unsigned value `n % (2^w)` *)
   | Not of size * exp
   | And of size * exp * exp
   | Or of size * exp * exp
@@ -75,7 +76,7 @@ let is_atomic t =
 let rec string_of_exp (e : exp) : string =
   match e with
   | Var v -> string_of_var v
-  | Const (_w, n) -> Z.to_string n
+  | Const (_w, c) -> string_of_const c
   | Not (_w, e) -> if is_atomic e then "!" ^ string_of_exp e ^ "" else "!(" ^ string_of_exp e ^ ")"
   | And (_w, e1, e2) ->
      (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
@@ -563,7 +564,8 @@ end
 let rec btor_of_exp m e =
   match e with
   | Var v -> m#mkvar v
-  | Const (w, n) -> m#mkconstd w n
+  | Const (w, Cint n) -> m#mkconstd w n
+  | Const _ -> fail "Const (_, c) with non-integer c is not supported"
   | Not (w, e) -> m#mknot w (btor_of_exp m e)
   | And (w, e1, e2) -> m#mkand w (btor_of_exp m e1) (btor_of_exp m e2)
   | Or (w, e1, e2) -> m#mkor w (btor_of_exp m e1) (btor_of_exp m e2)
@@ -578,18 +580,18 @@ let rec btor_of_exp m e =
   | Sdiv (w, e1, e2) -> m#mksdiv w (btor_of_exp m e1) (btor_of_exp m e2)
   | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
   | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Shl (w, e1, Const (_, Cint e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Shl _ -> fail "Shl (_, n) with non-constant n is not supported"
-  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Lshr (w, e1, Const (_, Cint e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
-  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Ashr (w, e1, Const (_, Cint e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
   | Rol (w, e, n) -> let n = match n with
-                       | Const (w, n) -> m#mkconstd_for_rotate w n
+                       | Const (w, Cint n) -> m#mkconstd_for_rotate w n
                        | _ -> btor_of_exp m n in
                      m#mkrol w (btor_of_exp m e) n
   | Ror (w, e, n) -> let n = match n with
-                       | Const (w, n) -> m#mkconstd_for_rotate w n
+                       | Const (w, Cint n) -> m#mkconstd_for_rotate w n
                        | _ -> btor_of_exp m n in
                      m#mkror w (btor_of_exp m e) n
   | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
@@ -1058,14 +1060,33 @@ let bvsmulo w e1 e2 =
 
 (** QF_BV to SMTLIB *)
 
-let smtlib2_of_const w n =
+let smtlib2_of_int_const w n =
   if w / 4 * 4 = w && not !use_binary_repr then "#x" ^ hex_of_Z w n
   else "#b" ^ bin_of_Z w n
+
+let smtlib2_of_float_const w f =
+  let p = Float.prec_of_size w in
+  let fmt = Float.get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  match FloatConst.to_ieee p f with
+  | FpNan -> Printf.sprintf "(_ NaN %d %d)" eb sb 
+  | FpPosInf -> Printf.sprintf "(_ +oo %d %d)" eb sb
+  | FpNegInf -> Printf.sprintf "(_ -oo %d %d)" eb sb
+  | FpFields fs -> Printf.sprintf "(fp %s %s %s)" 
+                     (smtlib2_of_int_const 1 fs.sign) 
+                     (smtlib2_of_int_const eb fs.exp) 
+                     (smtlib2_of_int_const (sb - 1) fs.mant)
+
+let smtlib2_of_const w c =
+  match c with
+  | Cint n -> smtlib2_of_int_const w n
+  | Cfloat f -> smtlib2_of_float_const w f
 
 let rec smtlib2_of_exp e =
   match e with
   | Var v -> string_of_var v
-  | Const (w, n) -> smtlib2_of_const w n
+  | Const (w, c) -> smtlib2_of_const w c
   | Not (_w, e) -> bvnot (smtlib2_of_exp e)
   | And (_w, e1, e2) -> bvand (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Or (_w, e1, e2) -> bvor (smtlib2_of_exp e1) (smtlib2_of_exp e2)
@@ -1084,10 +1105,12 @@ let rec smtlib2_of_exp e =
   | Lshr (_w, e1, e2) -> bvlshr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ashr (_w, e1, e2) -> bvashr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Rol (_, e, n) -> (match n with
-                      | Const (_, n) -> bvrol (smtlib2_of_exp e) (Z.to_int n)
+                      | Const (_, Cint n) -> bvrol (smtlib2_of_exp e) (Z.to_int n)
+                      | Const _ -> failwith ("SMTLIB2 format does not support rotation by a non-integer.")
                       | _ -> failwith ("SMTLIB2 format does not support rotation by an expression"))
   | Ror (_, e, n) -> (match n with
-                      | Const (_, n) -> bvror (smtlib2_of_exp e) (Z.to_int n)
+                      | Const (_, Cint n) -> bvror (smtlib2_of_exp e) (Z.to_int n)
+                      | Const _ -> failwith ("SMTLIB2 format does not support rotation by a non-integer.")
                       | _ -> failwith ("SMTLIB2 format does not support rotation by an expression."))
   | Concat (_w1, _w2, e1, e2) -> bvconcat (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Extract (_w, i, j, e) -> bvextract i j (smtlib2_of_exp e)
@@ -1580,7 +1603,8 @@ object(self)
   method bit_blast_exp_nocache e =
     match e with
     | Var v -> ([], self#bit_blast_var v)
-    | Const (w, n) -> self#bit_blast_const w n
+    | Const (w, Cint n) -> self#bit_blast_const w n
+    | Const _ -> failwith "Const (_, c) with non-integer c is not supported"
     | Not (w, e) ->
        let (clauses1, e) = self#bit_blast_exp e in
        let (clauses2, rs) = self#bit_blast_not w e in

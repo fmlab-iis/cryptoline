@@ -1,6 +1,7 @@
 open Std 
 
 type prec = Single | Double
+
 type fp_format = {
   total_bits: int;
   exp_bits: int;
@@ -8,11 +9,24 @@ type fp_format = {
   emin_norm: int;
   emax_norm: int;
 }
+
 type mpfr_format = {
   precision : int;
   emin : int;
   emax : int;
 }
+
+type fp_fields = {
+  sign : Z.t;
+  exp : Z.t;
+  mant : Z.t;
+}
+
+type fp_fields_ieee =
+  | FpFields of fp_fields
+  | FpNan
+  | FpPosInf
+  | FpNegInf
 
 let to_mpfr_fmt (fmt: fp_format) =
   {
@@ -56,6 +70,7 @@ module type FloatType = sig
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
   val to_mpq: t -> 'a Mpq.tt
+  val to_ieee: prec -> t -> fp_fields_ieee
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val sub: t -> t ->rnd:Mpfr.round -> t
@@ -88,6 +103,7 @@ module type S = sig
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
   val to_mpq: t -> 'a Mpq.tt
+  val to_ieee: prec -> t -> fp_fields_ieee
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val add_int: t -> int ->rnd:Mpfr.round -> t
@@ -132,6 +148,7 @@ module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   let of_int = FloatNum.of_int
   let of_float = FloatNum.of_float
   let to_mpq = FloatNum.to_mpq
+  let to_ieee = FloatNum.to_ieee
 
   let add = FloatNum.add
   let add_int x n ~rnd = FloatNum.add x (FloatNum.of_int n ~rnd) ~rnd
@@ -198,6 +215,45 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
     let _ = Mpfr.set_d x f rnd in
     Mpfrf.of_mpfr x
   let to_mpq x = Mpqf.to_mpq (Mpfrf.to_mpqf x)
+  let to_ieee p x =
+    if Mpfrf.nan_p x then 
+      FpNan
+    else if Mpfrf.inf_p x then
+      if Mpfrf.sgn x < 0 then FpNegInf else FpPosInf
+    else
+      let z_of_mpz z =
+        Z.of_string (Mpz.to_string z) in
+      let z_mul_2exp n e = (* computes n*2^e in Zarith, basically Z.shift_left or Z.shift_right *)
+        if e >= 0 then
+          Z.shift_left n e
+        else
+          let d = Z.shift_left Z.one (-e) in
+          if not (Z.equal (Z.erem n d) Z.zero) then
+            failwith "n is not divisible by 2^(-e)"
+          else
+            Z.div n d in
+      let fmt = get_fmt p in
+      let mz = Mpz.init () in
+      let e = Mpfr.get_z_exp mz x in   (* x = mz * 2^e *)
+      let z = Z.abs (z_of_mpz mz) in   (* z = |mz| *)
+      let sign_bit = if Mpfrf.sgn x < 0 then Z.one else Z.zero in (* sign_bit = sign bit of x *)
+      if Z.equal z Z.zero then  (* x = mz * 2^e = z * 2^e = 0 *)
+        FpFields { sign = sign_bit; exp = Z.zero; mant = Z.zero }
+      else
+        let bias = (1 lsl (fmt.exp_bits - 1)) - 1 in (* bias = 2^(eb-1) - 1 *)
+        let e_unbiased = e + (Z.numbits z - 1) in
+        let e_biased = e_unbiased + bias in
+        if e_unbiased > fmt.emax_norm then       (* unbiased exp is greater than max exp allowed *)
+          failwith "exponent overflow"
+        else if e_unbiased >= fmt.emin_norm then (* x is normal *)
+          let mant_with_hidden = z_mul_2exp z (e + fmt.mant_bits - e_unbiased) in
+          let hidden = Z.shift_left Z.one fmt.mant_bits in
+          FpFields { sign = sign_bit ; exp = Z.of_int e_biased ; mant = Z.sub mant_with_hidden hidden }
+        else                                     (* x is subnormal *)
+          FpFields { sign = sign_bit ; exp = Z.zero ; mant = z_mul_2exp z (e + fmt.mant_bits - fmt.emin_norm) }
+        
+
+
 
   let add x y ~rnd = Mpfrf.add x y rnd
   let sub x y ~rnd = Mpfrf.sub x y rnd
@@ -277,6 +333,7 @@ module Qnumber: FloatType with type t = Mpqf.t = struct
   let of_z n ~rnd:_ = Mpqf.of_string (Z.to_string n)
   let of_float f ~rnd:_ = Mpqf.of_float f
   let to_mpq = Mpqf.to_mpq
+  let to_ieee _ _ = raise (UnsupportedException "to_ieee is not implemented yet")
 
   let add x y ~rnd:_ = Mpqf.add x y
   let sub x y ~rnd:_ = Mpqf.sub x y

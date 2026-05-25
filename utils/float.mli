@@ -15,6 +15,19 @@ type mpfr_format = {
   emax : int;
 }
 
+type fp_fields = {
+  sign : Z.t;
+  exp : Z.t;
+  mant : Z.t;
+}
+
+type fp_fields_ieee =
+  | FpFields of fp_fields
+  | FpNan
+  | FpPosInf
+  | FpNegInf
+
+
 val get_fmt: prec -> fp_format
 val get_mpfr_fmt: prec -> mpfr_format
 
@@ -30,6 +43,7 @@ module type FloatType = sig
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
   val to_mpq: t -> 'a Mpq.tt
+  val to_ieee: prec -> t -> fp_fields_ieee
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val sub: t -> t ->rnd:Mpfr.round -> t
@@ -64,6 +78,7 @@ module type S = sig
   val of_int: int -> rnd:Mpfr.round -> t
   val of_float: float -> rnd:Mpfr.round -> t
   val to_mpq: t -> 'a Mpq.tt
+  val to_ieee: prec -> t -> fp_fields_ieee
 
   val add: t -> t ->rnd:Mpfr.round -> t
   val add_int: t -> int ->rnd:Mpfr.round -> t

@@ -9,7 +9,7 @@ type result = Sat | Unsat | Unknown (* *)
 
 type exp =
   | Var of var                          (** variable *)
-  | Const of size * Z.t                 (** constant *)
+  | Const of size * const               (** constant *)
   | Not of size * exp                   (** bit-wise NOT *)
   | And of size * exp * exp             (** bit-wise AND *)
   | Or of size * exp * exp              (** bit-wise OR *)

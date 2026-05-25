@@ -21,7 +21,7 @@ let force_const_to_int c =
 
 let exp_var v = Var v
 
-let exp_const w n = Const (w, force_const_to_int n)
+let exp_const w c = Const (w, c)
 
 let exp_atom a =
   match a with
@@ -34,7 +34,7 @@ let exp_carry n c =
 let rec exp_rexp e =
   match e with
   | Rvar v -> Var v
-  | Rconst (w, n) -> Const (w, force_const_to_int n)
+  | Rconst (w, c) -> Const (w, c)
   | Runop (w, op, e) ->
      (match op with
       | Rnegb -> Neg (w, exp_rexp e)
@@ -110,13 +110,13 @@ let exp_subc ?extend:(ext=false) w a1 a2 =
         Add (w + 1,
              ZeroExtend (w, 1, exp_atom a1),
              ZeroExtend (w, 1, Not (w, exp_atom a2))),
-        Const (w + 1, Z.one))
+        Const (w + 1, Cint Z.one))
   else
     Add(w,
         Add (w,
              exp_atom a1,
              Not (w, exp_atom a2)),
-        Const (w, Z.one))
+        Const (w, Cint Z.one))
 
 let exp_subb ?extend:(ext=false) w a1 a2 =
   if ext then
@@ -184,7 +184,7 @@ let exp_smul ?extend:(ext=false) w a1 a2 =
 let exp_cshl w a1 a2 n =
   Shl (w + w,
        Concat (w, w, exp_atom a1, exp_atom a2),
-       Const (w + w, n))
+       Const (w + w, Cint n))
 
 let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
 let bexp_shl v a p =
@@ -195,7 +195,7 @@ let bexp_shls l v a p =
   let ip = Z.to_int p in
   Conj
     (Eq (ip, exp_var l, High (w - ip, ip, exp_atom a)),
-     Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, p))))
+     Eq (w, exp_var v, Shl (w, exp_atom a, Const (w, Cint p))))
 let bexp_shr v a p =
   let w = size_of_var v in
   Eq (w, exp_var v, Lshr (w, exp_atom a, exp_atom p))
@@ -203,7 +203,7 @@ let bexp_shrs v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
   Conj
-    (Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, p))),
+    (Eq (w, exp_var v, Lshr (w, exp_atom a, Const (w, Cint p))),
      Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
 let bexp_sar v a p =
   let w = size_of_var v in
@@ -212,7 +212,7 @@ let bexp_sars v l a p =
   let w = size_of_var v in
   let ip = Z.to_int p in
   Conj
-    (Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, p))),
+    (Eq (w, exp_var v, Ashr (w, exp_atom a, Const (w, Cint p))),
      Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a)))
 let bexp_cshl vh vl a1 a2 p =
   let w = size_of_var vh in
@@ -224,7 +224,7 @@ let bexp_cshl vh vl a1 a2 p =
          exp_var vl,
          Lshr (w,
                Low (w, w, exp_cshl w a1 a2 p),
-               Const (w, p))))
+               Const (w, Cint p))))
 let bexp_cshls l vh vl a1 a2 p =
   let w = size_of_var vh in
   let ip = Z.to_int p in
@@ -237,21 +237,21 @@ let bexp_cshls l vh vl a1 a2 p =
             exp_var vl,
             Lshr (w,
                   Low (w, w, exp_cshl w a1 a2 p),
-                  Const (w, p)))),
+                  Const (w, Cint p)))),
      (Eq (ip, exp_var l, High (w - ip, ip, exp_atom a1)))
     )
 let bexp_cshr vh vl a1 a2 p =
   let w = size_of_var vh in
   let ip = Z.to_int p in
   Conj
-    ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, p)))),
+    ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, Cint p)))),
      (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atom a1), High (ip, w - ip, exp_atom a2)))))
 let bexp_cshrs vh vl l a1 a2 p =
   let w = size_of_var vh in
   let ip = Z.to_int p in
   Conj
     (Conj
-       ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, p)))),
+       ((Eq (w, exp_var vh, Lshr (w, exp_atom a1, Const (w, Cint p)))),
         (Eq (w, exp_var vl, Concat (ip, w - ip, Low (ip, w - ip, exp_atom a1), High (ip, w - ip, exp_atom a2))))),
      (Eq (ip, exp_var l, Low (ip, w - ip, exp_atom a2))))
 
@@ -322,9 +322,9 @@ let bexp_muls c v a1 a2 =
        (Eq (1,
             exp_var c,
             Ite (w,
-                 Eq (w, High (w, w, exp_umul ~extend:true w a1 a2), Const (w, Z.zero)),
-                 Const (1, Z.zero),
-                 Const (1, Z.one))),
+                 Eq (w, High (w, w, exp_umul ~extend:true w a1 a2), Const (w, Cint Z.zero)),
+                 Const (1, Cint Z.zero),
+                 Const (1, Cint Z.one))),
         Eq (w,
             exp_var v,
             Low (w, w, exp_umul ~extend:true w a1 a2)))
@@ -336,8 +336,8 @@ let bexp_muls c v a1 a2 =
                  Eq (w + w,
                      SignExtend (w, w, Low (w, w, exp_smul ~extend:true w a1 a2)),
                      exp_smul ~extend:true w a1 a2),
-                 Const (1, Z.zero),
-                 Const (1, Z.one))),
+                 Const (1, Cint Z.zero),
+                 Const (1, Cint Z.one))),
         Eq (w,
             exp_var v,
             Low (w, w, exp_smul ~extend:true w a1 a2)))
@@ -399,7 +399,7 @@ let bexp_seteq v a1 a2 =
     Eq (sv,
         exp_var v,
         (Sub (sv,
-              Const (sv, Z.zero),
+              Const (sv, Cint Z.zero),
               ZeroExtend (1, sv - 1, Comp (w, exp_atom a1, exp_atom a2)))))
 let bexp_setne v a1 a2 =
   let w = size_of_atom a1 in
@@ -410,7 +410,7 @@ let bexp_setne v a1 a2 =
     Eq (sv,
         exp_var v,
         Sub (sv,
-             Const (sv, Z.zero),
+             Const (sv, Cint Z.zero),
              ZeroExtend (1, sv - 1, Not (1, Comp (w, exp_atom a1, exp_atom a2)))))
 let bexp_and v a1 a2 =
   let w = size_of_var v in
@@ -448,13 +448,13 @@ let bexp_cast od v a =
     | Some d ->
        (match v.vtyp, typ_of_atom a with
         | Tuint wv, Tuint wa ->
-           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Cint Z.zero)))
            else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atom a)))
         | Tuint wv, Tsint wa ->
            if wv >= wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atom a)))
            else Some (Eq (wa - wv, exp_var d, High (wv, wa - wv, exp_atom a)))
         | Tsint wv, Tuint wa ->
-           if wv > wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           if wv > wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Cint Z.zero)))
            else if wv = wa then Some (Eq (1, exp_var d, High (wa - 1, 1, exp_atom a)))
            else Some (Eq (wa - wv + 1,
                           exp_var d,
@@ -463,7 +463,7 @@ let bexp_cast od v a =
                                ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
         | Tsint wv, Tsint wa ->
-           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Z.zero)))
+           if wv >= wa then Some (Eq (wv - wa, exp_var d, Const (wv - wa, Cint Z.zero)))
            else Some (Eq (wa - wv + 1,
                           exp_var d,
                           Add (wa - wv + 1,
@@ -571,7 +571,7 @@ let bexp_atom_ssub_safe w a1 a2 =
 let bexp_atom_usbc_safe w a1 a2 y =
   let a1 = exp_atom a1 in
   let a2 = exp_atom a2 in
-  let borrow = Sub (w, Const (w, Z.one), exp_carry w y) in
+  let borrow = Sub (w, Const (w, Cint Z.one), exp_carry w y) in
   Conj
     (Lneg (Uaddo (w, a2, borrow)),
      Lneg (Usubo (w, a1, Add (w, a2, borrow))))
@@ -579,7 +579,7 @@ let bexp_atom_usbc_safe w a1 a2 y =
 let bexp_atom_ssbc_safe w a1 a2 y =
   let a1 = exp_atom a1 in
   let a2 = exp_atom a2 in
-  let borrow = Sub (w, Const (w, Z.one), exp_carry w y) in
+  let borrow = Sub (w, Const (w, Cint Z.one), exp_carry w y) in
   Conj
     (Lneg (Saddo (w, a2, borrow)),
      Lneg (Ssubo (w, a1, Add (w, a2, borrow))))
@@ -613,13 +613,13 @@ let bexp_atom_ushl_safe w a p =
       let n = Z.to_int k in
         Eq (n,
           High (w - n, n, exp_atom a),
-          Const (n, Z.zero))
+          Const (n, Cint Z.zero))
     | Cfloat _ -> 
           raise (UnsupportedException "An shl instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
-        Lshr (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
-        Const (w, Z.zero))
+        Lshr (w, exp_atom a, Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p)),
+        Const (w, Cint Z.zero))
 
 let bexp_atom_sshl_safe w a p =
   if atom_is_const p then
@@ -636,11 +636,11 @@ let bexp_atom_sshl_safe w a p =
       Ashr (w,
             exp_atom a,
             Sub (w,
-                 Sub (w, Const (w, Z.of_int w), exp_atom p),
-                 Const (w, Z.one))) in
+                 Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p),
+                 Const (w, Cint Z.one))) in
     Disj
-      (Eq (w, shifted, Const (w, Z.zero)),
-       Eq (w, shifted, Sub (w, Const (w, Z.zero), Const (w, Z.one))))
+      (Eq (w, shifted, Const (w, Cint Z.zero)),
+       Eq (w, shifted, Sub (w, Const (w, Cint Z.zero), Const (w, Cint Z.one))))
 
 let bexp_atom_ushr_safe w a p =
   if atom_is_const p then
@@ -649,24 +649,24 @@ let bexp_atom_ushr_safe w a p =
       let n = Z.to_int k in
       Eq (n,
           Low (n, w - n, exp_atom a),
-          Const (n, Z.zero))
+          Const (n, Cint Z.zero))
     | Cfloat _ ->
       raise (UnsupportedException "An shr instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
-        Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
-        Const (w, Z.zero))
+        Shl (w, exp_atom a, Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p)),
+        Const (w, Cint Z.zero))
 
 let bexp_atom_sshr_safe w a p =
   if atom_is_const p then
     let n = Z.to_int (force_const_to_int (const_of_atom p)) in
     Conj
-      (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)),
-       Eq (w, Low (n, w - n, exp_atom a), Const (n, Z.zero)))
+      (Eq (1, High (w - 1, 1, exp_atom a), Const (1, Cint Z.zero)),
+       Eq (w, Low (n, w - n, exp_atom a), Const (n, Cint (Z.zero))))
   else
     Conj
-      (Eq (w, Lshr (w, exp_atom a, Const (w, Z.of_int (w - 1))), Const (w, Z.zero)),
-       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)), Const (w, Z.zero)))
+      (Eq (w, Lshr (w, exp_atom a, Const (w, Cint (Z.of_int (w - 1)))), Const (w, Cint (Z.zero))),
+       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p)), Const (w, Cint (Z.zero))))
 
 let bexp_atom_usar_safe w a p =
   if atom_is_const p then
@@ -674,14 +674,14 @@ let bexp_atom_usar_safe w a p =
     | Cint k ->
       let n = Z.to_int k in
       Conj
-        (Eq (n, Low (n, w - n, exp_atom a), Const (n, Z.zero)),
-         Eq (1, High (w - 1, 1, exp_atom a), Const (1, Z.zero)))
+        (Eq (n, Low (n, w - n, exp_atom a), Const (n, Cint (Z.zero))),
+         Eq (1, High (w - 1, 1, exp_atom a), Const (1, Cint (Z.zero))))
     | Cfloat _ -> 
       raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
   else
     Conj
-      (Eq (w, Lshr (w, exp_atom a, Const (w, Z.of_int (w - 1))), Const (w, Z.zero)),
-       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)), Const (w, Z.zero)))
+      (Eq (w, Lshr (w, exp_atom a, Const (w, Cint (Z.of_int (w - 1)))), Const (w, Cint (Z.zero))),
+       Eq (w, Shl (w, exp_atom a, Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p)), Const (w, Cint (Z.zero))))
 
 let bexp_atom_ssar_safe w a p =
   if atom_is_const p then
@@ -690,36 +690,36 @@ let bexp_atom_ssar_safe w a p =
       let n = Z.to_int k in
       Eq (n,
           Low (n, w - n, exp_atom a),
-          Const (n, Z.zero))
+          Const (n, Cint (Z.zero)))
     | Cfloat _ ->
       raise (UnsupportedException "An sar instruction expects a non-floatingpoint shift offset.")
   else
     Eq (w,
-        Shl (w, exp_atom a, Sub (w, Const (w, Z.of_int w), exp_atom p)),
-        Const (w, Z.zero))
+        Shl (w, exp_atom a, Sub (w, Const (w, Cint (Z.of_int w)), exp_atom p)),
+        Const (w, Cint (Z.zero)))
 
 let bexp_atom_ucshl_safe w a1 _a2 n =
   Conj
-    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+    (Ule (w, Const (w, Cint (n)), Const (w, Cint (Z.of_int w))),
      bexp_atom_ushl_safe w a1 (mkatom_const (uint_t w) (Cint n)))
 
 let bexp_atom_scshl_safe w a1 _a2 n =
   Conj
-    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
+    (Ule (w, Const (w, Cint (n)), Const (w, Cint (Z.of_int w))),
      bexp_atom_sshl_safe w a1 (mkatom_const (uint_t w) (Cint n)))
 
 let bexp_atom_ucshr_safe w _a1 a2 n =
   let ni = Z.to_int n in
   Conj
-    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Z.zero)))
+    (Ule (w, Const (w, Cint (n)), Const (w, Cint (Z.of_int w))),
+     Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Cint (Z.zero))))
 
 let bexp_atom_scshr_safe w a1 a2 n =
   let ni = Z.to_int n in
   Conj
-    (Ule (w, Const (w, n), Const (w, Z.of_int w)),
-     Conj (Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Z.zero)),
-           Eq (1, High (w - 1, 1, exp_atom a1), Const (1, Z.zero))))
+    (Ule (w, Const (w, Cint (n)), Const (w, Cint (Z.of_int w))),
+     Conj (Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, Cint (Z.zero))),
+           Eq (1, High (w - 1, 1, exp_atom a1), Const (1, Cint (Z.zero)))))
 
 let bexp_vpc_safe v a =
   match v.vtyp, typ_of_atom a with
@@ -727,17 +727,17 @@ let bexp_vpc_safe v a =
      if wv >= wa then True
      else Eq (wa - wv,
               High (wv, wa - wv, exp_atom a),
-              Const (wa - wv, Z.zero))
+              Const (wa - wv, Cint (Z.zero)))
   | Tsint wv, Tuint wa ->
      if wv > wa then True
      else Eq (wa - wv + 1,
               High (wv - 1, wa - wv + 1, exp_atom a),
-              Const (wa - wv + 1, Z.zero))
+              Const (wa - wv + 1, Cint (Z.zero)))
   | Tuint wv, Tsint wa ->
-     if wv >= wa - 1 then Eq (1, High (wa - 1, 1, exp_atom a), Const (1, Z.zero))
+     if wv >= wa - 1 then Eq (1, High (wa - 1, 1, exp_atom a), Const (1, Cint (Z.zero)))
      else Eq (wa - wv,
               High (wv, wa - wv, exp_atom a),
-              Const (wa - wv, Z.zero))
+              Const (wa - wv, Cint (Z.zero)))
   | Tsint wv, Tsint wa ->
      if wv >= wa then True
      else Eq (wa,
