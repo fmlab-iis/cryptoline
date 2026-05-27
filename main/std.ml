@@ -576,7 +576,10 @@ let anon file =
        () in
      let (_, s) = Common.parse_and_check file in
      let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
-     let ss = Ast.Cryptoline.cut_spec (tagged_spec_untag s |> normalize_spec |> ssa_spec) in
+     let ss = Ast.Cryptoline.cut_spec (
+         tagged_spec_untag s |> ssa_spec |> normalize_spec
+         |> (if !apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
+       ) in
      let smtlibs_rev =
        List.fold_left
          (fun smtlibs s ->
