@@ -43,6 +43,18 @@ package `pyparsing` is required.
 Installation
 ============
 
+On macOS
+--------
+
+```
+$ brew install opam curl cmake boolector singular
+$ opam install dune ocamlfind lwt lwt_ppx num zarith
+$ opam init
+$ eval $(opam env)
+$ dune build
+$ dune install
+```
+
 On Linux
 --------
 
@@ -159,7 +171,7 @@ Reference
 =========
 
 - Vincent Hwang, Jiaxiang Liu, Gregor Seiler, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
-  Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU. 
+  Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU.
   IACR Transactions on Cryptographic Hardware and Embedded Systems. 2022(4): 718-750 (2022).
 - Yu-Fu Fu, Jiaxiang Liu, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
   Signed Cryptographic Program Verification with Typed CryptoLine.
