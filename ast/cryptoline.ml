@@ -2,7 +2,7 @@
 open Set
 open NBits
 open Utils.Std
-open Utils
+open Utils.Float
 
 
 module StringElem : OrderedType with type t = string =
@@ -65,7 +65,7 @@ let map_snd f pairs =
 
 
 (** Constants *)
-module FloatConst = Float.Make(Float.Fnumber)
+module FloatConst = Make(Fnumber) (* see utils/float.ml *)
 
 type const =
   | Cint   of Z.t
@@ -98,40 +98,40 @@ let const_to_float c =
 let cadd c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint(Z.add n m)
-  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.add f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.add f1 f2 ~rnd:RNE)
   | Cfloat f, Cint n ->
-    Cfloat (FloatConst.add f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.add f (FloatConst.of_z n ~rnd:RNE) ~rnd:RNE)
   | Cint n, Cfloat f ->
-    Cfloat (FloatConst.add (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.add (FloatConst.of_z n ~rnd:RNE) f ~rnd:RNE)
 
 let csub c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint (Z.sub n m)
-  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.sub f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.sub f1 f2 ~rnd:RNE)
   | Cfloat f, Cint n  ->
-    Cfloat (FloatConst.sub f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.sub f (FloatConst.of_z n ~rnd:RNE) ~rnd:RNE)
   | Cint n, Cfloat f ->
-    Cfloat (FloatConst.sub (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.sub (FloatConst.of_z n ~rnd:RNE) f ~rnd:RNE)
 
 let cmul c1 c2 =
   match c1, c2 with
   | Cint n, Cint m -> Cint (Z.mul n m)
-  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.mul f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.mul f1 f2 ~rnd:RNE)
   | Cfloat f, Cint n ->
-    Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.mul f (FloatConst.of_z n ~rnd:RNE) ~rnd:RNE)
   | Cint n, Cfloat f ->
-    Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+    Cfloat (FloatConst.mul (FloatConst.of_z n ~rnd:RNE) f ~rnd:RNE)
 
 let cdiv c1 c2 = (*floating-point division of constants*)
   match c1, c2 with
   | Cint n, Cint m when not (Z.equal m Z.zero) -> 
-      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) (FloatConst.of_z m ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:RNE) (FloatConst.of_z m ~rnd:RNE) ~rnd:RNE)
   | Cfloat f1, Cfloat f2 when not (FloatConst.eq f2 FloatConst.zero) -> 
-      Cfloat (FloatConst.div f1 f2 ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.div f1 f2 ~rnd:RNE)
   | Cfloat f, Cint n when not (Z.equal n Z.zero) ->
-      Cfloat (FloatConst.div f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.div f (FloatConst.of_z n ~rnd:RNE) ~rnd:RNE)
   | Cint n, Cfloat f when not (FloatConst.eq f FloatConst.zero) ->
-      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.div (FloatConst.of_z n ~rnd:RNE) f ~rnd:RNE)
   | _, _ -> failwith "Denominator must not be zero."
 
 let cpow c1 c2 =
@@ -150,18 +150,18 @@ let cpow c1 c2 =
           if Z.equal (Z.rem n num_two) Z.zero then z
           else Z.mul x z in
       Cint (big_pow n m)
-  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.pow f1 f2 ~rnd:Mpfr.Near)
+  | Cfloat f1, Cfloat f2 -> Cfloat (FloatConst.pow f1 f2 ~rnd:RNE)
   | Cfloat f, Cint n ->
     if Z.fits_int n then
-      Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.pow_int f (Z.to_int n) ~rnd:RNE)
     else
-      Cfloat (FloatConst.pow f (FloatConst.of_z n ~rnd:Mpfr.Near) ~rnd:Mpfr.Near)
-  | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:Mpfr.Near) f ~rnd:Mpfr.Near)
+      Cfloat (FloatConst.pow f (FloatConst.of_z n ~rnd:RNE) ~rnd:RNE)
+  | Cint n, Cfloat f -> Cfloat (FloatConst.pow (FloatConst.of_z n ~rnd:RNE) f ~rnd:RNE)
 
 let cneg c =
   match c with
   | Cint n -> Cint (Z.neg n)
-  | Cfloat f -> Cfloat (FloatConst.neg f ~rnd:Mpfr.Near)
+  | Cfloat f -> Cfloat (FloatConst.neg f ~rnd:RNE)
 
 let sgn_const c =
   match c with
@@ -172,15 +172,15 @@ let eq_const c1 c2 =
   match c1, c2 with
   | Cint n1, Cint n2 -> Z.equal n1 n2
   | Cfloat f1, Cfloat f2 -> FloatConst.eq f1 f2
-  | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
-  | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+  | Cfloat f1, Cint n2 -> FloatConst.eq f1 (FloatConst.of_z n2 ~rnd:RNE)
+  | Cint n1, Cfloat f2 -> FloatConst.eq (FloatConst.of_z n1 ~rnd:RNE) f2
 
 let cmp_const c1 c2 =
   match c1, c2 with
   | Cint n1, Cint n2 -> Z.compare n1 n2
   | Cfloat f1, Cfloat f2 -> FloatConst.cmp f1 f2
-  | Cfloat f1, Cint n2 -> FloatConst.cmp f1 (FloatConst.of_z n2 ~rnd:Mpfr.Near)
-  | Cint n1, Cfloat f2 -> FloatConst.cmp (FloatConst.of_z n1 ~rnd:Mpfr.Near) f2
+  | Cfloat f1, Cint n2 -> FloatConst.cmp f1 (FloatConst.of_z n2 ~rnd:RNE)
+  | Cint n1, Cfloat f2 -> FloatConst.cmp (FloatConst.of_z n1 ~rnd:RNE) f2
 
 
 (** Types *)
@@ -210,16 +210,16 @@ let min_of_typ ty =
   match ty with
   | Tuint _w -> Cint Z.zero
   | Tsint w -> Cint (Z.neg (Z.pow z_two (w - 1)))
-  | Tdouble -> Cfloat (FloatConst.neg (FloatConst.max_val Float.Double) ~rnd:Mpfr.Near)
-  | Tsingle -> Cfloat (FloatConst.neg (FloatConst.max_val Float.Single) ~rnd:Mpfr.Near)
+  | Tdouble -> Cfloat (FloatConst.neg (FloatConst.max_val Double) ~rnd:RNE)
+  | Tsingle -> Cfloat (FloatConst.neg (FloatConst.max_val Single) ~rnd:RNE)
 
 
 let max_of_typ ty =
   match ty with
   | Tuint w -> Cint (Z.sub (Z.pow z_two w) Z.one)
   | Tsint w -> Cint (Z.sub (Z.pow z_two (w - 1)) Z.one)
-  | Tdouble -> Cfloat (FloatConst.max_val Float.Double)
-  | Tsingle -> Cfloat (FloatConst.max_val Float.Single)
+  | Tdouble -> Cfloat (FloatConst.max_val Double)
+  | Tsingle -> Cfloat (FloatConst.max_val Single)
 
 let typ_is_unsigned ty =
   match ty with
@@ -289,19 +289,19 @@ let typ_map f ty =
 let const_of_string_for_typ s t =
   match t with
   | Tuint _ | Tsint _ -> Cint (Z.of_string s)
-  | Tdouble | Tsingle -> Cfloat (FloatConst.of_string s ~rnd:Mpfr.Near)
+  | Tdouble | Tsingle -> Cfloat (FloatConst.of_string s ~rnd:RNE)
 
 let random_double_const () : FloatConst.t =
   let bits = Random.bits64 () in
   let f = Int64.float_of_bits bits in
-  let ff = FloatConst.of_float f ~rnd:Mpfr.Near in
-  FloatConst.round_to Float.Double ~rnd:Mpfr.Near ff
+  let ff = FloatConst.of_float f ~rnd:RNE in
+  FloatConst.round_to Double ~rnd:RNE ff
 
 let random_single_const () : FloatConst.t =
   let bits = Random.bits32 () in
   let f = Int32.float_of_bits bits in
-  let ff = FloatConst.of_float f ~rnd:Mpfr.Near in
-  FloatConst.round_to Float.Single ~rnd:Mpfr.Near ff
+  let ff = FloatConst.of_float f ~rnd:RNE in
+  FloatConst.round_to Single ~rnd:RNE ff
 
 
 [%%import "config.mlh"]
@@ -345,8 +345,8 @@ let is_representable ty v =
     | _ ->
       false
     )
-  | Tdouble, Cfloat f -> FloatConst.is_representable Float.Double f
-  | Tsingle, Cfloat f -> FloatConst.is_representable Float.Single f
+  | Tdouble, Cfloat f -> FloatConst.is_representable Double f
+  | Tsingle, Cfloat f -> FloatConst.is_representable Single f
   | (Tdouble | Tsingle), Cint _ -> false
   | (Tuint _ | Tsint _), Cfloat _ -> false
 
@@ -537,7 +537,7 @@ let epow' e1 e2 =
   | Econst (Cint n), _ when Z.equal n Z.zero -> Econst (Cint Z.zero)
   | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.zero -> Econst (Cfloat FloatConst.zero)
   | Econst (Cint n), _ when Z.equal n Z.one -> Econst (Cint Z.one)
-  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.one -> Econst (Cfloat (FloatConst.of_int 1 ~rnd:Mpfr.Near))
+  | Econst (Cfloat f), _ when FloatConst.eq f FloatConst.one -> Econst (Cfloat (FloatConst.of_int 1 ~rnd:RNE))
   | Econst c1, Econst c2 -> Econst (cpow c1 c2)
   | _, _ -> epow e1 e2
 let esq e = Ebinop (Epow, e, Econst (Cint z_two))
@@ -3662,7 +3662,7 @@ let auto_cast_const ?preserve:(preserve=false) ct ty (nty, c) =
     let vn = 
       let abs_c_str = (match c with
                       | Cint n -> Z.to_string (Z.abs n)
-                      | Cfloat f -> FloatConst.to_string (FloatConst.abs f ~rnd:Mpfr.Near)) in
+                      | Cfloat f -> FloatConst.to_string (FloatConst.abs f ~rnd:RNE)) in
       "auto_cast_" ^ (if sgn_const c = -1 then "minus" else "") ^ abs_c_str ^ "_" ^ string_of_typ ty in
     let v = mkvar vn ty in
     let _ = Hashtbl.add ct (c, ty) v in
@@ -4909,17 +4909,17 @@ let rec eval_rexp_float e =
   | Runop (_, op, e) ->
       let v = eval_rexp_float e in
       (match op with
-       | Rnegb -> FloatConst.neg v ~rnd:Mpfr.Near
+       | Rnegb -> FloatConst.neg v ~rnd:RNE
        | _ ->
            raise (EvaluationException "Floating-point does not support this operation"))
   | Rbinop (_, op, e1, e2) ->
       let v1 = eval_rexp_float e1 in
       let v2 = eval_rexp_float e2 in
       (match op with
-       | Radd -> FloatConst.add v1 v2 ~rnd:Mpfr.Near
-       | Rsub -> FloatConst.sub v1 v2 ~rnd:Mpfr.Near
-       | Rmul -> FloatConst.mul v1 v2 ~rnd:Mpfr.Near
-       | Rdiv -> FloatConst.div v1 v2 ~rnd:Mpfr.Near
+       | Radd -> FloatConst.add v1 v2 ~rnd:RNE
+       | Rsub -> FloatConst.sub v1 v2 ~rnd:RNE
+       | Rmul -> FloatConst.mul v1 v2 ~rnd:RNE
+       | Rdiv -> FloatConst.div v1 v2 ~rnd:RNE
        | _ ->
            raise (EvaluationException "Floating-point does not support this operation"))
   | Ruext _ | Rsext _ | Rconcat _ ->

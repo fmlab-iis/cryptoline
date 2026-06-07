@@ -264,7 +264,7 @@ token = parse
   | "0b" ((bin+) as bin)           { NUM (Z.of_string_base 2 bin) }
   | "0x" ((hex+) as hex)           { NUM (Z.of_string_base 16 hex) }
   | (number+) as num               { NUM (Z.of_string num) }
-  | float as f                     { FLOAT (Ast.Cryptoline.FloatConst.of_string f ~rnd:Mpfr.Near) }
+  | float as f                     { FLOAT (Ast.Cryptoline.FloatConst.of_string f ~rnd:Utils.Float.RNE) }
   | identity_vec as id             { VEC_ID id }
   | identity as id                 { try
                                        Hashtbl.find keywords id

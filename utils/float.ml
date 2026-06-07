@@ -1,6 +1,7 @@
 open Std 
 
 type prec = Single | Double
+type rounding_mode = RNE | RNA | RTP | RTN | RTZ
 
 type fp_format = {
   total_bits: int;
@@ -27,6 +28,20 @@ type fp_fields_ieee =
   | FpNan
   | FpPosInf
   | FpNegInf
+
+let mpfr_of_rdm = function
+  | RNE -> Mpfr.Near
+  | RNA -> Mpfr.NearAway
+  | RTP -> Mpfr.Up
+  | RTN -> Mpfr.Down
+  | RTZ -> Mpfr.Zero
+
+let smtlib2_of_rdm = function
+  | RNE -> "RNE"
+  | RNA -> "RNA"
+  | RTP -> "RTP"
+  | RTN -> "RTN"
+  | RTZ -> "RTZ"
 
 let to_mpfr_fmt (fmt: fp_format) =
   {
@@ -64,31 +79,31 @@ let size_of_prec (p: prec) =
 module type FloatType = sig
   type t
 
-  val of_string: string -> rnd:Mpfr.round -> t
+  val of_string: string -> rnd:rounding_mode -> t
   val to_string: t -> string
-  val of_z: Z.t -> rnd:Mpfr.round -> t
-  val of_int: int -> rnd:Mpfr.round -> t
-  val of_float: float -> rnd:Mpfr.round -> t
+  val of_z: Z.t -> rnd:rounding_mode -> t
+  val of_int: int -> rnd:rounding_mode -> t
+  val of_float: float -> rnd:rounding_mode -> t
   val to_mpq: t -> 'a Mpq.tt
   val to_ieee: prec -> t -> fp_fields_ieee
 
-  val add: t -> t ->rnd:Mpfr.round -> t
-  val sub: t -> t ->rnd:Mpfr.round -> t
-  val mul: t -> t ->rnd:Mpfr.round -> t
-  val mul_2exp: t -> int -> rnd:Mpfr.round -> t
-  val div: t -> t ->rnd:Mpfr.round -> t
-  val div_2exp: t -> int -> rnd:Mpfr.round -> t
-  val neg: t -> rnd:Mpfr.round -> t
-  val abs: t -> rnd:Mpfr.round -> t
-  val pow: t -> t -> rnd:Mpfr.round -> t
-  val pow_int: t -> int -> rnd:Mpfr.round -> t
+  val add: t -> t ->rnd:rounding_mode -> t
+  val sub: t -> t ->rnd:rounding_mode -> t
+  val mul: t -> t ->rnd:rounding_mode -> t
+  val mul_2exp: t -> int -> rnd:rounding_mode -> t
+  val div: t -> t ->rnd:rounding_mode -> t
+  val div_2exp: t -> int -> rnd:rounding_mode -> t
+  val neg: t -> rnd:rounding_mode -> t
+  val abs: t -> rnd:rounding_mode -> t
+  val pow: t -> t -> rnd:rounding_mode -> t
+  val pow_int: t -> int -> rnd:rounding_mode -> t
  
   val sgn: t -> int
   val cmp: t -> t -> int
 
   val cmp_int: t -> int -> int
   val is_representable: prec -> t -> bool
-  val round_to: prec -> rnd:Mpfr.round -> t -> t
+  val round_to: prec -> rnd:rounding_mode -> t -> t
 end
 
 module type S = sig
@@ -97,32 +112,32 @@ module type S = sig
   val zero: t
   val one: t
 
-  val of_string: string -> rnd:Mpfr.round -> t
+  val of_string: string -> rnd:rounding_mode -> t
   val to_string: t -> string
-  val of_z: Z.t -> rnd:Mpfr.round -> t
-  val of_int: int -> rnd:Mpfr.round -> t
-  val of_float: float -> rnd:Mpfr.round -> t
+  val of_z: Z.t -> rnd:rounding_mode -> t
+  val of_int: int -> rnd:rounding_mode -> t
+  val of_float: float -> rnd:rounding_mode -> t
   val to_mpq: t -> 'a Mpq.tt
   val to_ieee: prec -> t -> fp_fields_ieee
 
-  val add: t -> t ->rnd:Mpfr.round -> t
-  val add_int: t -> int ->rnd:Mpfr.round -> t
-  val int_add: int -> t ->rnd:Mpfr.round -> t
-  val sub: t -> t ->rnd:Mpfr.round -> t
-  val sub_int: t -> int ->rnd:Mpfr.round -> t
-  val int_sub: int -> t ->rnd:Mpfr.round -> t
-  val mul: t -> t ->rnd:Mpfr.round -> t
-  val mul_int: t -> int ->rnd:Mpfr.round -> t
-  val int_mul: int -> t ->rnd:Mpfr.round -> t
-  val mul_2exp: t -> int -> rnd:Mpfr.round -> t
-  val div: t -> t ->rnd:Mpfr.round -> t
-  val div_int: t -> int ->rnd:Mpfr.round -> t
-  val int_div: int -> t ->rnd:Mpfr.round -> t
-  val div_2exp: t -> int -> rnd:Mpfr.round -> t
-  val neg: t -> rnd:Mpfr.round -> t
-  val abs: t -> rnd:Mpfr.round -> t
-  val pow: t -> t -> rnd:Mpfr.round -> t
-  val pow_int: t -> int -> rnd:Mpfr.round -> t
+  val add: t -> t ->rnd:rounding_mode -> t
+  val add_int: t -> int ->rnd:rounding_mode -> t
+  val int_add: int -> t ->rnd:rounding_mode -> t
+  val sub: t -> t ->rnd:rounding_mode -> t
+  val sub_int: t -> int ->rnd:rounding_mode -> t
+  val int_sub: int -> t ->rnd:rounding_mode -> t
+  val mul: t -> t ->rnd:rounding_mode -> t
+  val mul_int: t -> int ->rnd:rounding_mode -> t
+  val int_mul: int -> t ->rnd:rounding_mode -> t
+  val mul_2exp: t -> int -> rnd:rounding_mode -> t
+  val div: t -> t ->rnd:rounding_mode -> t
+  val div_int: t -> int ->rnd:rounding_mode -> t
+  val int_div: int -> t ->rnd:rounding_mode -> t
+  val div_2exp: t -> int -> rnd:rounding_mode -> t
+  val neg: t -> rnd:rounding_mode -> t
+  val abs: t -> rnd:rounding_mode -> t
+  val pow: t -> t -> rnd:rounding_mode -> t
+  val pow_int: t -> int -> rnd:rounding_mode -> t
 
   val sgn: t -> int
   val cmp: t -> t -> int
@@ -131,7 +146,7 @@ module type S = sig
   val eq: t -> t -> bool
   val eq_int: t -> int -> bool
   val is_representable: prec -> t -> bool
-  val round_to: prec -> rnd:Mpfr.round -> t -> t
+  val round_to: prec -> rnd:rounding_mode -> t -> t
   val min_val: prec -> t
   val max_val: prec -> t
 end
@@ -139,8 +154,8 @@ end
 module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
   type t = FloatNum.t
 
-  let zero = FloatNum.of_int 0 ~rnd:Mpfr.Near
-  let one = FloatNum.of_int 1 ~rnd:Mpfr.Near
+  let zero = FloatNum.of_int 0 ~rnd:RNE
+  let one = FloatNum.of_int 1 ~rnd:RNE
 
   let of_string = FloatNum.of_string
   let to_string = FloatNum.to_string
@@ -179,11 +194,11 @@ module Make (FloatNum: FloatType): S with type t = FloatNum.t = struct
 
   let min_val p =
     let fmt = get_fmt p in
-    let rnd = Mpfr.Near in
+    let rnd = RNE in
     FloatNum.mul_2exp (FloatNum.of_int 1 ~rnd) (fmt.emin_norm - fmt.mant_bits) ~rnd
   let max_val p =
     let fmt = get_fmt p in
-    let rnd = Mpfr.Near in
+    let rnd = RNE in
     let x = FloatNum.of_int 1 ~rnd in (* x := 1 *)
     let x = FloatNum.mul_2exp x (fmt.mant_bits + 1) ~rnd in (* x := x * 2^53 == 2^ 53 *)
     let x = sub_int x 1 ~rnd in (* x := x-1 == 2^53-1 *)
@@ -199,20 +214,20 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
 
   let of_string s ~rnd =
     let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
-    let _ = Mpfr.set_str x s ~base:10 rnd in
+    let _ = Mpfr.set_str x s ~base:10 (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr x
   let to_string = Mpfrf.to_string
   let of_z n ~rnd =
     let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
-    let _ = Mpfr.set_str x (Z.to_string n) ~base:10 rnd in
+    let _ = Mpfr.set_str x (Z.to_string n) ~base:10 (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr x
   let of_int n ~rnd =
     let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
-    let _ = Mpfr.set_si x n rnd in
+    let _ = Mpfr.set_si x n (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr x
   let of_float f ~rnd =
     let x = (Mpfr.init2 double_mpfr_fmt.precision: Mpfr.t) in
-    let _ = Mpfr.set_d x f rnd in
+    let _ = Mpfr.set_d x f (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr x
   let to_mpq x = Mpqf.to_mpq (Mpfrf.to_mpqf x)
   let to_ieee p x =
@@ -255,22 +270,22 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
 
 
 
-  let add x y ~rnd = Mpfrf.add x y rnd
-  let sub x y ~rnd = Mpfrf.sub x y rnd
-  let mul x y ~rnd = Mpfrf.mul x y rnd
+  let add x y ~rnd = Mpfrf.add x y (mpfr_of_rdm rnd)
+  let sub x y ~rnd = Mpfrf.sub x y (mpfr_of_rdm rnd)
+  let mul x y ~rnd = Mpfrf.mul x y (mpfr_of_rdm rnd)
   let mul_2exp x k ~rnd =
     let r = (Mpfr.init2 (Mpfr.get_prec x): Mpfr.t) in
-    let _ = Mpfr.mul_2si r x k rnd in
+    let _ = Mpfr.mul_2si r x k (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr r
-  let div x y ~rnd = Mpfrf.div x y rnd
+  let div x y ~rnd = Mpfrf.div x y (mpfr_of_rdm rnd)
   let div_2exp x k ~rnd =
     let r = (Mpfr.init2 (Mpfr.get_prec x): Mpfr.t) in
-    let _ = Mpfr.div_2si r x k rnd in
+    let _ = Mpfr.div_2si r x k (mpfr_of_rdm rnd) in
     Mpfrf.of_mpfr r
-  let neg x ~rnd = Mpfrf.neg x rnd
-  let abs x ~rnd = Mpfrf.abs x rnd
-  let pow x y ~rnd = Mpfrf.pow x y rnd
-  let pow_int x n ~rnd = Mpfrf.pow_int x n rnd
+  let neg x ~rnd = Mpfrf.neg x (mpfr_of_rdm rnd)
+  let abs x ~rnd = Mpfrf.abs x (mpfr_of_rdm rnd)
+  let pow x y ~rnd = Mpfrf.pow x y (mpfr_of_rdm rnd)
+  let pow_int x n ~rnd = Mpfrf.pow_int x n (mpfr_of_rdm rnd)
 
   let sgn x =
     let s = Mpfrf.sgn x in
@@ -307,8 +322,8 @@ module Fnumber: FloatType with type t = Mpfrf.t = struct
     let _ = Mpfr.set_emax emax in
     try
       let x = (Mpfr.init2 precision : Mpfr.t) in
-      let ternary = Mpfr.set x f rnd in
-      let _ = Mpfr.subnormalize x ternary rnd in
+      let ternary = Mpfr.set x f (mpfr_of_rdm rnd) in
+      let _ = Mpfr.subnormalize x ternary (mpfr_of_rdm rnd) in
       let res = Mpfrf.of_mpfr x in
       let _ = Mpfr.set_emin old_emin in
       let _ = Mpfr.set_emax old_emax in
@@ -389,8 +404,8 @@ module Qnumber: FloatType with type t = Mpqf.t = struct
     let _ = Mpfr.set_emax emax in
     try
       let x = (Mpfr.init2 precision : Mpfr.t) in
-      let ternary = Mpfr.set_q x (Mpqf.to_mpq q) rnd in
-      let _ = Mpfr.subnormalize x ternary rnd in
+      let ternary = Mpfr.set_q x (Mpqf.to_mpq q) (mpfr_of_rdm rnd) in
+      let _ = Mpfr.subnormalize x ternary (mpfr_of_rdm rnd) in
       let res = Mpqf.of_mpq (Mpfr.to_mpq x) in
       let _ = Mpfr.set_emin old_emin in
       let _ = Mpfr.set_emax old_emax in

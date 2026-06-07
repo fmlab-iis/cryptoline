@@ -1,6 +1,7 @@
 
 open Parsing
 open Utils.Std
+open Utils.Float
 open Ast.Cryptoline
 open Ast.MultiTrack
 
@@ -601,7 +602,7 @@ let parse_typed_const ctx lno ty n_token =
                              else Cint n
            end
       | Tsingle | Tdouble ->
-          let rnd = Mpfr.Near in
+          let rnd = RNE in
           let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
           let f = Ast.Cryptoline.FloatConst.of_z n ~rnd in
           if Ast.Cryptoline.FloatConst.is_representable p f then Cfloat f
@@ -617,7 +618,7 @@ let parse_typed_const ctx lno ty n_token =
           raise_at_line lno "Floating-point constants cannot be converted into integer types."
       | Tsingle -> 
           if FloatConst.is_representable Utils.Float.Single f then Cfloat f
-          else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to Utils.Float.Single ~rnd:Mpfr.Near f)
+          else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to Utils.Float.Single ~rnd:RNE f)
           else raise_at_line lno ("The floating-point constant does not fit into type Tsingle."
                                    ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
       | Tdouble ->

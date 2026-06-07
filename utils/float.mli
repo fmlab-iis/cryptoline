@@ -1,5 +1,6 @@
 
 type prec = Single | Double
+type rounding_mode = RNE | RNA | RTP | RTN | RTZ
 
 type fp_format = {
   total_bits: int;
@@ -27,6 +28,8 @@ type fp_fields_ieee =
   | FpPosInf
   | FpNegInf
 
+val mpfr_of_rdm: rounding_mode -> Mpfr.round
+val smtlib2_of_rdm: rounding_mode -> string
 
 val get_fmt: prec -> fp_format
 val get_mpfr_fmt: prec -> mpfr_format
@@ -37,24 +40,24 @@ val size_of_prec: prec -> int
 module type FloatType = sig
   type t
 
-  val of_string: string -> rnd:Mpfr.round -> t
+  val of_string: string -> rnd:rounding_mode -> t
   val to_string: t -> string
-  val of_z: Z.t -> rnd:Mpfr.round -> t
-  val of_int: int -> rnd:Mpfr.round -> t
-  val of_float: float -> rnd:Mpfr.round -> t
+  val of_z: Z.t -> rnd:rounding_mode -> t
+  val of_int: int -> rnd:rounding_mode -> t
+  val of_float: float -> rnd:rounding_mode -> t
   val to_mpq: t -> 'a Mpq.tt
   val to_ieee: prec -> t -> fp_fields_ieee
 
-  val add: t -> t ->rnd:Mpfr.round -> t
-  val sub: t -> t ->rnd:Mpfr.round -> t
-  val mul: t -> t ->rnd:Mpfr.round -> t
-  val mul_2exp: t -> int -> rnd:Mpfr.round -> t
-  val div: t -> t ->rnd:Mpfr.round -> t
-  val div_2exp: t -> int -> rnd:Mpfr.round -> t
-  val neg: t -> rnd:Mpfr.round -> t
-  val abs: t -> rnd:Mpfr.round -> t
-  val pow: t -> t -> rnd:Mpfr.round -> t
-  val pow_int: t -> int -> rnd:Mpfr.round -> t
+  val add: t -> t ->rnd:rounding_mode -> t
+  val sub: t -> t ->rnd:rounding_mode -> t
+  val mul: t -> t ->rnd:rounding_mode -> t
+  val mul_2exp: t -> int -> rnd:rounding_mode -> t
+  val div: t -> t ->rnd:rounding_mode -> t
+  val div_2exp: t -> int -> rnd:rounding_mode -> t
+  val neg: t -> rnd:rounding_mode -> t
+  val abs: t -> rnd:rounding_mode -> t
+  val pow: t -> t -> rnd:rounding_mode -> t
+  val pow_int: t -> int -> rnd:rounding_mode -> t
  
   val sgn: t -> int
   (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
@@ -63,7 +66,7 @@ module type FloatType = sig
 
   val cmp_int: t -> int -> int
   val is_representable: prec -> t -> bool
-  val round_to: prec -> rnd:Mpfr.round -> t -> t
+  val round_to: prec -> rnd:rounding_mode -> t -> t
 end
 
 module type S = sig
@@ -72,32 +75,32 @@ module type S = sig
   val zero: t
   val one: t
 
-  val of_string: string -> rnd:Mpfr.round -> t
+  val of_string: string -> rnd:rounding_mode -> t
   val to_string: t -> string
-  val of_z: Z.t -> rnd:Mpfr.round -> t
-  val of_int: int -> rnd:Mpfr.round -> t
-  val of_float: float -> rnd:Mpfr.round -> t
+  val of_z: Z.t -> rnd:rounding_mode -> t
+  val of_int: int -> rnd:rounding_mode -> t
+  val of_float: float -> rnd:rounding_mode -> t
   val to_mpq: t -> 'a Mpq.tt
   val to_ieee: prec -> t -> fp_fields_ieee
 
-  val add: t -> t ->rnd:Mpfr.round -> t
-  val add_int: t -> int ->rnd:Mpfr.round -> t
-  val int_add: int -> t ->rnd:Mpfr.round -> t
-  val sub: t -> t ->rnd:Mpfr.round -> t
-  val sub_int: t -> int ->rnd:Mpfr.round -> t
-  val int_sub: int -> t ->rnd:Mpfr.round -> t
-  val mul: t -> t ->rnd:Mpfr.round -> t
-  val mul_int: t -> int ->rnd:Mpfr.round -> t
-  val int_mul: int -> t ->rnd:Mpfr.round -> t
-  val mul_2exp: t -> int -> rnd:Mpfr.round -> t
-  val div: t -> t ->rnd:Mpfr.round -> t
-  val div_int: t -> int ->rnd:Mpfr.round -> t
-  val int_div: int -> t ->rnd:Mpfr.round -> t
-  val div_2exp: t -> int -> rnd:Mpfr.round -> t
-  val neg: t -> rnd:Mpfr.round -> t
-  val abs: t -> rnd:Mpfr.round -> t
-  val pow: t -> t -> rnd:Mpfr.round -> t
-  val pow_int: t -> int -> rnd:Mpfr.round -> t
+  val add: t -> t ->rnd:rounding_mode -> t
+  val add_int: t -> int ->rnd:rounding_mode -> t
+  val int_add: int -> t ->rnd:rounding_mode -> t
+  val sub: t -> t ->rnd:rounding_mode -> t
+  val sub_int: t -> int ->rnd:rounding_mode -> t
+  val int_sub: int -> t ->rnd:rounding_mode -> t
+  val mul: t -> t ->rnd:rounding_mode -> t
+  val mul_int: t -> int ->rnd:rounding_mode -> t
+  val int_mul: int -> t ->rnd:rounding_mode -> t
+  val mul_2exp: t -> int -> rnd:rounding_mode -> t
+  val div: t -> t ->rnd:rounding_mode -> t
+  val div_int: t -> int ->rnd:rounding_mode -> t
+  val int_div: int -> t ->rnd:rounding_mode -> t
+  val div_2exp: t -> int -> rnd:rounding_mode -> t
+  val neg: t -> rnd:rounding_mode -> t
+  val abs: t -> rnd:rounding_mode -> t
+  val pow: t -> t -> rnd:rounding_mode -> t
+  val pow_int: t -> int -> rnd:rounding_mode -> t
 
   val sgn: t -> int
   (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
@@ -108,7 +111,7 @@ module type S = sig
   val eq: t -> t -> bool
   val eq_int: t -> int -> bool
   val is_representable: prec -> t -> bool
-  val round_to: prec -> rnd:Mpfr.round -> t -> t
+  val round_to: prec -> rnd:rounding_mode -> t -> t
 
   val min_val: prec -> t
   (** [min_val prec] returns the smallest representable (subnormal) positive number in precision [prec], as specified by IEEE-754.  *)
