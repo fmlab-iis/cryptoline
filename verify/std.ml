@@ -1220,7 +1220,7 @@ let verify_spec options s =
         | WithLwt ->
           WithLwt.verify_rspec options rs hashopt
         | WithDomains ->
-          failwith("To be supported")
+          WithDomains.verify_rspec_domains options rs hashopt
       else
         verify_rspec options rs hashopt in
     let t2 = Unix.gettimeofday() in

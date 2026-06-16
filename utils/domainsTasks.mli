@@ -85,3 +85,7 @@ val finish_pending_with_timedouts :
   ('t list -> 'o task list) -> ('r * 't list) ->
   ('o, exn) result pending_state -> 'r
 (** Finish all pending tasks, and redo timedout tasks. *)
+
+val exec_cmd:
+  ?_timeout:int -> ?ofile:string -> ?errfile:string ->
+  string array -> Unix.process_status

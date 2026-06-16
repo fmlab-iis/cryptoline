@@ -3,6 +3,9 @@ open Options.Std
 open Ast.Cryptoline
 (*open Ast.MultiTrack
   open Smt*)
+open Qfbv.Common
+open Qfbv.WithDomains
+open Smt
 open Common
 open Utils
 open Utils.Std
@@ -35,24 +38,6 @@ let apply_to_cuts_domains ids f delivered_helper res pending ss =
                 DomainsTasks.log_with_lock ("=== Skip Cut #" ^ string_of_int i ^ " ===\n") in
             helper (i+1) (res, pending) tl in
   helper 0 (res, pending) ss
-
-(* Run commands safely with Domains. *)
-let exec_cmd_domains ?ofile cmd_array =
-  let (out, err, fds_to_close) =
-    match ofile with
-    | None -> (Unix.stdout, Unix.stderr, [])
-    | Some file ->
-      let out_fd = Unix.openfile file [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
-      (out_fd, out_fd, [out_fd]) in
-  let pid =
-    Unix.create_process cmd_array.(0) cmd_array
-      Unix.stdin out err in
-  let (_, status) = Unix.waitpid [] pid in
-  let _ = List.iter Unix.close fds_to_close in
-  match status with
-  | Unix.WSIGNALED n when n = Sys.sigkill ->
-    raise Tasks.TimeoutException
-  | _ -> status
 
 (* Converting a string of command-line arguments to a list. *)
 let args_from_string str =
@@ -92,7 +77,7 @@ let run_singular_domains headers ifile ofile =
   let extra_args = args_from_string !Options.Std.algebra_solver_args in
   let cmd_list = [ !singular_path; "-q" ] @ extra_args @ [ifile] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = exec_cmd_domains ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
     DomainsTasks.lock_log();
@@ -300,6 +285,119 @@ let verify_espec_domains options vgen s hashopt =
   apply_to_cuts_domains options.st_verify_ecuts
     verify (&&) true (DomainsTasks.empty_pending()) (cut_espec s)
 
+
+let verify_rspec_single_conjunct_domains ?comments header s hashopt =
+  let solver = range_solver_of_prove_with (List.split s.rspost |> snd |> tflatten) in
+  let verify_one header s =
+    let f = bexp_rbexp s.rspre in
+    let p = bexp_program s.rsprog in
+    let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
+    let r =
+      solve_simp
+        ~comments:(
+          if !debug then
+            rcons_comments_option comments ("Range condition: " ^ string_of_bexp g)
+          else
+            []
+        )
+        ~solver:solver
+        ~header:header
+        (f::(rcons p g)) in
+    r = Unsat in
+  (* NOTE: any logging here increases the verification time pretty much for trivial specifications/assertions *)
+  if is_rspec_trivial s then true
+  else verify_one header (if !apply_slicing then slice_rspec_ssa s hashopt else s)
+
+let verify_rspec_no_rcut_abs_interp_domains hashopt s =
+  let splitted_s = split_rspec_post s in
+  if !Options.Std.abs_interp && List.for_all (fun (e, _) -> Absdom.Common.rbexp_apply_abs_interp e) s.rspost then
+    let s = if !apply_slicing then slice_rspec_ssa s hashopt else s in
+    let vs = vars_rspec s in
+    let mgr = Absdom.Std.create_manager vs in
+    let vars_dom = Absdom.Std.abs_of_vars mgr
+                     (VS.diff vs (lvs_program s.rsprog)) in
+    match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom s.rspre with
+    | Some dom ->
+       let start_dom = Absdom.Std.meet mgr dom vars_dom in
+       let dom' = Absdom.Std.interp_prog mgr start_dom s.rsprog in
+       (*
+       let _ = Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter "Start domain:";
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter
+                 (Absdom.Std.string_of_abs dom);
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter "End domain:";
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_string Format.std_formatter
+                 (Absdom.Std.string_of_abs dom');
+               Format.pp_force_newline Format.std_formatter ();
+               Format.pp_print_flush Format.std_formatter () in
+        *)
+       let rev_ret =
+         List.fold_left (fun ret rs ->
+             let (post, _) = merge_rbexp_prove_with rs.rspost in
+             if Absdom.Std.sat_rbexp mgr dom' post then
+               let _ = if !Options.Std.debug then begin
+                           DomainsTasks.lock_log ();
+                           DomainsTasks.log "Range condition: ";
+                           DomainsTasks.log (string_of_rbexp post);
+                           DomainsTasks.log " [ok]\n";
+                           DomainsTasks.log "End abstract domain: ";
+                           DomainsTasks.log (Absdom.Std.string_of_abs dom');
+                           DomainsTasks.log "\n";
+                           DomainsTasks.unlock_log ()
+                         end in
+               ret
+             else
+               (*
+               let _ = safe_trace ("Range condition: " ^
+                                     (string_of_rbexp post) ^ " [fail]") in
+               let _ = safe_trace ("End abstract domain: " ^
+                                     (Absdom.Std.string_of_abs dom')) in
+               *)
+               rs::ret) [] splitted_s in
+       List.rev rev_ret
+    | None -> splitted_s
+  else
+    splitted_s
+
+
+let verify_rspec_no_rcut_domains ?comments header s hashopt =
+  let verify comments s = fun () ->
+    verify_rspec_single_conjunct_domains ?comments header s hashopt in
+  verify_rspec_no_rcut_abs_interp_domains hashopt s |>
+  List.rev_map (verify comments) |> List.rev
+
+
+(* The top function of verifying range specifications when !jobs > 1. *)
+let verify_rspec_domains options s hashopt =
+  let _ =
+    if !Options.Std.debug then
+      DomainsTasks.log_with_lock "===== Verifying range specifications =====\n" in
+  let delivered_helper = (&&) in
+  let mk_tasks ?comments headers s = verify_rspec_no_rcut_domains ?comments headers s hashopt in
+  let verify_ands ?comments headers (res, pending) s =
+    DomainsTasks.add_to_pending Fun.id delivered_helper res
+      pending (mk_tasks ?comments headers s) in
+  (* Check previous result *)
+  let verify cid headers (res, pending) (sid, s) =
+    if res then
+      verify_ands
+        ~comments:(
+          if !debug then
+            [ "Verify: range specifications";
+              Printf.sprintf "Track: %s" options.st_tag;
+              Printf.sprintf "Cut: #%d" cid;
+              Printf.sprintf "Range specification #%d: %s" sid (string_of_rbexp_prove_with s.rspost) ]
+          else
+            []
+        )
+        headers (res, pending) s
+    else (res, pending) in
+  apply_to_cuts_domains options.st_verify_rcuts
+    verify delivered_helper true (DomainsTasks.empty_pending()) (cut_rspec s)
+
 (* The top function of verifying algebraic assertions when !jobs > 1. *)
 let verify_eassert_domains options vgen s hashopt =
   let _ =
@@ -344,3 +442,4 @@ let verify_eassert_domains options vgen s hashopt =
     true                            (* initial result *)
     (DomainsTasks.empty_pending())   (* initial pending state *)
     (cut_eassert (espec_of_spec s)) (* all cuts *)
+

@@ -11,3 +11,8 @@ val verify_eassert_domains :
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
 (** Verify algebraic assertions parallelly with Domains. *)
 
+val verify_rspec_domains :
+  Options.Std.st_options ->
+  Ast.Cryptoline.rspec ->
+  Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option -> bool
+(** Verify range specification parallelly with Domains. *)

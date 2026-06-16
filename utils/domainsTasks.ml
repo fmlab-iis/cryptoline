@@ -215,3 +215,28 @@ let finish_pending_with_timedouts continue_helper delivered_helper make_promise 
     else res
   in
   verify_timedouts (res, timedouts) pending
+
+(* Run commands safely with Domains. *)
+let exec_cmd ?_timeout ?ofile ?errfile cmd_array =
+  let (out, err, fds_to_close) =
+    match ofile, errfile with
+    | None, None -> (Unix.stdout, Unix.stderr, [])
+    | Some out, None ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, Unix.stderr, [out_fd])
+    | None, Some err ->
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (Unix.stdout, err_fd, [err_fd])
+    | Some out, Some err ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, err_fd, [out_fd; err_fd]) in
+  let pid =
+    Unix.create_process cmd_array.(0) cmd_array
+      Unix.stdin out err in
+  let (_, status) = Unix.waitpid [] pid in
+  let _ = List.iter Unix.close fds_to_close in
+  match status with
+  | Unix.WSIGNALED n when n = Sys.sigkill ->
+    raise Tasks.TimeoutException
+  | _ -> status
