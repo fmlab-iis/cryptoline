@@ -1185,7 +1185,7 @@ let verify_spec options s =
         | WithLwt ->
           WithLwt.verify_eassert options vgen s hashopt
         | WithDomains ->
-          WithDomains.verify_eassert_domains options vgen s hashopt
+          WithDomains.verify_eassert options vgen s hashopt
       else
         verify_eassert options vgen s hashopt in
     let t2 = Unix.gettimeofday() in
@@ -1202,7 +1202,7 @@ let verify_spec options s =
         | WithLwt ->
           WithLwt.verify_rassert options s hashopt
         | WithDomains ->
-          failwith("To be supported")
+          WithDomains.verify_rassert options s hashopt
       else
         verify_rassert options s hashopt in
     let t2 = Unix.gettimeofday() in
@@ -1220,7 +1220,7 @@ let verify_spec options s =
         | WithLwt ->
           WithLwt.verify_rspec options rs hashopt
         | WithDomains ->
-          WithDomains.verify_rspec_domains options rs hashopt
+          WithDomains.verify_rspec options rs hashopt
       else
         verify_rspec options rs hashopt in
     let t2 = Unix.gettimeofday() in
@@ -1238,7 +1238,7 @@ let verify_spec options s =
         | WithLwt ->
            WithLwt.verify_espec options vgen es hashopt
         | WithDomains ->
-          WithDomains.verify_espec_domains options vgen es hashopt
+          WithDomains.verify_espec options vgen es hashopt
       else
         verify_espec options vgen es hashopt in
     let t2 = Unix.gettimeofday() in
