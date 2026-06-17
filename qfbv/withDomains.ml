@@ -56,13 +56,14 @@ let run_smt_solver ?timeout:_timeout ?(solver=(!range_solver)) headers ifile ofi
       DomainsTasks.lock_log ();
       List.iter (fun str -> DomainsTasks.log str; DomainsTasks.log "\n")
         headers;
-      DomainsTasks.log "INPUT IN SMTLIB2 FORMAT:";
+      DomainsTasks.log "INPUT IN SMTLIB2 FORMAT:\n";
       DomainsTasks.log_file ifile;
       DomainsTasks.log "\n";
       DomainsTasks.log ("Run " ^ solver ^ " with command: " ^ cmd ^ "\n");
       DomainsTasks.log ("Execution time of " ^ solver ^ ": " ^ string_of_running_time t1 t2 ^ "\n");
-      DomainsTasks.log ("OUTPUT FROM " ^ solver ^ ":");
+      DomainsTasks.log ("OUTPUT FROM " ^ solver ^ ":\n");
       DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
       DomainsTasks.log_file errfile;
       DomainsTasks.log "\n";
       DomainsTasks.unlock_log ()
