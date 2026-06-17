@@ -53,6 +53,55 @@ let write_singular_input ?comments ifile vars gen p =
       Buffer.output_buffer ch buf
   )
 
+(** Write input to Sage using Buffer and Out_channel. *)
+let write_sage_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_sage_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
+(** Write input to Magma using Buffer and Out_channel. *)
+let write_magma_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_magma_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
+(** Write input to Mathematica using Buffer and Out_channel. *)
+let write_mathematica_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_mathematica_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
+(** Write input to Macaulay2 using Buffer and Out_channel. *)
+let write_macaulay2_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_macaulay2_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
+(** Write input to Maple using Buffer and Out_channel. *)
+let write_maple_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_maple_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
+let read_one_line ofile =
+  let line = In_channel.with_open_text ofile input_line in
+  String.trim line
+
 (* Read output from Singular using In_channel with comments skipped. *)
 let read_singular_output ofile =
   let rec read_skip_comment ch =
@@ -63,6 +112,21 @@ let read_singular_output ofile =
       line in
   let line = In_channel.with_open_text ofile read_skip_comment in
   String.trim line
+
+let read_sage_output ofile =
+  let lines = In_channel.with_open_text ofile In_channel.input_lines in
+  if List.mem "AssertionError" lines then "false"
+  else if List.length lines = 0 then "true"
+  else failwith "Unknown error in Sage"
+
+let read_magma_output = read_one_line
+
+let read_mathematica_output = read_one_line
+
+let read_macaulay2_output = read_one_line
+
+let read_maple_output = read_one_line
+
 
 (* Write headers to log file. *)
 let write_headers_to_log headers =
@@ -92,6 +156,117 @@ let run_singular headers ifile ofile =
     DomainsTasks.unlock_log()
   end
 
+(* Run Sage in a compatible way. *)
+let run_sage headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !sage_path ] @ extra_args @ [ ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO SAGE:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Sage: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM SAGE:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+(* Run Magma in a compatible way. *)
+let run_magma headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !sage_path ] @ extra_args @ [ ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO MAGMA:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Magma: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM MAGMA:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ();
+    end
+
+(* Run Mathematica in a compatible way. *)
+let run_mathematica headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !sage_path ] @ extra_args @ [ ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO MATHEMATICA:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Mathematica: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM MATHEMATICA:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+(* Run Macaulay2 in a compatible way. *)
+let run_macaulay2 headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !singular_path; "-q" ] @ extra_args @ [ifile] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO MACAULAY2:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Macaulay2: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM MACAULAY2:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+(* Run Maple in a compatible way. *)
+let run_maple headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !singular_path; "-q" ] @ extra_args @ [ifile] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO MAPLE:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Maple: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM MAPLE:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ();
+    end
+
+
 (* Check if polynomial [p] is in the ideal generated by the polynoimals
    [ideal]. *)
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) headers vars ideal p =
@@ -109,46 +284,31 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) h
        res = "0"
     | Sage ->
       (* The input file to Sage must have file extension ".sage". *)
-      failwith("To be supported")
-      (*
        let ifile = ifile ^ ".sage" in
        let _ = write_sage_input ~comments ifile vars ideal p in
-       let _ = run_sage ifile ofile in
+       let _ = run_sage headers ifile ofile in
        let res = read_sage_output ofile in
        res = "true"
-       *)
     | Magma ->
-      failwith("To be supported")
-      (*
        let _ = write_magma_input ~comments ifile vars ideal p in
-       let _ = run_magma ifile ofile in
+       let _ = run_magma headers ifile ofile in
        let res = read_magma_output ofile in
        res = "0"
-       *)
     | Mathematica ->
-      failwith("To be supported")
-        (*
        let _ = write_mathematica_input ~comments ifile vars ideal p in
-       let _ = run_mathematica ifile ofile in
+       let _ = run_mathematica headers ifile ofile in
        let res = read_mathematica_output ofile in
        res = "0"
-       *)
     | Macaulay2 ->
-      failwith("To be supported")
-        (*
        let _ = write_macaulay2_input ~comments ifile vars ideal p in
-       let _ = run_macaulay2 ifile ofile in
+       let _ = run_macaulay2 headers ifile ofile in
        let res = read_macaulay2_output ofile in
        res = "0"
-       *)
     | Maple ->
-      failwith("To be supported")
-        (*
        let _ = write_maple_input ~comments ifile vars ideal p in
-       let _ = run_maple ifile ofile in
+       let _ = run_maple headers ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
-       *)
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
     | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in

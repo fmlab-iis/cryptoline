@@ -98,10 +98,47 @@ val polys_of_espec_two_phase :
 val bprint_eexp_singular : Buffer.t -> Ast.Cryptoline.eexp -> unit
 (** Print an algebraic expression in Singular format to a buffer. *)
 
+val bprint_eexp_sage : Buffer.t -> Ast.Cryptoline.eexp -> unit
+(** Print an algebraic expression in Sage format to a buffer. *)
+
+val bprint_eexp_magma : Buffer.t -> Ast.Cryptoline.eexp -> unit
+(** Print an algebraic expression in Magma format to a buffer. *)
+
+val bprint_eexp_mathematica : Buffer.t -> Ast.Cryptoline.eexp -> unit
+(** Print an algebraic expression in Mathematica format to a buffer. *)
+
+val bprint_eexp_macaulay2 : Buffer.t -> Ast.Cryptoline.eexp -> unit
+(** Print an algebraic expression in Macaulay2 format to a buffer. *)
+
 val bprint_singular_input :
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Singular for ideal membership query. *)
+
+val bprint_sage_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Sage for ideal membership query. *)
+
+val bprint_magma_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Magma for ideal membership query. *)
+
+val bprint_mathematica_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Mathematica for ideal membership query. *)
+
+val bprint_macaulay2_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Macaulay2 for ideal membership query. *)
+
+val bprint_maple_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Maple for ideal membership query. *)
 
 
 val algebra_symbol_of_ebinop : Ast.Cryptoline.ebinop -> string
