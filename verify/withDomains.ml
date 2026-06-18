@@ -267,6 +267,251 @@ let run_maple headers ifile ofile =
     end
 
 
+(** Low-Level Interaction of MIP Solvers *)
+
+let write_ppl_input ?comments ifile mipvars constr =
+  let partition_variables mipvars =
+    List.fold_left (fun (i, c) mv ->
+        if is_mip_cvar mv then (i, mv::c) else (mv::i, c))
+      ([], []) mipvars in
+  let ppl_variables buf mipvars =
+    List.iteri (fun i mv ->
+        Buffer.add_string buf (string_of_var (var_of_mip mv));
+        Buffer.add_string buf (" Variable(" ^ string_of_int i ^ ")\n"))
+      mipvars in
+  let ppl_constraint buf mip constr =
+    List.iter (fun c ->
+        Buffer.add_string buf
+          (mip ^ ".add_constraint(" ^ ppl_of_ebexp c ^ ")\n"))
+      constr in
+  let set_ppl_ivariable buf delimiter mipvars =
+    let (_, rev_ppl_cmds) =
+      List.fold_left (fun (i, ret) mv ->
+          (succ i,
+           if is_mip_cvar mv then ret
+           else ("mip.add_to_integer_space_dimensions(Variables_Set("
+                 ^ string_of_int i ^ "))")::ret))
+        (0, []) mipvars in
+    Buffer.add_string buf (String.concat delimiter rev_ppl_cmds) in
+  let input_text buf =
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
+    let (rev_ivars, rev_cvars) = partition_variables mipvars in
+    let (nivars, icvars) = (List.length rev_ivars, List.length rev_cvars) in
+    let ordered_mipvars = List.rev_append rev_ivars (List.rev rev_cvars) in
+    let nvars = nivars + icvars in
+    Buffer.add_string buf comment;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf 
+      "from ppl import Variable, Variables_Set, C_Polyhedron, MIP_Problem\n";
+    ppl_variables buf ordered_mipvars;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf ("ph = C_Polyhedron(" ^ string_of_int nvars ^ ")\n");
+    ppl_constraint buf "ph" constr;
+    Buffer.add_char buf '\n';
+    if !Options.Std.minimize_constraint then
+      Buffer.add_string buf
+        ("ph.remove_higher_space_dimensions(" ^ string_of_int nivars ^ ")\n");
+    Buffer.add_string buf "mip = MIP_Problem(";
+    Buffer.add_string buf (string_of_int (if !Options.Std.minimize_constraint
+                                          then nivars else nvars));
+    Buffer.add_string buf ")\n";
+    Buffer.add_string buf "mip.add_constraints(";
+    Buffer.add_string buf 
+      (if !Options.Std.minimize_constraint
+       then "ph.minimized_constraints ())\n" else "ph.constraints())\n");
+    set_ppl_ivariable buf
+      "\nif not mip.is_satisfiable():\n    print('False')\n    exit()\n"
+      ordered_mipvars;
+    Buffer.add_string buf "\nprint(mip.is_satisfiable())\nexit()\n" in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      let buf = Buffer.create 1024 in
+      let _ = input_text buf in
+      Buffer.output_buffer ch buf)
+
+let write_scip_input ?comments ifile mipvars constr =
+  let scip_variables buf mip mipvars =
+    List.iter (fun mv ->
+        Buffer.add_string buf
+          (string_of_var (var_of_mip mv) ^ " = " ^ mip ^ ".addVar(vtype=" ^
+             (if is_mip_cvar mv then "'C'" else "'I'") ^ ")\n"))
+      mipvars in
+  let scip_constraint buf mip constr =
+    List.iter (fun c ->
+        Buffer.add_string buf (mip ^ ".addCons(" ^ ppl_of_ebexp c ^ ")\n"))
+      constr in
+  let input_text buf =
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
+    Buffer.add_string buf comment;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "from pyscipopt import Model\n";
+    Buffer.add_string buf "mip = Model('SCIP Solver')\n";
+    scip_variables buf "mip" mipvars;
+    Buffer.add_char buf '\n';
+    scip_constraint buf "mip" constr;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "mip.optimize()\n";
+    Buffer.add_string buf "print(mip.getStatus())\n";
+    Buffer.add_string buf "exit()\n" in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      let buf = Buffer.create 1024 in
+      let _ = input_text buf in
+      Buffer.output_buffer ch buf)
+
+let write_isl_input ?comments ifile mipvars constr =
+  let isl_variables buf mipvars =
+    Buffer.add_string buf 
+      (String.concat ", "
+         (tmap (fun mv -> "'" ^ string_of_var (var_of_mip mv) ^ "'")
+            mipvars)) in
+  let isl_set_header buf mipvars =
+    Buffer.add_string buf
+      ("{[" ^ String.concat ", "
+                (tmap (fun mv -> string_of_var (var_of_mip mv))
+                   mipvars) ^ "]:") in
+  let isl_constraint buf constr =
+    Buffer.add_string buf
+      (String.concat " and '\\\n"
+         (tmap (fun eb -> "'" ^ isl_of_ebexp eb) constr)) in
+  let input_text buf =
+    let comment =
+      if !debug then
+        Option.value (Option.map (make_line_comments "#") comments) ~default:""
+      else
+        "" in
+    Buffer.add_string buf comment;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "from islpy import Space, BasicSet, DEFAULT_CONTEXT\n";
+    Buffer.add_string buf "variables = [";
+    isl_variables buf mipvars;
+    Buffer.add_string buf "]\n";
+    Buffer.add_string buf "space = Space.create_from_names(DEFAULT_CONTEXT, set = variables)\n";
+    Buffer.add_string buf "bset = ";
+    isl_set_header buf mipvars;
+    Buffer.add_string buf "'\\\n";
+    isl_constraint buf constr;
+    Buffer.add_string buf "}'\n";
+    Buffer.add_string buf "print(BasicSet(bset).is_empty())\n";
+    Buffer.add_string buf "exit()\n" in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      let buf = Buffer.create 1024 in
+      let _ = input_text buf in
+      Buffer.output_buffer ch buf)
+
+let write_smt_input ~comments ifile vgen constr =
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+        let (_, smtlib) = smtlib_ebexps_lia ~expn:false vgen constr in
+        if !debug then
+          Out_channel.output_string ch (make_line_comments ";" comments);
+        Out_channel.output_string ch smtlib )
+  
+  
+
+let run_ppl headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let cmd_list = [ !python_path; "-q"; ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "\n";
+      DomainsTasks.log "INPUT TO PPLPY:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of PPLPY: " ^ string_of_running_time t1 t2);
+      DomainsTasks.log "\n";
+      DomainsTasks.log "OUTPUT FROM PPLPY:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+let run_scip headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let cmd_list = [ !python_path; "-q"; ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "\n";
+      DomainsTasks.log "INPUT TO PYSCIPOPT:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of PYSCIPOPT: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM PYSCIPOPT:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+let run_isl headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let cmd_list = [ !python_path; "-q"; ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "\n";
+      DomainsTasks.log "INPUT TO ISLPY:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of ISLPY: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM ISLPY:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+
+let run_smt headers algsmt_path ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let cmd_list = [ algsmt_path; ifile ] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO SMT Solver:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of SMT Solver " ^ algsmt_path ^ ": " ^ Options.Std.string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM SMT SOLVER:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ()
+    end
+  
+let read_ppl_output = read_one_line
+
+let read_scip_output ofile =
+  let lines = In_channel.with_open_text ofile In_channel.input_lines in
+  lines |> List.rev |> List.hd
+
+let read_isl_output = read_one_line
+
+let read_smt_output = read_one_line
+
 (* Check if polynomial [p] is in the ideal generated by the polynoimals
    [ideal]. *)
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) headers vars ideal p =
@@ -315,6 +560,54 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) h
   let _ = cleanup [ifile; ofile] in
   res
 
+let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
+      vgen mipvars constr =
+  let gen_files_py () =
+    let ifile = tmpfile "inputfmip_" ".py" in
+    let ofile = tmpfile "outputfmip_" ".log" in
+    let comments =
+      if !debug then
+        rcons_comments_option comments ("Output file: " ^ ofile)
+      else
+        [] in
+    (ifile, ofile, comments) in
+  let gen_files_smt () =
+    let ifile = tmpfile "inputfgb_" ".smt2" in
+    let ofile = tmpfile "outputfgb_" ".log" in
+    let comments =
+      if !debug then
+        rcons_comments_option comments ("Output file: " ^ ofile)
+      else
+        [] in
+    (ifile, ofile, comments) in
+  match solver with
+  | PPL ->
+     let (ifile, ofile, comments) = gen_files_py() in
+     let _ = write_ppl_input ~comments ifile mipvars constr in
+     let _ = run_ppl headers ifile ofile in
+     let res = read_ppl_output ofile in
+     res = "False"
+  | SCIP ->
+     let (ifile, ofile, comments) = gen_files_py() in
+     let _ = write_scip_input ~comments ifile mipvars constr in
+     let _ = run_scip headers ifile ofile in
+     let res = read_scip_output ofile in
+     res = "infeasible"
+  | ISL ->
+     let (ifile, ofile, comments) = gen_files_py() in
+     let _ = write_isl_input ~comments ifile mipvars constr in
+     let _ = run_isl headers ifile ofile in
+     let res = read_isl_output ofile in
+     res = "True"
+  | SMTSolver o when o.algsmt_logic = LIA ->
+     let (ifile, ofile, comments) = gen_files_smt() in
+     let _ = write_smt_input ~comments ifile vgen constr in
+     let _ = run_smt headers o.algsmt_path ifile ofile in
+     let res = read_smt_output ofile in
+     res = "unsat"
+  | _ -> failwith "Algebraic range condition needs MIP solver."
+
+
 (* Verify a list of entailments. *)
 let verify_entailments ?comments ?(solver=(!algebra_solver)) headers entailments =
   List.fold_left
@@ -354,11 +647,66 @@ let verify_espec_single_conjunct_ideal ?comments headers vgen s =
   let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
   verify_entailments ?comments ~solver:solver headers entailments
 
-let verify_espec_single_conjunct_smt _solver ?comments:_comments _headers _vgen _s =
-  failwith("To be supported")
+(* TODO: LIA queries from mip_of_espec are solved sequentially *)
+let verify_espec_single_conjunct_smt solver ?comments:comments headers vgen s =
+  let verify_one_smtlib smtlib =
+    let ifile = tmpfile "inputfgb_" ".smt2" in
+    let ofile = tmpfile "outputfgb_" "" in
+    let comments =
+      if !debug then
+        append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp_prove_with s.espost;
+                                          "Output file: " ^ ofile ] |> make_line_comments ";"
+      else
+        "" in
+    let _ = Out_channel.with_open_bin ifile (
+                fun ch ->
+                Out_channel.output_string ch comments;
+                Out_channel.output_string ch smtlib  ) in
+    let t1 = Unix.gettimeofday() in
+    let cmd_list = [ solver.algsmt_path; ifile ] in
+    let cmd_array = Array.of_list cmd_list in
+    let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+    let t2 = Unix.gettimeofday() in
+    let _ = if !debug then begin
+                DomainsTasks.lock_log ();
+                write_headers_to_log headers;
+                DomainsTasks.log "INPUT TO SMT Solver:\n";
+                DomainsTasks.log_file ifile;
+                DomainsTasks.log "\n";
+                DomainsTasks.log ("Execution time of SMT Solver " ^ solver.algsmt_path ^ ": " ^ string_of_running_time t1 t2 ^ "\n");
+                DomainsTasks.log "OUTPUT FROM SMT SOLVER:\n";
+                DomainsTasks.log_file ofile;
+                DomainsTasks.log "\n";
+                DomainsTasks.unlock_log ()
+              end in
+    let res = read_one_line ofile in
+    res = "unsat" in
+  let verify_one_mipvars_constr vgen (_mipvars, constrs) =
+    let (_, smtlib) = smtlib_ebexps_lia vgen constrs in
+    verify_one_smtlib smtlib in
+  let res =
+    match solver.algsmt_logic with
+    | NIA -> let (_, smtlib) = smtlib_espec vgen s in
+             verify_one_smtlib smtlib
+    | LIA -> let (_, mipvars_constrs) = mip_of_espec vgen s in
+             (* TODO: parallelize this *)
+             List.for_all (verify_one_mipvars_constr vgen) mipvars_constrs in
+  res
 
-let verify_espec_single_conjunct_mip ?comments:_comments _headers _vgen _s =
-  failwith("To be supported")
+let verify_espec_single_conjunct_mip ?comments:comments headers vgen s =
+  let (_, mipvars_constrs) = mip_of_espec vgen s in
+  let solver =
+    algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
+  let helper (mipvars, constr) =
+    let epoststr = string_of_ebexp (fst (List.hd s.espost)) in
+    is_constr_feasible ~comments:(
+      if !debug then
+        append_comments_option comments [ "Algebraic condition: " ^ epoststr ]
+      else
+        []
+      ) ~solver:solver headers vgen mipvars constr in
+  (* TODO: parallelize this *)
+  List.for_all helper mipvars_constrs
 
 (* Verify an algebraic specification. The solver used can be specified
    in the prove-with clauses of the specification.
