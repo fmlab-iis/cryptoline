@@ -395,7 +395,7 @@ let write_isl_input ?comments ifile mipvars constr =
     isl_variables buf mipvars;
     Buffer.add_string buf "]\n";
     Buffer.add_string buf "space = Space.create_from_names(DEFAULT_CONTEXT, set = variables)\n";
-    Buffer.add_string buf "bset = ";
+    Buffer.add_string buf "bset = '";
     isl_set_header buf mipvars;
     Buffer.add_string buf "'\\\n";
     isl_constraint buf constr;
