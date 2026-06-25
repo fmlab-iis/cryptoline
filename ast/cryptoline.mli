@@ -1,6 +1,7 @@
 
 open NBits
 open Utils
+open Utils.Float
 
 (** Abstract syntax tree of CryptoLine *)
 
@@ -90,6 +91,9 @@ val single_t : typ
 val size_of_typ : typ -> size
 (** [size_of_typ t] is the size of a type [t]. *)
 
+val prec_of_typ : typ -> prec
+(** [prec_of_typ t] is the precision of a floating-point type [t]. *)
+
 val min_of_typ : typ -> const
 (** [min_of_typ t] is the minimal number representable by a type [t]. *)
 
@@ -150,6 +154,9 @@ val default_non_ssa_idx : int
 val size_of_var : var -> size
 (** [size_of_var v] is the size of a variable [v]. *)
 
+val prec_of_var : var -> prec
+(** [prec_of_var v] is the precision of a floating-point variable [v]. *)
+
 val typ_of_var : var -> typ
 (** [typ_of_var v] is the type of a variable [v]. *)
 
@@ -170,6 +177,9 @@ val var_is_bit : var -> bool
 
 val var_is_int : var -> bool
 (** [var_is_int v] is [true] if the type of [v] is [Tuint _] or [Tsint _]. *)
+
+val var_is_float : var -> bool
+(** [var_is_float v] is [true] if the type of [v] is [Tdouble] or [Tsingle]. *)
 
 val var_is_unsigned :  var -> bool
 (** [var_is_unsigned v] is [true] if [v] is unsigned. *)

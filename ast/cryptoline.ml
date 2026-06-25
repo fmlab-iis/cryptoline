@@ -206,6 +206,12 @@ let size_of_typ ty =
   | Tdouble -> 64
   | Tsingle -> 32
 
+let prec_of_typ ty =
+  match ty with
+  | Tdouble -> Double
+  | Tsingle -> Single
+  | _ -> failwith "Type is not floating-point."
+
 let min_of_typ ty =
   match ty with
   | Tuint _w -> Cint Z.zero
@@ -378,6 +384,8 @@ let default_non_ssa_idx = -1
 
 let size_of_var v = size_of_typ v.vtyp
 
+let prec_of_var v = prec_of_typ v.vtyp
+
 let typ_of_var v = v.vtyp
 
 (* Two variables are equal if
@@ -404,6 +412,10 @@ let var_is_bit v = v.vtyp = bit_t
 let var_is_int v = 
   match v.vtyp with
   | Tuint _ | Tsint _ -> true
+  | _ -> false
+let var_is_float v =
+  match v.vtyp with
+  | Tdouble | Tsingle -> true
   | _ -> false
 let var_is_unsigned v = typ_is_unsigned v.vtyp
 let var_is_signed v = typ_is_signed v.vtyp
