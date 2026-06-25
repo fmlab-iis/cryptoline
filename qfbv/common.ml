@@ -3,18 +3,18 @@ open Set
 open Options.Std
 open Ast.Cryptoline
 open Utils.Std
-open Utils
+open Utils.Float
 
 (** Utility functions *)
 
 
-(** QF_BV *)
+(** QF_BVFP *)
 
 type result = Sat | Unsat | Unknown
 
 type exp =
   | Var of var
-  | Const of size * const (* Const (w, Cint n) is a bit-vector with width w and unsigned value `n % (2^w)` *)
+  | Const of size * Z.t                 (* Const (w, n) is a bit-vector with width w and unsigned value `n % (2^w)` *)
   | Not of size * exp
   | And of size * exp * exp
   | Or of size * exp * exp
@@ -42,6 +42,23 @@ type exp =
   | ZeroExtend of size * int * exp      (* ZeroExtend (size_of_exp, bit_to_extend, exp) *)
   | SignExtend of size * int * exp      (* SignExtend (size_of_exp, bit_to_extend, exp) *)
   | Ite of size * bexp * exp * exp
+  | UbvOfFp of size * rounding_mode * fpexp
+  | SbvOfFp of size * rounding_mode * fpexp
+and fpexp =
+  | FpVar of var
+  | FpConst of prec * FloatConst.t
+  | FpAdd of prec * rounding_mode * fpexp * fpexp 
+  | FpSub of prec * rounding_mode * fpexp * fpexp 
+  | FpMul of prec * rounding_mode * fpexp * fpexp 
+  | FpDiv of prec * rounding_mode * fpexp * fpexp
+  | FpRem of prec * fpexp * fpexp
+  | FpNeg of prec * fpexp
+  | FpAbs of prec * fpexp
+  | FpBitCast of prec * exp
+  | FpOfSbv of prec * rounding_mode * exp
+  | FpOfUbv of prec * rounding_mode * exp
+  | FpOfFp of prec * rounding_mode * fpexp
+  | FpOfReal of prec * rounding_mode * string
 and bexp =
   | True
   | Ult of size * exp * exp
@@ -62,112 +79,169 @@ and bexp =
   | Lneg of bexp
   | Conj of bexp * bexp
   | Disj of bexp * bexp
+  | FpEq of prec * fpexp * fpexp
+  | FpLt of prec * fpexp * fpexp
+  | FpLeq of prec * fpexp * fpexp
+  | FpGt of prec * fpexp * fpexp
+  | FpGeq of prec * fpexp * fpexp
+  | FpIsZero of prec * fpexp
+  | FpIsInf of prec * fpexp
+  | FpIsNaN of prec * fpexp
+  | FpIsNeg of prec * fpexp
+  | FpIsPos of prec * fpexp
 
 let rec split_bexp e =
   match e with
   | Conj (e1, e2) -> (split_bexp e1)@(split_bexp e2)
   | _ -> [e]
 
-let is_atomic t =
+let is_exp_atomic t =
   match t with
   | Var _ | Const _ -> true
+  | _ -> false
+
+let is_fpexp_atomic t =
+  match t with
+  | FpVar _ | FpConst _ -> true
   | _ -> false
 
 let rec string_of_exp (e : exp) : string =
   match e with
   | Var v -> string_of_var v
-  | Const (_w, c) -> string_of_const c
-  | Not (_w, e) -> if is_atomic e then "!" ^ string_of_exp e ^ "" else "!(" ^ string_of_exp e ^ ")"
+  | Const (_w, n) -> Z.to_string n
+  | Not (_w, e) -> if is_exp_atomic e then "!" ^ string_of_exp e ^ "" else "!(" ^ string_of_exp e ^ ")"
   | And (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " & "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Or (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " | "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Xor (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " ^ "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
-  | Neg (_w, e) -> if is_atomic e then "-" ^ string_of_exp e ^ "" else "-(" ^ string_of_exp e ^ ")"
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+  | Neg (_w, e) -> if is_exp_atomic e then "-" ^ string_of_exp e ^ "" else "-(" ^ string_of_exp e ^ ")"
   | Comp (_, e1, e2) -> string_of_exp e1 ^ " == " ^ string_of_exp e2
   | Add (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " + "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Sub (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " - "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Mul (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " * "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Udiv (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " / "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Mod (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " % "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Sdiv (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " sdiv "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Srem (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " srem "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Smod (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " smod "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Shl (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " << "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Lshr (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " >>l "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Ashr (_w, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ " >>a "
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Rol (_, e, n) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ " rol "
-     ^ (if is_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
+     ^ (if is_exp_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
   | Ror (_, e, n) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ " ror "
-     ^ (if is_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
+     ^ (if is_exp_atomic n then string_of_exp n else "(" ^ string_of_exp n ^ ")")
   | Concat (_w1, _w2, e1, e2) ->
-     (if is_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
+     (if is_exp_atomic e1 then string_of_exp e1 else "(" ^ string_of_exp e1 ^ ")")
      ^ "."
-     ^ (if is_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
+     ^ (if is_exp_atomic e2 then string_of_exp e2 else "(" ^ string_of_exp e2 ^ ")")
   | Extract (_w, i, j, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "[" ^ string_of_int i ^ ", " ^ string_of_int j ^ "]"
   | Slice (w1, w2, w3, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "{" ^ string_of_int w1 ^ ", " ^ string_of_int w2 ^ ", " ^ string_of_int w3 ^ "}"
   | High (_lo, hi, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "@h" ^ string_of_int hi
   | Low (_lo, hi, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "@l" ^ string_of_int hi
   | ZeroExtend (_w, i, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "@e" ^ string_of_int i
   | SignExtend (_w, i, e) ->
-     (if is_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+     (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
      ^ "@s" ^ string_of_int i
   | Ite (_w, c, e1, e2) ->
      "ite (" ^ string_of_bexp c ^") (" ^ string_of_exp e1 ^ ") (" ^ string_of_exp e2 ^ ")"
+  | UbvOfFp (_w, _r, e) ->
+     "fp.to_ubv " ^ (if is_fpexp_atomic e then string_of_fpexp e else "(" ^ string_of_fpexp e ^ ")")
+  | SbvOfFp (_w, _r, e) ->
+     "fp.to_sbv " ^ (if is_fpexp_atomic e then string_of_fpexp e else "(" ^ string_of_fpexp e ^ ")")
+and string_of_fpexp e =
+  match e with
+  | FpVar v -> string_of_var v
+  | FpConst (_p, f) -> FloatConst.to_string f
+  | FpAdd (_p, _r, e1, e2) ->
+     (if is_fpexp_atomic e1 then string_of_fpexp e1 else "(" ^ string_of_fpexp e1 ^ ")")
+     ^ " +f "
+     ^ (if is_fpexp_atomic e2 then string_of_fpexp e2 else "(" ^ string_of_fpexp e2 ^ ")")
+  | FpSub (_p, _r, e1, e2) ->
+     (if is_fpexp_atomic e1 then string_of_fpexp e1 else "(" ^ string_of_fpexp e1 ^ ")")
+     ^ " -f "
+     ^ (if is_fpexp_atomic e2 then string_of_fpexp e2 else "(" ^ string_of_fpexp e2 ^ ")")
+  | FpMul (_p, _r, e1, e2) ->
+     (if is_fpexp_atomic e1 then string_of_fpexp e1 else "(" ^ string_of_fpexp e1 ^ ")")
+     ^ " *f "
+     ^ (if is_fpexp_atomic e2 then string_of_fpexp e2 else "(" ^ string_of_fpexp e2 ^ ")")
+  | FpDiv (_p, _r, e1, e2) ->
+     (if is_fpexp_atomic e1 then string_of_fpexp e1 else "(" ^ string_of_fpexp e1 ^ ")")
+     ^ " /f "
+     ^ (if is_fpexp_atomic e2 then string_of_fpexp e2 else "(" ^ string_of_fpexp e2 ^ ")")
+  | FpRem (_p, e1, e2) ->
+     (if is_fpexp_atomic e1 then string_of_fpexp e1 else "(" ^ string_of_fpexp e1 ^ ")")
+     ^ " %f "
+     ^ (if is_fpexp_atomic e2 then string_of_fpexp e2 else "(" ^ string_of_fpexp e2 ^ ")")
+  | FpNeg (_p, e) ->
+     if is_fpexp_atomic e then "-f" ^ string_of_fpexp e else "-f(" ^ string_of_fpexp e ^ ")"
+  | FpAbs (_p, e) ->
+     "fp.abs " ^ (if is_fpexp_atomic e then string_of_fpexp e else "(" ^ string_of_fpexp e ^ ")")
+  | FpBitCast (_p, e) ->
+     "fp.bitcast " ^ (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+  | FpOfSbv (_p, _r, e) ->
+     "fp.of_sbv " ^ (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+  | FpOfUbv (_p, _r, e) ->
+     "fp.of_ubv " ^ (if is_exp_atomic e then string_of_exp e else "(" ^ string_of_exp e ^ ")")
+  | FpOfFp (_p, _r, e) ->
+     "fp.of_fp " ^ (if is_fpexp_atomic e then string_of_fpexp e else "(" ^ string_of_fpexp e ^ ")") 
+  | FpOfReal (_p, _r, e) ->
+     "fp.of_real " ^ e ^ ")"
 and string_of_bexp e =
   match e with
   | True -> "True"
@@ -186,6 +260,16 @@ and string_of_bexp e =
   | Saddo (_w, e1, e2) -> string_of_exp e1 ^ " +so " ^ string_of_exp e2
   | Ssubo (_w, e1, e2) -> string_of_exp e1 ^ " -so " ^ string_of_exp e2
   | Smulo (_w, e1, e2) -> string_of_exp e1 ^ " *so " ^ string_of_exp e2
+  | FpEq (_p, e1, e2) ->  string_of_fpexp e1 ^ " =f " ^ string_of_fpexp e2
+  | FpLt (_p, e1, e2) ->  string_of_fpexp e1 ^ " <f " ^ string_of_fpexp e2
+  | FpLeq (_p, e1, e2) ->  string_of_fpexp e1 ^ " <=f " ^ string_of_fpexp e2
+  | FpGt (_p, e1, e2) ->  string_of_fpexp e1 ^ " >f " ^ string_of_fpexp e2
+  | FpGeq (_p, e1, e2) ->  string_of_fpexp e1 ^ " >=f " ^ string_of_fpexp e2
+  | FpIsZero (_p, e) -> "fp.isZero (" ^ string_of_fpexp e ^ ")"
+  | FpIsInf (_p, e) -> "fp.isInfinite (" ^ string_of_fpexp e ^ ")"
+  | FpIsNaN (_p, e) -> "fp.isNaN (" ^ string_of_fpexp e ^ ")"
+  | FpIsNeg (_p, e) -> "fp.isNegative (" ^ string_of_fpexp e ^ ")"
+  | FpIsPos (_p, e) -> "fp.isPositive (" ^ string_of_fpexp e ^ ")"
   | Lneg e -> "~ (" ^ string_of_bexp e ^ ")"
   | Conj (e1, e2) -> string_of_bexp e1 ^ " /\\ " ^ string_of_bexp e2
   | Disj (e1, e2) -> string_of_bexp e1 ^ " \\/ " ^ string_of_bexp e2
@@ -221,6 +305,24 @@ let rec vars_exp e =
   | ZeroExtend (_, _, e)
   | SignExtend (_, _, e) -> vars_exp e
   | Ite (_, c, e1, e2) -> VS.union (vars_bexp c) (VS.union (vars_exp e1) (vars_exp e2))
+  | UbvOfFp (_, _, e) -> vars_fpexp e
+  | SbvOfFp (_, _, e) -> vars_fpexp e
+and vars_fpexp e =
+  match e with
+  | FpVar v -> VS.singleton v
+  | FpConst _ -> VS.empty
+  | FpAdd (_, _, e1, e2)
+  | FpSub (_, _, e1, e2)
+  | FpMul (_, _, e1, e2)
+  | FpDiv (_, _, e1, e2)
+  | FpRem (_, e1, e2) -> VS.union (vars_fpexp e1) (vars_fpexp e2)
+  | FpNeg (_, e)
+  | FpAbs (_, e) -> vars_fpexp e
+  | FpBitCast (_, e)
+  | FpOfSbv (_, _, e)
+  | FpOfUbv (_, _, e) -> vars_exp e
+  | FpOfFp (_, _, e) -> vars_fpexp e
+  | FpOfReal _ -> VS.empty 
 and vars_bexp e =
   match e with
   | True -> VS.empty
@@ -239,6 +341,16 @@ and vars_bexp e =
   | Saddo (_, e1, e2)
   | Ssubo (_, e1, e2)
   | Smulo (_, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
+  | FpEq (_, e1, e2)
+  | FpLt (_, e1, e2)
+  | FpLeq (_, e1, e2)
+  | FpGt (_, e1, e2)
+  | FpGeq (_, e1, e2) -> VS.union (vars_fpexp e1) (vars_fpexp e2)
+  | FpIsZero (_, e)
+  | FpIsInf (_, e)
+  | FpIsNaN (_, e)
+  | FpIsNeg (_, e)
+  | FpIsPos (_, e) -> vars_fpexp e
   | Lneg e -> vars_bexp e
   | Conj (e1, e2)
   | Disj (e1, e2) -> VS.union (vars_bexp e1) (vars_bexp e2)
@@ -564,8 +676,7 @@ end
 let rec btor_of_exp m e =
   match e with
   | Var v -> m#mkvar v
-  | Const (w, Cint n) -> m#mkconstd w n
-  | Const _ -> fail "Const (_, c) with non-integer c is not supported"
+  | Const (w, n) -> m#mkconstd w n
   | Not (w, e) -> m#mknot w (btor_of_exp m e)
   | And (w, e1, e2) -> m#mkand w (btor_of_exp m e1) (btor_of_exp m e2)
   | Or (w, e1, e2) -> m#mkor w (btor_of_exp m e1) (btor_of_exp m e2)
@@ -580,18 +691,18 @@ let rec btor_of_exp m e =
   | Sdiv (w, e1, e2) -> m#mksdiv w (btor_of_exp m e1) (btor_of_exp m e2)
   | Srem (w, e1, e2) -> m#mksrem w (btor_of_exp m e1) (btor_of_exp m e2)
   | Smod (w, e1, e2) -> m#mksmod w (btor_of_exp m e1) (btor_of_exp m e2)
-  | Shl (w, e1, Const (_, Cint e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Shl (w, e1, Const (_, e2)) -> m#mksll w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Shl _ -> fail "Shl (_, n) with non-constant n is not supported"
-  | Lshr (w, e1, Const (_, Cint e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Lshr (w, e1, Const (_, e2)) -> m#mksrl w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Lshr _ -> fail "Lshr (_, n) with non-constant n is not supported"
-  | Ashr (w, e1, Const (_, Cint e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
+  | Ashr (w, e1, Const (_, e2)) -> m#mksra w (btor_of_exp m e1) (m#mkconstd_for_shift w e2)
   | Ashr _ -> fail "Ashr (_, n) with non-constant n is not supported"
   | Rol (w, e, n) -> let n = match n with
-                       | Const (w, Cint n) -> m#mkconstd_for_rotate w n
+                       | Const (w, n) -> m#mkconstd_for_rotate w n
                        | _ -> btor_of_exp m n in
                      m#mkrol w (btor_of_exp m e) n
   | Ror (w, e, n) -> let n = match n with
-                       | Const (w, Cint n) -> m#mkconstd_for_rotate w n
+                       | Const (w, n) -> m#mkconstd_for_rotate w n
                        | _ -> btor_of_exp m n in
                      m#mkror w (btor_of_exp m e) n
   | Concat (w1, w2, e1, e2) -> m#mkconcat w1 w2 (btor_of_exp m e1) (btor_of_exp m e2)
@@ -602,6 +713,8 @@ let rec btor_of_exp m e =
   | ZeroExtend (w, i, e) -> m#mkzext w i (btor_of_exp m e)
   | SignExtend (w, i, e) -> m#mksext w i (btor_of_exp m e)
   | Ite (w, c, e1, e2) -> m#mkcond w (btor_of_bexp m c) (btor_of_exp m e1) (btor_of_exp m e2)
+  | UbvOfFp _
+  | SbvOfFp _ -> fail "UbvOfFp/SbvOfFp is not supported"
 and btor_of_bexp m e =
   (*let _ = m#mkcomment (string_of_bexp e) in*)
   match e with
@@ -621,6 +734,16 @@ and btor_of_bexp m e =
   | Saddo (_w, e1, e2) -> m#mksaddo (btor_of_exp m e1) (btor_of_exp m e2)
   | Ssubo (_w, e1, e2) -> m#mkssubo (btor_of_exp m e1) (btor_of_exp m e2)
   | Smulo (_w, e1, e2) -> m#mksmulo (btor_of_exp m e1) (btor_of_exp m e2)
+  | FpEq _
+  | FpLt _
+  | FpLeq _
+  | FpGt _
+  | FpGeq _
+  | FpIsZero _
+  | FpIsInf _
+  | FpIsNaN _
+  | FpIsNeg _
+  | FpIsPos _ -> fail "Fp* is not supported"
   | Lneg e -> m#mknot 1 (btor_of_bexp m e)
   | Conj (e1, e2) -> m#mkand 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
   | Disj (e1, e2) -> m#mkor 1 (btor_of_bexp m e1) (btor_of_bexp m e2)
@@ -1009,6 +1132,40 @@ let bvlow lo _hi e = "((_ extract " ^ string_of_int (lo - 1) ^ " " ^ string_of_i
 let zero_extend i e = "((_ zero_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
 let sign_extend i e = "((_ sign_extend " ^ string_of_int i ^ ") " ^ e ^ ")"
 let ite c e1 e2 = "(ite " ^ c ^" " ^ e1 ^ " " ^ e2 ^ ")"
+let fp2ubv w r e = "((_ fp.to_ubv " ^ string_of_int w ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
+let fp2sbv w r e = "((_ fp.to_sbv " ^ string_of_int w ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
+let fpadd r e1 e2 = "(fp.add " ^ smtlib2_of_rdm r ^ " " ^ e1 ^ " " ^ e2 ^ ")"
+let fpsub r e1 e2 = "(fp.sub " ^ smtlib2_of_rdm r ^ " " ^ e1 ^ " " ^ e2 ^ ")"
+let fpmul r e1 e2 = "(fp.mul " ^ smtlib2_of_rdm r ^ " " ^ e1 ^ " " ^ e2 ^ ")"
+let fpdiv r e1 e2 = "(fp.div " ^ smtlib2_of_rdm r ^ " " ^ e1 ^ " " ^ e2 ^ ")"
+let fprem e1 e2 = "(fp.rem " ^ e1 ^ " " ^ e2 ^ ")"
+let fpneg e = "(fp.neg " ^ e ^ ")"
+let fpabs e = "(fp.abs " ^ e ^ ")"
+let fpbitcast p e = 
+  let fmt = get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  "((_ to_fp " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ") " ^ e ^ ")"
+let fpofsbv p r e =
+  let fmt = get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  "((_ to_fp " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
+let fpofubv p r e =
+  let fmt = get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  "((_ to_fp_unsigned " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
+let fpoffp p r e =
+  let fmt = get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  "((_ to_fp " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
+let fpofreal p r e =
+  let fmt = get_fmt p in
+  let eb = fmt.exp_bits in
+  let sb = fmt.mant_bits + 1 in
+  "((_ to_fp " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ") " ^ smtlib2_of_rdm r ^ " " ^ e ^ ")"
 let bvult e1 e2 = "(bvult " ^ e1 ^ " " ^ e2 ^ ")"
 let bvule e1 e2 = "(bvule " ^ e1 ^ " " ^ e2 ^ ")"
 let bvugt e1 e2 = "(bvugt " ^ e1 ^ " " ^ e2 ^ ")"
@@ -1056,17 +1213,25 @@ let bvsmulo w e1 e2 =
   let high_mul = bvhigh w w mul in
   let cond = ite (bveq sign_mul "#b1") ("#b" ^ ones w) ("#b" ^ zeros w) in
   bvneq high_mul cond
+let fpeq e1 e2 = "(fp.eq " ^ e1 ^ " " ^ e2 ^ ")"
+let fplt e1 e2 = "(fp.lt " ^ e1 ^ " " ^ e2 ^ ")"
+let fpleq e1 e2 = "(fp.leq " ^ e1 ^ " " ^ e2 ^ ")"
+let fpgt e1 e2 = "(fp.gt " ^ e1 ^ " " ^ e2 ^ ")"
+let fpgeq e1 e2 = "(fp.geq " ^ e1 ^ " " ^ e2 ^ ")"
+let fpiszero e = "(fp.isZero " ^ e ^ ")"
+let fpisinf e = "(fp.isInfinite " ^ e ^ ")" 
+let fpisnan e = "(fp.isNaN " ^ e ^ ")"
+let fpisneg e = "(fp.isNegative " ^ e ^ ")"
+let fpispos e = "(fp.isPositive " ^ e ^ ")"
 
-
-(** QF_BV to SMTLIB *)
+(** QF_BVFP to SMTLIB *)
 
 let smtlib2_of_int_const w n =
   if w / 4 * 4 = w && not !use_binary_repr then "#x" ^ hex_of_Z w n
   else "#b" ^ bin_of_Z w n
 
-let smtlib2_of_float_const w f =
-  let p = Float.prec_of_size w in
-  let fmt = Float.get_fmt p in
+let smtlib2_of_float_const p f =
+  let fmt = get_fmt p in
   let eb = fmt.exp_bits in
   let sb = fmt.mant_bits + 1 in
   match FloatConst.to_ieee p f with
@@ -1078,21 +1243,16 @@ let smtlib2_of_float_const w f =
                      (smtlib2_of_int_const eb fs.exp) 
                      (smtlib2_of_int_const (sb - 1) fs.mant)
 
-let smtlib2_of_const w c =
-  match c with
-  | Cint n -> smtlib2_of_int_const w n
-  | Cfloat f -> smtlib2_of_float_const w f
-
 let rec smtlib2_of_exp e =
   match e with
   | Var v -> string_of_var v
-  | Const (w, c) -> smtlib2_of_const w c
+  | Const (w, n) -> smtlib2_of_int_const w n
   | Not (_w, e) -> bvnot (smtlib2_of_exp e)
   | And (_w, e1, e2) -> bvand (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Or (_w, e1, e2) -> bvor (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Xor (_w, e1, e2) -> bvxor (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Neg (_w, e) -> bvneg (smtlib2_of_exp e)
-  | Comp (_, e1, e2) -> bvcomp (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | Comp (_w, e1, e2) -> bvcomp (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Add (_w, e1, e2) -> bvadd (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Sub (_w, e1, e2) -> bvsub (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Mul (_w, e1, e2) -> bvmul (smtlib2_of_exp e1) (smtlib2_of_exp e2)
@@ -1104,13 +1264,11 @@ let rec smtlib2_of_exp e =
   | Shl (_w, e1, e2) -> bvshl (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Lshr (_w, e1, e2) -> bvlshr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ashr (_w, e1, e2) -> bvashr (smtlib2_of_exp e1) (smtlib2_of_exp e2)
-  | Rol (_, e, n) -> (match n with
-                      | Const (_, Cint n) -> bvrol (smtlib2_of_exp e) (Z.to_int n)
-                      | Const _ -> failwith ("SMTLIB2 format does not support rotation by a non-integer.")
+  | Rol (_w, e, n) -> (match n with
+                      | Const (_, n) -> bvrol (smtlib2_of_exp e) (Z.to_int n)
                       | _ -> failwith ("SMTLIB2 format does not support rotation by an expression"))
-  | Ror (_, e, n) -> (match n with
-                      | Const (_, Cint n) -> bvror (smtlib2_of_exp e) (Z.to_int n)
-                      | Const _ -> failwith ("SMTLIB2 format does not support rotation by a non-integer.")
+  | Ror (_w, e, n) -> (match n with
+                      | Const (_, n) -> bvror (smtlib2_of_exp e) (Z.to_int n)
                       | _ -> failwith ("SMTLIB2 format does not support rotation by an expression."))
   | Concat (_w1, _w2, e1, e2) -> bvconcat (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Extract (_w, i, j, e) -> bvextract i j (smtlib2_of_exp e)
@@ -1120,6 +1278,24 @@ let rec smtlib2_of_exp e =
   | ZeroExtend (_w, i, e) -> zero_extend i (smtlib2_of_exp e)
   | SignExtend (_w, i, e) -> sign_extend i (smtlib2_of_exp e)
   | Ite (_w, c, e1, e2) -> ite (smtlib2_of_bexp c) (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | UbvOfFp (w, r, e) -> fp2ubv w r (smtlib2_of_fpexp e)
+  | SbvOfFp (w, r, e) -> fp2sbv w r (smtlib2_of_fpexp e)
+and smtlib2_of_fpexp e =
+  match e with
+  | FpVar v -> string_of_var v 
+  | FpConst (p, f) -> smtlib2_of_float_const p f
+  | FpAdd (_, r, e1, e2) -> fpadd r (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpSub (_, r, e1, e2) -> fpsub r (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpMul (_, r, e1, e2) -> fpmul r (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpDiv (_, r, e1, e2) -> fpdiv r (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpRem (_, e1, e2) -> fprem (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpNeg (_, e) -> fpneg (smtlib2_of_fpexp e)
+  | FpAbs (_, e) -> fpabs (smtlib2_of_fpexp e)
+  | FpBitCast (p, e) -> fpbitcast p (smtlib2_of_exp e)
+  | FpOfSbv (p, r, e) -> fpofsbv p r (smtlib2_of_exp e)
+  | FpOfUbv (p, r, e) -> fpofubv p r (smtlib2_of_exp e)
+  | FpOfFp (p, r, e) ->  fpoffp p r (smtlib2_of_fpexp e)
+  | FpOfReal (p, r, s) -> fpofreal p r s 
 and smtlib2_of_bexp e =
   match e with
   | True -> "true"
@@ -1138,6 +1314,16 @@ and smtlib2_of_bexp e =
   | Saddo (w, e1, e2) -> bvsaddo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Ssubo (w, e1, e2) -> bvssubo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Smulo (w, e1, e2) -> bvsmulo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
+  | FpEq (_, e1, e2) -> fpeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpLt (_, e1, e2) -> fplt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpLeq (_, e1, e2) -> fpleq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpGt (_, e1, e2) -> fpgt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpGeq (_, e1, e2) -> fpgeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpIsZero (_, e) -> fpiszero (smtlib2_of_fpexp e)
+  | FpIsInf (_, e) -> fpisinf (smtlib2_of_fpexp e)
+  | FpIsNaN (_, e) -> fpisnan (smtlib2_of_fpexp e)
+  | FpIsNeg (_, e) -> fpisneg (smtlib2_of_fpexp e)
+  | FpIsPos (_, e) -> fpispos (smtlib2_of_fpexp e)
   | Lneg e -> bvlneg (smtlib2_of_bexp e)
   | Conj (e1, e2) -> bvconj (smtlib2_of_bexp e1) (smtlib2_of_bexp e2)
   | Disj (e1, e2) -> bvdisj (smtlib2_of_bexp e1) (smtlib2_of_bexp e2)
@@ -1151,18 +1337,27 @@ let smtlib2_of_imp es =
   ^ "\n"
   ^ "(assert " ^ bvlneg (smtlib2_of_bexp goal) ^ ")"
 
+let smtlib2_of_typ ty =
+  match ty with
+  | Tuint _ | Tsint _ -> "(_ BitVec " ^ string_of_int (size_of_typ ty) ^ ")"
+  | Tdouble | Tsingle -> 
+      let fmt = get_fmt (prec_of_typ ty) in
+      let eb = fmt.exp_bits in
+      let sb = fmt.mant_bits + 1 in
+      "(_ FloatingPoint " ^ string_of_int eb ^ " " ^ string_of_int sb ^ ")"
+
 let smtlib2_declare_vars vars =
   let decls = VS.fold (
                   fun v res ->
                   ("(declare-fun "
                    ^ string_of_var v
-                   ^ " () (_ BitVec "
-                   ^ string_of_int (size_of_var v)
-                   ^ "))")::res) vars [] in
+                   ^ " () "
+                   ^ smtlib2_of_typ (typ_of_var v)
+                   ^ ")")::res) vars [] in
   String.concat "\n" decls
 
 let smtlib2_imp_check_sat es =
-  "(set-logic QF_BV)\n"
+  "(set-logic QF_BVFP)\n"
   ^ "(set-info :smt-lib-version 2.0)\n"
   ^ smtlib2_declare_vars (vars_imp es)
   ^ "\n"
@@ -1603,8 +1798,7 @@ object(self)
   method bit_blast_exp_nocache e =
     match e with
     | Var v -> ([], self#bit_blast_var v)
-    | Const (w, Cint n) -> self#bit_blast_const w n
-    | Const _ -> failwith "Const (_, c) with non-integer c is not supported"
+    | Const (w, n) -> self#bit_blast_const w n
     | Not (w, e) ->
        let (clauses1, e) = self#bit_blast_exp e in
        let (clauses2, rs) = self#bit_blast_not w e in
@@ -1701,6 +1895,8 @@ object(self)
        let (clauses3, e2) = self#bit_blast_exp e2 in
        let (clauses4, rs) = self#bit_blast_ite w c e1 e2 in
        (clauses1@@clauses2@@clauses3@@clauses4, rs)
+    | UbvOfFp _
+    | SbvOfFp _ -> fail "Not supported: UbvOfFp/SbvOfFp"
 
   method bit_blast_bexp e : int list list * int =
     try
@@ -1782,6 +1978,16 @@ object(self)
     | Saddo (_w, _e1, _e2) -> failwith "Not supported: Saddo"
     | Ssubo (_w, _e1, _e2) -> failwith "Not supported: Ssubo"
     | Smulo (_w, _e1, _e2) -> failwith "Not supported: Smulo"
+    | FpEq _
+    | FpLt _
+    | FpLeq _
+    | FpGt _
+    | FpGeq _
+    | FpIsZero _
+    | FpIsInf _
+    | FpIsNaN _
+    | FpIsNeg _
+    | FpIsPos _ -> failwith "Not supported: Fp*"
     | Lneg e ->
        let (clauses1, e) = self#bit_blast_bexp e in
        let (clauses2, r) = self#bit_blast_lneg e in

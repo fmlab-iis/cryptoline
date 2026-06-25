@@ -1,5 +1,6 @@
 
 open Ast.Cryptoline
+open Utils.Float
 
 
 (** This modules provides QF_BV. *)
@@ -9,7 +10,7 @@ type result = Sat | Unsat | Unknown (* *)
 
 type exp =
   | Var of var                          (** variable *)
-  | Const of size * const               (** constant *)
+  | Const of size * Z.t                 (** constant *)
   | Not of size * exp                   (** bit-wise NOT *)
   | And of size * exp * exp             (** bit-wise AND *)
   | Or of size * exp * exp              (** bit-wise OR *)
@@ -40,6 +41,26 @@ type exp =
   | SignExtend of size * int * exp      (** [SignExtend (size_of_exp, bit_to_extend, exp)] applies signed extension to [exp] *)
   | Ite of size * bexp * exp * exp      (** if-then-else *) (* *)
 (** QF_BV expressions *)
+  | UbvOfFp of size * rounding_mode * fpexp
+  | SbvOfFp of size * rounding_mode * fpexp
+(** QF_BVFP expressions *)
+
+and fpexp =
+  | FpVar of var
+  | FpConst of prec * FloatConst.t
+  | FpAdd of prec * rounding_mode * fpexp * fpexp 
+  | FpSub of prec * rounding_mode * fpexp * fpexp 
+  | FpMul of prec * rounding_mode * fpexp * fpexp 
+  | FpDiv of prec * rounding_mode * fpexp * fpexp
+  | FpRem of prec * fpexp * fpexp
+  | FpNeg of prec * fpexp
+  | FpAbs of prec * fpexp
+  | FpBitCast of prec * exp
+  | FpOfSbv of prec * rounding_mode * exp
+  | FpOfUbv of prec * rounding_mode * exp
+  | FpOfFp of prec * rounding_mode * fpexp
+  | FpOfReal of prec * rounding_mode * string
+(** QF_BVFP expressions *)
 
 and bexp =
   | True                                (** true *)
@@ -62,6 +83,17 @@ and bexp =
   | Conj of bexp * bexp                 (** conjunction *)
   | Disj of bexp * bexp                 (** disjunction *) (* *)
 (** QF_BV predicates *)
+  | FpEq of prec * fpexp * fpexp
+  | FpLt of prec * fpexp * fpexp
+  | FpLeq of prec * fpexp * fpexp
+  | FpGt of prec * fpexp * fpexp
+  | FpGeq of prec * fpexp * fpexp
+  | FpIsZero of prec * fpexp
+  | FpIsInf of prec * fpexp
+  | FpIsNaN of prec * fpexp
+  | FpIsNeg of prec * fpexp
+  | FpIsPos of prec * fpexp
+(** QF_BVFP predicates *)
 
 val string_of_exp : exp -> string
 (** string representation of a QF_BV expression *)
@@ -151,6 +183,9 @@ class btor_manager :
 val smtlib2_of_exp : exp -> string
 (** Convert an exp to an SMTLIB string. *)
 
+val smtlib2_of_fpexp : fpexp -> string
+(** Convert a fpexp to an SMTLIB string. *)
+
 val smtlib2_of_bexp : bexp -> string
 (** Convert a bexp to an SMTLIB string. *)
 
@@ -160,6 +195,9 @@ val smtlib2_declare_vars : VS.t -> string
 val smtlib2_of_imp : bexp list -> string
 (** Convert the implication e1 -> e2 -> e3 -> ... -> en into an SMTLIB string.
     The implication is given as a list [e1; e2; e3; ...; en]. *)
+
+val smtlib2_of_typ : typ -> string
+(** Convert a typ to an SMTLIB string. *)
 
 val smtlib2_imp_check_sat : bexp list -> string
 (** [smtlib2_imp_check_sat [e1; e2; ...; en]] returns a query in SMTLIB format.
