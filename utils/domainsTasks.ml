@@ -216,8 +216,8 @@ let finish_pending_with_timedouts continue_helper delivered_helper make_promise 
   in
   verify_timedouts (res, timedouts) pending
 
-(* Run commands safely with Domains. *)
-let exec_cmd ?_timeout ?ofile ?errfile cmd_array =
+(* Run commands safely with Domains (no timeout). *)
+let _exec_cmd_no_timeout ?ofile ?errfile cmd_array =
   let (out, err, fds_to_close) =
     match ofile, errfile with
     | None, None -> (Unix.stdout, Unix.stderr, [])
@@ -240,3 +240,90 @@ let exec_cmd ?_timeout ?ofile ?errfile cmd_array =
   | Unix.WSIGNALED n when n = Sys.sigkill ->
     raise Tasks.TimeoutException
   | _ -> status
+
+(* Run commands safely with Domains (with timeout). *)
+let _exec_cmd_select ?timeout ?ofile ?errfile cmd_array =
+  let select_timeout = Option.value timeout ~default:(-1.0) in
+  let (r_notify, w_notify) = Unix.pipe () in
+  let (out, err, fds_to_close) =
+    match ofile, errfile with
+    | None, None -> (Unix.stdout, Unix.stderr, [])
+    | Some out, None ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, Unix.stderr, [out_fd])
+    | None, Some err ->
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (Unix.stdout, err_fd, [err_fd])
+    | Some out, Some err ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, err_fd, [out_fd; err_fd]) in
+  let cleanup () = List.iter Unix.close fds_to_close in
+  let pid =
+    try
+      Unix.create_process cmd_array.(0) cmd_array
+        Unix.stdin out err
+    with exn ->
+      cleanup (); Unix.close w_notify; Unix.close r_notify; raise exn
+  in
+  let _ = Unix.close w_notify in
+  let status_or_exception =
+    try
+      let (ready_read, _, _) = Unix.select [r_notify] [] [] select_timeout in
+      let _ = Unix.close r_notify in
+      if ready_read = [] then
+        let _ = Unix.kill pid Sys.sigkill in
+        let _ = Unix.waitpid [] pid in
+        Error Tasks.TimeoutException
+      else
+        let (_, status) = Unix.waitpid [] pid in
+        Ok status
+    with exn ->
+      Error exn
+  in
+  let _ = cleanup () in
+  match status_or_exception with
+  | Ok status -> status
+  | Error exn -> raise exn
+
+
+(* Run commands safely with Domains (with timeout). *)
+let _exec_cmd_thread ?timeout ?ofile ?errfile cmd_array =
+  let monitor pid timeout () =
+    let _ = Thread.delay timeout in
+    try
+      Unix.kill pid Sys.sigkill;
+      ignore(Unix.waitpid [] pid);
+      raise Thread.Exit
+    with Unix.Unix_error (Unix.ESRCH, _, _) ->
+      () in
+  let (out, err, fds_to_close) =
+    match ofile, errfile with
+    | None, None -> (Unix.stdout, Unix.stderr, [])
+    | Some out, None ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, Unix.stderr, [out_fd])
+    | None, Some err ->
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (Unix.stdout, err_fd, [err_fd])
+    | Some out, Some err ->
+      let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
+      (out_fd, err_fd, [out_fd; err_fd]) in
+  let pid =
+    Unix.create_process cmd_array.(0) cmd_array
+      Unix.stdin out err in
+  let _ =
+    match timeout with
+    | None -> ()
+    | Some t ->
+      ignore (Thread.create (monitor pid t) ())
+  in
+  let (_, status) = Unix.waitpid [] pid in
+  let _ = List.iter Unix.close fds_to_close in
+  match status with
+  | Unix.WSIGNALED n when n = Sys.sigkill ->
+    raise Tasks.TimeoutException
+  | _ -> status
+
+let exec_cmd = _exec_cmd_select

@@ -35,7 +35,7 @@ let btor_write_input ?comments m ifile es =
 let run_smt_solver ?timeout:timeout ?(solver=(!range_solver)) header ifile ofile errfile =
   let t1 = Unix.gettimeofday() in
   let cmd = solver ^ " " ^ !range_solver_args ^ " " ^ "\"" ^ ifile ^ "\"" in
-  let%lwt _ = Tasks.exec_shell ?timeout:(Option.map float_of_int timeout) ofile errfile cmd in
+  let%lwt _ = Tasks.exec_shell ?timeout ofile errfile cmd in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Lwt_list.iter_s

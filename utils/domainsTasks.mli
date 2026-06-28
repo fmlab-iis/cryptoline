@@ -87,5 +87,5 @@ val finish_pending_with_timedouts :
 (** Finish all pending tasks, and redo timedout tasks. *)
 
 val exec_cmd:
-  ?_timeout:int -> ?ofile:string -> ?errfile:string ->
+  ?timeout:float -> ?ofile:string -> ?errfile:string ->
   string array -> Unix.process_status

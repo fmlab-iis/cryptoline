@@ -629,12 +629,15 @@ let verify_safety_of_cut_inc options ?comments sid s hashopt =
       let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !qs) ^ " ==") in
       let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                         ^ string_of_int (List.length !qs) ^ " safety conditions, timeout = "
-                        ^ string_of_int !timeout ^ " seconds)") in
+                        ^ string_of_float !timeout ^ " seconds)") in
       let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
-                                                       "Timeout: " ^ string_of_int !timeout ] in
+                                                       "Timeout: " ^ string_of_float !timeout ] in
       let res =
         if !Options.Std.jobs > 1 then
-          WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
+          match !Options.Std.parallel_model with
+          | WithLwt -> WithLwt.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
+          | WithDomains -> WithDomains.verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt
+          | WithCli -> failwith ("internal error: calling verify_safety_of_cut_inc with CLI")
         else
           verify_safety_conditions ~comments !timeout s.rspre s.rsprog !qs hashopt in
       let _ =
@@ -645,7 +648,7 @@ let verify_safety_of_cut_inc options ?comments sid s hashopt =
                    (fun (id0, _, _) (id1, _, _) -> compare id0 id1)
                    rest in
       let _ = round := !round + 1 in
-      let _ = timeout := !timeout * 2 in
+      let _ = timeout := !timeout *. 2.0 in
       ()
     done in
   let res =
@@ -687,10 +690,8 @@ let verify_safety_cut_by_cut options s hashopt =
         | WithCli ->
           WithLwt.verify_safety_conditions_cli
             options ~comments:msgs sid s.rspre s.rsprog
-        | WithLwt ->
+        | WithLwt | WithDomains ->
           verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
-        | WithDomains ->
-          failwith("To be supported")
       else
         verify_safety_of_cut_inc options ~comments:msgs sid s hashopt
     else verify_safety_of_cut options ~comments:msgs sid s hashopt in
@@ -704,11 +705,11 @@ let verify_safety_cut_by_cut options s hashopt =
   let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall\t\t\t\t\t" in
   res
 
-(* Verify safety of a specification across cuts.
+(* Verify safety of a specification cross cuts.
    Verify the safety conditions of the next cut whenever there are free
    job workers.
  *)
-let verify_safety_across_cuts options s hashopt =
+let verify_safety_cross_cuts options s hashopt =
   let _ = Options.Std.trace "===== Verifying program safety =====" in
   let _ = if !Options.Std.incremental_safety then Options.Std.vprintln "" in
   let comments = [ "Verify: safety" ] in
@@ -720,7 +721,7 @@ let verify_safety_across_cuts options s hashopt =
       | WithLwt ->
         WithLwt.verify_safety_lwt options ~comments s hashopt
       | WithDomains ->
-        failwith("To be supported")
+        WithDomains.verify_safety_cross_cut_domains options ~comments s hashopt
     else
       verify_safety_cut_by_cut options s hashopt in
   let _ = if !Options.Std.incremental_safety then Options.Std.vprint "\tOverall safety\t\t\t\t" in
@@ -778,12 +779,15 @@ let verify_safety_mip_of_cut_inc options ?comments vgen sid s hashopt =
       let _ = Options.Std.trace ("== Number of safety conditions to be verified: " ^ string_of_int (List.length !indexed_infos) ^ " ==") in
       let _ = Options.Std.vprintln ("\t     Round " ^ string_of_int !round ^ " ("
                         ^ string_of_int (List.length !indexed_infos) ^ " safety conditions, timeout = "
-                        ^ string_of_int !timeout ^ " seconds)") in
+                        ^ string_of_float !timeout ^ " seconds)") in
       let comments = append_comments_option comments [ "Round: " ^ string_of_int !round;
-                                                       "Timeout: " ^ string_of_int !timeout ] in
+                                                       "Timeout: " ^ string_of_float !timeout ] in
       let res =
         if !Options.Std.jobs > 1 then
-          WithLwt.verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt
+          match !Options.Std.parallel_model with
+          | WithLwt -> WithLwt.verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt
+          | WithDomains -> WithDomains.verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt
+          | WithCli -> failwith ("internal error: calling verify_safety_mip_of_cut_inc with CLI")
         else
           verify_safety_mip_conditions ~comments !timeout !indexed_infos vgen hashopt in
       let _ =
@@ -794,7 +798,7 @@ let verify_safety_mip_of_cut_inc options ?comments vgen sid s hashopt =
                               (fun (id0, _) (id1, _) -> compare id0 id1)
                               rest in
       let _ = round := !round + 1 in
-      let _ = timeout := !timeout * 2 in
+      let _ = timeout := !timeout *. 2.0 in
       ()
     done in
   let res =
@@ -823,7 +827,8 @@ let verify_safety_mip_cut_by_cut options vgen s hashopt =
         verify_safety_mip_of_cut_inc
           options ~comments:msgs vgen sid s hashopt
       | WithDomains ->
-        failwith("To be supported")
+        verify_safety_mip_of_cut_inc
+          options ~comments:msgs vgen sid s hashopt
     else
       verify_safety_mip_of_cut_inc options ~comments:msgs vgen sid s hashopt in
   (* Check previous result, cid: cut id, sid: id of the next safety condition *)
@@ -834,11 +839,11 @@ let verify_safety_mip_cut_by_cut options vgen s hashopt =
   let _ = Options.Std.vprint "\tOverall\t\t\t\t\t" in
   res
 
-(* Verify safety of a specification across cuts.
+(* Verify safety of a specification cross cuts.
    Verify the safety conditions of the next cut whenever there are free
    job workers.
  *)
-let verify_safety_mip_across_cuts options vgen s hashopt =
+let verify_safety_mip_cross_cuts options vgen s hashopt =
   let _ = Options.Std.trace "===== Verifying program safety =====" in
   let _ = Options.Std.vprintln "" in
   let comments = [ "Verify: safety" ] in
@@ -851,7 +856,8 @@ let verify_safety_mip_across_cuts options vgen s hashopt =
         WithLwt.verify_safety_mip_cross_cuts_lwt
           options ~comments vgen s hashopt
       | WithDomains ->
-        failwith("To be supported")
+        WithDomains.verify_safety_mip_cross_cuts_domains
+          options ~comments vgen s hashopt
     else
       verify_safety_mip_cut_by_cut options vgen s hashopt in
   let _ = Options.Std.vprint "\tOverall safety\t\t\t\t" in
@@ -859,7 +865,7 @@ let verify_safety_mip_across_cuts options vgen s hashopt =
 
 let verify_safety_mip options s hashopt =
   let vgen = vgen_of_spec s in
-  if !Options.Std.cross_cuts then verify_safety_mip_across_cuts options vgen s hashopt
+  if !Options.Std.cross_cuts then verify_safety_mip_cross_cuts options vgen s hashopt
   else verify_safety_mip_cut_by_cut options vgen s hashopt
 
 (*
@@ -867,36 +873,37 @@ let verify_safety_mip options s hashopt =
  *
  * if verify_safety_mip then:
  *
- * cross_cuts? -- verify_safety_mip_across_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_mip_cross_cuts_cli
- *             |                                             |                 |- WithLwt -- WithLwt.verify_safety_mip_cross_cuts_lwt
- *             |                                             |                 |- WithDomains -- To be supported
- *             |                                             |- verify_safety_mip_cut_by_cut
+ * cross_cuts? -- verify_safety_mip_cross_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_mip_cross_cuts_cli
+ *             |                                            |                 |- WithLwt -- WithLwt.verify_safety_mip_cross_cuts_lwt
+ *             |                                            |                 |- WithDomains -- WithDomains.verify_safety_mip_cross_cuts_lwt
+ *             |                                            |- verify_safety_mip_cut_by_cut
  *             |- verify_safety_mip_cut_by_cut -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_mip_conditions_cli
- *                                                          |                 |- WithLwt -- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
- *                                                          |                 |- WithDomains -- To be supported
- *                                                          |- verify_safety_mip_of_cut_inc (sequential or parallel with Lwt)
+ *                                                          |                 |- WithLwt -- verify_safety_mip_of_cut_inc (sequential, Lwt, or Domains) -- WithLwt.verify_safety_mip_conditions
+ *                                                          |                 |- WithDomains -- verify_safety_mip_of_cut_inc (sequential, Lwt, or Domains) -- WithDomains.verify_safety_mip_conditions
+ *                                                          |- verify_safety_mip_of_cut_inc (sequential, Lwt, or Domains) -- Std.verify_safety_mip_conditions
  *
  * else:
  *
- * cross_cuts? -- verify_safety_across_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
- *             |                                         |                 |                                                              |- WithLiwt.verify_safety_all_cli
- *             |                                         |                 |- WithLwt -- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
- *             |                                         |                 |                                                              |- WithLwt.verify_safety_all_lwt
- *             |                                         |                 |- WithDomains -- To be supported
- *             |                                         |- verify_safety_cut_by_cut (same as cross_cuts = false)
+ * cross_cuts? -- verify_safety_cross_cuts -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_cli -- incremental_safety? -- WithLwt.verify_safety_inc_cli
+ *             |                                        |                 |                                                              |- WithLiwt.verify_safety_all_cli
+ *             |                                        |                 |- WithLwt -- WithLwt.verify_safety_lwt -- incremental_safety? -- WithLwt.verify_safety_inc_lwt
+ *             |                                        |                 |                                                              |- WithLwt.verify_safety_all_lwt
+ *             |                                        |                 |- WithDomains -- WithDomains.verify_safety_cross_cut_domains -- incremental_safety? -- WithDomains.verify_safety_cross_cut_inc_domains
+ *             |                                        |                                                                                                      |- WithDomains.verify_safety_cruss_cut_all_domains
+ *             |                                        |- verify_safety_cut_by_cut (same as cross_cuts = false)
  *             |
  *             |- verify_safety_cut_by_cut -- incremental_safety? -- jobs > 1? -- parallel_mode? -- WithCli -- WithLwt.verify_safety_conditions_cli
- *                     (cut specs)                                |            |                 |- WithLwt -- verify_safety_of_cut_inc (sequential or parallel with Lwt)
+ *                     (cut specs)                                |            |                 |- WithLwt -- verify_safety_of_cut_inc (sequential, Lwt, or Domains) -- WithLwt.verify_safety_conditions
  *                                                                |            |                 |             (Verify safety of each instruction in a cut)
- *                                                                |            |                 |- WithDomains -- To be supported
- *                                                                |            |- verify_safety_of_cut_inc (sequential or parallel with Lwt)
+ *                                                                |            |                 |- WithDomains -- verify_safety_of_cut_inc (sequential, Lwt, or Domains) -- WithDomains.verify_safety_conditions
+ *                                                                |            |- verify_safety_of_cut_inc (sequential, Lwt, or Domains) -- Std.verify_safety_conditions
  *                                                                |- verify_safety_of_cut
- *                                                              (verify safety of a whole cut)
+ *                                                               (verify safety of a whole cut)
  *)
 let verify_safety options s hashopt =
   if !Options.Std.safety_by_mip then verify_safety_mip options s hashopt
   else
-    if !cross_cuts then verify_safety_across_cuts options s hashopt
+    if !cross_cuts then verify_safety_cross_cuts options s hashopt
     else verify_safety_cut_by_cut options s hashopt
 
 

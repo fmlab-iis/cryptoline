@@ -39,6 +39,32 @@ let apply_to_cuts ids f delivered_helper res pending ss =
             helper (i+1) (res, pending) tl in
   helper 0 (res, pending) ss
 
+(*
+ * This is same as apply_to_cuts except that finish_pending is not invoked
+ * after all cuts are processed. It is the caller's responsibility to finish
+ * all pending tasks.
+*)
+let apply_to_cuts_unfinished ids f res pending ss =
+  let ids = ids
+            |> Option.map Hashset.to_list
+            |> Option.map (List.rev_map (normalize_index (List.length ss)))
+            |> Option.map List.rev
+            |> Option.map Hashset.of_list in
+  let rec helper i (res, pending) ss =
+    match ss with
+    | [] -> (res, pending)
+    | hd::tl ->
+       if Options.Std.mem_hashset_opt ids i
+       then let headers = [ "=== Cut #" ^ string_of_int i ^ " ===" ] in
+            let (res, pending) =
+              List.fold_left (f i headers) (res, pending) hd in
+            helper (i+1) (res, pending) tl
+       else let _ =
+              if !Options.Std.debug then
+                DomainsTasks.log_with_lock ("=== Skip Cut #" ^ string_of_int i ^ " ===\n") in
+            helper (i+1) (res, pending) tl in
+  helper 0 (res, pending) ss
+
 (* Converting a string of command-line arguments to a list. *)
 let args_from_string str =
   String.split_on_char ' ' str
@@ -305,7 +331,7 @@ let write_ppl_input ?comments ifile mipvars constr =
     let nvars = nivars + icvars in
     Buffer.add_string buf comment;
     Buffer.add_char buf '\n';
-    Buffer.add_string buf 
+    Buffer.add_string buf
       "from ppl import Variable, Variables_Set, C_Polyhedron, MIP_Problem\n";
     ppl_variables buf ordered_mipvars;
     Buffer.add_char buf '\n';
@@ -320,7 +346,7 @@ let write_ppl_input ?comments ifile mipvars constr =
                                           then nivars else nvars));
     Buffer.add_string buf ")\n";
     Buffer.add_string buf "mip.add_constraints(";
-    Buffer.add_string buf 
+    Buffer.add_string buf
       (if !Options.Std.minimize_constraint
        then "ph.minimized_constraints ())\n" else "ph.constraints())\n");
     set_ppl_ivariable buf
@@ -369,7 +395,7 @@ let write_scip_input ?comments ifile mipvars constr =
 
 let write_isl_input ?comments ifile mipvars constr =
   let isl_variables buf mipvars =
-    Buffer.add_string buf 
+    Buffer.add_string buf
       (String.concat ", "
          (tmap (fun mv -> "'" ^ string_of_var (var_of_mip mv) ^ "'")
             mipvars)) in
@@ -415,14 +441,14 @@ let write_smt_input ~comments ifile vgen constr =
         if !debug then
           Out_channel.output_string ch (make_line_comments ";" comments);
         Out_channel.output_string ch smtlib )
-  
-  
 
-let run_ppl headers ifile ofile =
+
+
+let run_ppl ?timeout headers ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_list = [ !python_path; "-q"; ifile ] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ?timeout ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       DomainsTasks.lock_log ();
@@ -440,11 +466,11 @@ let run_ppl headers ifile ofile =
       DomainsTasks.unlock_log ()
     end
 
-let run_scip headers ifile ofile =
+let run_scip ?timeout headers ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_list = [ !python_path; "-q"; ifile ] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ?timeout ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       DomainsTasks.lock_log ();
@@ -461,11 +487,11 @@ let run_scip headers ifile ofile =
       DomainsTasks.unlock_log ()
     end
 
-let run_isl headers ifile ofile =
+let run_isl ?timeout headers ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_list = [ !python_path; "-q"; ifile ] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ?timeout ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       DomainsTasks.lock_log ();
@@ -482,11 +508,11 @@ let run_isl headers ifile ofile =
       DomainsTasks.unlock_log ()
     end
 
-let run_smt headers algsmt_path ifile ofile =
+let run_smt ?timeout headers algsmt_path ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_list = [ algsmt_path; ifile ] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ?timeout ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       DomainsTasks.lock_log ();
@@ -501,7 +527,7 @@ let run_smt headers algsmt_path ifile ofile =
       DomainsTasks.log "\n";
       DomainsTasks.unlock_log ()
     end
-  
+
 let read_ppl_output = read_one_line
 
 let read_scip_output ofile =
@@ -560,7 +586,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) h
   let _ = cleanup [ifile; ofile] in
   res
 
-let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
+let is_constr_feasible ?timeout ?comments headers ?(solver=(!Options.Std.algebra_solver))
       vgen mipvars constr =
   let gen_files_py () =
     let ifile = tmpfile "inputfmip_" ".py" in
@@ -584,25 +610,25 @@ let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
   | PPL ->
      let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_ppl_input ~comments ifile mipvars constr in
-     let _ = run_ppl headers ifile ofile in
+     let _ = run_ppl ?timeout headers ifile ofile in
      let res = read_ppl_output ofile in
      res = "False"
   | SCIP ->
      let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_scip_input ~comments ifile mipvars constr in
-     let _ = run_scip headers ifile ofile in
+     let _ = run_scip ?timeout headers ifile ofile in
      let res = read_scip_output ofile in
      res = "infeasible"
   | ISL ->
      let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_isl_input ~comments ifile mipvars constr in
-     let _ = run_isl headers ifile ofile in
+     let _ = run_isl ?timeout headers ifile ofile in
      let res = read_isl_output ofile in
      res = "True"
   | SMTSolver o when o.algsmt_logic = LIA ->
      let (ifile, ofile, comments) = gen_files_smt() in
      let _ = write_smt_input ~comments ifile vgen constr in
-     let _ = run_smt headers o.algsmt_path ifile ofile in
+     let _ = run_smt ?timeout headers o.algsmt_path ifile ofile in
      let res = read_smt_output ofile in
      res = "unsat"
   | _ -> failwith "Algebraic range condition needs MIP solver."
@@ -995,7 +1021,352 @@ let verify_rassert options s hashopt =
     verify                          (* verification function *)
     delivered_helper                (* function for delivering results *)
     true                            (* initial result *)
-    (DomainsTasks.empty_pending ()) (* initial pending state *)          
+    (DomainsTasks.empty_pending ()) (* initial pending state *)
     (cut_rassert (rspec_of_spec s)) (* all cuts *)
 
 
+
+(** Verification of Safety Conditions *)
+
+(* This function is used in Std.verify_safety_of_cut_inc, which verifies
+   safety conditions incrementally cut by cut. Options.vscuts is handled
+   in Std.verify_safety. *)
+let verify_safety_conditions ?comments timeout f prog qs hashopt =
+  let mk_task (id, i, q, p) = fun () ->
+    let fp = safety_assumptions f p q hashopt in
+    try
+      let simp_res =
+        Qfbv.WithDomains.solve_simp
+          ~comments:(
+            if !debug then
+              append_comments_option comments
+                [ "Safety condition: #" ^ string_of_int id;
+                  "Instruction: " ^ string_of_instr i ]
+            else
+              []
+          )
+          ~timeout:timeout (rcons fp q) in
+      match simp_res with
+      | Sat -> (id, i, q, "[FAILED]", Solved Sat)
+      | Unknown -> (id, i, q, "[FAILED]", Solved Unknown)
+      | Unsat -> (id, i, q, "[OK]", Solved Unsat)
+    with Tasks.TimeoutException ->
+      (id, i, q, "[TIMEOUT]", Unfinished [(id, i, q)]) in
+  let continue_helper r =
+    match r with
+    | Solved Unsat | Unfinished _ -> true
+    | _ -> false in
+  let delivered_helper r (id, i, q, ret_str, ret) =
+    let _ = vprint ("\t\tSafety condition #" ^
+                      string_of_int id ^ "\t\t") in
+    let _ = vprintln ret_str in
+    let add_unsolved q res =
+      match res with
+      | Solved Unsat -> Unfinished [q]
+      | Unfinished unsolved -> Unfinished (q::unsolved)
+      | _ -> assert false in
+    match r with
+    | Solved Sat | Solved Unknown -> r
+    | _ ->
+       match ret with
+       | Solved Sat | Solved Unknown -> ret
+       | Solved Unsat -> r
+       | Unfinished qs ->
+          let _ = assert (List.length qs = 1) in
+          add_unsolved (id, i, q) r in
+  let rec find_program_prefix i revp p =
+    match p with
+    | [] -> failwith "find_program_prefix fails"
+    | hd::tl -> if i = hd then (hd::revp, tl)
+                else find_program_prefix i (hd::revp) tl in
+  let fold_fun (res, revp, p, pending) (id, i, q) =
+    match res with
+      Solved Sat
+    | Solved Unknown ->
+      let res' = DomainsTasks.finish_pending delivered_helper res pending in
+      (res', revp, p, pending)
+    | _ ->
+      let (revp', p') = find_program_prefix i revp p in
+      let task = mk_task (id, i, q, List.rev revp') in
+      let (res', pending') = DomainsTasks.add_to_pending continue_helper delivered_helper res pending [task] in
+      (res', revp', p', pending') in
+  let rec fold_fun_abs_interp (res, revp, p, pending, mgr, dom) (id, i, q) =
+    match p with
+    | h::t ->
+       if h <> i then
+         let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
+         fold_fun_abs_interp (res, h::revp, t, pending, mgr, dom') (id, i, q)
+       else
+         if Absdom.Std.instr_safe mgr dom i then
+           let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^
+                             "\t\t[ok]\n") in
+           let dom' = Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
+           (res, h::revp, t, pending, mgr, dom')
+         else
+           let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom h in
+           let (res', revp', p', pending') =
+             fold_fun (res, revp, p, pending) (id, i, q) in
+           let _ = assert (p' == t) in
+           (res', revp', p', pending', mgr, dom')
+    | [] -> failwith "fold_fun_abs_interp fails" in
+  let (res, _, _, pending) =
+    if !Options.Std.abs_interp then
+      let vars = VS.union (vars_rbexp f) (vars_program prog) in
+      let mgr = Absdom.Std.create_manager vars in
+      let vars_dom = Absdom.Std.abs_of_vars mgr
+                       (VS.diff vars (lvs_program prog)) in
+      match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom f with
+      | Some dom ->
+         let start_dom = Absdom.Std.meet mgr dom vars_dom in
+         let (res, revp, p, pending, _, _) =
+           List.fold_left fold_fun_abs_interp
+             (Solved Unsat, [], prog, DomainsTasks.empty_pending(), mgr, start_dom) qs in
+         (res, revp, p, pending)
+      | None -> List.fold_left fold_fun (Solved Unsat, [], prog, DomainsTasks.empty_pending()) qs
+    else
+      List.fold_left fold_fun (Solved Unsat, [], prog, DomainsTasks.empty_pending()) qs in
+  DomainsTasks.finish_pending delivered_helper res pending
+
+
+
+(*
+ * Verify safety of a specification instruction by instruction parallelly.
+ * A single predicate is created for the safety of each instruction.
+ *)
+let verify_safety_cross_cut_inc_domains options ?comments s hashopt =
+  let continue_helper ((res, _), _) = res in
+  let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, i, q, res_str, timedout, safe) =
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s, Timeout %8s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) (Printf.sprintf "%5.2f" timeout) res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout *. 2.0, header, id, i, q)::rtimedouts else rtimedouts) in
+  let make_task (cid, timeout, header, id, i, q) = fun () ->
+    let res =
+      try
+        let simp_res =
+          Qfbv.WithDomains.solve_simp
+            ~comments:(
+              if !debug then
+                append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                  "Cut: #" ^ string_of_int cid;
+                                                  "Safety condition: #" ^ string_of_int id;
+                                                  "Instruction: " ^ string_of_instr i ]
+              else
+                []
+            )
+            ~timeout ~header q in
+        match simp_res with
+        | Sat -> (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+        | Unknown -> (cid, timeout, header, id, i, q, "[FAILED]", false, false)
+        | Unsat -> (cid, timeout, header, id, i, q, "[OK]", false, true)
+      with Tasks.TimeoutException ->
+        (cid, timeout, header, id, i, q, "[TIMEOUT]", true, true) in
+    res in
+  let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
+    let verify_cut_helper (res_with_timedouts, pending) (id, i, q) =
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids id then
+        let task =  make_task (cid, !incremental_safety_timeout,
+                               header, id, i, q) in
+        DomainsTasks.add_to_pending continue_helper delivered_helper res_with_timedouts pending [task]
+      else
+        (res_with_timedouts, pending) in
+    let rec verify_cut_helper_abs_interp ((res_with_timedouts, pending), mgr, dom, p) (id, i, q) =
+      match p with
+      | h::t ->
+        if i <> h then
+          let dom' =
+            Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom h in
+          verify_cut_helper_abs_interp ((res_with_timedouts, pending), mgr, dom', t)
+            (id, i, q)
+        else if Absdom.Std.instr_safe mgr dom i then
+          let dom' =
+            Absdom.Std.interp_instr ~safe:true ~var_bound:true mgr dom i in
+          ((res_with_timedouts, pending), mgr, dom', t)
+        else
+          let dom' = Absdom.Std.interp_instr ~safe:false ~var_bound:true mgr dom i in
+          (verify_cut_helper (res_with_timedouts, pending) (id, i, q), mgr, dom', t)
+      | [] -> failwith "verify_cut_helper_abs_interp fails" in
+    if res then
+      let (next_sid, conds) = bexp_program_safe_numbered_conds sid s.rspre s.rsprog hashopt in
+      let (res_with_timedouts', pending') =
+        if !Options.Std.abs_interp then
+          let vars = VS.union (vars_rbexp s.rspre)
+              (vars_program s.rsprog) in
+          let mgr = Absdom.Std.create_manager vars in
+          let vars_dom = Absdom.Std.abs_of_vars mgr
+              (VS.diff vars (lvs_program s.rsprog)) in
+          match Absdom.Std.abs_of_rbexp mgr ~abs:vars_dom s.rspre with
+          | Some dom ->
+            let start_dom = Absdom.Std.meet mgr dom vars_dom in
+            let ((res_with_timedouts', pending'), _, _, _) = List.fold_left
+                verify_cut_helper_abs_interp
+                ((((res, sid), timedouts), pending), mgr, start_dom, s.rsprog)
+                conds in
+            (res_with_timedouts', pending')
+          | None -> List.fold_left verify_cut_helper (((res, sid), timedouts), pending) conds
+        else
+          List.fold_left verify_cut_helper (((res, sid), timedouts), pending) conds in
+      let _ =
+        if next_sid > sid then
+          vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length conds) sid (next_sid - 1))
+        else
+          vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length conds)) in
+      (res_with_timedouts', pending')
+    else
+      (((res, sid), timedouts), pending) in
+  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_unfinished options.st_verify_scuts verify_cut ((true, 0), []) (DomainsTasks.empty_pending()) (cut_safety (rspec_of_spec s)) in
+  let (res, _) = DomainsTasks.finish_pending_with_timedouts continue_helper delivered_helper (tmap make_task) ((res, sid), List.rev timedouts_rev) pending in
+  res
+
+(*
+ * Verify safety of a specification cut by cut parallelly.
+ * A single predicate is created for the safety of each cut.
+ *)
+let verify_safety_cruss_cut_all_domains options ?comments s hashopt =
+  let delivered_helper (rsafe, rsid) safe = (rsafe && safe, rsid) in
+  let verify_cut cid header ((res, sid), pending) (_, s) =
+    if res then
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids sid then
+        let comments =
+          if !debug then
+            append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                              "Cut: #" ^ string_of_int cid;
+                                              "Target: all instructions in this cut" ]
+          else
+            [] in
+        let task () =
+          let g = bexp_program_safe s.rsprog in
+          let fp = safety_assumptions s.rspre s.rsprog g hashopt in
+          let res = Qfbv.WithDomains.solve_simp ~comments ~header (fp@[g]) in
+          (res = Unsat) in
+        DomainsTasks.add_to_pending fst delivered_helper (res, sid + 1) pending [task]
+      else ((res, sid + 1), pending)
+    else ((res, sid), pending) in
+  let (res, _) = apply_to_cuts options.st_verify_scuts verify_cut delivered_helper (true, 0) (DomainsTasks.empty_pending()) (cut_safety (rspec_of_spec s)) in
+  res
+
+(* Verify safety of a specification parallelly. Safety conditions cross
+   different cuts may be verified at the same time. *)
+let verify_safety_cross_cut_domains options ?comments s hashopt =
+  if !incremental_safety then verify_safety_cross_cut_inc_domains options ?comments s hashopt
+  else verify_safety_cruss_cut_all_domains options ?comments s hashopt
+
+
+
+(* This function is used in Std.verify_safety_mip_of_cut_inc, which verifies
+   safety conditions incrementally cut by cut. Options.vscuts is handled
+   in Std.verify_safety. Abstract interpretation is not supported. *)
+let verify_safety_mip_conditions ?comments timeout indexed_infos vgen _hashopt =
+  let headers = [] in
+  let mip_verifier ?comments ?timeout (mipvars, constr) =
+    is_constr_feasible ?timeout ~comments:(
+      if !debug then
+        append_comments_option comments []
+      else
+        []
+    ) headers ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
+  let mk_task (id, info) = fun () ->
+    try
+      let mip_res =
+        mip_verifier
+          ~comments:(
+            if !debug then
+              append_comments_option comments [ Printf.sprintf "Safety condition: #%d" id;
+                                                Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ]
+            else
+              []
+          )
+          ~timeout
+          info.mip_sndcond_constrs in
+      if mip_res
+      then (id, info, "[OK]", Solved Unsat)
+      else (id, info, "[FAILED]", Solved Sat)
+    with Tasks.TimeoutException ->
+      (id, info, "[TIMEOUT]", Unfinished [(id, info)]) in
+  let continue_helper r =
+    match r with
+    | Solved Unsat | Unfinished _ -> true
+    | _ -> false in
+  let delivered_helper r (id, info, ret_str, ret) =
+    let _ = vprint ("\t\tSafety condition #" ^
+                      string_of_int id ^ "\t\t") in
+    let _ = vprintln ret_str in
+    let add_unsolved q res =
+      match res with
+      | Solved Unsat -> Unfinished [q]
+      | Unfinished unsolved -> Unfinished (q::unsolved)
+      | _ -> assert false in
+    match r with
+    | Solved Sat | Solved Unknown -> r
+    | _ ->
+       (match ret with
+        | Solved Sat | Solved Unknown -> ret
+        | Solved Unsat -> r
+        | Unfinished qs ->
+           let _ = assert (List.length qs = 1) in
+           add_unsolved (id, info) r) in
+  let fold_fun (res, pending) (id, info) =
+    match res with
+      Solved Sat
+    | Solved Unknown -> (res, pending)
+    | _ ->
+      let task = mk_task (id, info) in
+      DomainsTasks.add_to_pending continue_helper delivered_helper res pending [task] in
+  let (res, pending) = List.fold_left fold_fun (Solved Unsat, DomainsTasks.empty_pending()) indexed_infos in
+  DomainsTasks.finish_pending delivered_helper res pending
+
+(* Verify safety of a specification parallelly cross cuts. Abstract
+   interpretation is not supported. *)
+let verify_safety_mip_cross_cuts_domains options ?comments vgen s _hashopt =
+  let assoc_safety_ids base i info = (base + i, info) in
+  let mip_verifier ?comments ?timeout header (mipvars, constr) =
+    is_constr_feasible ?timeout ~comments:(
+      if !debug then
+        append_comments_option comments []
+      else
+        []
+    ) header ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
+  let continue_helper ((res, _), _) = res in
+  let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, info, res_str, timedout, safe) =
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s, Timeout %8s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) (Printf.sprintf "%5.2f" timeout) res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout *. 2.0, header, id, info)::rtimedouts else rtimedouts) in
+  let make_task (cid, timeout, header, id, info) = fun () ->
+    try
+      let mip_res =
+        mip_verifier
+          ~comments:(
+            if !debug then
+              append_comments_option comments [ Printf.sprintf "Track: %s" options.st_tag;
+                                                Printf.sprintf "Cut: #%d" cid;
+                                                Printf.sprintf "Safety condition: #%d" id;
+                                                Printf.sprintf "Instruction: %s" (string_of_instr info.Mip.mip_sndcond_instr);
+                                                Printf.sprintf "Condition: %s" (string_of_ebexp info.mip_sndcond_cond);
+                                                Printf.sprintf "Constraint: #%d" info.mip_sndcond_index ]
+            else
+              []
+          )
+          ~timeout header info.mip_sndcond_constrs in
+      if mip_res
+      then (cid, timeout, header, id, info, "[OK]", false, true)
+      else (cid, timeout, header, id, info, "[FAILED]", false, false)
+    with Tasks.TimeoutException ->
+      (cid, timeout, header, id, info, "[TIMEOUT]", true, true) in
+  let verify_cut cid header (((res, sid), timedouts), pending) (_, s) =
+    let verify_cut_helper (res_with_timedouts, pending) (id, info) =
+      if Options.Std.mem_hashset_opt options.st_verify_safety_ids id
+      then let task = make_task (cid, !incremental_safety_timeout, header, id, info) in
+           DomainsTasks.add_to_pending continue_helper delivered_helper res_with_timedouts pending [task]
+      else (res_with_timedouts, pending) in
+    if res
+    then let (_, infos) = Mip.safety_conditions_of_program vgen s.espre s.esprog in
+         let indexed_infos = List.mapi (assoc_safety_ids sid) infos in
+         let next_sid = sid + List.length infos in
+         let (res_with_timedouts', pending') = List.fold_left verify_cut_helper (((res, sid), timedouts), pending) indexed_infos in
+         let _ = if next_sid > sid then vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions (#%d - #%d)" cid (List.length indexed_infos) sid (next_sid - 1))
+                 else vprintln(Printf.sprintf "\t=> Cut #%d: %d safety conditions" cid (List.length indexed_infos)) in
+         (res_with_timedouts', pending')
+    else (((res, sid), timedouts), pending)
+  in
+  let (((res, sid), timedouts_rev), pending) = apply_to_cuts_unfinished options.st_verify_scuts verify_cut ((true, 0), []) (DomainsTasks.empty_pending()) (cut_esafety (espec_of_spec s)) in
+  let (res, _) = DomainsTasks.finish_pending_with_timedouts continue_helper delivered_helper (tmap make_task) ((res, sid), List.rev timedouts_rev) pending in
+  res

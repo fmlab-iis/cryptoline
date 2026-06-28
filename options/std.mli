@@ -98,11 +98,11 @@ val mem_hashset_opt : ('a Hashset.t) option -> 'a -> bool
 val incremental_safety : bool ref
 (** [true] to verify safety incrementally, i.e. one instruction by one instruction *)
 
-val incremental_safety_timeout : int ref
-(** The timeout in incremental safety verification. The range solver may time
-    out when verifying the safety condition of an instruction. In this case, the
-    range solver will verify the safety condition again with an increased
-    timeout. *)
+val incremental_safety_timeout : float ref
+(** The timeout (in seconds) in incremental safety verification. The range
+    solver may time out when verifying the safety condition of an instruction.
+    In this case, the range solver will verify the safety condition again with
+    an increased timeout. *)
 
 val cross_cuts : bool ref
 (** [true] to verify safety conditions of next cuts whenever there are free job workers *)

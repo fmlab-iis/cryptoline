@@ -120,7 +120,7 @@ let mem_hashset_opt so e =
 
 let incremental_safety = ref false
 
-let incremental_safety_timeout = ref 300
+let incremental_safety_timeout = ref 300.0
 
 let cross_cuts = ref false
 

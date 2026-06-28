@@ -31,7 +31,7 @@ let read_smt_output ofile _errfile =
     with exn ->
           let _ = if !debug then
                     DomainsTasks.log_with_lock
-                      ((Printexc.to_string exn) ^ "\n" 
+                      ((Printexc.to_string exn) ^ "\n"
                        ^ "Failed to read the output file "
                        ^ ofile
                        ^ ". Please check the log file for error messages.") in
@@ -43,13 +43,13 @@ let read_smt_output ofile _errfile =
   else if res = "unknown" then Unknown
   else failwith ("Unknown result from the SMT solver: " ^ res)
 
-let run_smt_solver ?timeout:_timeout ?(solver=(!range_solver)) headers ifile ofile errfile =
+let run_smt_solver ?timeout:timeout ?(solver=(!range_solver)) headers ifile ofile errfile =
   let t1 = Unix.gettimeofday() in
   let solver_args = String.split_on_char ' ' !range_solver_args |>
                       List.filter (fun s -> s <> "") in
   let cmd_list = [ solver ] @ solver_args @ [ ifile ] in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile ~errfile cmd_array in
+  let _ = DomainsTasks.exec_cmd ?timeout ~ofile ~errfile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       let cmd = String.concat " " cmd_list in

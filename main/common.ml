@@ -121,13 +121,13 @@ let args_verifier =
                   "Implicitly convert constants to fit into their types"]));
     ("-isafety", Set incremental_safety,
      mk_arg_desc(["  Verify program safety incrementally."]));
-    ("-isafety_timeout", Int (fun i -> incremental_safety_timeout := i),
+    ("-isafety_timeout", Float (fun i -> incremental_safety_timeout := i),
      mk_arg_desc([
-           "INT";
+           "FLOAT";
            "Set initial timeout for incremental verification of program safety."
     ]));
-    ("-isafety-across-cuts", Set cross_cuts,
-     mk_arg_desc([""; "Verify safety conditions across cuts."]));
+    ("-isafety-cross-cuts", Set cross_cuts,
+     mk_arg_desc([""; "Verify safety conditions cross cuts."]));
     ("-macaulay2",
      String (fun str -> macaulay2_path := str;
                         algebra_solver := Macaulay2),
