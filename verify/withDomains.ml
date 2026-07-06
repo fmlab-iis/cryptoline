@@ -712,12 +712,12 @@ let verify_espec_single_conjunct_smt solver ?comments:comments headers vgen s =
     verify_one_smtlib smtlib in
   let res =
     match solver.algsmt_logic with
-    | NIA -> let (_, smtlib) = smtlib_espec vgen s in
-             [ fun () -> verify_one_smtlib smtlib ]
-    | LIA -> let (_, mipvars_constrs) = mip_of_espec vgen s in
-             List.rev_map (fun constr ->
-                 fun () -> verify_one_mipvars_constr vgen constr)
-               mipvars_constrs in
+    | NIA ->
+      let (_, smtlib) = smtlib_espec vgen s in
+      verify_one_smtlib smtlib
+    | LIA ->
+      let (_, mipvars_constrs) = mip_of_espec vgen s in
+      List.for_all (verify_one_mipvars_constr vgen) mipvars_constrs in
   res
 
 let verify_espec_single_conjunct_mip ?comments:comments headers vgen s =
@@ -732,7 +732,7 @@ let verify_espec_single_conjunct_mip ?comments:comments headers vgen s =
       else
         []
       ) ~solver:solver headers vgen mipvars constr in
-  List.rev_map (fun constr -> fun () -> helper constr) mipvars_constrs
+  List.for_all helper mipvars_constrs
 
 (* Verify an algebraic specification. The solver used can be specified
    in the prove-with clauses of the specification.
@@ -745,10 +745,9 @@ let verify_espec_single_conjunct ?comments headers vgen s hashopt =
     | PPL | SCIP | ISL ->
       verify_espec_single_conjunct_mip ?comments headers vgen s
     | _ ->
-       [ fun () ->
-         verify_espec_single_conjunct_ideal ?comments headers vgen s ] in
-  if is_espec_trivial s || Deduce.espec_prover s then []
-  else verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s)
+      verify_espec_single_conjunct_ideal ?comments headers vgen s in
+  is_espec_trivial s || Deduce.espec_prover s ||
+  (verify vgen (if !apply_slicing then slice_espec_ssa s hashopt else s))
 
 let verify_espec_no_ecut ?comments headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
@@ -780,10 +779,11 @@ let verify_espec_no_ecut ?comments headers vgen s hashopt =
       match s.espost with
       | [] -> List.rev tasks
       | _ ->
-        let more_tasks =
+        let task =
+          fun () ->
           verify_espec_single_conjunct
             ?comments headers vgen s hashopt in
-        List.rev_append more_tasks tasks in
+        task::tasks in
     List.fold_left verify_task [] (split_espec_post s) |> List.rev
 
 (* The top function of verifying range specifications when !jobs > 1.
