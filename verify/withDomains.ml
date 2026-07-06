@@ -612,24 +612,28 @@ let is_constr_feasible ?timeout ?comments headers ?(solver=(!Options.Std.algebra
      let _ = write_ppl_input ~comments ifile mipvars constr in
      let _ = run_ppl ?timeout headers ifile ofile in
      let res = read_ppl_output ofile in
+     let _ = cleanup [ifile; ofile] in
      res = "False"
   | SCIP ->
      let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_scip_input ~comments ifile mipvars constr in
      let _ = run_scip ?timeout headers ifile ofile in
      let res = read_scip_output ofile in
+     let _ = cleanup [ifile; ofile] in
      res = "infeasible"
   | ISL ->
      let (ifile, ofile, comments) = gen_files_py() in
      let _ = write_isl_input ~comments ifile mipvars constr in
      let _ = run_isl ?timeout headers ifile ofile in
      let res = read_isl_output ofile in
+     let _ = cleanup [ifile; ofile] in
      res = "True"
   | SMTSolver o when o.algsmt_logic = LIA ->
      let (ifile, ofile, comments) = gen_files_smt() in
      let _ = write_smt_input ~comments ifile vgen constr in
      let _ = run_smt ?timeout headers o.algsmt_path ifile ofile in
      let res = read_smt_output ofile in
+     let _ = cleanup [ifile; ofile] in
      res = "unsat"
   | _ -> failwith "Algebraic range condition needs MIP solver."
 
@@ -706,6 +710,7 @@ let verify_espec_single_conjunct_smt solver ?comments:comments headers vgen s =
                 DomainsTasks.unlock_log ()
               end in
     let res = read_one_line ofile in
+    let _ = cleanup [ifile; ofile] in
     res = "unsat" in
   let verify_one_mipvars_constr vgen (_mipvars, constrs) =
     let (_, smtlib) = smtlib_ebexps_lia vgen constrs in

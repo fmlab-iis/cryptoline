@@ -80,4 +80,6 @@ let solve_simp ?comments ?timeout:timeout ?(solver=(!range_solver)) ?(header=[])
     else smtlib2_write_input ~comments ifile fs in
   let _ = run_smt_solver ?timeout:timeout ~solver:solver header
             ifile ofile errfile in
-  read_smt_output ofile errfile
+  let res = read_smt_output ofile errfile in
+  let _ = cleanup [ifile; ofile; errfile] in
+  res
