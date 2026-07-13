@@ -381,8 +381,16 @@ type rexp =
   | Rconcat of size * size * rexp * rexp     (** concatenation (a high followed by a low) *)
 (** Range expressions *)
 
+type rexp_sort =
+  | BvSort of size
+  | FpSort of prec
+(** sorts (bv/fp) of range expressions *)
+
 val size_of_rexp : rexp -> size
 (** [size_of_rexp e] is the bit-width of the range expression [e]. *)
+
+val sort_of_rexp : rexp -> rexp_sort 
+(** [sort_of_rexp e] is the sort (bv/fp) of the range expression [e]. *)
 
 val rvar : var -> rexp
 (** [rvar v] is [Rvar v]. *)
@@ -526,7 +534,11 @@ type rcmpop =
   | Rslt     (** signed less than *)
   | Rsle     (** signed less than or equal to *)
   | Rsgt     (** signed greater than *)
-  | Rsge     (** signed greater than or equal to *) (* *)
+  | Rsge     (** signed greater than or equal to *)
+  | Rfplt    (** floating-point less than *)
+  | Rfple    (** floating-point less than or equal to *)
+  | Rfpgt    (** floating-point greater than *)
+  | Rfpge    (** floating-point greater than or equal to *) (* *)
 (** range comparison operators *)
 
 type rbexp =

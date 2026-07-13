@@ -35,6 +35,10 @@ let slt_symbol = "<s"
 let sle_symbol = "<=s"
 let sgt_symbol = ">s"
 let sge_symbol = ">=s"
+let fplt_symbol = "<f"
+let fple_symbol = "<=f"
+let fpgt_symbol = ">f"
+let fpge_symbol = ">=f"
 let typ_delim = "@"
 
 type associativity = LeftAssoc | RightAssoc
@@ -481,6 +485,10 @@ type rcmpop =
   | Rsle
   | Rsgt
   | Rsge
+  | Rfplt
+  | Rfple
+  | Rfpgt
+  | Rfpge
 
 
 (** Algebraic Expressions *)
@@ -856,6 +864,10 @@ type rexp =
   | Rsext of size * rexp * int
   | Rconcat of size * size * rexp * rexp
 
+type rexp_sort =
+  | BvSort of size
+  | FpSort of prec
+
 let size_of_rexp e =
   match e with
   | Rvar v -> size_of_var v
@@ -865,6 +877,23 @@ let size_of_rexp e =
   | Ruext (w, _, i)
   | Rsext (w, _, i) -> w + i
   | Rconcat (w1, w2, _, _) -> w1 + w2
+
+let rec sort_of_rexp e =
+  match e with
+  | Rvar v ->
+     (match typ_of_var v with
+      | Tuint w | Tsint w -> BvSort w
+      | Tsingle -> FpSort Single
+      | Tdouble -> FpSort Double)
+  | Rconst (w, c) ->
+      (match c with
+      | Cint _ -> BvSort w
+      | Cfloat _ -> FpSort (prec_of_size w))
+  | Runop (_, _, e) -> sort_of_rexp e
+  | Rbinop (_, _, e1, _) -> sort_of_rexp e1
+  | Ruext (w, _, i) -> BvSort (w + i)
+  | Rsext (w, _, i) -> BvSort (w + i)
+  | Rconcat (w1, w2, _, _) -> BvSort (w1 + w2)
 
 let rvar v = Rvar v
 let rconst w c = Rconst (w, c)
@@ -1501,6 +1530,10 @@ let string_of_rcmpop op =
   | Rsle -> "sle"
   | Rsgt -> "sgt"
   | Rsge -> "sge"
+  | Rfplt -> "fplt"
+  | Rfple -> "fple"
+  | Rfpgt -> "fpgt"
+  | Rfpge -> "fpge"
 
 let symbol_of_rcmpop op =
   match op with
@@ -1512,6 +1545,10 @@ let symbol_of_rcmpop op =
   | Rsle -> sle_symbol
   | Rsgt -> sgt_symbol
   | Rsge -> sge_symbol
+  | Rfplt -> fplt_symbol
+  | Rfple -> fple_symbol
+  | Rfpgt -> fpgt_symbol
+  | Rfpge -> fpge_symbol
 
 let string_of_runop op =
   match op with
@@ -5014,6 +5051,10 @@ let bvcryptoline_of_rcmpop op =
   | Rsle -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
   | Rsgt -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
   | Rsge -> raise (UnsupportedException "Signed comparison is not supported by BvCryptoLine.")
+  | Rfplt -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfple -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfpgt -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfpge -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
 let rec bvcryptoline_of_rexp e =
   match e with
   | Rvar v -> Printf.sprintf "(bvrvar %s)" (bvcryptoline_of_var v)
