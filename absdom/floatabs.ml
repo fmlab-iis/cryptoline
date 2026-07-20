@@ -197,7 +197,7 @@ module FloatAbsDomain = struct
 
         let scalar_mul x y =
           match x,y with
-          | Float a, Float b -> Scalar.of_float (a *. b)
+          | Scalar.Float a, Scalar.Float b -> Scalar.of_float (a *. b)
           | Mpqf a, Mpqf b   -> Scalar.of_mpqf (Mpqf.mul a b)
           | Mpfrf a, Mpfrf b -> Scalar.of_mpfrf (Mpfrf.mul a b Mpfr.Near)
           | _ -> failwith "Operands of mul must be same type"
@@ -277,11 +277,11 @@ module FloatAbsDomain = struct
     | Some i ->
         let scalar_div x y =
           match x,y with
-          | Float a, Float b -> Scalar.of_float (a /. b)
+          | Scalar.Float a, Scalar.Float b -> Scalar.of_float (a /. b)
           | Mpqf a, Mpqf b   ->
               let r = Mpq.init () in
               Mpq.div r a b;
-              Scalar.of_mpqf r
+              Scalar.of_mpq r
           | Mpfrf a, Mpfrf b ->
               Scalar.of_mpfrf (Mpfrf.div a b Mpfr.Near)
           | _ -> failwith "Operands of div must be same type"
