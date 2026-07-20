@@ -81,9 +81,9 @@ and bexp =
   | Disj of bexp * bexp
   | FpEq of prec * fpexp * fpexp
   | FpLt of prec * fpexp * fpexp
-  | FpLeq of prec * fpexp * fpexp
+  | FpLe of prec * fpexp * fpexp
   | FpGt of prec * fpexp * fpexp
-  | FpGeq of prec * fpexp * fpexp
+  | FpGe of prec * fpexp * fpexp
   | FpIsZero of prec * fpexp
   | FpIsInf of prec * fpexp
   | FpIsNaN of prec * fpexp
@@ -262,9 +262,9 @@ and string_of_bexp e =
   | Smulo (_w, e1, e2) -> string_of_exp e1 ^ " *so " ^ string_of_exp e2
   | FpEq (_p, e1, e2) ->  string_of_fpexp e1 ^ " =f " ^ string_of_fpexp e2
   | FpLt (_p, e1, e2) ->  string_of_fpexp e1 ^ " <f " ^ string_of_fpexp e2
-  | FpLeq (_p, e1, e2) ->  string_of_fpexp e1 ^ " <=f " ^ string_of_fpexp e2
+  | FpLe (_p, e1, e2) ->  string_of_fpexp e1 ^ " <=f " ^ string_of_fpexp e2
   | FpGt (_p, e1, e2) ->  string_of_fpexp e1 ^ " >f " ^ string_of_fpexp e2
-  | FpGeq (_p, e1, e2) ->  string_of_fpexp e1 ^ " >=f " ^ string_of_fpexp e2
+  | FpGe (_p, e1, e2) ->  string_of_fpexp e1 ^ " >=f " ^ string_of_fpexp e2
   | FpIsZero (_p, e) -> "fp.isZero (" ^ string_of_fpexp e ^ ")"
   | FpIsInf (_p, e) -> "fp.isInfinite (" ^ string_of_fpexp e ^ ")"
   | FpIsNaN (_p, e) -> "fp.isNaN (" ^ string_of_fpexp e ^ ")"
@@ -343,9 +343,9 @@ and vars_bexp e =
   | Smulo (_, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
   | FpEq (_, e1, e2)
   | FpLt (_, e1, e2)
-  | FpLeq (_, e1, e2)
+  | FpLe (_, e1, e2)
   | FpGt (_, e1, e2)
-  | FpGeq (_, e1, e2) -> VS.union (vars_fpexp e1) (vars_fpexp e2)
+  | FpGe (_, e1, e2) -> VS.union (vars_fpexp e1) (vars_fpexp e2)
   | FpIsZero (_, e)
   | FpIsInf (_, e)
   | FpIsNaN (_, e)
@@ -736,9 +736,9 @@ and btor_of_bexp m e =
   | Smulo (_w, e1, e2) -> m#mksmulo (btor_of_exp m e1) (btor_of_exp m e2)
   | FpEq _
   | FpLt _
-  | FpLeq _
+  | FpLe _
   | FpGt _
-  | FpGeq _
+  | FpGe _
   | FpIsZero _
   | FpIsInf _
   | FpIsNaN _
@@ -1316,9 +1316,9 @@ and smtlib2_of_bexp e =
   | Smulo (w, e1, e2) -> bvsmulo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | FpEq (_, e1, e2) -> fpeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpLt (_, e1, e2) -> fplt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
-  | FpLeq (_, e1, e2) -> fpleq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpLe (_, e1, e2) -> fpleq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpGt (_, e1, e2) -> fpgt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
-  | FpGeq (_, e1, e2) -> fpgeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpGe (_, e1, e2) -> fpgeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpIsZero (_, e) -> fpiszero (smtlib2_of_fpexp e)
   | FpIsInf (_, e) -> fpisinf (smtlib2_of_fpexp e)
   | FpIsNaN (_, e) -> fpisnan (smtlib2_of_fpexp e)
@@ -1980,9 +1980,9 @@ object(self)
     | Smulo (_w, _e1, _e2) -> failwith "Not supported: Smulo"
     | FpEq _
     | FpLt _
-    | FpLeq _
+    | FpLe _
     | FpGt _
-    | FpGeq _
+    | FpGe _
     | FpIsZero _
     | FpIsInf _
     | FpIsNaN _

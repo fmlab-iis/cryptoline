@@ -85,9 +85,9 @@ and bexp =
 (** QF_BV predicates *)
   | FpEq of prec * fpexp * fpexp
   | FpLt of prec * fpexp * fpexp
-  | FpLeq of prec * fpexp * fpexp
+  | FpLe of prec * fpexp * fpexp
   | FpGt of prec * fpexp * fpexp
-  | FpGeq of prec * fpexp * fpexp
+  | FpGe of prec * fpexp * fpexp
   | FpIsZero of prec * fpexp
   | FpIsInf of prec * fpexp
   | FpIsNaN of prec * fpexp
