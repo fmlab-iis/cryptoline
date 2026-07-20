@@ -238,6 +238,10 @@ token = parse
   | ">=s"                          { SGEOP }
   | "<s"                           { SLTOP }
   | ">s"                           { SGTOP }
+  | "<=f"                          { FLEOP }
+  | ">=f"                          { FGEOP }
+  | "<f"                           { FLTOP }
+  | ">f"                           { FGTOP }
   | "<="                           { ULEOP }
   | ">="                           { UGEOP }
   | "<<"                           { SHLOP }

@@ -31,7 +31,7 @@
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP DIVOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
+%token ADDOP SUBOP MULOP DIVOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP FLEOP FLTOP FGEOP FGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
 %token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
@@ -39,7 +39,7 @@
 
 %left LOROP
 %left LANDOP
-%nonassoc EQOP ULTOP ULEOP UGTOP UGEOP SLTOP SLEOP SGTOP SGEOP
+%nonassoc EQOP ULTOP ULEOP UGTOP UGEOP SLTOP SLEOP SGTOP SGEOP FLEOP FLTOP FGEOP FGTOP
 %left OROP
 %left XOROP
 %left ANDOP
@@ -673,6 +673,10 @@ cmpop_infix:
   | SLEOP                                         { Rsle }
   | SGTOP                                         { Rsgt }
   | SGEOP                                         { Rsge }
+  | FLTOP                                         { Rfplt }
+  | FLEOP                                         { Rfple }
+  | FGTOP                                         { Rfpgt }
+  | FGEOP                                         { Rfpge }
 ;
 
 eexp_primary:
