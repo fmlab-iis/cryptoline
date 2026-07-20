@@ -326,6 +326,7 @@ let rcmpop_is_signed op =
   match op with
   | Rult | Rule | Rugt | Ruge -> false
   | Rslt | Rsle | Rsgt | Rsge -> true
+  | Rfplt | Rfple | Rfpgt | Rfpge -> raise (Invalid_argument ("Floating-point comparison has no sign")) 
 
 let texpr_bv_add ?(safe=true) env w signed ta0 ta1 =
   if safe then texpr_add ta0 ta1
@@ -540,14 +541,18 @@ let tcons_rneq mgr env abs e0 e1 =
   | Some te0, Some te1 -> Some (tcons_deq te0 te1)
   | _ -> None
 let tcons_rcmp mgr env abs op e0 e1 =
-  let signed = rcmpop_is_signed op in
-  match texpr_of_rexp ~signed mgr env abs e0, texpr_of_rexp ~signed mgr env abs e1 with
-  | Some te0, Some te1 -> (match op with
-                           | Rult | Rslt -> Some (tcons_lt te0 te1)
-                           | Rule | Rsle -> Some (tcons_le te0 te1)
-                           | Rugt | Rsgt -> Some (tcons_lt te1 te0)
-                           | Ruge | Rsge -> Some (tcons_le te1 te0))
-  | _ -> None
+  match op with
+  | Rfplt | Rfple | Rfpgt | Rfpge -> None
+  | _ ->
+    let signed = rcmpop_is_signed op in
+    match texpr_of_rexp ~signed mgr env abs e0, texpr_of_rexp ~signed mgr env abs e1 with
+    | Some te0, Some te1 -> (match op with
+                             | Rult | Rslt -> Some (tcons_lt te0 te1)
+                             | Rule | Rsle -> Some (tcons_le te0 te1)
+                             | Rugt | Rsgt -> Some (tcons_lt te1 te0)
+                             | Ruge | Rsge -> Some (tcons_le te1 te0)
+                             | Rfplt | Rfple | Rfpgt | Rfpge -> assert false)
+    | _ -> None
 let neg_cmpop op =
   match op with
   | Rult -> Ruge
@@ -558,6 +563,10 @@ let neg_cmpop op =
   | Rsle -> Rsgt
   | Rsgt -> Rsle
   | Rsge -> Rslt
+  | Rfplt -> Rfpge
+  | Rfple -> Rfpgt
+  | Rfpgt -> Rfple
+  | Rfpge -> Rfplt
 
 let tconses_of_rbexp mgr abs env e =
   let singleton a = [a] in
