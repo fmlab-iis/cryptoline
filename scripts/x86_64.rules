@@ -46,6 +46,7 @@
 #! and $1c, $2v -> and $2v@uint64 $2v $1c@uint64
 #! andn $1v, $2v, $3v -> not $2v_n@uint64 $2v; and $3v@uint64 $2v_n $1v
 #! cmovb $1v, $2v -> cmov $2v carry $1v $2v
+#! cmovae $1v, $2v -> cmov $2v carry $2v $1v
 #! cmove $1v, $2v -> cmov $2v zero $1v $2v
 #! cmovne $1v, $2v -> cmov $2v zero $2v $1v
 #! dec $1v -> subb overflow $1v $1v 1@uint64
