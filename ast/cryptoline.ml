@@ -878,6 +878,11 @@ let size_of_rexp e =
   | Rsext (w, _, i) -> w + i
   | Rconcat (w1, w2, _, _) -> w1 + w2
 
+let size_of_sort s =
+  match s with
+  | BvSort w -> w
+  | FpSort p -> size_of_prec p
+
 let rec sort_of_rexp e =
   match e with
   | Rvar v ->

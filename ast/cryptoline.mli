@@ -389,6 +389,9 @@ type rexp_sort =
 val size_of_rexp : rexp -> size
 (** [size_of_rexp e] is the bit-width of the range expression [e]. *)
 
+val size_of_sort : rexp_sort -> size
+(** [size_of_sort s] is the bit-width of the sort (bv/fp) [s]. *)
+
 val sort_of_rexp : rexp -> rexp_sort 
 (** [sort_of_rexp e] is the sort (bv/fp) of the range expression [e]. *)
 

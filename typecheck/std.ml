@@ -2,6 +2,7 @@
 open Ast.Cryptoline
 open Ast.MultiTrack
 open Utils.Std
+open Utils.Float
 
 type spec =
   { spre : bexp;
@@ -334,25 +335,64 @@ let illformed_ebexp_reason vs e =
   if not (VS.subset (vars_ebexp e) vs) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_ebexp e) vs))
   else None
 let illformed_rexp_reason vs e =
-  let well_var v =
-    if not (VS.mem v vs) then Some ("Undefined variable: " ^ string_of_var v)
-    else None in
-  let well_rexp e =
-    if not (VS.subset (vars_rexp e) vs) then Some ("Undefined variables: " ^ string_of_vs (VS.diff (vars_rexp e) vs))
-    else None in
-  let well_size w e =
-    if not (size_of_rexp e = w) then Some ("Unmatched bit-size: " ^ string_of_rexp e)
-    else None in
-  let helper e =
+  let rec check_rexp vs e =
     match e with
-    | Rvar v -> [well_var v]
-    | Rconst (_w, _n) -> []
-    | Runop (w, _op, e) -> [well_size w e; well_rexp e]
-    | Rbinop (w, _op, e1, e2) -> [well_size w e1; well_size w e2; well_rexp e1; well_rexp e2]
-    | Ruext (w, e, _i) | Rsext (w, e, _i) -> [well_size w e; well_rexp e]
-    | Rconcat (w1, w2, e1, e2) -> [well_size w1 e1; well_size w2 e2; well_rexp e1; well_rexp e2]
+    | Rvar v ->  
+      if not (VS.mem v vs) then Error ("Undefined variable: " ^ string_of_var v)
+      else Ok (match typ_of_var v with
+               | Tuint w | Tsint w -> BvSort w
+               | Tsingle -> FpSort Single
+               | Tdouble -> FpSort Double)
+    | Rconst (w, c) ->
+      (match c with
+      | Cint _ -> Ok (BvSort w)
+      | Cfloat _ -> Ok (FpSort (prec_of_size w)))
+    | Runop (w, op, e) ->
+      (match check_rexp vs e with
+      | Ok s ->
+          (match op with
+          | Rnotb ->
+            (match s with
+             | BvSort w' when w = w' -> Ok s
+             | _ -> Error ("Unmatched bit-size or type: " ^ string_of_rexp e))
+          | Rnegb ->
+            if size_of_sort s = w then Ok s
+            else Error ("Unmatched bit-size or type: " ^ string_of_rexp e))
+      | Error r -> Error r)
+    | Rbinop (w, op, e1, e2) ->
+      (match check_rexp vs e1, check_rexp vs e2 with
+       | Error r, _ | _, Error r -> Error r
+       | Ok s1, Ok s2 when s1 <> s2 ->
+          Error ("Unmatched operand types: " ^ string_of_rexp e1 ^ " and " ^ string_of_rexp e2)
+       | Ok s, Ok _ ->
+        (match op with
+        | Radd | Rsub | Rmul ->
+          (match s with
+           | BvSort w' when w = w' -> Ok s
+           | FpSort p when size_of_prec p = w -> Ok s
+           | _ -> Error ("Unmatched bit-size: " ^ string_of_rexp e1))
+        | Rudiv | Rumod | Rsdiv | Rsrem | Rsmod | Randb | Rorb | Rxorb | Rshl | Rlshr | Rashr | Rrol | Rror ->
+          (match s with
+           | BvSort w' when w = w' -> Ok s
+           | _ -> Error ("Unmatched bit-size or type: " ^ string_of_rexp e1))
+        | Rdiv -> 
+          (match s with
+           | FpSort p when size_of_prec p = w -> Ok s
+           | _ -> Error ("Unmatched bit-size or type: " ^ string_of_rexp e1))))
+    | Ruext (w, e, i) | Rsext (w, e, i) ->
+      (match check_rexp vs e with
+      | Ok (BvSort w') when w = w' -> Ok (BvSort (w+i))
+      | Error r -> Error r
+      | Ok _ -> Error ("Unmatched bit-size or type: " ^ string_of_rexp e))
+    | Rconcat (w1, w2, e1, e2) ->
+      (match check_rexp vs e1, check_rexp vs e2 with
+      | Ok (BvSort w1'), Ok (BvSort w2') when w1 = w1' && w2 = w2' -> Ok (BvSort (w1 + w2))
+      | Error r, _ | _, Error r -> Error r
+      | Ok _, Ok _ -> Error ("Unmatched bit-size or type: " ^ string_of_rexp e1 ^ " or " ^ string_of_rexp e2))
   in
-  chain_reasons (helper e)
+  match check_rexp vs e with
+  | Ok _ -> None
+  | Error r -> Some r
 let illformed_rbexp_reason vs e =
   let well_size w e =
     if not (size_of_rexp e = w) then Some ("Unmatched bit-width: " ^ string_of_rexp e)
