@@ -7,7 +7,7 @@
 
 val verify_safety_conditions :
   ?comments:(string list) ->
-  int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
+  float -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
@@ -25,7 +25,7 @@ val verify_safety_lwt :
 
 val verify_safety_mip_conditions :
   ?comments:(string list) ->
-  int ->
+  float ->
   (int * Mip.mip_safety_condition_info) list ->
   Cas.var_gen ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->

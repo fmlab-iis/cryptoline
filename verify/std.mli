@@ -26,7 +26,7 @@ val verify_tagged_spec : Options.Std.mt_options -> tagged_spec -> bool
 
 val verify_safety_conditions :
   ?comments:(string list) ->
-  int -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
+  float -> Ast.Cryptoline.rbexp -> Ast.Cryptoline.program ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) list ->
   Ast.Cryptoline.VS.t Ast.Cryptoline.atomhash_t option ->
   (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
@@ -64,7 +64,7 @@ val verify_rspec : Options.Std.st_options -> rspec -> VS.t atomhash_t option -> 
 
 (** {1 Low-level Verification Functions} *)
 
-val verify_instruction_safety : ?comments:(string list) -> int -> int -> rbexp -> program -> int ->
+val verify_instruction_safety : ?comments:(string list) -> float -> int -> rbexp -> program -> int ->
                                 VS.t atomhash_t option ->
                                 (int * Ast.Cryptoline.instr * Qfbv.Common.bexp) Common.round_result
 (**

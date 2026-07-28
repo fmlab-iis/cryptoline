@@ -98,11 +98,11 @@ val mem_hashset_opt : ('a Hashset.t) option -> 'a -> bool
 val incremental_safety : bool ref
 (** [true] to verify safety incrementally, i.e. one instruction by one instruction *)
 
-val incremental_safety_timeout : int ref
-(** The timeout in incremental safety verification. The range solver may time
-    out when verifying the safety condition of an instruction. In this case, the
-    range solver will verify the safety condition again with an increased
-    timeout. *)
+val incremental_safety_timeout : float ref
+(** The timeout (in seconds) in incremental safety verification. The range
+    solver may time out when verifying the safety condition of an instruction.
+    In this case, the range solver will verify the safety condition again with
+    an increased timeout. *)
 
 val cross_cuts : bool ref
 (** [true] to verify safety conditions of next cuts whenever there are free job workers *)
@@ -110,8 +110,13 @@ val cross_cuts : bool ref
 val jobs : int ref
 (** number of concurrent jobs to be used *)
 
-val use_cli : bool ref
-(** [true] to use fork and the command-line interface of CryptoLine instead of Lwt *)
+type parallel_model =
+    WithLwt
+  | WithCli
+  | WithDomains
+
+val parallel_model : parallel_model ref
+(** The model used for parallel computation. *)
 
 val cli_path : string ref
 (** the path to the command-line interface of CryptoLine *)
@@ -316,8 +321,11 @@ val abs_interp : bool ref
 val verbose : bool ref
 (** [true] to print verbose messages *)
 
+val logfile_base : string ref
+(** the original file name for logging *)
+
 val logfile : string ref
-(** the file to write log messages to *)
+(** the current file to write log messages to *)
 
 val propose_logfile : string option -> string
 (** [propose_logfile fnopt] proposes a file name for a log.

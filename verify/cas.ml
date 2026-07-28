@@ -857,6 +857,130 @@ let rec bprint_eexp_singular buf e =
        Buffer.add_char buf ')'
      ))
 
+let rec bprint_eexp_sage buf e =
+  match e with
+  | Evar v -> Buffer.add_string buf v.cached_name
+  | Econst n -> Buffer.add_string buf (string_of_const n)
+  | Eunop (op, e) ->
+     bprint_eunop buf op;
+     if is_eexp_atom e then
+       bprint_eexp_sage buf e
+     else (
+       Buffer.add_string buf " (";
+       bprint_eexp_sage buf e;
+       Buffer.add_char buf ')'  )
+  | Ebinop (op, e1, e2) ->
+     if eexp_ebinop_open e1 op then
+       bprint_eexp_sage buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_sage buf e1;
+       Buffer.add_char buf ')'  );
+     Buffer.add_char buf ' ';
+     bprint_ebinop_algebra_symbol buf op;
+     Buffer.add_char buf ' ';
+     if ebinop_eexp_open op e2 then
+       bprint_eexp_sage buf e2
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_sage buf e2;
+       Buffer.add_char buf ')'  )
+
+let rec bprint_eexp_magma buf e =
+  match e with
+  | Evar v -> Buffer.add_string buf v.cached_name
+  | Econst n -> Buffer.add_string buf (string_of_const n)
+  | Eunop (op, e) ->
+     bprint_eunop buf op;
+     if is_eexp_atom e then
+       bprint_eexp_magma buf e
+     else (
+       Buffer.add_string buf " (";
+       bprint_eexp_magma buf e;
+       Buffer.add_char buf ')'  )
+  | Ebinop (op, e1, e2) ->
+     if is_eexp_atom e1 then
+       bprint_eexp_magma buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_magma buf e1;
+       Buffer.add_char buf ')'  );
+     Buffer.add_char buf ' ';
+     bprint_ebinop_algebra_symbol buf op;
+     Buffer.add_char buf ' ';
+     if is_eexp_atom e2 then
+       bprint_eexp_magma buf e2
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_magma buf e2;
+       Buffer.add_char buf ')'  )
+
+(* Underscore is not allowed in variable names in Mathematica. *)
+let mathematica_of_var v =
+  "v[\"" ^ v.cached_name ^ "\"]"
+let rec bprint_eexp_mathematica buf e =
+  match e with
+  | Evar v -> Buffer.add_string buf (mathematica_of_var v)
+  | Econst n -> Buffer.add_string buf (string_of_const n)
+  | Eunop (op, e) ->
+     bprint_eunop buf op;
+     if is_eexp_atom e then
+       bprint_eexp_mathematica buf e
+     else (
+       Buffer.add_string buf " (";
+       bprint_eexp_mathematica buf e;
+       Buffer.add_char buf ')'  )
+  | Ebinop (op, e1, e2) ->
+     if eexp_ebinop_open e1 op then
+       bprint_eexp_mathematica buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_mathematica buf e1;
+       Buffer.add_char buf ')'  );
+     Buffer.add_char buf ' ';
+     bprint_ebinop_algebra_symbol buf op;
+     Buffer.add_char buf ' ';
+     if ebinop_eexp_open op e2 then
+       bprint_eexp_mathematica buf e2
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_mathematica buf e2;
+       Buffer.add_char buf ')'  )
+
+
+let macaulay2_of_var v =
+  String.map (fun c -> if c = '_'
+                       then '\''
+                       else c) v.cached_name
+let rec bprint_eexp_macaulay2 buf e =
+  match e with
+  | Evar v -> Buffer.add_string buf (macaulay2_of_var v)
+  | Econst n -> Buffer.add_string buf (string_of_const n)
+  | Eunop (op, e) ->
+     bprint_eunop buf op;
+     if is_eexp_atom e then
+       bprint_eexp_macaulay2 buf e
+     else (
+       Buffer.add_string buf " (";
+       bprint_eexp_macaulay2 buf e;
+       Buffer.add_char buf ')'  )
+  | Ebinop (op, e1, e2) ->
+     if eexp_ebinop_open e1 op then
+       bprint_eexp_macaulay2 buf e1
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_macaulay2 buf e1;
+       Buffer.add_char buf ')'  );
+     Buffer.add_char buf ' ';
+     bprint_ebinop_algebra_symbol buf op;
+     Buffer.add_char buf ' ';
+     if ebinop_eexp_open op e2 then
+       bprint_eexp_macaulay2 buf e2
+     else (
+       Buffer.add_char buf '(';
+       bprint_eexp_macaulay2 buf e2;
+       Buffer.add_char buf ')'  )
+
 
 let algebra_symbol_of_ebinop op =
   match op with
@@ -901,9 +1025,6 @@ let rec magma_of_eexp e =
 
 let maple_of_eexp e = magma_of_eexp e
 
-(* Underscore is not allowed in variable names in Mathematica. *)
-let mathematica_of_var v =
-  "v[\"" ^ v.cached_name ^ "\"]"
 let rec mathematica_of_eexp e =
   match e with
   | Evar v -> mathematica_of_var v
@@ -922,10 +1043,6 @@ let rec mathematica_of_eexp e =
         then mathematica_of_eexp e2
         else "(" ^ mathematica_of_eexp e2 ^ ")")
 
-let macaulay2_of_var v =
-  String.map (fun c -> if c = '_'
-                       then '\''
-                       else c) v.cached_name
 let rec macaulay2_of_eexp e =
   match e with
   | Evar v -> macaulay2_of_var v
@@ -1033,6 +1150,43 @@ let generate_singular_input ?comments vars gen p =
       "}";
       "exit;" ]
 
+let bprint_sage_input ?comments buf vars gen p =
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let bprint_generator buf =
+    if List.length gen = 0
+    then Buffer.add_char buf '0'
+    else bprint_list buf ",\n  " bprint_eexp_sage gen in
+  let bprint_poly buf = bprint_eexp_sage buf p in
+  let bprint_comment buf  =
+    if !debug then
+      match comments with
+      | None -> ()
+      | Some comments ->
+         bprint_list buf "\n" (
+             fun buf c ->
+             Buffer.add_string buf "# ";
+             Buffer.add_string buf c
+           ) comments
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Sage in
+  bprint_comment buf; Buffer.add_char buf '\n';
+  Buffer.add_string buf "R.<";
+  bprint_varseq buf;
+  Buffer.add_string buf "> = PolynomialRing";
+  Buffer.add_string buf (Printf.sprintf
+                           "(ZZ, %d, order='%s')\n"
+                           (max 1 (List.length vars)) mon_ord);
+  Buffer.add_string buf "I = (";
+  bprint_generator buf;
+  Buffer.add_string buf ") * R\n";
+  Buffer.add_string buf "P = ";
+  bprint_poly buf;
+  Buffer.add_char buf '\n';
+  Buffer.add_string buf "assert P in I\n"
+
 let generate_sage_input ?comments vars gen p =
   let varseq =
     match vars with
@@ -1059,6 +1213,54 @@ let generate_sage_input ?comments vars gen p =
       Printf.sprintf "I = (%s) * R" generator;
       Printf.sprintf "P = %s" poly;
       "assert P in I" ]
+
+let bprint_magma_input ?comments buf vars gen p =
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let varlen = max 1 (List.length vars) in
+  let bprint_generator buf =
+    if List.length gen = 0
+    then Buffer.add_char buf '0'
+    else bprint_list buf ",\n" bprint_eexp_magma gen in
+  let bprint_poly buf = bprint_eexp_magma buf p in
+  let bprint_comment buf =
+    if !debug then
+      match comments with
+      | None -> ()
+      | Some comments ->
+         bprint_list buf "\n" (
+             fun buf c ->
+             Buffer.add_string buf "// ";
+             Buffer.add_string buf c
+           ) comments
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Magma in
+  (* Test if polynomial g is in the ideal J: `g in J` *)
+  (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
+  bprint_comment buf; Buffer.add_char buf '\n';
+  Buffer.add_string buf "Z := IntegerRing();\n";
+  Buffer.add_string buf "F<";
+  bprint_varseq buf;
+  Buffer.add_string buf "> := PolynomialRing";
+  Buffer.add_string buf (Printf.sprintf
+                           "(Z, %d, \"%s\");"
+                           varlen mon_ord); Buffer.add_char buf '\n';
+  Buffer.add_string buf "G := [";
+  bprint_generator buf;
+  Buffer.add_string buf "];\n";
+  Buffer.add_string buf "p := ";
+  bprint_poly buf;
+  Buffer.add_string buf ";\n";
+  Buffer.add_string buf "if p in G then\n";
+  Buffer.add_string buf "  0;\n";
+  Buffer.add_string buf "else\n";
+  Buffer.add_string buf "  I := ideal<F|G>;\n";
+  Buffer.add_string buf "  J := GroebnerBasis(I);\n";
+  Buffer.add_string buf "  NormalForm(p, J);\n";
+  Buffer.add_string buf "end if;\n";
+  Buffer.add_string buf "exit;\n"
 
 let generate_magma_input ?comments vars gen p =
   let varseq =
@@ -1096,6 +1298,42 @@ let generate_magma_input ?comments vars gen p =
       "end if;";
       "exit;" ]
 
+let bprint_mathematica_input ?comments buf vars gen p =
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf (mathematica_of_var v)) vars in
+  let bprint_generator buf =
+    if List.length gen = 0
+    then Buffer.add_char buf '0'
+    else bprint_list buf  ",\n " bprint_eexp_mathematica gen in
+  let bprint_poly buf = bprint_eexp_mathematica buf p in
+  let bprint_comment buf =
+    if !debug then
+      Buffer.add_string buf
+        (Option.value (Option.map (make_block_comments "(*" "*)") comments)
+           ~default:"")
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Mathematica in
+  bprint_comment buf; Buffer.add_char buf '\n';
+  Buffer.add_string buf "vars = {";
+  bprint_varseq buf; Buffer.add_string buf "};\n";
+  Buffer.add_string buf "gs = {";
+  bprint_generator buf; Buffer.add_string buf "};\n";
+  Buffer.add_string buf "p = ";
+  bprint_poly buf; Buffer.add_string buf ";\n";
+  Buffer.add_string buf
+    "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers ";
+  Buffer.add_string buf
+    (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+  Buffer.add_string buf "];\n";
+  Buffer.add_string buf
+    "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers";
+  Buffer.add_string buf
+    (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+  Buffer.add_string buf "];\n";
+  Buffer.add_string buf "Print[r];\n"
+
 let generate_mathematica_input ?comments vars gen p =
   let varseq =
     match vars with
@@ -1126,6 +1364,53 @@ let generate_mathematica_input ?comments vars gen p =
         "CoefficientDomain -> Integers"
         (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
       "Print[r];" ]
+
+let bprint_macaulay2_input ?comments buf vars gen p =
+  let (vars, gen, p, default_generator) =
+    let dummy_var =
+      mkvar
+        ~newvid:true
+        "cryptoline'dummy'variable"
+        (Tuint 0) (* The variable type does not matter *) in
+    let _ = cache_var_name dummy_var in
+    let no_var_in_generator =
+      VS.is_empty
+        (List.fold_left
+           (fun vs e -> VS.union vs (vars_eexp e)) VS.empty gen) in
+    if no_var_in_generator then
+      (dummy_var::vars,
+       List.map (fun e -> emul (evar dummy_var) e) gen,
+       emul (evar dummy_var) p,
+       dummy_var.cached_name ^ "*0")
+    else
+      (vars, gen, p, "0") in
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf (macaulay2_of_var v)) vars in
+  let bprint_generator buf =
+    if List.length gen = 0
+    then Buffer.add_string buf default_generator
+    else (bprint_list buf ",\n  " bprint_eexp_macaulay2 gen) in
+  let bprint_poly buf = bprint_eexp_macaulay2 buf p in
+  let bprint_comment buf =
+    if !debug then
+      Buffer.add_string buf
+        (Option.value (Option.map (make_line_comments "--") comments)
+           ~default:"")
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Macaulay2 in
+  bprint_comment buf; Buffer.add_char buf '\n';
+  Buffer.add_string buf "myRing = ZZ[";
+  bprint_varseq buf;
+  Buffer.add_string buf (",MonomialOrder=>" ^ mon_ord ^ "]\n");
+  Buffer.add_string buf "myIdeal = ideal(";
+  bprint_generator buf; Buffer.add_string buf ")";
+  Buffer.add_string buf "myPoly = ";
+  bprint_poly buf; Buffer.add_char buf '\n';
+  Buffer.add_string buf "myBasis = groebnerBasis myIdeal\n";
+  Buffer.add_string buf "myRes = toString (myPoly % myBasis)\n";
+  Buffer.add_string buf "print myRes\n"
 
 let generate_macaulay2_input ?comments vars gen p =
   let (vars, gen, p, default_generator) =
@@ -1172,6 +1457,44 @@ let generate_macaulay2_input ?comments vars gen p =
       "myBasis = groebnerBasis myIdeal";
       "myRes = toString (myPoly % myBasis)";
       "print myRes" ]
+
+let bprint_maple_input ?comments buf vars gen p =
+  let const_gen =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ =
+      if List.length poly_gen > 0
+      then failwith ("Only prime modulus is supported when using maple.") in
+    match const_gen with
+    | [] -> Econst Z.zero
+    | c::[] -> c
+    | _ -> failwith("Multi-moduli is not supported when using maple.") in
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let bprint_poly buf = bprint_eexp_magma buf p in
+  let bprint_comment buf =
+    if !debug then
+      Buffer.add_string buf
+        (Option.value (Option.map (make_line_comments "--") comments)
+           ~default:"")
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Maple in
+  bprint_comment buf;
+  Buffer.add_string buf "interface(prettyprint=0):\n";
+  Buffer.add_string buf "with(PolynomialIdeals):\n";
+  Buffer.add_string buf "with(Groebner):\n";
+  Buffer.add_string buf ("Ord := " ^ mon_ord ^ "(");
+  bprint_varseq buf;
+  Buffer.add_string buf "):\n";
+  Buffer.add_string buf "g := ";
+  bprint_poly buf; Buffer.add_string buf ":\n";
+  Buffer.add_string buf "J := PolynomialIdeal([], characteristic=";
+  Buffer.add_string buf (magma_of_eexp const_gen);
+  Buffer.add_string buf "):\n";
+  Buffer.add_string buf "res := IdealMembership(g, J):\n";
+  Buffer.add_string buf "res;\n";
+  Buffer.add_string buf "quit:\n"
 
 let generate_maple_input ?comments vars gen p =
   let const_gen =

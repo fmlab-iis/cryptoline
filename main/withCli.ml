@@ -74,7 +74,7 @@ let anon file =
      print_endline (string_of_bool res)
   | VerifySafety ->
      let (comments, rspec) = rspec_from_file file in
-     let comments = Utils.Std.rcons comments ("Timeout: " ^ string_of_int !Options.Std.incremental_safety_timeout) in
+     let comments = Utils.Std.rcons comments ("Timeout: " ^ string_of_float !Options.Std.incremental_safety_timeout) in
      let spec = from_typecheck_rspec rspec in
      let spec = normalize_rspec spec in
      (* Verify the safety of an instruction if its index is given.

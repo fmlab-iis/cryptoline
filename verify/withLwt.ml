@@ -758,8 +758,8 @@ let verify_safety_conditions ?comments timeout f prog qs hashopt =
 let verify_safety_inc_lwt options ?comments s hashopt =
   let continue_helper ((res, _), _) = res in
   let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, i, q, res_str, timedout, safe) =
-    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
-    ((rsafe && safe, rsid), if timedout then (cid, timeout * 2, header, id, i, q)::rtimedouts else rtimedouts) in
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s, Timeout %8s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) (Printf.sprintf "%5.2f" timeout) res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout *. 2.0, header, id, i, q)::rtimedouts else rtimedouts) in
   let make_promise (cid, timeout, header, id, i, q) () =
     let%lwt res =
       try%lwt
@@ -936,8 +936,8 @@ let verify_safety_mip_cross_cuts_lwt options ?comments vgen s _hashopt =
     ) header ~solver:!Options.Std.mip_safety_solver vgen mipvars constr in
   let continue_helper ((res, _), _) = res in
   let delivered_helper ((rsafe, rsid), rtimedouts) (cid, timeout, header, id, info, res_str, timedout, safe) =
-    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
-    ((rsafe && safe, rsid), if timedout then (cid, timeout * 2, header, id, info)::rtimedouts else rtimedouts) in
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s, Timeout %8s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) (Printf.sprintf "%5.2f" timeout) res_str) in
+    ((rsafe && safe, rsid), if timedout then (cid, timeout *. 2.0, header, id, info)::rtimedouts else rtimedouts) in
   let make_promise (cid, timeout, header, id, info) () =
     let%lwt res =
       try%lwt
@@ -1364,7 +1364,7 @@ let verify_espec options vgen s hashopt =
 
 type cli_round_result =
   Solved of result
-| Unfinished of (int * int * int * instr) list
+| Unfinished of (int * float * int * instr) list
 
 (*
  * Run CLI to verify the safety of one instruction.
@@ -1394,7 +1394,7 @@ let run_cli_visafety id timeout idx instr ifile =
                             else "");
                            (if !Options.Std.incremental_safety then "-isafety"
                             else "");
-                           (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int timeout
+                           (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_float timeout
                             else "");
                            (if !Options.Std.apply_slicing then "-slicing"
                             else "");
@@ -1519,19 +1519,19 @@ let verify_safety_conditions_cli options ?comments sid f p =
       let comments = Option.value (Option.map (make_line_comments "#!") comments) ~default:"" in
       output_string ch comments in
   let _ = output_string ch (string_of_rspec ~typ:true {rspre = f; rsprog = p; rspost = [(Rtrue, [])]}); close_out ch in
-  let add_unsolved q res =
+  let add_unsolved q res : cli_round_result =
     match res with
     | Solved Unsat -> Unfinished [q]
     | Unfinished unsolved -> Unfinished (q::unsolved)
     | _ -> assert false in
   let delivered_helper r (id, timeout, idx, i, _ifile, ret_str, timedout, safe) =
     let _ = vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
-    let _ = vprintln (ret_str ^ (if timedout then " timeout = " ^ string_of_int timeout else "")) in
+    let _ = vprintln (ret_str ^ (if timedout then " timeout = " ^ string_of_float timeout else "")) in
     match r with
     | Solved Sat | Solved Unknown -> r
     | _ ->
        if not safe then Solved Sat
-       else if timedout then add_unsolved (id, timeout * 2, idx, i) r
+       else if timedout then add_unsolved (id, timeout *. 2.0, idx, i) r
        else r in
   let rec verify_round qs (res, pending) =
     match res with
@@ -1619,7 +1619,7 @@ let run_cli_vespec ?comments header s =
      (if !Options.Std.range_solver_args = "" then "" else "-qfbv_args \"" ^ !Options.Std.range_solver_args ^ "\"");
      (if !Options.Std.use_btor then "-btor" else "");
      (if !Options.Std.incremental_safety then "-isafety" else "");
-     (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_int !Options.Std.incremental_safety_timeout else "");
+     (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_float !Options.Std.incremental_safety_timeout else "");
      (match !Options.Std.algebra_solver with
       | Options.Std.Singular -> "-singular " ^ !Options.Std.singular_path
       | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
@@ -1879,8 +1879,8 @@ let verify_rassert_cli options s =
 let verify_safety_inc_cli options ?comments s _hashopt =
   let continue_helper ((res, _, _), _) = res in
   let delivered_helper ((rsafe, rsid, rifiles), rtimedouts) (cid, id, timeout, idx, i, ifile, res_str, timedout, safe) =
-    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d, Timeout %d\t%s" cid id timeout res_str) in
-    ((rsafe && safe, rsid, rifiles), (if timedout then (cid, id, timeout * 2, idx, i, ifile)::rtimedouts else rtimedouts)) in
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s, Timeout %8s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) (Printf.sprintf "%5.2f" timeout) res_str) in
+    ((rsafe && safe, rsid, rifiles), (if timedout then (cid, id, timeout *. 2.0, idx, i, ifile)::rtimedouts else rtimedouts)) in
   let make_promise (cid, id, timeout, idx, i, ifile) () = run_cli_visafety_with_cut cid id timeout idx i ifile in
   let verify_cut cid _header (((res, sid, ifiles), timedouts), pending) (_, s) =
     if res then
@@ -2002,7 +2002,7 @@ let verify_safety_mip_conditions_cli options ?comments vgen sid s =
 let verify_safety_mip_cross_cuts_cli options ?comments vgen s =
   let continue_helper (res, _) = res in
   let delivered_helper (rsafe, rsid) (cid, id, safe, ret_str) =
-    let _ = vprintln (Printf.sprintf "\tCut #%d, Condition #%d\t\t%s" cid id ret_str) in
+    let _ = vprintln (Printf.sprintf "\tCut %4s, Condition %5s\t%s" (Printf.sprintf "#%d" cid) (Printf.sprintf "#%d" id) ret_str) in
     (rsafe && safe, rsid) in
   let make_promise (cid, id, f, p, sndcond) () =
     let espec_for_safety = { espre = f; esprog = p; espost = [(sndcond, [AlgebraSolver !Options.Std.mip_safety_solver])] } in
