@@ -117,6 +117,8 @@ let args = [
      Common.mk_arg_desc(["PROC"; "Limit the verification to a specified procedure."]));
     ("-jobs", Int (fun j -> jobs := j),
      Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
+    ("-lwt", Unit (fun () -> Options.Std.parallel_model := Options.Std.WithLwt),
+     Common.mk_arg_desc(["  Use Lwt to run verification tasks parallelly (when # of "; "jobs > 1)."]));
     ("-ma", Set apply_move_assert, Common.mk_arg_desc(["\t     Move assertions of an SSA specification to its post-condition. Use";
                                                        "with -pssa. Note that if the specification contains assume";
                                                        "instructions, the move of assertions may be unsound."]));

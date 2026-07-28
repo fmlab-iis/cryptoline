@@ -1,3 +1,7 @@
+# This is a containerfile based on Ubuntu 24.04 with OCaml packages
+# installed by opam. The image built by this file supports CryptoLine
+# prior to commit 8e38ecb6.
+
 FROM ubuntu:24.04
 
 SHELL ["/bin/bash", "-l", "-c"]

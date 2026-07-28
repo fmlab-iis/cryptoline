@@ -131,7 +131,7 @@ type parallel_model =
   | WithCli
   | WithDomains
 
-let parallel_model = ref WithLwt
+let parallel_model = ref WithDomains
 
 let cli_path = ref "cv_cli"
 

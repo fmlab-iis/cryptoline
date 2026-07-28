@@ -8,7 +8,8 @@ implementations in
 [BoringSSL](https://opensource.google.com/projects/boringssl),
 [mbed TLS](https://tls.mbed.org),
 [pqm4](https://github.com/mupq/pqm4),
-[ntt-polymul](https://github.com/ntt-polymul/ntt-polymul), etc.
+[ntt-polymul](https://github.com/ntt-polymul/ntt-polymul),
+[PQClean](https://github.com/pqclean/PQClean), etc.
 
 
 Prerequisite
@@ -16,9 +17,10 @@ Prerequisite
 
 To compile and run CryptoLine, the following packages need to be installed.
 
-- [OCaml compiler](https://ocaml.org) (version 4.11 up)
+- [OCaml compiler](https://ocaml.org) (version 5.0 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: `dune`, `ocamlfind`, `lwt`, `lwt_ppx`, `num`, `zarith`, `ppx_optcomp`
+- OCaml packages: `dune`, `ocamlfind`, `lwt`, `lwt_ppx`, `num`,
+  `zarith`, `ppx_optcomp`, `domainslib`
 - [apron](https://antoinemine.github.io/Apron/doc/)
 - One of the following computer algebra systems:
   + [Singular](https://www.singular.uni-kl.de) (recommended, the default to
@@ -46,8 +48,9 @@ Installation
 On Linux
 --------
 
-See `misc/Dockerfile.apt` or `misc/Dockerfile.opam` for instructions to install
-CryptoLine on Ubuntu 23.04.
+See `misc/ubuntu26.04.apt.containerfile` or
+`misc/ubuntu26.04.opam.containerfile` for installation instructions of
+CryptoLine on Ubuntu 26.04.
 
 Run the following command to see the available command-line arguments.
 
@@ -61,19 +64,24 @@ To uninstall CryptoLine, run the following command.
 $ dune uninstall
 ```
 
-Using Docker
-------------
+Using Docker/Podman
+-------------------
 
-Two dockerfiles are provided in CryptoLine. Run the following commands to build
-a docker image and run a new container from the image.
+Two containerfiles are provided in CryptoLine. Run the following
+commands to build an image and run a new container from the image.
 
 ```
-$ docker build -t cryptoline - < misc/Dockerfile.apt
-$ docker run -it --name cryptoline cryptoline bash -l
+$ docker build -t cryptoline - < misc/ubuntu26.04.apt.containerfile
+$ docker run -it --name cryptoline cryptoline /bin/bash -l
 ```
 
-Replace `misc/Dockerfile.apt` with `misc/Dockerfile.opam` if you want to manage
-OCaml packages using [opam](https://opam.ocaml.org).
+If you prefer Podman, replace `docker` with `podman`.
+
+If you want to manage OCaml packages using
+[opam](https://opam.ocaml.org), replace
+`misc/ubuntu26.04.apt.containerfile` with
+`misc/ubuntu26.04.opam.containerfile`.
+
 
 Simple Test
 -----------
@@ -119,11 +127,12 @@ $ cv -pssa program.cl
 ```
 
 Verify a CryptoLine program program.cl with at most 2 parallel jobs (-jobs 2),
-verbose outputs (-v), incremental checking of algebraic soundness (-isafety),
-and program slicing (-slicing).
+verbose outputs (-v), incremental checking of algebraic soundness
+(-isafety), program slicing (-slicing), and without constructing carry
+constraints.
 
 ```
-$ cv -v -jobs 2 -isafety -slicing program.cl
+$ cv -v -jobs 2 -isafety -slicing -no_carry_constraint program.cl
 ```
 
 
@@ -159,7 +168,7 @@ Reference
 =========
 
 - Vincent Hwang, Jiaxiang Liu, Gregor Seiler, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
-  Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU. 
+  Verified NTT Multiplications for NISTPQC KEM Lattice Finalists: Kyber, SABER, and NTRU.
   IACR Transactions on Cryptographic Hardware and Embedded Systems. 2022(4): 718-750 (2022).
 - Yu-Fu Fu, Jiaxiang Liu, Xiaomu Shi, Ming-Hsien Tsai, Bow-Yaw Wang, and Bo-Yin Yang.
   Signed Cryptographic Program Verification with Typed CryptoLine.
