@@ -34,6 +34,34 @@
 
 # scalar instructions
 
+# APX
+#! add $1v, $2v, $3v -> adds carry $3v $2v $1v
+#! add $1c, $2v, $3v -> adds carry $3v $2v $1c@uint64
+#! add $1ea, $2v, $3v -> adds carry $3v $2v $1ea
+#! adc $1v, $2v, $3v -> adcs carry $3v $2v $1v carry
+#! adc $1c, $2v, $3v -> adcs carry $3v $2v $1c@uint64 carry
+#! adc $1ea, $2v, $3v -> adcs carry $3v $2v $1ea carry
+#! adcx $1v, $2v, $3v -> adcs carry $3v $2v $1v carry
+#! adox $1v, $2v, $3v -> adcs overflow $3v $2v $1v overflow
+#! sub $1v, $2v, $3v -> subb carry $3v $2v $1v
+#! sub $1c, $2v, $3v -> subb carry $3v $2v $1c@uint64
+#! sub $1ea, $2v, $3v -> subb carry $3v $2v $1ea
+#! sbb $1v, $2v, $3v -> sbbs carry $3v $2v $1v carry
+#! sbb $1c, $2v, $3v -> sbbs carry $3v $2v $1c@uint64 carry
+#! sbb $1ea, $2v, $3v -> sbbs carry $3v $2v $1ea
+#! imul $1v, $2v, $3v -> mull dontcare $3v $1v $2v
+#! and $1v, $2v, $3v -> and $3v@uint64 $2v $1v
+#! and $1c, $2v, $3v -> and $3v@uint64 $2v $1c@uint64
+#! and $1ea, $2v, $3v -> and $3v@uint64 $2v $1ea
+#! cmovb $1v, $2v, $3v -> cmov $3v carry $1v $2v
+#! cmovae $1v, $2v, $3v -> cmov $3v carry $2v $1v
+#! cmove $1v, $2v, $3v -> cmov $3v zero $1v $2v
+#! cmovne $1v, $2v, $3v -> cmov $3v zero $2v $1v
+#! shl $1c, $2v, $3v -> split dc $3v $2v (64-$1c);\nshl $3v $3v $1c@uint64
+#! shr $1c, $2v, $3v -> split $3v dc $2v $1c
+#! {nf} imul $1v, $2v, $3v -> mull dontcare $3v $1v $2v
+#! {nf} and $1ea, $2v, $3v -> and $3v@uint64 $2v $1ea
+
 #! add $1v, $2v -> adds carry $2v $2v $1v
 #! add $1c, $2v -> adds carry $2v $2v $1c@uint64
 #! add $1ea, $2v -> adds carry $2v $2v $1ea
