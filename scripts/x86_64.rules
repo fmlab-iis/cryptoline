@@ -103,7 +103,7 @@
 #! shrx $1c, $2v, $3v -> split $3v dc $2v $1c
 #! shr $1c, $2v -> split $2v dc $2v $1c
 #! test $1v, $1v -> subb zero dontcare $1v 1@uint64
-#! test \$0x1, $1v -> and tmp@uint64 0x1@uint64 $1v;\nsubb zero dontcare tmp 0x1@uint64
+#! test $1c, $2v -> and tmp@uint64 $1c@uint64 $2v;\nsubb zero dontcare tmp 0x1@uint64
 #! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
 
 # vector instructions
