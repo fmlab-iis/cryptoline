@@ -155,17 +155,19 @@ let smtlib_var_ranges_mix vs =
 (* Convert a specification to SMTLIB. The output will use integer theory and
    bit-vector theory. Cuts and assertions are not allowed in the input
    specification. *)
-let smtlib_spec ?(expn=true) vgen s =
+let smtlib_spec ?(expn=true) ?(rpost=true) ?(epost=true) vgen s =
   let rs = rspec_of_spec s in
   let es = espec_of_spec s in
   (* === range === *)
   let rng_f = Smt.bexp_rbexp rs.rspre |> Qfbv.Common.smtlib2_of_bexp in
   let rng_p =  Smt.bexp_program rs.rsprog |> tmap Qfbv.Common.smtlib2_of_bexp in
   let rng_g =
-    let rng_g = Smt.bexp_rbexp (rbexp_prove_with_rands rs.rspost) in
-    if is_rspec_trivial rs
-    then smtlib_true
-    else Qfbv.Common.smtlib2_of_bexp rng_g in
+    if not rpost then smtlib_true
+    else 
+      let rng_g = Smt.bexp_rbexp (rbexp_prove_with_rands rs.rspost) in
+      if is_rspec_trivial rs
+      then smtlib_true
+      else Qfbv.Common.smtlib2_of_bexp rng_g in
   (* === algebra === *)
   let (vgen, zs) = Cas.bv2z_espec vgen es in
   (* pvs: bit-vector variables *)
@@ -175,11 +177,16 @@ let smtlib_spec ?(expn=true) vgen s =
   let alg_f = smtlib_ebexp_mix ~expn:expn is_pvar zs.ppre in
   let alg_p = tmap (smtlib_ebexp_mix ~expn:expn is_pvar) zs.pprog in
   let alg_g =
-    let alg_g = smtlib_ebexp_mix ~expn:expn is_pvar zs.ppost in
-    if is_espec_trivial es
-    then smtlib_true
-    else alg_g in
-  let alg_post_disj = List.rev_map (smtlib_eexp_mix ~expn:expn is_pvar) zs.pextra
+    if not epost then smtlib_true 
+    else 
+      let alg_g = smtlib_ebexp_mix ~expn:expn is_pvar zs.ppost in
+      if is_espec_trivial es
+      then smtlib_true
+      else alg_g in
+  let alg_post_disj = 
+    if not epost then []
+    else 
+    List.rev_map (smtlib_eexp_mix ~expn:expn is_pvar) zs.pextra
                       |> List.rev_map (fun e -> Smt.smtlib_eq e "0") in
   (* All variables *)
   let vars = Cas.vars_poly_spec zs in

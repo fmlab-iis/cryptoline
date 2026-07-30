@@ -588,7 +588,7 @@ let anon file =
        List.fold_left
          (fun smtlibs s ->
            let vgen = Verify.Common.vgen_of_spec s in
-           let (_, smtlib) = Verify.Mix.smtlib_spec ~expn:false vgen s in
+           let (_, smtlib) = Verify.Mix.smtlib_spec ~expn:false ~rpost:!verify_rpost ~epost:!verify_epost vgen s in
            smtlib::smtlibs) [] ss in
      List.iteri output (List.rev smtlibs_rev)
   | Simulation ->
