@@ -3,7 +3,6 @@ open Options.Std
 open Ast.Cryptoline
 open Ast.MultiTrack
 open Qfbv.Common
-open Qfbv.Std
 open Smt
 open Common
 open Utils
@@ -520,7 +519,7 @@ let verify_instruction_safety ?comments timeout sid f p n hashopt =
     | True -> Solved Unsat
     | _ ->
        let fp = safety_assumptions f p q hashopt in
-       Solved (solve_simp
+       Solved (Qfbv.WithDomains.solve_simp
                  ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int sid;
                                                               "Instruction: " ^ string_of_instr i ])
                  ~timeout:timeout (fp@[q]))
@@ -558,8 +557,10 @@ let verify_safety_conditions ?comments timeout f p qs hashopt =
            let _ = Options.Std.vprint ("\t\tSafety condition #" ^ string_of_int id ^ "\t\t") in
            let (revp', p') = find_program_prefix i revp p in
            let fp = safety_assumptions f (List.rev revp') q hashopt in
-           match solve_simp ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
-                                                                         "Instruction: " ^ string_of_instr i ]) ~timeout:timeout (fp@[q]) with
+           match Qfbv.WithDomains.solve_simp
+                   ~comments:(append_comments_option comments [ "Safety condition: #" ^ string_of_int id;
+                                                                "Instruction: " ^ string_of_instr i ])
+                   ~timeout:timeout (fp@[q]) with
            | Sat -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Sat, revp', p')
            | Unknown -> let _ = Options.Std.vprintln "[FAILED]" in (Solved Unknown, revp', p')
            | Unsat -> let _ = Options.Std.vprintln "[OK]" in (res, revp', p')
@@ -667,7 +668,10 @@ let verify_safety_of_cut options ?comments sid s hashopt =
   then let t1 = Unix.gettimeofday() in
        let g = bexp_program_safe s.rsprog in
        let fp = safety_assumptions s.rspre s.rsprog g hashopt in
-       let res = solve_simp ~comments:(rcons_comments_option comments "Verify: safety (all in one query)") (fp@[g]) = Unsat in
+       let res =
+         Qfbv.WithDomains.solve_simp
+           ~comments:(rcons_comments_option comments "Verify: safety (all in one query)")
+           (fp@[g]) = Unsat in
        let t2 = Unix.gettimeofday() in
        let _ = Options.Std.trace("Execution of safety task: " ^ Options.Std.string_of_running_time t1 t2) in
        (res, sid + 1)
@@ -942,7 +946,7 @@ let verify_rspec_single_conjunct ?comments s hashopt =
     let p = bexp_program s.rsprog in
     let g = bexp_rbexp (rbexp_prove_with_rands s.rspost) in
     let solver = range_solver_of_prove_with (rbexp_prove_with_specs s.rspost) in
-    solve_simp
+    Qfbv.WithDomains.solve_simp
       ~comments:(rcons_comments_option comments ("Range condition: " ^ string_of_bexp g))
       ~solver:solver (f::p@[g]) = Unsat in
   is_rspec_trivial s || heuristics s ||

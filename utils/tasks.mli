@@ -52,6 +52,8 @@ val exec : ?timeout:float -> ?env:string array -> ?cwd:string -> ?stdin:Lwt_proc
 (** Spawn a process running a specified command using Lwt_process.exec. Raise [TimeoutException] if timeout is reached. *)
 
 val exec_shell : ?timeout:float -> ?env:string array -> ?cwd:string -> string -> string -> string -> Unix.process_status Lwt.t
-(** [exec_shell ofile errfile cmd] spawns a process running a specified shell command using Lwt_process.exec.
-    Standard output and standard error are redirected respectively to [ofile] and [errfile].
-    Raise [TimeoutException] if timeout is reached. *)
+(** [exec_shell ofile errfile cmd] spawns a process running a specified
+    shell command using Lwt_process.exec. Standard output and standard
+    error are redirected respectively to [ofile] and [errfile]. Raise
+    [TimeoutException] if timeout is reached. Note that this function
+    is not compatible with Domainslib. *)
