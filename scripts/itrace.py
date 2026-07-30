@@ -73,6 +73,27 @@ def sign_extend(value, bits):
     sign_bit = 1 << bits
     return (value & (sign_bit - 1)) - (value & sign_bit)
 
+def label(args, address):
+    min = 4096
+    base = None
+
+    for i, (key, value) in enumerate(args.items()):
+        offset = address - value
+        if offset >= 0 and offset < min:
+            min = offset
+            base = key
+        if offset == 0:
+            break
+
+    if base:
+        return "L{:s}_0x{:03x}".format(base, min)
+    else:   # look above Canonical Frame Address
+        offset = args["cfa"] - address
+        if offset < 4096:
+            return "Lcfa_0x{:03x}".format(offset)
+
+    return "L" + hex(address)
+
 class Extractor:
     def __init__(self, wordsize):
         self.wordsize = wordsize
@@ -101,12 +122,16 @@ class X86_64(Extractor):
                              r'(?:,%([a-z0-9]+),([1248]))?' # index and scale
                            r'\)'
                            r'(?:\s*,\s*%([a-z0-9]+))?')
+    args = {}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
         print(function + ":")
-        for reg in ("rdi", "rsi", "rdx", "rcx", "r8", "r9"):
-            print("# %{0:3s} = 0x{1:x}".format(reg, int(frame.read_register(reg))))
+        for reg in ("rdi", "rsi", "rdx", "rcx", "r8", "r9", "rsp"):
+            val = int(frame.read_register(reg)) & 0xffffffffffffffff
+            self.args[reg] = val
+            print("# %{0:3s} = 0x{1:x}".format(reg, val))
+        self.args["cfa"] = self.args["rsp"]
         return
 
     def isFunctionCall(self, b):
@@ -159,6 +184,7 @@ class ARM64(Extractor):
                            r'\]'
                            r'(?:\s*,\s*#(-?(?:0x)?[0-9a-fA-F]+))?')
     v_to_fmt = {'b': 'b', 'h': 'h', 's': 'w', 'd': 'g'}
+    args = {}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -166,7 +192,11 @@ class ARM64(Extractor):
         for reg in range(0,8) :
             reg = "x{0}".format(reg)
             val = int(frame.read_register(reg)) & 0xffffffffffffffff
+            self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
+        val = int(frame.read_register("sp")) & 0xffffffffffffffff
+        self.args["sp"] = val
+        self.args["cfa"] = val
         return
 
     def isFunctionCall(self, b):
@@ -233,6 +263,7 @@ class ARM32(Extractor):
                                r'(?:\s*,\s*([a-z0-9]+|#-?(?:0x)?[0-9a-fA-F]+)|\s*:\d+)?'
                              r'\]'
                            r'|(?:ld|st)m\w*\.?\w*\s+(\w+)!?,)')
+    args = {}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -240,7 +271,11 @@ class ARM32(Extractor):
         for reg in range(0,4) :
             reg = "r{0}".format(reg)
             val = int(frame.read_register(reg)) & 0xffffffff
+            self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
+        val = int(frame.read_register("sp")) & 0xffffffff
+        self.args["sp"] = val
+        self.args["cfa"] = val
         return
 
     def isFunctionCall(self, b):
@@ -294,6 +329,7 @@ class MIPS(Extractor):
     branchpattern = re.compile(r'^(b|j\w*)\s*(.*)')
     # e.g. 20($2)
     eapattern = re.compile(r'(-?(?:0x)?[0-9a-fA-F]+)?\((\w+)\)')
+    args = {}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -301,7 +337,11 @@ class MIPS(Extractor):
         for reg in range(4,12) :
             reg = "r{0}".format(reg)
             val = int(frame.read_register(reg)) & self.mask
+            self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
+        val = int(frame.read_register("sp")) & self.mask
+        self.args["sp"] = val
+        self.args["cfa"] = val
         return
 
     def isBranch(self, insns, frame):
@@ -311,9 +351,9 @@ class MIPS(Extractor):
             mnemonic = insns[1]["asm"]
             addr = self.getEA(insns[1], frame)
             if addr:
-                print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}".format(mnemonic, addr, insns[1]["addr"]))
+                print("\t{0:48s}#! EA = {:s}".format(mnemonic, label(addr)))
             else:
-                print("\t{0:48s}#! PC = 0x{1:x}".format(mnemonic,insns[1]["addr"]))
+                print("\t{0s}".format(mnemonic))
         return b
 
     def isFunctionCall(self, b):
@@ -346,6 +386,7 @@ class RISCV(Extractor):
     branchpattern = re.compile(r'^(b|j\w*|ret)\s*(.*)')
     # e.g. 20($2)
     eapattern = re.compile(r'(-?(?:0x)?[0-9a-fA-F]+)?\((\w+)\)')
+    args = {}
 
     def printHeader(self, function):
         frame = gdb.newest_frame()
@@ -353,7 +394,11 @@ class RISCV(Extractor):
         for reg in range(10,18) :
             reg = "x{0}".format(reg)
             val = int(frame.read_register(reg)) & self.mask
+            self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
+        val = int(frame.read_register("sp")) & self.mask
+        self.args["sp"] = val
+        self.args["cfa"] = val
         return
 
     def isFunctionCall(self, b):
@@ -488,7 +533,7 @@ def trace():
                 print("\t#! <- SP = 0x{0:x}".format(int(frame.read_register("sp"))))
             gdb.execute("stepi", to_string=True)
             debug("After stepi 1")
-            print("\t#{0:47s}#! PC = 0x{1:x}".format(mnemonic,insns[0]["addr"]))
+            print("\t#{:s}".format(mnemonic))
             if extr.isFunctionCall(b):      # calls are handled recursively
                 debug("Call")
                 trace()
@@ -504,23 +549,20 @@ def trace():
         else:
             ea = extr.getEA(insns[0], frame)
             if ea :
-                if ea.get("value") :
-                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
-                          .format(mnemonic, ea["addr"], ea["value"], insns[0]["addr"]))
-                elif ea.get("load") :
+                if ea.get("load") and not ea_only :
                     values = []
                     try :
                         value = gdb.execute("x/{0} 0x{1:x}".format(ea["load"], ea["addr"]), False, True)
                         values.extend(re.findall(r'(0[xX][0-9a-fA-F]+\b)(?!(?:\s+<.*>)?:)', value))
                     except gdb.MemoryError :
                         values.append("'?'")
-                    print("\t{0:48s}#! EA = L0x{1:x}; Value = {2}; PC = 0x{3:x}"
-                          .format(mnemonic, ea["addr"], " ".join(values), insns[0]["addr"]))
+                    print("\t{0:48s}#! EA = {1:s}; Value = {2}"
+                          .format(mnemonic, label(extr.args, ea["addr"]), " ".join(values)))
                 else :
-                    print("\t{0:48s}#! EA = L0x{1:x}; PC = 0x{2:x}"
-                          .format(mnemonic, ea["addr"], insns[0]["addr"]))
+                    print("\t{0:48s}#! EA = {1:s}"
+                          .format(mnemonic, label(extr.args, ea["addr"])))
             else:
-                print("\t{0:48s}#! PC = 0x{1:x}".format(mnemonic, insns[0]["addr"]))
+                print("\t{0:s}".format(mnemonic))
             gdb.execute("stepi", to_string=True)
             debug("After stepi 2")
         if not frame.is_valid():      # inter-procedure branches
@@ -538,6 +580,7 @@ if "TRACE_OUTFILE" in os.environ:
     sys.stdout = open(os.environ["TRACE_OUTFILE"], "w")
 
 function = os.environ["TRACE_FUNCTION"]
+ea_only = "TRACE_EAONLY" in os.environ
 
 # quirk: even though gdb.Breakpoint is documented to have pending attribute
 # it didn't work for me :-(
