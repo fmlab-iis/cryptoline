@@ -10,7 +10,7 @@ pushd ${TOOLS_DIR}
 git clone ${ABC_URL} ${ABC_NAME}
 
 pushd ${ABC_NAME}
-make
+make -j `nproc`
 sudo mkdir -p /usr/local/bin/
 sudo install -m 755 -s abc /usr/local/bin/
 popd
