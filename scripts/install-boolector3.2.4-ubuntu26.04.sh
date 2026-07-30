@@ -19,7 +19,7 @@ pushd ${BOOLECTOR_DIR}
 CMAKE_POLICY_VERSION_MINIMUM=3.5 ./contrib/setup-btor2tools.sh
 CMAKE_POLICY_VERSION_MINIMUM=3.5 ./configure.sh
 cd build
-make
+make -j `nproc`
 sudo make install
 cd ..
 popd
