@@ -12,7 +12,8 @@ RUN apt-get update \
                           libgmp-dev libmpfr-dev libppl-dev libglpk-dev libflint-dev \
                           libbigarray-compat-ocaml-dev libreadline-dev \
                           python3-pip python3-venv libmpc-dev vim tmux z3 singular \
-                          opam
+                          opam \
+    && apt-get clean
 
 # Install OCaml packages (not available via apt), CryptoLine, and external tools
 WORKDIR /home/ubuntu
@@ -27,14 +28,18 @@ RUN opam init -a -y -c ocaml-system --dot-profile=/home/ubuntu/.bashrc \
     && cd cryptoline \
     && dune build \
     && dune install --prefix /home/ubuntu/.local \
+    && dune clean \
 # Install abc
     && ./scripts/install-abc.sh \
 # Install Boolector
     && ./scripts/install-boolector3.2.4-ubuntu26.04.sh \
+# Clean abc and Boolector
+    && rm -rf tools \
 # Install MIP solvers (islpy, pplpy and pyscipopt)
     && python3 -m venv /home/ubuntu/.local \
     && export PATH=/home/ubuntu/.local/bin:$PATH \
     && pip3 install islpy pplpy pyscipopt pyparsing \
+    && pip cache purge \
 # Set up user account
     && passwd -d ubuntu \
     && echo 'export PATH=$HOME/.local/bin:$PATH' >> /home/ubuntu/.bashrc \
