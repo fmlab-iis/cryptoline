@@ -8,6 +8,7 @@
 # * v[[i:j:k]] will be expanded into v[i], v[i+k], ..., v[j].
 
 import sys
+import os
 import re
 import collections
 import string
@@ -231,6 +232,10 @@ def parse_tspec(fn, line_parser, line_filter):
 
 # Parse translation specification in an external file
 def parse_external_tspec(fn):
+  if not os.path.isfile(fn):
+    dir = os.path.dirname(sys.argv[0])
+    if dir:
+      fn = os.path.join(dir, fn)
   return parse_tspec(fn, parse_tspec_comment, lambda item: not is_asm_comment(item) and not is_empty_line(item))
 
 # Parse translation specification in a gas file
