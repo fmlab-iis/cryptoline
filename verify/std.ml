@@ -125,6 +125,17 @@ let write_maple_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
+let write_maxima_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_maxima_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+    fun ch ->
+      Buffer.output_buffer ch buf
+  );
+  Options.Std.trace "INPUT TO MAXIMA:";
+  Options.Std.trace_file ifile;
+  Options.Std.trace ""
+
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
   unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
@@ -176,6 +187,15 @@ let run_maple ifile ofile =
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAPLE:";
+  Options.Std.trace_file ofile;
+  Options.Std.trace ""
+
+let run_maxima ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ !Options.Std.algebra_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  let t2 = Unix.gettimeofday() in
+  Options.Std.trace ("Execution time of Maxima: " ^ Options.Std.string_of_running_time t1 t2);
+  Options.Std.trace "OUTPUT FROM MAXIMA:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
@@ -235,6 +255,8 @@ let read_mathematica_output = read_one_line
 let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
+
+let read_maxima_output = read_one_line
 
 
 
@@ -437,6 +459,11 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let _ = run_maple ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
+    | Maxima ->
+       let _ = write_maxima_input ~comments ifile vars ideal p in
+       let _ = run_maxima ifile ofile in
+       let res = read_maxima_output ofile in
+       res = "0"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
     | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in

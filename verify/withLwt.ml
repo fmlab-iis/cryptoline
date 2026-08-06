@@ -125,6 +125,17 @@ let write_maple_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
+let write_maxima_input ?comments ifile vars gen p =
+  let%lwt buf = Lwt.return (Buffer.create 1024) in
+  let%lwt _ = Cas.bprint_maxima_input ?comments buf vars gen p; Lwt.return_unit in
+  let%lwt ifd = Lwt_unix.openfile ifile
+                  [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
+                  0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.output ifd in
+  let%lwt _ = Lwt_io.write ch (Buffer.contents buf) in
+  let%lwt _ = Lwt_io.close ch in
+  Lwt.return_unit
+
 let run_singular header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_array =
@@ -230,6 +241,22 @@ let run_maple header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
+let run_maxima header ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ !Options.Std.algebra_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let t2 = Unix.gettimeofday() in
+  let%lwt _ = Options.WithLwt.log_lock () in
+  let%lwt _ = write_header_to_log header in
+  let%lwt _ = Options.WithLwt.trace "INPUT TO MAXIMA:" in
+  let%lwt _ = Options.WithLwt.trace_file ifile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.trace ("Execution time of Maxima: " ^ string_of_running_time t1 t2) in
+  let%lwt _ = Options.WithLwt.trace "OUTPUT FROM MAXIMA:" in
+  let%lwt _ = Options.WithLwt.trace_file ofile in
+  let%lwt _ = Options.WithLwt.trace "" in
+  let%lwt _ = Options.WithLwt.log_unlock () in
+  Lwt.return_unit
+
 let read_one_line ofile =
   let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
@@ -277,6 +304,8 @@ let read_mathematica_output = read_one_line
 let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
+
+let read_maxima_output = read_one_line
 
 
 
@@ -545,6 +574,12 @@ let is_in_ideal
        let%lwt res = read_maple_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
+    | Maxima ->
+       let%lwt _ = write_maxima_input ~comments ifile vars ideal p in
+       let%lwt _ = run_maxima header ifile ofile in
+       let%lwt res = read_maxima_output ofile in
+       let%lwt _ = cleanup_lwt [ifile; ofile] in
+       Lwt.return (res = "0")
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
     | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in

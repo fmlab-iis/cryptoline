@@ -124,6 +124,15 @@ let write_maple_input ?comments ifile vars gen p =
       Buffer.output_buffer ch buf
     )
 
+(** Write input to Maxima using Buffer and Out_channel. *)
+let write_maxima_input ?comments ifile vars gen p =
+  let buf = Buffer.create 1024 in
+  let _ = Cas.bprint_maxima_input ?comments buf vars gen p in
+  Out_channel.with_open_bin ifile (
+      fun ch ->
+      Buffer.output_buffer ch buf
+    )
+
 let read_one_line ofile =
   let line = In_channel.with_open_text ofile input_line in
   String.trim line
@@ -152,6 +161,8 @@ let read_mathematica_output = read_one_line
 let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
+
+let read_maxima_output = read_one_line
 
 
 (* Write headers to log file. *)
@@ -287,6 +298,28 @@ let run_maple headers ifile ofile =
       DomainsTasks.log
         ("Execution time of Maple: " ^ string_of_running_time t1 t2 ^ "\n");
       DomainsTasks.log "OUTPUT FROM MAPLE:\n";
+      DomainsTasks.log_file ofile;
+      DomainsTasks.log "\n";
+      DomainsTasks.unlock_log ();
+    end
+
+(* Run Maxima. *)
+let run_maxima headers ifile ofile =
+  let t1 = Unix.gettimeofday() in
+  let extra_args = args_from_string !Options.Std.algebra_solver_args in
+  let cmd_list = [ !maxima_path; "--very-quiet"; "--suppress-input-echo" ] @ extra_args @ ["-b"; ifile] in
+  let cmd_array = Array.of_list cmd_list in
+  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let t2 = Unix.gettimeofday() in
+  if !debug then begin
+      DomainsTasks.lock_log ();
+      write_headers_to_log headers;
+      DomainsTasks.log "INPUT TO MAXIMA:\n";
+      DomainsTasks.log_file ifile;
+      DomainsTasks.log "\n";
+      DomainsTasks.log
+        ("Execution time of Maxima: " ^ string_of_running_time t1 t2 ^ "\n");
+      DomainsTasks.log "OUTPUT FROM MAXIMA:\n";
       DomainsTasks.log_file ofile;
       DomainsTasks.log "\n";
       DomainsTasks.unlock_log ();
@@ -583,6 +616,11 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) h
        let _ = run_maple headers ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
+    | Maxima ->
+       let _ = write_maxima_input ~comments ifile vars ideal p in
+       let _ = run_maxima headers ifile ofile in
+       let res = read_maxima_output ofile in
+       res = "0"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
     | PPL | SCIP | ISL -> failwith ("Ideal membership queries are not supported by MIP solver.")
   in

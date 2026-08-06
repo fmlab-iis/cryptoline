@@ -77,7 +77,8 @@ let args_verifier =
            ^ Options.Std.string_of_algebra_solver Options.Std.Magma ^ ",";
            Options.Std.string_of_algebra_solver Options.Std.Mathematica ^ ", "
            ^ Options.Std.string_of_algebra_solver Options.Std.Macaulay2 ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Maple ^ ", or "
+           ^ Options.Std.string_of_algebra_solver Options.Std.Maple ^ ", "
+           ^ Options.Std.string_of_algebra_solver Options.Std.Maxima ^ ", or "
            ^ "smt:SMT_SOLVER where SMT_SOLVER";
            "is the name of the SMT solver which accepts inputs in SMTLIB";
            "format. The default algebra solver is "
@@ -148,9 +149,17 @@ let args_verifier =
                         algebra_solver := Maple),
      mk_arg_desc(["PATH";
                   "Use Maple at the specified path."]));
+    ("-maxima",
+     String (fun str -> maxima_path := str;
+                        algebra_solver := Maxima),
+     mk_arg_desc(["PATH";
+                  "Use Maxima at the specified path."]));
     ("-maple_path", String (fun str -> maple_path := str),
      mk_arg_desc(["PATH";
                   "Set the path to Maple."]));
+    ("-maxima_path", String (fun str -> maxima_path := str),
+     mk_arg_desc(["PATH";
+                  "Set the path to Maxima."]));
     ("-mathematica",
      String (fun str -> mathematica_path := str;
                         algebra_solver := Mathematica),

@@ -166,6 +166,7 @@ type algebra_solver =
   | Mathematica
   | Macaulay2
   | Maple
+  | Maxima
   | SMTSolver of algsmt_option
   | PPL
   | SCIP
@@ -211,6 +212,7 @@ let string_of_algebra_solver s =
   | Mathematica -> "mathematica"
   | Macaulay2 -> "macaulay2"
   | Maple -> "maple"
+  | Maxima -> "maxima"
   | SMTSolver o -> "smt:" ^ string_of_algsmt_option o ^ ""
   | PPL -> "ppl"
   | SCIP -> "scip"
@@ -229,6 +231,7 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver Mathematica then Mathematica
   else if str = string_of_algebra_solver Macaulay2 then Macaulay2
   else if str = string_of_algebra_solver Maple then Maple
+  else if str = string_of_algebra_solver Maxima then Maxima
   else if Str.string_match (Str.regexp "^smt\\(:[^:]+\\)\\(:[^:]+\\)?") str 0 then
     let path =
       match String.split_on_char ':' (Str.matched_group 1 str) with
@@ -255,6 +258,7 @@ let magma_path = ref "magma"
 let mathematica_path = ref "wolframscript"
 let macaulay2_path = ref "M2"
 let maple_path = ref "maple"
+let maxima_path = ref "maxima"
 let python_path = ref "python"
 
 let apply_rewrite_mov = ref true
@@ -383,6 +387,16 @@ let code_of_monomial_order_for_solver mo so =
         | NegativeReverseLexicographical
         | NegativeDegreeLexicographic
         | NegativeDegreeReverseLexicographic -> None)
+  | Maxima ->
+     (match mo with
+      | Lexicographic -> Some "lex"
+      | ReverseLexicographic -> Some "invlex"
+      | DegreeLexicographic -> Some "grlex"
+      | DegreeReverseLexicographic -> Some "grevlex"
+      | NegativeLexicographic -> None
+      | NegativeReverseLexicographical -> None
+      | NegativeDegreeLexicographic -> None
+      | NegativeDegreeReverseLexicographic -> None)
   | _ -> None
 
 let parse_monomial_order str =

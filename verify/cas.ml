@@ -915,6 +915,8 @@ let rec bprint_eexp_magma buf e =
        bprint_eexp_magma buf e2;
        Buffer.add_char buf ')'  )
 
+let bprint_eexp_maxima = bprint_eexp_sage
+
 (* Underscore is not allowed in variable names in Mathematica. *)
 let mathematica_of_var v =
   "v[\"" ^ v.cached_name ^ "\"]"
@@ -1060,6 +1062,8 @@ let rec macaulay2_of_eexp e =
      ^ (if ebinop_eexp_open op e2
         then macaulay2_of_eexp e2
         else "(" ^ macaulay2_of_eexp e2 ^ ")")
+
+let _maxima_of_eexp = sage_of_eexp
 
 let get_mon_ord order solver =
   match code_of_monomial_order_for_solver order solver with
@@ -1644,3 +1648,67 @@ res := IdealMembership(g, J):
 res;
 quit:
 |} comment mon_ord varseq poly (magma_of_eexp (const_gen()))
+
+
+let bprint_maxima_input ?comments buf vars gen p =
+  let (const_gen, poly_gen) =
+    let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
+    let _ =
+      if List.length const_gen > 1
+      then failwith ("Multiple constant modulus is not supported when using maxima.") in
+    (const_gen, poly_gen) in
+  let bprint_varseq buf =
+    match vars with
+    | [] -> Buffer.add_char buf 'x'
+    | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let bprint_generator buf =
+    if List.length poly_gen = 0
+    then Buffer.add_char buf '0'
+    else bprint_list buf ",\n  " bprint_eexp_maxima poly_gen in
+  let bprint_poly buf = bprint_eexp_maxima buf p in
+  let bprint_comment buf  =
+    if !debug then
+      match comments with
+      | None -> ()
+      | Some comments ->
+         bprint_list buf "\n" (
+             fun buf c ->
+             Buffer.add_string buf "/* ";
+             Buffer.add_string buf c;
+             Buffer.add_string buf " */"
+           ) comments
+    else () in
+  let mon_ord = get_mon_ord !monomial_order Maxima in
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    bprint_comment buf;
+    Buffer.add_string buf "display2d : false$\n";
+    Buffer.add_string buf "vars : [";
+    bprint_varseq buf;
+    Buffer.add_string buf "]$\n";
+    Buffer.add_string buf "p : ";
+    bprint_poly buf; Buffer.add_string buf "$\n";
+    Buffer.add_string buf "expand(p);\n";
+  | _ ->
+    bprint_comment buf;
+    Buffer.add_string buf "display2d : false$\n";
+    Buffer.add_string buf "load(\"grobner\")$\n";
+    (match const_gen with
+     | c::[] ->
+       Buffer.add_string buf "modulus : ";
+       bprint_eexp_maxima buf c;
+       Buffer.add_string buf "$\n"
+     | _ -> ());
+    Buffer.add_string buf "vars : [";
+    bprint_varseq buf;
+    Buffer.add_string buf "]$\n";
+    Buffer.add_string buf "poly_monomial_order : '";
+    Buffer.add_string buf mon_ord;
+    Buffer.add_string buf "$\n";
+    Buffer.add_string buf "gb : poly_grobner([";
+    bprint_generator buf;
+    Buffer.add_string buf "], vars)$\n";
+    Buffer.add_string buf "p : ";
+    bprint_poly buf; Buffer.add_string buf "$\n";
+    Buffer.add_string buf "poly_normal_form(p, gb, vars);\n";

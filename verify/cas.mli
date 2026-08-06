@@ -140,6 +140,11 @@ val bprint_maple_input :
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Maple for ideal membership query. *)
 
+val bprint_maxima_input :
+  ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
+  Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
+(** Print input to Maxima for ideal membership query. *)
+
 
 val algebra_symbol_of_ebinop : Ast.Cryptoline.ebinop -> string
 (** return the symbol for a binary operator *)

@@ -159,6 +159,7 @@ type algebra_solver =
   | Mathematica              (** {{:https://www.wolfram.com/mathematica/}Mathematica} *)
   | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
   | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
+  | Maxima                   (** {{:https://maxima.sourceforge.io}Maxima} *)
   | SMTSolver of algsmt_option
                              (** SMT solvers that support {{:https://smtlib.cs.uiowa.edu}SMTLIB format} *) (* *)
   | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
@@ -219,6 +220,9 @@ val macaulay2_path : string ref
 
 val maple_path : string ref
 (** the path to maple *)
+
+val maxima_path : string ref
+(** the path to maxima *)
 
 val python_path : string ref
 (** the path to python *)
