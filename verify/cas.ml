@@ -1196,16 +1196,13 @@ let bprint_sage_input ?comments buf vars gen p =
   | [] ->
     (* If gen is empty, we simply check if p equals 0. *)
     bprint_comment buf; Buffer.add_char buf '\n';
-    Buffer.add_string buf "R.<";
+    Buffer.add_string buf "var('";
     bprint_varseq buf;
-    Buffer.add_string buf "> = PolynomialRing";
-    Buffer.add_string buf (Printf.sprintf
-                             "(ZZ, %d)\n"
-                             (max 1 (List.length vars)));
+    Buffer.add_string buf "')";
     Buffer.add_string buf "P = ";
     bprint_poly buf;
     Buffer.add_char buf '\n';
-    Buffer.add_string buf "assert P == 0\n"
+    Buffer.add_string buf "assert P.expand() == 0\n"
   | _ ->
     bprint_comment buf; Buffer.add_char buf '\n';
     Buffer.add_string buf "R.<";
@@ -1241,10 +1238,10 @@ let generate_sage_input ?comments vars gen p =
   match gen with
   | [] ->
     Printf.sprintf {|%s
-R.<%s> = PolynomialRing(ZZ, %d)
+var('%s')
 P = %s
-assert P == 0
-|} comment varseq (max 1 (List.length vars)) poly
+assert P.expand() == 0
+|} comment varseq poly
   | _ ->
     Printf.sprintf {|%s
 R.<%s> = PolynomialRing(ZZ, %d, order='%s')
@@ -1387,7 +1384,7 @@ let bprint_mathematica_input ?comments buf vars gen p =
     bprint_varseq buf; Buffer.add_string buf "};\n";
     Buffer.add_string buf "p = ";
     bprint_poly buf; Buffer.add_string buf ";\n";
-    Buffer.add_string buf "Print[p];\n"
+    Buffer.add_string buf "Print[Expand[p]];\n"
   | _ ->
     bprint_comment buf; Buffer.add_char buf '\n';
     Buffer.add_string buf "vars = {";
@@ -1430,7 +1427,7 @@ let generate_mathematica_input ?comments vars gen p =
     Printf.sprintf {|%s
 vars = {%s};
 p = %s;
-Print[p];
+Print[Expand[p]];
 |} comment varseq poly
   | _ ->
     let append_mon_ord =
