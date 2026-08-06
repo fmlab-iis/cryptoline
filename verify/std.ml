@@ -395,9 +395,14 @@ let read_isl_output = read_one_line
 (** Interfaces of Solvers *)
 
 let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
+  (* The input file to Sage must have file extension ".sage". *)
+  let propose_input_suffix solver =
+    match solver with
+    | Sage -> ".sage"
+    | _ -> "" in
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
-  let ifile = tmpfile "inputfgb_" "" in
+  let ifile = tmpfile "inputfgb_" (propose_input_suffix solver) in
   let ofile = tmpfile "outputfgb_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   let res =
@@ -408,8 +413,6 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let res = read_singular_output ofile in
        res = "0"
     | Sage ->
-       (* The input file to Sage must have file extension ".sage". *)
-       let ifile = ifile ^ ".sage" in
        let _ = write_sage_input ~comments ifile vars ideal p in
        let _ = run_sage ifile ofile in
        let res = read_sage_output ofile in

@@ -493,9 +493,14 @@ let is_in_ideal
       ?(expand=(!Options.Std.expand_poly))
       ?(solver=(!Options.Std.algebra_solver))
       header vars ideal p =
+  (* The input file to Sage must have file extension ".sage". *)
+  let propose_input_suffix solver =
+    match solver with
+    | Sage -> ".sage"
+    | _ -> "" in
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
-  let ifile = tmpfile "inputfgb_" "" in
+  let ifile = tmpfile "inputfgb_" (propose_input_suffix solver) in
   let ofile = tmpfile "outputfgb_" "" in
   let comments =
     if !debug then
@@ -511,8 +516,6 @@ let is_in_ideal
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Sage ->
-       (* The input file to Sage must have file extension ".sage". *)
-       let ifile = ifile ^ ".sage" in
        let%lwt _ = write_sage_input ~comments ifile vars ideal p in
        let%lwt _ = run_sage header ifile ofile in
        let%lwt res = read_sage_output ofile in

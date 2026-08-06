@@ -1093,32 +1093,42 @@ let bprint_singular_input ?comments buf vars gen p =
         ) comments
     else () in
   let mon_ord = get_mon_ord !monomial_order Singular in
-  bprint_comment(); Buffer.add_char buf '\n';
-  Buffer.add_string buf "proc is_generator(poly p, ideal I) {"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  int idx;"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  for (idx=1; idx<=size(I); idx++) {"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "    if (p == I[idx]) { return (0==0); }"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  }"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  return (0==1);"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "}"; Buffer.add_char buf '\n';
-  Buffer.add_string buf ""; Buffer.add_char buf '\n';
-  Buffer.add_string buf "ring r = integer, ("; bprint_varseq(); Buffer.add_string buf "), "; Buffer.add_string buf mon_ord; Buffer.add_char buf ';'; Buffer.add_char buf '\n';
-  Buffer.add_string buf "ideal gs = "; bprint_generator(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
-  Buffer.add_string buf "poly p = "; bprint_poly(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
-  Buffer.add_string buf "if (is_generator(p, gs) || reduce(p, gs) == 0) {"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  0;"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "} else {"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  ideal I = groebner(gs);"; Buffer.add_char buf '\n';
-  Buffer.add_string buf "  reduce(p, I);"; Buffer.add_char buf '\n';
-  Buffer.add_char buf '}'; Buffer.add_char buf '\n';
-  Buffer.add_string buf "exit;"; Buffer.add_char buf '\n'
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0.
+       To make the result consistent, the result is 0 if p is 0. *)
+    bprint_comment(); Buffer.add_char buf '\n';
+    Buffer.add_string buf "ring r = integer, ("; bprint_varseq(); Buffer.add_string buf "), "; Buffer.add_string buf mon_ord; Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "poly p = "; bprint_poly(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "print(p);\n";
+    Buffer.add_string buf "exit;\n"
+  | _ ->
+    bprint_comment(); Buffer.add_char buf '\n';
+    Buffer.add_string buf "proc is_generator(poly p, ideal I) {"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  int idx;"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  for (idx=1; idx<=size(I); idx++) {"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "    if (p == I[idx]) { return (0==0); }"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  }"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  return (0==1);"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "}"; Buffer.add_char buf '\n';
+    Buffer.add_string buf ""; Buffer.add_char buf '\n';
+    Buffer.add_string buf "ring r = integer, ("; bprint_varseq(); Buffer.add_string buf "), "; Buffer.add_string buf mon_ord; Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "ideal gs = "; bprint_generator(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "poly p = "; bprint_poly(); Buffer.add_char buf ';'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "if (is_generator(p, gs) || reduce(p, gs) == 0) {"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  0;"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "} else {"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  ideal I = groebner(gs);"; Buffer.add_char buf '\n';
+    Buffer.add_string buf "  reduce(p, I);"; Buffer.add_char buf '\n';
+    Buffer.add_char buf '}'; Buffer.add_char buf '\n';
+    Buffer.add_string buf "exit;\n"
 
 let generate_singular_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
     | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
-  let generator =
+  let generator () =
     if List.length gen = 0
     then "0"
     else (String.concat ",\n  " (tmap singular_of_eexp gen)) in
@@ -1129,26 +1139,36 @@ let generate_singular_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Singular in
-  String.concat "\n" [
-      comment;
-      "proc is_generator(poly p, ideal I) {";
-      "  int idx;";
-      "  for (idx=1; idx<=size(I); idx++) {";
-      "    if (p == I[idx]) { return (0==0); }";
-      "  }";
-      "  return (0==1);";
-      "}";
-      "";
-      Printf.sprintf "ring r = integer, (%s), %s;" varseq mon_ord;
-      Printf.sprintf "ideal gs = %s;" generator;
-      Printf.sprintf "poly p = %s;" poly;
-      "if (is_generator(p, gs) || reduce(p, gs) == 0) {";
-      "  0;";
-      "} else {";
-      "  ideal I = groebner(gs);";
-      "  reduce(p, I);";
-      "}";
-      "exit;" ]
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0.
+       To make the result consistent, the result is 0 if p is 0. *)
+    Printf.sprintf {|%s
+ring r = integer, (%s), %s;
+poly p = %s;
+print(p);
+exit;
+|} comment varseq mon_ord poly
+  | _ ->
+    Printf.sprintf {|%s
+proc is_generator(poly p, ideal I) {
+  int idx;
+  for (idx=1; idx<=size(I); idx++) {
+    if (p == I[idx]) { return (0==0); }
+  }
+  return (0==1);
+}
+ring r = integer, (%s), %s;
+ideal gs = %s;
+poly p = %s;
+if (is_generator(p, gs) || reduce(p, gs) == 0) {
+  0;
+} else {
+  ideal I = groebner(gs);
+  reduce(p, I);
+}
+exit;
+|} comment varseq mon_ord (generator()) poly
 
 let bprint_sage_input ?comments buf vars gen p =
   let bprint_varseq buf =
@@ -1172,27 +1192,42 @@ let bprint_sage_input ?comments buf vars gen p =
            ) comments
     else () in
   let mon_ord = get_mon_ord !monomial_order Sage in
-  bprint_comment buf; Buffer.add_char buf '\n';
-  Buffer.add_string buf "R.<";
-  bprint_varseq buf;
-  Buffer.add_string buf "> = PolynomialRing";
-  Buffer.add_string buf (Printf.sprintf
-                           "(ZZ, %d, order='%s')\n"
-                           (max 1 (List.length vars)) mon_ord);
-  Buffer.add_string buf "I = (";
-  bprint_generator buf;
-  Buffer.add_string buf ") * R\n";
-  Buffer.add_string buf "P = ";
-  bprint_poly buf;
-  Buffer.add_char buf '\n';
-  Buffer.add_string buf "assert P in I\n"
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "R.<";
+    bprint_varseq buf;
+    Buffer.add_string buf "> = PolynomialRing";
+    Buffer.add_string buf (Printf.sprintf
+                             "(ZZ, %d)\n"
+                             (max 1 (List.length vars)));
+    Buffer.add_string buf "P = ";
+    bprint_poly buf;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "assert P == 0\n"
+  | _ ->
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "R.<";
+    bprint_varseq buf;
+    Buffer.add_string buf "> = PolynomialRing";
+    Buffer.add_string buf (Printf.sprintf
+                             "(ZZ, %d, order='%s')\n"
+                             (max 1 (List.length vars)) mon_ord);
+    Buffer.add_string buf "I = (";
+    bprint_generator buf;
+    Buffer.add_string buf ") * R\n";
+    Buffer.add_string buf "P = ";
+    bprint_poly buf;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "assert P in I\n"
 
 let generate_sage_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
     | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
-  let generator =
+  let generator () =
     if List.length gen = 0
     then "0"
     else (String.concat ",\n  " (tmap sage_of_eexp gen)) in
@@ -1203,16 +1238,20 @@ let generate_sage_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Sage in
-  String.concat "\n" [
-      comment;
-      Printf.sprintf
-        "R.<%s> = PolynomialRing(ZZ, %d, order='%s')"
-        varseq
-        (max 1 (List.length vars))
-        mon_ord;
-      Printf.sprintf "I = (%s) * R" generator;
-      Printf.sprintf "P = %s" poly;
-      "assert P in I" ]
+  match gen with
+  | [] ->
+    Printf.sprintf {|%s
+R.<%s> = PolynomialRing(ZZ, %d)
+P = %s
+assert P == 0
+|} comment varseq (max 1 (List.length vars)) poly
+  | _ ->
+    Printf.sprintf {|%s
+R.<%s> = PolynomialRing(ZZ, %d, order='%s')
+I = (%s) * R
+P = %s
+assert P in I
+|} comment varseq (max 1 (List.length vars)) mon_ord (generator()) poly
 
 let bprint_magma_input ?comments buf vars gen p =
   let bprint_varseq buf =
@@ -1237,30 +1276,46 @@ let bprint_magma_input ?comments buf vars gen p =
            ) comments
     else () in
   let mon_ord = get_mon_ord !monomial_order Magma in
-  (* Test if polynomial g is in the ideal J: `g in J` *)
-  (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
-  bprint_comment buf; Buffer.add_char buf '\n';
-  Buffer.add_string buf "Z := IntegerRing();\n";
-  Buffer.add_string buf "F<";
-  bprint_varseq buf;
-  Buffer.add_string buf "> := PolynomialRing";
-  Buffer.add_string buf (Printf.sprintf
-                           "(Z, %d, \"%s\");"
-                           varlen mon_ord); Buffer.add_char buf '\n';
-  Buffer.add_string buf "G := [";
-  bprint_generator buf;
-  Buffer.add_string buf "];\n";
-  Buffer.add_string buf "p := ";
-  bprint_poly buf;
-  Buffer.add_string buf ";\n";
-  Buffer.add_string buf "if p in G then\n";
-  Buffer.add_string buf "  0;\n";
-  Buffer.add_string buf "else\n";
-  Buffer.add_string buf "  I := ideal<F|G>;\n";
-  Buffer.add_string buf "  J := GroebnerBasis(I);\n";
-  Buffer.add_string buf "  NormalForm(p, J);\n";
-  Buffer.add_string buf "end if;\n";
-  Buffer.add_string buf "exit;\n"
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "Z := IntegerRing();\n";
+    Buffer.add_string buf "F<";
+    bprint_varseq buf;
+    Buffer.add_string buf "> := PolynomialRing";
+    Buffer.add_string buf (Printf.sprintf "(Z, %d);" varlen);
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "p := ";
+    bprint_poly buf;
+    Buffer.add_string buf ";\n";
+    Buffer.add_string buf "print p;\n";
+    Buffer.add_string buf "exit;\n"
+  | _ ->
+    (* Test if polynomial g is in the ideal J: `g in J` *)
+    (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "Z := IntegerRing();\n";
+    Buffer.add_string buf "F<";
+    bprint_varseq buf;
+    Buffer.add_string buf "> := PolynomialRing";
+    Buffer.add_string buf (Printf.sprintf
+                             "(Z, %d, \"%s\");"
+                             varlen mon_ord); Buffer.add_char buf '\n';
+    Buffer.add_string buf "G := [";
+    bprint_generator buf;
+    Buffer.add_string buf "];\n";
+    Buffer.add_string buf "p := ";
+    bprint_poly buf;
+    Buffer.add_string buf ";\n";
+    Buffer.add_string buf "if p in G then\n";
+    Buffer.add_string buf "  0;\n";
+    Buffer.add_string buf "else\n";
+    Buffer.add_string buf "  I := ideal<F|G>;\n";
+    Buffer.add_string buf "  J := GroebnerBasis(I);\n";
+    Buffer.add_string buf "  NormalForm(p, J);\n";
+    Buffer.add_string buf "end if;\n";
+    Buffer.add_string buf "exit;\n"
 
 let generate_magma_input ?comments vars gen p =
   let varseq =
@@ -1268,7 +1323,7 @@ let generate_magma_input ?comments vars gen p =
     | [] -> "x"
     | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
   let varlen = max 1 (List.length vars) in
-  let generator =
+  let generator () =
     if List.length gen = 0
     then "0"
     else (String.concat ",\n" (tmap magma_of_eexp gen)) in
@@ -1279,24 +1334,33 @@ let generate_magma_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Magma in
-  (* Test if polynomial g is in the ideal J: `g in J` *)
-  (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
-  String.concat "\n" [
-      comment;
-      "Z := IntegerRing();";
-      Printf.sprintf
-        "F<%s> := PolynomialRing(Z, %d, \"%s\");"
-        varseq varlen mon_ord;
-      Printf.sprintf "G := [%s];" generator;
-      Printf.sprintf "p := %s;" poly;
-      "if p in G then";
-      "  0;";
-      "else";
-      "  I := ideal<F|G>;";
-      "  J := GroebnerBasis(I);";
-      "  NormalForm(p, J);";
-      "end if;";
-      "exit;" ]
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    Printf.sprintf {|%s
+Z := IntegerRing();
+F<%s> := PolynomialRing(Z, %d);
+p := %s;
+print p;
+exit;
+|} comment varseq varlen poly
+  | _ ->
+    (* Test if polynomial g is in the ideal J: `g in J` *)
+    (* Reduce polynomial g with the ideal J: `NormalForm(g, J)` *)
+    Printf.sprintf {|%s
+Z := IntegerRing();
+F<%s> := PolynomialRing(Z, %d, \"%s\");
+G := [%s];
+p := %s;
+if p in G then
+  0;
+else
+  I := ideal<F|G>;
+  J := GroebnerBasis(I);
+  NormalForm(p, J);
+end if;
+exit
+|} comment varseq varlen mon_ord (generator()) poly
 
 let bprint_mathematica_input ?comments buf vars gen p =
   let bprint_varseq buf =
@@ -1315,31 +1379,41 @@ let bprint_mathematica_input ?comments buf vars gen p =
            ~default:"")
     else () in
   let mon_ord = get_mon_ord !monomial_order Mathematica in
-  bprint_comment buf; Buffer.add_char buf '\n';
-  Buffer.add_string buf "vars = {";
-  bprint_varseq buf; Buffer.add_string buf "};\n";
-  Buffer.add_string buf "gs = {";
-  bprint_generator buf; Buffer.add_string buf "};\n";
-  Buffer.add_string buf "p = ";
-  bprint_poly buf; Buffer.add_string buf ";\n";
-  Buffer.add_string buf
-    "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers ";
-  Buffer.add_string buf
-    (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
-  Buffer.add_string buf "];\n";
-  Buffer.add_string buf
-    "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers";
-  Buffer.add_string buf
-    (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
-  Buffer.add_string buf "];\n";
-  Buffer.add_string buf "Print[r];\n"
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "vars = {";
+    bprint_varseq buf; Buffer.add_string buf "};\n";
+    Buffer.add_string buf "p = ";
+    bprint_poly buf; Buffer.add_string buf ";\n";
+    Buffer.add_string buf "Print[p];\n"
+  | _ ->
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "vars = {";
+    bprint_varseq buf; Buffer.add_string buf "};\n";
+    Buffer.add_string buf "gs = {";
+    bprint_generator buf; Buffer.add_string buf "};\n";
+    Buffer.add_string buf "p = ";
+    bprint_poly buf; Buffer.add_string buf ";\n";
+    Buffer.add_string buf
+      "gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers ";
+    Buffer.add_string buf
+      (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+    Buffer.add_string buf "];\n";
+    Buffer.add_string buf
+      "{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers";
+    Buffer.add_string buf
+      (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
+    Buffer.add_string buf "];\n";
+    Buffer.add_string buf "Print[r];\n"
 
 let generate_mathematica_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
     | _ -> String.concat "," (tmap mathematica_of_var vars) in
-  let generator =
+  let generator () =
     if List.length gen = 0
     then "0"
     else (String.concat ",\n" (tmap mathematica_of_eexp gen)) in
@@ -1350,20 +1424,30 @@ let generate_mathematica_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Mathematica in
-  String.concat "\n" [
-      comment;
-      Printf.sprintf "vars = {%s};" varseq;
-      Printf.sprintf "gs = {%s};" generator;
-      Printf.sprintf "p = %s;" poly;
-      Printf.sprintf
-        "gb = GroebnerBasis[gs, vars, %s %s];"
-        "CoefficientDomain -> Integers"
-        (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
-      Printf.sprintf
-        "{q, r} = PolynomialReduce[p, gb, vars, %s%s];"
-        "CoefficientDomain -> Integers"
-        (if mon_ord = "" then "" else ", MonomialOrder -> " ^ mon_ord);
-      "Print[r];" ]
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    Printf.sprintf {|%s
+vars = {%s};
+p = %s;
+Print[p];
+|} comment varseq poly
+  | _ ->
+    let append_mon_ord =
+      if mon_ord = "" then
+        ""
+      else
+        ", MonomialOrder -> " ^ mon_ord in
+    Printf.sprintf {|%s
+vars = {%s};
+gs = {%s};
+p = %s;
+gb = GroebnerBasis[gs, vars, CoefficientDomain -> Integers%s];
+{q, r} = PolynomialReduce[p, gb, vars, CoefficientDomain -> Integers%s];
+Print[r];
+|} comment varseq (generator()) poly
+      append_mon_ord
+      append_mon_ord
 
 let bprint_macaulay2_input ?comments buf vars gen p =
   let (vars, gen, p, default_generator) =
@@ -1400,17 +1484,28 @@ let bprint_macaulay2_input ?comments buf vars gen p =
            ~default:"")
     else () in
   let mon_ord = get_mon_ord !monomial_order Macaulay2 in
-  bprint_comment buf; Buffer.add_char buf '\n';
-  Buffer.add_string buf "myRing = ZZ[";
-  bprint_varseq buf;
-  Buffer.add_string buf (",MonomialOrder=>" ^ mon_ord ^ "]\n");
-  Buffer.add_string buf "myIdeal = ideal(";
-  bprint_generator buf; Buffer.add_string buf ")";
-  Buffer.add_string buf "myPoly = ";
-  bprint_poly buf; Buffer.add_char buf '\n';
-  Buffer.add_string buf "myBasis = groebnerBasis myIdeal\n";
-  Buffer.add_string buf "myRes = toString (myPoly % myBasis)\n";
-  Buffer.add_string buf "print myRes\n"
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "myRing = ZZ[";
+    bprint_varseq buf;
+    Buffer.add_string buf "]\n";
+    Buffer.add_string buf "myPoly = ";
+    bprint_poly buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "print myPoly\n"
+  | _ ->
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "myRing = ZZ[";
+    bprint_varseq buf;
+    Buffer.add_string buf (",MonomialOrder=>" ^ mon_ord ^ "]\n");
+    Buffer.add_string buf "myIdeal = ideal(";
+    bprint_generator buf; Buffer.add_string buf ")";
+    Buffer.add_string buf "myPoly = ";
+    bprint_poly buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "myBasis = groebnerBasis myIdeal\n";
+    Buffer.add_string buf "myRes = toString (myPoly % myBasis)\n";
+    Buffer.add_string buf "print myRes\n"
 
 let generate_macaulay2_input ?comments vars gen p =
   let (vars, gen, p, default_generator) =
@@ -1435,7 +1530,7 @@ let generate_macaulay2_input ?comments vars gen p =
     match vars with
     | [] -> "x"
     | _ -> String.concat "," (List.map macaulay2_of_var vars) in
-  let generator =
+  let generator () =
     if List.length gen = 0
     then default_generator
     else (String.concat ",\n  " (tmap macaulay2_of_eexp gen)) in
@@ -1446,17 +1541,23 @@ let generate_macaulay2_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Macaulay2 in
-  String.concat "\n" [
-      comment;
-      Printf.sprintf
-        "myRing = ZZ[%s,MonomialOrder=>%s]"
-        varseq
-        mon_ord;
-      Printf.sprintf "myIdeal = ideal(%s)" generator;
-      Printf.sprintf "myPoly = %s" poly;
-      "myBasis = groebnerBasis myIdeal";
-      "myRes = toString (myPoly % myBasis)";
-      "print myRes" ]
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    Printf.sprintf {|%s
+myRing = ZZ[%s]
+myPoly = %s
+print myPoly
+|} comment varseq poly
+  | _ ->
+    Printf.sprintf {|%s
+myRing = ZZ[%s,MonomialOrder=>%s]
+myIdeal = ideal(%s)
+myPoly = %s
+myBasis = groebnerBasis myIdeal
+myRes = toString (myPoly %% myBasis)
+print myRes
+|} comment varseq mon_ord (generator()) poly
 
 let bprint_maple_input ?comments buf vars gen p =
   let const_gen =
@@ -1480,24 +1581,33 @@ let bprint_maple_input ?comments buf vars gen p =
            ~default:"")
     else () in
   let mon_ord = get_mon_ord !monomial_order Maple in
-  bprint_comment buf;
-  Buffer.add_string buf "interface(prettyprint=0):\n";
-  Buffer.add_string buf "with(PolynomialIdeals):\n";
-  Buffer.add_string buf "with(Groebner):\n";
-  Buffer.add_string buf ("Ord := " ^ mon_ord ^ "(");
-  bprint_varseq buf;
-  Buffer.add_string buf "):\n";
-  Buffer.add_string buf "g := ";
-  bprint_poly buf; Buffer.add_string buf ":\n";
-  Buffer.add_string buf "J := PolynomialIdeal([], characteristic=";
-  Buffer.add_string buf (magma_of_eexp const_gen);
-  Buffer.add_string buf "):\n";
-  Buffer.add_string buf "res := IdealMembership(g, J):\n";
-  Buffer.add_string buf "res;\n";
-  Buffer.add_string buf "quit:\n"
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    bprint_comment buf;
+    Buffer.add_string buf "g := ";
+    bprint_poly buf; Buffer.add_string buf ":\n";
+    Buffer.add_string buf "expand(g);\n";
+    Buffer.add_string buf "quit:\n"
+  | _ ->
+    bprint_comment buf;
+    Buffer.add_string buf "interface(prettyprint=0):\n";
+    Buffer.add_string buf "with(PolynomialIdeals):\n";
+    Buffer.add_string buf "with(Groebner):\n";
+    Buffer.add_string buf ("Ord := " ^ mon_ord ^ "(");
+    bprint_varseq buf;
+    Buffer.add_string buf "):\n";
+    Buffer.add_string buf "g := ";
+    bprint_poly buf; Buffer.add_string buf ":\n";
+    Buffer.add_string buf "J := PolynomialIdeal([], characteristic=";
+    Buffer.add_string buf (magma_of_eexp const_gen);
+    Buffer.add_string buf "):\n";
+    Buffer.add_string buf "res := IdealMembership(g, J):\n";
+    Buffer.add_string buf "res;\n";
+    Buffer.add_string buf "quit:\n"
 
 let generate_maple_input ?comments vars gen p =
-  let const_gen =
+  let const_gen () =
     let (const_gen, poly_gen) = List.partition is_eexp_over_const gen in
     let _ =
       if List.length poly_gen > 0
@@ -1517,19 +1627,23 @@ let generate_maple_input ?comments vars gen p =
            ~default:""
     else "" in
   let mon_ord = get_mon_ord !monomial_order Maple in
-  String.concat "\n" [
-      comment;
-      "interface(prettyprint=0):";
-      "with(PolynomialIdeals):";
-      "with(Groebner):";
-      Printf.sprintf
-        "Ord := %s(%s):"
-        mon_ord
-        varseq;
-      Printf.sprintf "g := %s:" poly;
-      Printf.sprintf
-        "J := PolynomialIdeal([], characteristic=%s):"
-        (magma_of_eexp const_gen);
-      "res := IdealMembership(g, J):";
-      "res;";
-      "quit:" ]
+  match gen with
+  | [] ->
+    (* If gen is empty, we simply check if p equals 0. (not tested) *)
+    Printf.sprintf {|%s
+g := %s:
+expand(g);
+quit:
+|} comment poly
+  | _ ->
+    Printf.sprintf {|%s
+interface(prettyprint=0):
+with(PolynomialIdeals):
+with(Groebner):
+Ord := %s(%s):
+g := %s:
+J := PolynomialIdeal([], characteristic=%s):
+res := IdealMembership(g, J):
+res;
+quit:
+|} comment mon_ord varseq poly (magma_of_eexp (const_gen()))
