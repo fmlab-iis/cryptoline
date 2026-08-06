@@ -1198,7 +1198,7 @@ let bprint_sage_input ?comments buf vars gen p =
     bprint_comment buf; Buffer.add_char buf '\n';
     Buffer.add_string buf "var('";
     bprint_varseq buf;
-    Buffer.add_string buf "')";
+    Buffer.add_string buf "')\n";
     Buffer.add_string buf "P = ";
     bprint_poly buf;
     Buffer.add_char buf '\n';
