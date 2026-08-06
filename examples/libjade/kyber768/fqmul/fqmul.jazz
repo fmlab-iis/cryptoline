@@ -1,0 +1,27 @@
+param int KYBER_Q = 3329;
+param int QINV    = 62209;     /* q^(-1) mod 2^16 */
+
+export fn fqmul(reg u16 a b) -> reg u16
+{
+  reg u32 ad bd c t u;
+  reg u16 r;
+
+  ad = (32s)a;
+  bd = (32s)b;
+
+  c = ad * bd;
+
+  u = c * QINV;
+
+  u <<= 16;
+  u >>s= 16; 
+
+  t = u * KYBER_Q;
+  t = c - t;
+ 
+  t >>s= 16;
+  r = t;
+
+  return r;
+}
+

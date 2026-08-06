@@ -1,0 +1,46 @@
+proc main (di, si) =
+{
+  true
+  &&
+  true
+}
+
+(* fqmul: *)
+fqmul:;
+(* #! -> SP = 0x7fffffffd9a8 *)
+#! 0x7fffffffd9a8 = 0x7fffffffd9a8;
+(* movswl %di,%eax                                 #! PC = 0x555555555240 *)
+cast eax@sint32 di;
+(* movswl %si,%ecx                                 #! PC = 0x555555555243 *)
+cast ecx@sint32 si;
+(* imul   %ecx,%eax                                #! PC = 0x555555555246 *)
+mull dontcare eax ecx eax;
+(* imul   $0xf301,%eax,%ecx                        #! PC = 0x555555555249 *)
+cast eax@sint32 eax;
+mull dontcare ecx 0xf301@sint32 eax;
+(* shl    $0x10,%ecx                               #! PC = 0x55555555524f *)
+split dontcare ecx ecx 16;
+shl ecx ecx 16;
+(* sar    $0x10,%ecx                               #! PC = 0x555555555252 *)
+cast ecx@sint32 ecx;
+ssplit ecx dontcare ecx 16;
+(* imul   $0xd01,%ecx,%ecx                         #! PC = 0x555555555255 *)
+cast ecx@sint32 ecx;
+mull dontcare ecx 0xd01@sint32 ecx;
+(* sub    %ecx,%eax                                #! PC = 0x55555555525b *)
+cast eax@uint32 eax;
+subb carry eax eax ecx;
+(* sar    $0x10,%eax                               #! PC = 0x55555555525d *)
+cast eax@sint32 eax;
+ssplit eax dontcare eax 16;
+(* #! <- SP = 0x7fffffffd9a8 *)
+#! 0x7fffffffd9a8 = 0x7fffffffd9a8;
+(* #retq                                           #! PC = 0x555555555260 *)
+#retq                                           #! 0x555555555260 = 0x555555555260;
+
+{
+  true
+  &&
+  true
+}
+
