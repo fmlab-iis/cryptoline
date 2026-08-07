@@ -148,11 +148,7 @@ let read_singular_output ofile =
   let line = In_channel.with_open_text ofile read_skip_comment in
   String.trim line
 
-let read_sage_output ofile =
-  let lines = In_channel.with_open_text ofile In_channel.input_lines in
-  if List.mem "AssertionError" lines then "false"
-  else if List.length lines = 0 then "true"
-  else failwith "Unknown error in Sage"
+let read_sage_output = read_one_line
 
 let read_magma_output = read_one_line
 
@@ -595,7 +591,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) h
        let _ = write_sage_input ~comments ifile vars ideal p in
        let _ = run_sage headers ifile ofile in
        let res = read_sage_output ofile in
-       res = "true"
+       res = "True"
     | Magma ->
        let _ = write_magma_input ~comments ifile vars ideal p in
        let _ = run_magma headers ifile ofile in

@@ -284,18 +284,7 @@ let read_singular_output ofile =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return (String.trim line)
 
-let read_sage_output ofile =
-  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
-  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
-  let%lwt lines =
-    try%lwt
-      Lwt.return (Lwt_io.read_lines ch)
-    with _ -> failwith "Failed to read the output file" in
-  let%lwt lines = Lwt_stream.to_list lines in
-  let%lwt _ = Lwt_io.close ch in
-  if List.mem "AssertionError" lines then Lwt.return "false"
-  else if List.length lines = 0 then Lwt.return "true"
-  else failwith "Unknown error in Sage"
+let read_sage_output = read_one_line
 
 let read_magma_output = read_one_line
 
@@ -549,7 +538,7 @@ let is_in_ideal
        let%lwt _ = run_sage header ifile ofile in
        let%lwt res = read_sage_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
-       Lwt.return (res = "true")
+       Lwt.return (res = "True")
     | Magma ->
        let%lwt _ = write_magma_input ~comments ifile vars ideal p in
        let%lwt _ = run_magma header ifile ofile in

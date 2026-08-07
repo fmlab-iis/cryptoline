@@ -1179,6 +1179,7 @@ let bprint_sage_input ?comments buf vars gen p =
     match vars with
     | [] -> Buffer.add_char buf 'x'
     | _ -> bprint_list buf "," (fun buf v -> Buffer.add_string buf v.cached_name) vars in
+  let varlen = max 1 (List.length vars) in
   let bprint_generator buf =
     if List.length gen = 0
     then Buffer.add_char buf '0'
@@ -1206,7 +1207,21 @@ let bprint_sage_input ?comments buf vars gen p =
     Buffer.add_string buf "P = ";
     bprint_poly buf;
     Buffer.add_char buf '\n';
-    Buffer.add_string buf "assert P.expand() == 0\n"
+    Buffer.add_string buf "print(P.expand() == 0)\n"
+  | m::[] when is_eexp_over_const m ->
+    (* This case is designed to work around Singular's variable limit. *)
+    bprint_comment buf; Buffer.add_char buf '\n';
+    Buffer.add_string buf "R.<";
+    bprint_varseq buf;
+    Buffer.add_string buf "> = PolynomialRing(Integers(";
+    bprint_eexp_sage buf m;
+    Buffer.add_string buf (Printf.sprintf
+                             "), %d, implementation=\"generic\")\n"
+                             varlen);
+    Buffer.add_string buf "P = ";
+    bprint_poly buf;
+    Buffer.add_char buf '\n';
+    Buffer.add_string buf "print(P == 0)\n"
   | _ ->
     bprint_comment buf; Buffer.add_char buf '\n';
     Buffer.add_string buf "R.<";
@@ -1214,20 +1229,21 @@ let bprint_sage_input ?comments buf vars gen p =
     Buffer.add_string buf "> = PolynomialRing";
     Buffer.add_string buf (Printf.sprintf
                              "(ZZ, %d, order='%s')\n"
-                             (max 1 (List.length vars)) mon_ord);
+                             varlen mon_ord);
     Buffer.add_string buf "I = (";
     bprint_generator buf;
     Buffer.add_string buf ") * R\n";
     Buffer.add_string buf "P = ";
     bprint_poly buf;
     Buffer.add_char buf '\n';
-    Buffer.add_string buf "assert P in I\n"
+    Buffer.add_string buf "print(P in I)\n"
 
 let generate_sage_input ?comments vars gen p =
   let varseq =
     match vars with
     | [] -> "x"
     | _ -> String.concat "," (tmap (fun v -> v.cached_name) vars) in
+  let varlen = max 1 (List.length vars) in
   let generator () =
     if List.length gen = 0
     then "0"
@@ -1244,15 +1260,22 @@ let generate_sage_input ?comments vars gen p =
     Printf.sprintf {|%s
 var('%s')
 P = %s
-assert P.expand() == 0
+print(P.expand() == 0)
 |} comment varseq poly
+  | m::[] when is_eexp_over_const m ->
+    (* This case is designed to work around Singular's variable limit. *)
+    Printf.sprintf {|%s
+R.<%s> = PolynomialRing(Integers(%s), %d, implementation="generic")
+P = %s
+print(P == 0)
+|} comment varseq (string_of_eexp m) varlen poly
   | _ ->
     Printf.sprintf {|%s
 R.<%s> = PolynomialRing(ZZ, %d, order='%s')
 I = (%s) * R
 P = %s
-assert P in I
-|} comment varseq (max 1 (List.length vars)) mon_ord (generator()) poly
+print(P in I)
+|} comment varseq varlen mon_ord (generator()) poly
 
 let bprint_magma_input ?comments buf vars gen p =
   let bprint_varseq buf =

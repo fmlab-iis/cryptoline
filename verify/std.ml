@@ -218,25 +218,6 @@ let read_singular_output ofile =
   let _ = close_in ch in
   String.trim !line
 
-let read_sage_output ofile =
-  let line = ref "true" in
-  let has_output = ref false in
-  let ch = open_in ofile in
-  let _ =
-    try
-      while true do
-        let str = input_line ch in
-        let _ = has_output := true in
-	    if str = "AssertionError" then line := "false"
-      done
-    with
-      End_of_file -> ()
-    | _ ->
-       failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  if !has_output && !line = "true" then failwith "Unknown error in Sage"
-  else !line
-
 let read_one_line ofile =
   let line = ref "" in
   let ch = open_in ofile in
@@ -247,6 +228,8 @@ let read_one_line ofile =
       failwith "Failed to read the output file" in
   let _ = close_in ch in
   String.trim !line
+
+let read_sage_output = read_one_line
 
 let read_magma_output = read_one_line
 
@@ -438,7 +421,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
        let _ = write_sage_input ~comments ifile vars ideal p in
        let _ = run_sage ifile ofile in
        let res = read_sage_output ofile in
-       res = "true"
+       res = "True"
     | Magma ->
        let _ = write_magma_input ~comments ifile vars ideal p in
        let _ = run_magma ifile ofile in
