@@ -1207,7 +1207,7 @@ let bprint_sage_input ?comments buf vars gen p =
     Buffer.add_string buf "P = ";
     bprint_poly buf;
     Buffer.add_char buf '\n';
-    Buffer.add_string buf "print(P.expand() == 0)\n"
+    Buffer.add_string buf "print(bool(P.expand() == 0))\n"
   | m::[] when is_eexp_over_const m ->
     (* This case is designed to work around Singular's variable limit. *)
     bprint_comment buf; Buffer.add_char buf '\n';
@@ -1260,7 +1260,7 @@ let generate_sage_input ?comments vars gen p =
     Printf.sprintf {|%s
 var('%s')
 P = %s
-print(P.expand() == 0)
+print(bool(P.expand() == 0))
 |} comment varseq poly
   | m::[] when is_eexp_over_const m ->
     (* This case is designed to work around Singular's variable limit. *)
