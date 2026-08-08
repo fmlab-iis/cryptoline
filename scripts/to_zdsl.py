@@ -257,7 +257,9 @@ def parse_subst(line):
   substs = []
   for pattern in line.split(";"):         # use ';' to split patterns in a line
     tokens = list(map(lambda x : x.strip(), pattern.split("=")))
-    if use_re:
+    if tokens[0].startswith("re:"):
+      lhs = tokens[0].lstrip("re:")
+    elif use_re:
       lhs = tokens[0]
     else:
       lhs = re.escape(tokens[0])
