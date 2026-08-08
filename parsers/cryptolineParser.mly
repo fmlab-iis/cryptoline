@@ -32,7 +32,7 @@
 /* Operators */
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
-%token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
+%token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA EQFIRST
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -549,6 +549,7 @@ prove_with_spec:
   | ALGEBRA SOLVER SMT COLON path smt_logic_opt   { fun _ -> AlgebraSolver (Options.Std.SMTSolver { algsmt_path = $5; algsmt_logic = $6 }) }
   | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
   | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
+  | EQFIRST                                       { fun _ -> EqFirst }
 ;
 
 path:

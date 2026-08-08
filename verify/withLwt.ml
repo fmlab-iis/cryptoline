@@ -1113,10 +1113,10 @@ let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
   verify_rspec_no_rcut_abs_interp hashopt s |>
   List.rev_map (verify comments) |> List.rev
 
-let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers (post, vars, ideal, p) =
+let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) ?(eqfirst=(!Options.Std.check_eq_first)) headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in
   let%lwt r =
-    if !Options.Std.check_eq_first then
+    if eqfirst then
       is_in_ideal
         ~comments:(
           if !debug then
@@ -1144,8 +1144,10 @@ let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) headers 
 (* Verify an algebraic specification using a computer algebra system. *)
 let verify_espec_single_conjunct_ideal ?comments headers vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-  Lwt_list.for_all_p (fun entailment -> verify_entailment ?comments ~solver:solver headers entailment) entailments
+  let pwss = ebexp_prove_with_specs s.espost in
+  let solver = algebra_solver_of_prove_with pwss in
+  let eqfirst = eqfirst_of_prove_with pwss in
+  Lwt_list.for_all_p (fun entailment -> verify_entailment ?comments ~solver ~eqfirst headers entailment) entailments
 
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
@@ -1231,8 +1233,10 @@ let verify_espec_single_conjunct ?comments cut_headers vgen s hashopt =
  *)
 let verify_espec_no_ecut ?comments headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
-    let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-    let mk_task entailment = fun () -> verify_entailment ?comments ~solver:solver headers entailment in
+    let pwss = ebexp_prove_with_specs s.espost in
+    let solver = algebra_solver_of_prove_with pwss in
+    let eqfirst = eqfirst_of_prove_with pwss in
+    let mk_task entailment = fun () -> verify_entailment ?comments ~solver ~eqfirst headers entailment in
     let s = remove_trivial_epost s in
     (* We don't need the full is_espec_trivial test. espre_implies_espost and espost_in_assumes are considered in remove_trivial_epost. *)
     match s.espost with

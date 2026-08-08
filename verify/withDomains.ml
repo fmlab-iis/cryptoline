@@ -676,11 +676,11 @@ let is_constr_feasible ?timeout ?comments headers ?(solver=(!Options.Std.algebra
 
 
 (* Verify a list of entailments. *)
-let verify_entailments ?comments ?(solver=(!algebra_solver)) headers entailments =
+let verify_entailments ?comments ?(solver=(!algebra_solver)) ?(eqfirst=(!Options.Std.check_eq_first)) headers entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
        if res then (
-         if !Options.Std.check_eq_first &&
+         if eqfirst &&
             is_in_ideal
               ~comments:(
                 if !debug then
@@ -711,8 +711,10 @@ let verify_entailments ?comments ?(solver=(!algebra_solver)) headers entailments
    - solving *)
 let verify_espec_single_conjunct_ideal ?comments headers vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
-  verify_entailments ?comments ~solver:solver headers entailments
+  let pwss = ebexp_prove_with_specs s.espost in
+  let solver = algebra_solver_of_prove_with pwss in
+  let eqfirst = eqfirst_of_prove_with pwss in
+  verify_entailments ?comments ~solver ~eqfirst headers entailments
 
 (* TODO: LIA queries from mip_of_espec are solved sequentially *)
 let verify_espec_single_conjunct_smt solver ?comments:comments headers vgen s =
@@ -793,10 +795,12 @@ let verify_espec_single_conjunct ?comments headers vgen s hashopt =
 
 let verify_espec_no_ecut ?comments headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
-    let solver = algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost) in
+    let pwss = ebexp_prove_with_specs s.espost in
+    let solver = algebra_solver_of_prove_with pwss in
+    let eqfirst = eqfirst_of_prove_with pwss in
     let mk_task entailment =
       fun () ->
-      verify_entailments ?comments ~solver:solver headers [entailment] in
+      verify_entailments ?comments ~solver ~eqfirst headers [entailment] in
     let s = remove_trivial_epost s in
     (* We don't need the full is_espec_trivial test. espre_implies_espost and
        espost_in_assumes are considered in remove_trivial_epost. *)

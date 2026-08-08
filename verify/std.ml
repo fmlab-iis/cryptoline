@@ -988,11 +988,11 @@ let verify_rspec options s hashopt =
   let _ = Options.Std.trace "===== Verifying range specifications =====" in
   verify_rspec_with_cuts options ~comments:["Verify: range specifications"] hashopt s
 
-let verify_entailments ?comments ?(solver=(!algebra_solver)) entailments =
+let verify_entailments ?comments ?(solver=(!algebra_solver)) ?(eqfirst=(!Options.Std.check_eq_first)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
-        if !Options.Std.check_eq_first && is_in_ideal
+        if eqfirst && is_in_ideal
              ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
                                                           "Try: #0 (pure equality)" ])
              ~solver:solver vars [] p then true
@@ -1007,7 +1007,10 @@ let verify_entailments ?comments ?(solver=(!algebra_solver)) entailments =
    Applied in this function: converting to ideal membership problems, polynomial rewriting, solving *)
 let verify_espec_single_conjunct_ideal ?comments vgen s =
   let (_, entailments) = polys_of_espec vgen s in
-  verify_entailments ?comments ~solver:(algebra_solver_of_prove_with (ebexp_prove_with_specs s.espost)) entailments
+  let pwss = ebexp_prove_with_specs s.espost in
+  let solver = algebra_solver_of_prove_with pwss in
+  let eqfirst = eqfirst_of_prove_with pwss in
+  verify_entailments ?comments ~solver ~eqfirst entailments
 
 (* Verify an algebraic specification using a specified SMT solver.
    Applied in this function: solving *)
@@ -1085,7 +1088,9 @@ let verify_espec_without_cuts ?comments hashopt vgen s =
          | _ -> (slice_espec_ssa s None, true) in
        (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
        let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-       verify_entailments ?comments ~solver:(algebra_solver_of_prove_with pwss) entailments
+       let solver = algebra_solver_of_prove_with pwss in
+       let eqfirst = eqfirst_of_prove_with pwss in
+       verify_entailments ?comments ~solver ~eqfirst entailments
     | _ -> assert false
   else
     let verify res s =

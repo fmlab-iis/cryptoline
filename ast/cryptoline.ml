@@ -1007,6 +1007,7 @@ type prove_with_spec =
   | AllGhosts
   | AlgebraSolver of Options.Std.algebra_solver
   | RangeSolver of string
+  | EqFirst
 
 type ebexp_prove_with = (ebexp * prove_with_spec list) list
 
@@ -1038,6 +1039,7 @@ let simplify_prove_with_specs pwss =
   let first_range_solver =
     try [List.find (fun pws -> match pws with RangeSolver _ -> true | _ -> false) pwss]
     with Not_found -> [] in
+  let has_eqfirst = List.mem EqFirst pwss in
   (* Precondition *)
   (if has_precondition then [Precondition] else [])
   (* Cuts *)
@@ -1050,6 +1052,7 @@ let simplify_prove_with_specs pwss =
   @(if has_all_ghosts then [AllGhosts] else [])
   @first_algebra_solver
   @first_range_solver
+  @(if has_eqfirst then [EqFirst] else [])
 
 let ebexp_prove_with_eands es = List.split es |> fst |> eands
 
@@ -1235,6 +1238,9 @@ let rec range_solver_of_prove_with pwss =
   | [] -> !Options.Std.range_solver
   | RangeSolver s::_ -> s
   | _::tl -> range_solver_of_prove_with tl
+
+let eqfirst_of_prove_with pwss =
+  !Options.Std.check_eq_first || List.mem EqFirst pwss
 
 let is_assert i =
   match i with
@@ -1649,6 +1655,7 @@ let bprint_prove_with_spec buf ps =
       Buffer.add_string buf "qfbv solver ";
       Buffer.add_string buf s
     )
+  | EqFirst -> Buffer.add_string buf "eqfirst"
 
 let bprint_prove_with_specs buf pss =
   bprint_list buf ", " bprint_prove_with_spec pss
@@ -2096,6 +2103,7 @@ let string_of_prove_with_spec ps =
   | AllGhosts -> "all ghosts"
   | AlgebraSolver s -> "algebra solver " ^ Options.Std.string_of_algebra_solver s
   | RangeSolver s -> "qfbv solver " ^ s
+  | EqFirst -> "eqfirst"
 
 let string_of_prove_with_specs pss =
   String.concat ", " (tmap string_of_prove_with_spec pss)
@@ -3602,7 +3610,7 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
       | Ighost (_, e) -> [eqn_bexp e]
       | _ -> [] in
     tflatten (tmap extractor instrs) in
-    *)  
+    *)
   let filter_of_pws pws =
     match pws with
       Precondition -> (fun _i -> false)
@@ -3611,7 +3619,8 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
     | AlgebraSolver _ -> (fun _ -> false)
-    | RangeSolver _ -> (fun _ -> false) in
+    | RangeSolver _ -> (fun _ -> false)
+    | EqFirst -> (fun _ -> false) in
   let filter =
     let filters = tmap filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
@@ -3657,7 +3666,8 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
     | AlgebraSolver _ -> (fun _ -> false)
-    | RangeSolver _ -> (fun _ -> false) in
+    | RangeSolver _ -> (fun _ -> false)
+    | EqFirst -> (fun _ -> false) in
   let filter =
     let filters = tmap filter_of_pws pwss in
     fun i -> List.exists (fun f -> f i) filters in
@@ -3678,7 +3688,8 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
 (*
  * Make a specification for the verification of a predicate with prove-with
  * clauses taken into consideration. The postcondition of the returned
- * specification has no prove-with clauses other than [AlgebraSolver].
+ * specification has no prove-with clauses of Precondition, Cuts, AllCuts,
+ * AllAssumes, AllGhosts, or RangeSolver.
  *
  * @param precond the precondition of the specification containing the predicate
  * @param before the instructions that are before the predicate and are possibly
@@ -3696,6 +3707,7 @@ let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
     else let is_algebra_solver pws =
            match pws with
            | AlgebraSolver _ -> true
+           | EqFirst -> true
            | _ -> false in
          List.filter is_algebra_solver pwss in
   { espre = pre; esprog = tappend prove_with visited; espost = [(e, pwss')] }

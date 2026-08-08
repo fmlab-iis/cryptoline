@@ -589,13 +589,14 @@ val eq_bexp : bexp -> bexp -> bool
 (** [eq_bexp e1 e2] is [true] if [e1] and [e2] are equal. *)
 
 type prove_with_spec =
-  Precondition                                              (** precondition *)
-| Cuts of int list                                          (** a list of cuts specified by cut IDs *)
-| AllCuts                                                   (** all cuts *)
-| AllAssumes                                                (** all assumes *)
-| AllGhosts                                                 (** all ghosts *)
-| AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
-| RangeSolver of string                                     (** range solver *) (* *)
+    Precondition                                              (** precondition *)
+  | Cuts of int list                                          (** a list of cuts specified by cut IDs *)
+  | AllCuts                                                   (** all cuts *)
+  | AllAssumes                                                (** all assumes *)
+  | AllGhosts                                                 (** all ghosts *)
+  | AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
+  | RangeSolver of string                                     (** range solver *)
+  | EqFirst                                                   (** check equality first *) (**)
 (** prove-with clauses *)
 
 type ebexp_prove_with = (ebexp * prove_with_spec list) list
@@ -1075,6 +1076,11 @@ val range_solver_of_prove_with : prove_with_spec list -> string
 (** [range_solver_of_prove_with pwss] returns the first range solver specified
     in the prove-with clauses [pwss]. If no range solver is specified,
     [!Options.Std.range_solver] is returned. *)
+
+val eqfirst_of_prove_with : prove_with_spec list -> bool
+(** [eqfirst_of_prove_with pwss] returns the option of checking equality first
+    specified in [pwss]. If the option is not found in [pwss], return
+    [!Options.Std.check_eq_first]. *)
 
 val new_name : ?prefix:string -> SS.t -> string
 (** [new_name ~prefix:s ss] suggests a new name that does not appear in [ss]. The returned name has a prefix [s]. *)

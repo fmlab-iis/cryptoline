@@ -160,7 +160,8 @@
               "solver"                     , SOLVER;
               "smt"                        , SMT;
               "nia"                        , NIA;
-              "lia"                        , LIA
+              "lia"                        , LIA;
+              "eqfirst"                    , EQFIRST
             ]
 }
 
