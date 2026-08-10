@@ -27,9 +27,9 @@ sort_rules = True
 
 counters = {}
 
-ea_pattern = r"L([a-z]\w+_)?0x[a-fA-f0-9]+"
-address_offset_group_pattern = r"(L0x\w+)\[\s*([\+|-])\s*(\d+)\s*\]"
-address_offset_pattern = r"L0x\w+\[\s*[\+|-]\s*\d+\s*\]"
+ea_pattern = r"L(?:[a-z]\w+_)?0x[a-fA-f0-9]+"
+address_offset_group_pattern = r"(" + ea_pattern + r")" + r"\[\s*([\+|-])\s*(\d+)\s*\]"
+address_offset_pattern = ea_pattern + r"\[\s*[\+|-]\s*\d+\s*\]"
 nop_instr = "nop"
 
 def debug(msg):
