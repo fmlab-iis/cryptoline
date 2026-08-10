@@ -80,9 +80,9 @@ def split_address(addr):
     elif sign == "-":
       return (base, -offset)
     else:
-      raise ("Unknown address: {}".format(addr))
+      raise Exception("Unknown address: {}".format(addr))
   else:
-    raise ("Unknown address: {}".format(addr))
+    raise Exception("Unknown address: {}".format(addr))
 
 def expand_list_notation(lhs, rhs, i):
   def helper(s):
