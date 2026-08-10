@@ -9,7 +9,7 @@ import clparse
 
 cryptoline_path = "cv"
 
-default_ea_pattern = r"L(?:([a-z][a-z0-9]*)_)?(0x\w+)"
+default_ea_pattern = r"L(?:([a-z]\w+)_)?(0x\w+)"
 
 dontcare_variable = "_"
 
