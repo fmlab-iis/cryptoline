@@ -360,7 +360,7 @@ class MIPS(Extractor):
         return b.group(1).startswith("jal")
 
     def isFunctionReturn(self, b):
-        return b.group(1) == "jr" and b.group(2).lstrip("$") == "ra"
+        return b.group(1) == "jr" and b.group(2) == "ra"
 
     def getEA(self, insn, frame):
         mnemonic = insn["asm"]
