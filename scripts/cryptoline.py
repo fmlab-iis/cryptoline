@@ -9,7 +9,7 @@ import clparse
 
 cryptoline_path = "cv"
 
-default_ea_pattern = r"L(?:([a-z]\w+)_)?(0x\w+)"
+ea_pattern = r"L(?:([a-z]\w+)_)?(0x\w+)"
 
 dontcare_variable = "_"
 
@@ -270,7 +270,7 @@ def inputs_of_program(instrs):
     return inputs
 
 # Return the address variable.
-def compute_address(addr, offset, ea_pattern=default_ea_pattern):
+def compute_address(addr, offset):
     match = re.search(ea_pattern, addr)
     if match:
         base = match.group(1)
