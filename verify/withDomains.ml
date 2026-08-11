@@ -137,6 +137,15 @@ let read_one_line ofile =
   let line = In_channel.with_open_text ofile input_line in
   String.trim line
 
+let read_lines ?filter ofile =
+  let lines = In_channel.with_open_text ofile (
+    fun ch ->
+      In_channel.input_lines ch
+  ) in
+  match filter with
+  | None -> lines
+  | Some f -> List.filter f lines |> tmap String.trim
+
 (* Read output from Singular using In_channel with comments skipped. *)
 let read_singular_output ofile =
   let rec read_skip_comment ch =
@@ -158,7 +167,15 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let read_maxima_output = read_one_line
+let read_maxima_output ofile =
+  match read_lines ~filter:(
+      fun line ->
+        (* Older versions of maxima do not support --suppress-input-echo.
+           The output may contain "Warning: argument suppress-input-echo not recognized.". *)
+        not (String.starts_with ~prefix:"Warning:" line)
+    ) ofile with
+  | [] -> ""
+  | hd::_ -> hd
 
 
 (* Write headers to log file. *)
@@ -303,9 +320,9 @@ let run_maple headers ifile ofile =
 let run_maxima headers ifile ofile =
   let t1 = Unix.gettimeofday() in
   let extra_args = args_from_string !Options.Std.algebra_solver_args in
-  let cmd_list = [ !maxima_path; "--very-quiet"; "--suppress-input-echo" ] @ extra_args @ ["-b"; ifile] in
+  let cmd_list = [ !maxima_path; "--very-quiet"; "--suppress-input-echo" ] @ extra_args in
   let cmd_array = Array.of_list cmd_list in
-  let _ = DomainsTasks.exec_cmd ~ofile cmd_array in
+  let _ = DomainsTasks.exec_cmd ~ifile ~ofile cmd_array in
   let t2 = Unix.gettimeofday() in
   if !debug then begin
       DomainsTasks.lock_log ();

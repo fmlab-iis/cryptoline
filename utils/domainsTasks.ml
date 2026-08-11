@@ -217,8 +217,8 @@ let finish_pending_with_timedouts continue_helper delivered_helper make_promise 
   verify_timedouts (res, timedouts) pending
 
 (* Run commands safely with Domains (no timeout). *)
-let _exec_cmd_no_timeout ?ofile ?errfile cmd_array =
-  let (out, err, fds_to_close) =
+let _exec_cmd_no_timeout ?ifile ?ofile ?errfile cmd_array =
+  let (out_fd, err_fd, fds_to_close) =
     match ofile, errfile with
     | None, None -> (Unix.stdout, Unix.stderr, [])
     | Some out, None ->
@@ -231,9 +231,13 @@ let _exec_cmd_no_timeout ?ofile ?errfile cmd_array =
       let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       (out_fd, err_fd, [out_fd; err_fd]) in
+  let in_fd =
+    match ifile with
+    | None -> Unix.stdin
+    | Some f -> Unix.openfile f [Unix.O_RDONLY] 0 in
   let pid =
     Unix.create_process cmd_array.(0) cmd_array
-      Unix.stdin out err in
+      in_fd out_fd err_fd in
   let (_, status) = Unix.waitpid [] pid in
   let _ = List.iter Unix.close fds_to_close in
   match status with
@@ -242,10 +246,10 @@ let _exec_cmd_no_timeout ?ofile ?errfile cmd_array =
   | _ -> status
 
 (* Run commands safely with Domains (with timeout). *)
-let _exec_cmd_select ?timeout ?ofile ?errfile cmd_array =
+let _exec_cmd_select ?timeout ?ifile ?ofile ?errfile cmd_array =
   let select_timeout = Option.value timeout ~default:(-1.0) in
   let (r_notify, w_notify) = Unix.pipe () in
-  let (out, err, fds_to_close) =
+  let (out_fd, err_fd, fds_to_close) =
     match ofile, errfile with
     | None, None -> (Unix.stdout, Unix.stderr, [])
     | Some out, None ->
@@ -258,11 +262,15 @@ let _exec_cmd_select ?timeout ?ofile ?errfile cmd_array =
       let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       (out_fd, err_fd, [out_fd; err_fd]) in
+  let in_fd =
+    match ifile with
+    | None -> Unix.stdin
+    | Some f -> Unix.openfile f [Unix.O_RDONLY] 0 in
   let cleanup () = List.iter Unix.close fds_to_close in
   let pid =
     try
       Unix.create_process cmd_array.(0) cmd_array
-        Unix.stdin out err
+        in_fd out_fd err_fd
     with exn ->
       cleanup (); Unix.close w_notify; Unix.close r_notify; raise exn
   in
@@ -288,7 +296,7 @@ let _exec_cmd_select ?timeout ?ofile ?errfile cmd_array =
 
 
 (* Run commands safely with Domains (with timeout). *)
-let _exec_cmd_thread ?timeout ?ofile ?errfile cmd_array =
+let _exec_cmd_thread ?timeout ?ifile ?ofile ?errfile cmd_array =
   let monitor pid timeout () =
     let _ = Thread.delay timeout in
     try
@@ -297,7 +305,7 @@ let _exec_cmd_thread ?timeout ?ofile ?errfile cmd_array =
       raise Thread.Exit
     with Unix.Unix_error (Unix.ESRCH, _, _) ->
       () in
-  let (out, err, fds_to_close) =
+  let (out_fd, err_fd, fds_to_close) =
     match ofile, errfile with
     | None, None -> (Unix.stdout, Unix.stderr, [])
     | Some out, None ->
@@ -310,9 +318,13 @@ let _exec_cmd_thread ?timeout ?ofile ?errfile cmd_array =
       let out_fd = Unix.openfile out [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       let err_fd = Unix.openfile err [Unix.O_WRONLY; Unix.O_CREAT; Unix.O_TRUNC] 0o644 in
       (out_fd, err_fd, [out_fd; err_fd]) in
+  let in_fd =
+    match ifile with
+    | None -> Unix.stdin
+    | Some f -> Unix.openfile f [Unix.O_RDONLY] 0 in
   let pid =
     Unix.create_process cmd_array.(0) cmd_array
-      Unix.stdin out err in
+      in_fd out_fd err_fd in
   let _ =
     match timeout with
     | None -> ()

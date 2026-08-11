@@ -267,6 +267,18 @@ let read_one_line ofile =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return (String.trim line)
 
+let read_lines ?filter ofile =
+  let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
+  let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
+  let%lwt lines =
+    try%lwt
+          Lwt_stream.to_list (Lwt_io.read_lines ch)
+    with _ -> failwith "Failed to read the output file" in
+  let%lwt _ = Lwt_io.close ch in
+  match filter with
+  | None -> Lwt.return lines
+  | Some f -> Lwt.return (List.filter f lines |> tmap String.trim)
+
 let read_singular_output ofile =
   let%lwt ofd = Lwt_unix.openfile ofile [Lwt_unix.O_RDONLY] 0o600 in
   let ch = Lwt_io.of_fd ~mode:Lwt_io.input ofd in
@@ -294,8 +306,15 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let read_maxima_output = read_one_line
-
+let read_maxima_output ofile =
+  match%lwt read_lines ~filter:(
+      fun line ->
+        (* Older versions of maxima do not support --suppress-input-echo.
+           The output may contain "Warning: argument suppress-input-echo not recognized.". *)
+        not (String.starts_with ~prefix:"Warning:" line)
+    ) ofile with
+  | [] -> Lwt.return ""
+  | hd::_ -> Lwt.return hd
 
 
 (** Low-Level Interaction of MIP Solvers *)

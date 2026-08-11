@@ -199,6 +199,26 @@ let run_maxima ifile ofile =
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
+let read_one_line ofile =
+  let line = ref "" in
+  let ch = open_in ofile in
+  let _ =
+    try
+      line := input_line ch
+    with _ ->
+      failwith "Failed to read the output file" in
+  let _ = close_in ch in
+  String.trim !line
+
+let read_lines ?filter ofile =
+  let lines = In_channel.with_open_text ofile (
+    fun ch ->
+      In_channel.input_lines ch
+  ) in
+  match filter with
+  | None -> lines
+  | Some f -> List.filter f lines |> tmap String.trim
+
 let read_singular_output ofile =
   let line = ref "" in
   let ch = open_in ofile in
@@ -218,17 +238,6 @@ let read_singular_output ofile =
   let _ = close_in ch in
   String.trim !line
 
-let read_one_line ofile =
-  let line = ref "" in
-  let ch = open_in ofile in
-  let _ =
-    try
-      line := input_line ch
-    with _ ->
-      failwith "Failed to read the output file" in
-  let _ = close_in ch in
-  String.trim !line
-
 let read_sage_output = read_one_line
 
 let read_magma_output = read_one_line
@@ -239,7 +248,15 @@ let read_macaulay2_output = read_one_line
 
 let read_maple_output = read_one_line
 
-let read_maxima_output = read_one_line
+let read_maxima_output ofile =
+  match read_lines ~filter:(
+      fun line ->
+        (* Older versions of maxima do not support --suppress-input-echo.
+           The output may contain "Warning: argument suppress-input-echo not recognized.". *)
+        not (String.starts_with ~prefix:"Warning:" line)
+    ) ofile with
+  | [] -> ""
+  | hd::_ -> hd
 
 
 
