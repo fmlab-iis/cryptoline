@@ -1,8 +1,14 @@
 (library
   (name        absdom)
+  (modules     (:standard \ floatabs_test))
   (preprocess  (pps lwt_ppx))
   (libraries   camlidl bigarray gmp apron apron.boxD apron.boxMPQ
                apron.octD apron.octMPQ apron.polkaMPQ
                options ast utils)
   (public_name cryptoline.absdom)
 )
+
+(executable
+  (name floatabs_test)
+  (modules floatabs_test)
+  (libraries absdom ast utils))
