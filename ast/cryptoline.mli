@@ -541,7 +541,8 @@ type rcmpop =
   | Rfplt    (** floating-point less than *)
   | Rfple    (** floating-point less than or equal to *)
   | Rfpgt    (** floating-point greater than *)
-  | Rfpge    (** floating-point greater than or equal to *) (* *)
+  | Rfpge    (** floating-point greater than or equal to *) 
+  | Rfpeq    (** floating-point equal to (IEEE 754-2008 equality as opposed to SMT-LIB =) *) (* *)
 (** range comparison operators *)
 
 type rbexp =

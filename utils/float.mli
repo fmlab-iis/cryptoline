@@ -63,8 +63,9 @@ module type FloatType = sig
   (** [sgn x] returns [+1] if [x]>[0], [0] if [x]=[0], [-1] if [x]<[0] *)
   val cmp: t -> t -> int
   (** [cmp x y] returns a positive value if [x]>[y], [0] if [x]=[y], a negative value if [x]<[y] *)
-
   val cmp_int: t -> int -> int
+  val eq: t -> t -> bool
+  val eq_int: t -> int -> bool
   val is_representable: prec -> t -> bool
   val round_to: prec -> rnd:rounding_mode -> t -> t
 end

@@ -2,7 +2,7 @@
 open Parsing
 open Utils.Std
 open Utils.Float
-open Ast.Cryptoline
+open Ast.Cryptoline 
 open Ast.MultiTrack
 
 
@@ -579,7 +579,7 @@ let parse_const_of_typ ctx lno ty n_token =
   | Cint n ->
     let size = size_of_typ ty in
     (* Check range *)
-    let _ = if not (!Options.Std.implicit_const_conversion) && (cmp_const (Cint n) (Ast.Cryptoline.min_of_typ ty) < 0 || cmp_const (Cint n) (Ast.Cryptoline.max_of_typ ty) > 0)
+    let _ = if not (!Options.Std.implicit_const_conversion) && (cmp_const (Cint n) (min_of_typ ty) < 0 || cmp_const (Cint n) (max_of_typ ty) > 0)
             then raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
                                     ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.") in
     (* Normalize the number: convert to non-negative integer *)
@@ -603,9 +603,9 @@ let parse_const_of_typ ctx lno ty n_token =
     | Tsingle | Tdouble ->
         let rnd = RNE in
         let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
-        let f = Ast.Cryptoline.FloatConst.of_z n ~rnd in
-        if Ast.Cryptoline.FloatConst.is_representable p f then Cfloat f
-        else if !Options.Std.implicit_const_conversion then Cfloat (Ast.Cryptoline.FloatConst.round_to p ~rnd f)
+        let f = FloatConst.of_z n ~rnd in
+        if FloatConst.is_representable p f then Cfloat f
+        else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to p ~rnd f)
         else raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
                                  ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types."))
   | Cfloat f ->
