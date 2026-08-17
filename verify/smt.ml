@@ -126,6 +126,7 @@ let rec bexp_rbexp e =
       | Rfpgt -> FpGt (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpge -> FpGe (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpeq -> FpEq (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
+      | Rfpne -> Lneg (FpEq (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2))
      )
   | Rneg e -> Lneg (bexp_rbexp e)
   | Rand (e1, e2) -> Conj (bexp_rbexp e1, bexp_rbexp e2)

@@ -40,6 +40,7 @@ let fple_symbol = "<=f"
 let fpgt_symbol = ">f"
 let fpge_symbol = ">=f"
 let fpeq_symbol = "=f"
+let fpne_symbol = "!=f"
 let typ_delim = "@"
 
 type associativity = LeftAssoc | RightAssoc
@@ -491,6 +492,7 @@ type rcmpop =
   | Rfpgt
   | Rfpge
   | Rfpeq
+  | Rfpne
 
 
 (** Algebraic Expressions *)
@@ -1546,6 +1548,7 @@ let string_of_rcmpop op =
   | Rfpgt -> "fpgt"
   | Rfpge -> "fpge"
   | Rfpeq -> "fpeq"
+  | Rfpne -> "fpne"
 
 let symbol_of_rcmpop op =
   match op with
@@ -1562,6 +1565,7 @@ let symbol_of_rcmpop op =
   | Rfpgt -> fpgt_symbol
   | Rfpge -> fpge_symbol
   | Rfpeq -> fpeq_symbol
+  | Rfpne -> fpne_symbol
 
 let string_of_runop op =
   match op with
@@ -5069,6 +5073,7 @@ let bvcryptoline_of_rcmpop op =
   | Rfpgt -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
   | Rfpge -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
   | Rfpeq -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfpne -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
 let rec bvcryptoline_of_rexp e =
   match e with
   | Rvar v -> Printf.sprintf "(bvrvar %s)" (bvcryptoline_of_var v)
