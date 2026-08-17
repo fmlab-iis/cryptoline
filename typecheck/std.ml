@@ -63,19 +63,33 @@ let vars_lined_program p =
   List.fold_left (fun res (_, i) -> VS.union (vars_instr i) res) VS.empty p
 
 let check_const_range lno ty c =
-  let min = min_of_typ ty in
-  let max = max_of_typ ty in
-  if cmp_const c min < 0 then
-    Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is smaller than the minimum value " ^ string_of_const min ^ " allowed at line " ^ (string_of_int lno) ^".")
-  else if cmp_const c max > 0 then
-    Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is larger than the maximum value " ^ string_of_const max ^ " allowed at line " ^ (string_of_int lno) ^ ".")
-  else
-    None
+  match ty, c with
+  | (Tuint _ | Tsint _), Cint _ ->
+    let min = min_of_typ ty in
+    let max = max_of_typ ty in
+    if cmp_const c min < 0 then
+      Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is smaller than the minimum value " ^ string_of_const min ^ " allowed at line " ^ (string_of_int lno) ^".")
+    else if cmp_const c max > 0 then
+      Some ("The constant " ^ string_of_const c ^ " for type " ^ string_of_typ ty ^ " is larger than the maximum value " ^ string_of_const max ^ " allowed at line " ^ (string_of_int lno) ^ ".")
+    else
+      None
+  | (Tsingle | Tdouble), Cfloat f ->
+      if FloatConst.is_representable (prec_of_typ ty) f then None
+      else Some ("The constant " ^ string_of_const c ^ " is not representable in " ^ string_of_typ ty ^ " at line " ^ string_of_int lno ^ ".")
+  | (Tuint _ | Tsint _), Cfloat _ ->
+      Some ("The floating-point constant " ^ string_of_const c ^ " is used with integer type " ^ string_of_typ ty ^ " at line " ^ string_of_int lno ^ ".")
+  | (Tsingle | Tdouble), Cint _ ->
+      Some ("The integer constant " ^ string_of_const c ^ " is used with floating-point type " ^ string_of_typ ty ^ " at line " ^ string_of_int lno ^ ".")
 
 let check_typ_sign signed name ty =
   match ty with
   | Tuint _ -> if signed then Some (name ^ " should be signed but is unsigned") else None
-  | Tsint _ | Tsingle | Tdouble -> if not signed then Some (name ^ " should be unsigned but is signed") else None
+  | Tsint _ -> if not signed then Some (name ^ " should be unsigned but is signed") else None
+  | Tsingle | Tdouble -> Some (name ^ " should be an integer type but is floating-point")
+let check_typ_fp fp name ty =
+  match ty with
+  | Tuint _ | Tsint _ -> if fp then Some (name ^ " should be an int but is a floating-point") else None
+  | Tdouble | Tsingle -> if not fp then Some (name ^ " should be a floating-point but is int") else None
 
 let check_var_sign signed v = check_typ_sign signed (string_of_var v) v.vtyp
 let check_var_size size v = if size_of_var v = size then None
@@ -87,12 +101,18 @@ let check_signed_var v  = check_var_sign true v
 let check_bit_var lno c =
   if var_is_bit c then None
   else Some (string_of_var c ^ " should be a bit at line " ^ (string_of_int lno))
+let check_fp_var v = check_typ_fp true (string_of_var v) v.vtyp
+let check_int_var v = check_typ_fp false (string_of_var v) v.vtyp
 
 let check_unsigned_atom a = check_atom_sign false a
 let check_signed_atom a = check_atom_sign true a
+let check_fp_atom a = check_typ_fp true (string_of_atom a) (typ_of_atom a)
+let check_int_atom a = check_typ_fp false (string_of_atom a) (typ_of_atom a)
 
 let check_unsigned_atoms atoms = apply_check_to_atoms check_unsigned_atom atoms
 let check_signed_atoms atoms = apply_check_to_atoms check_signed_atom atoms
+let _check_fp_atoms atoms = apply_check_to_atoms check_fp_atom atoms
+let check_int_atoms atoms = apply_check_to_atoms check_int_atom atoms
 
 let check_same_sign atoms =
   let rec helper (a, signed) atoms =
@@ -250,12 +270,12 @@ let illformed_instr_reason vs cs gs lno i =
   let reasons =
     match i with
     | Imov (v, a) -> [defined_atom a; check_same_typ lno [Avar v; a]; const_in_range [a]]
-    | Ishl (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
-    | Ishls (l, v, a, n) -> [defined_atom a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
-    | Ishr (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
-    | Ishrs (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
-    | Isar (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
-    | Isars (v, l, a, n) -> [defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
+    | Ishl (v, a, n) -> [check_int_var v; defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
+    | Ishls (l, v, a, n) -> [check_int_var v; defined_atom a; check_same_sign [Avar l; Avar v]; check_var_size (Z.to_int n) l; check_same_typ lno [Avar v; a]; const_in_range [a]; shift_in_range a n]
+    | Ishr (v, a, n) -> [check_int_var v; defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
+    | Ishrs (v, l, a, n) -> [check_int_var v; defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
+    | Isar (v, a, n) -> [check_int_var v; defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
+    | Isars (v, l, a, n) -> [check_int_var v; defined_atom a; check_same_typ lno [Avar v; a]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a]; shift_in_range a n]
     | Iadd (v, a1, a2)
       | Isub (v, a1, a2)
       | Imul (v, a1, a2) ->
@@ -264,39 +284,39 @@ let illformed_instr_reason vs cs gs lno i =
       | Isubc (c, v, a1, a2)
       | Isubb (c, v, a1, a2)
       | Imuls (c, v, a1, a2) ->
-       [check_diff_lvs lno c v; defined_atoms [a1; a2]; check_bit_var lno c; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+       [check_int_var v; check_diff_lvs lno c v; defined_atoms [a1; a2]; check_bit_var lno c; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Iadc (v, a1, a2, y)
       | Isbc (v, a1, a2, y)
       | Isbb (v, a1, a2, y) ->
-       [defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
+       [check_int_var v; defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; y]]
     | Iadcs (c, v, a1, a2, y)
       | Isbcs (c, v, a1, a2, y)
       | Isbbs (c, v, a1, a2, y) ->
-       [check_diff_lvs lno c v; defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
+       [check_int_var v; check_diff_lvs lno c v; defined_atoms [a1; a2]; defined_bit y; check_same_typ lno [Avar v; a1; a2]; check_bit_var lno c; const_in_range [a1; a2; y]]
     | Imull (vh, vl, a1, a2) ->
-       [check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atoms [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; check_mull_lvs lno vh vl; defined_atoms [a1; a2]; check_same_typ lno [Avar vh; a1; a2]; const_in_range [a1; a2]]
     | Imulj (v, a1, a2) ->
-       [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
+       [check_int_var v; defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_same_sign [Avar v; a1; a2]; check_mulj_size lno v a1 a2; const_in_range [a1; a2]]
     | Idiv (v, a1, a2) -> (* TODO: add fine-grained type check for Idiv *)
-        [defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+       [check_fp_var v; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2]]
     | Isplit (vh, vl, a, _) ->
-       [check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atom a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; check_split_lvs lno vh vl; defined_atom a; check_same_typ lno [Avar vh; a]; const_in_range [a]]
     | Ispl (vh, vl, a, n) ->
-       [check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atom a) (Z.to_int n); defined_atom a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; check_spl_lvs lno vh vl (size_of_atom a) (Z.to_int n); defined_atom a; check_same_sign [Avar vh; a]; check_unsigned_var vl; const_in_range [a]]
     | Iseteq (v, a1, a2) ->
        [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_unsigned_var v; const_in_range [a1; a2]]
     | Isetne (v, a1, a2) ->
        [defined_atoms [a1; a2]; check_same_typ lno [a1; a2]; check_unsigned_var v; const_in_range [a1; a2]]
     | Icshl (vh, vl, a1, a2, n) ->
-       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
     | Icshls (l, vh, vl, a1, a2, n) ->
-       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_same_sign [Avar l; Avar vh]; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a1 n]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_same_sign [Avar l; Avar vh]; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a1 n]
     | Icshr (vh, vl, a1, a2, n) ->
-       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; const_in_range [a1; a2]; shift_in_range a2 n]
     | Icshrs (vh, vl, l, a1, a2, n) ->
-       [check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a2 n]
-    | Irol (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
-    | Iror (v, a, n) -> [defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
+       [check_int_var vh; check_int_var vl; check_diff_lvs lno vh vl; defined_atoms [a1; a2]; check_same_size lno [a1; a2]; check_same_typ lno [Avar vh; a1]; check_unsigned_same_typ lno [Avar vl; a2]; check_unsigned_var l; check_var_size (Z.to_int n) l; const_in_range [a1; a2]; shift_in_range a2 n]
+    | Irol (v, a, n) -> [check_int_var v; defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
+    | Iror (v, a, n) -> [check_int_var v; defined_atoms [a; n]; check_same_typ lno [Avar v; a; n]; const_in_range [a; n]; shift_in_range_atom a n]
     | Inondet _ -> []
     | Icmov (v, c, a1, a2) ->
        [defined_bit c; defined_atoms [a1; a2]; check_same_typ lno [Avar v; a1; a2]; const_in_range [a1; a2; c]]
@@ -304,14 +324,14 @@ let illformed_instr_reason vs cs gs lno i =
     | Iand (v, a1, a2)
       | Ior (v, a1, a2)
       | Ixor (v, a1, a2) ->
-       [defined_atoms [a1; a2]; check_same_size lno [Avar v; a1; a2]; const_in_range [a1; a2]]
-    | Inot (v, a) -> [defined_atom a; check_same_size lno [Avar v; a]; const_in_range [a]]
+          [check_int_var v; check_int_atoms [a1; a2]; defined_atoms [a1; a2]; check_same_size lno [Avar v; a1; a2]; const_in_range [a1; a2]]
+    | Inot (v, a) -> [check_int_var v; defined_atom a; check_same_size lno [Avar v; a]; const_in_range [a]]
     | Icast (od, _v, a) ->
        (match od with
         | None -> [defined_atom a; const_in_range [a]]
         | Some d -> [defined_atom a; const_in_range [a]; ghost_disjoint (VS.singleton d)])
-    | Ivpc (_v, a) -> [defined_atom a; const_in_range [a]]
-    | Ijoin (v, ah, al) -> [defined_atoms [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atom al; check_join_size lno v ah al]
+    | Ivpc (v, a) -> [check_int_var v; check_int_atom a; defined_atom a; const_in_range [a]]
+    | Ijoin (v, ah, al) -> [check_int_var v; defined_atoms [ah; al]; check_same_sign [Avar v; ah]; check_unsigned_atom al; check_join_size lno v ah al]
     | Iassert e -> defined_bexp_prove_with e
     | Iassume e -> [defined_bexp e]
     | Icut e -> defined_bexp_prove_with e

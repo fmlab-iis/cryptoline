@@ -83,7 +83,8 @@ and bexp =
   | Conj of bexp * bexp                 (** conjunction *)
   | Disj of bexp * bexp                 (** disjunction *) (* *)
 (** QF_BV predicates *)
-  | FpEq of prec * fpexp * fpexp
+  | FpEq of prec * fpexp * fpexp        (** IEEE 754-2008 equality *)
+  | FpEquiv of prec * fpexp * fpexp     (** strict, bit-wise equality, same as Eq *)
   | FpLt of prec * fpexp * fpexp
   | FpLe of prec * fpexp * fpexp
   | FpGt of prec * fpexp * fpexp

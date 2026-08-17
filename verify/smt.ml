@@ -22,12 +22,22 @@ let force_const_to_int c =
 
 let exp_var v = Var v
 
+let fpexp_var v = FpVar v
+
 let exp_const w n = Const (w, n)
+
+let fpexp_const prec f = FpConst (prec, f)
 
 let exp_atom a =
   match a with
   | Avar v -> exp_var v
   | Aconst (ty, Cint n) -> exp_const (size_of_typ ty) n
+  | Aconst (_, _) -> assert false
+
+let fpexp_atom a =
+  match a with
+  | Avar v -> fpexp_var v
+  | Aconst (ty, Cfloat f) -> fpexp_const (prec_of_typ ty) f
   | Aconst (_, _) -> assert false
 
 let exp_carry n c =
@@ -100,7 +110,7 @@ let rec bexp_rbexp e =
   | Req (w, e1, e2) ->
       (match sort_of_rexp e1 with
       | BvSort _ -> Eq (w, exp_rexp e1, exp_rexp e2)
-      | FpSort p -> FpEq (p, fpexp_rexp e1, fpexp_rexp e2))
+      | FpSort _ -> FpEquiv (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2))
   | Rcmp (w, op, e1, e2) ->
      (match op with
       | Rult -> Ult (w, exp_rexp e1, exp_rexp e2)
@@ -115,6 +125,7 @@ let rec bexp_rbexp e =
       | Rfple -> FpLe (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpgt -> FpGt (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpge -> FpGe (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
+      | Rfpeq -> FpEq (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
      )
   | Rneg e -> Lneg (bexp_rbexp e)
   | Rand (e1, e2) -> Conj (bexp_rbexp e1, bexp_rbexp e2)
@@ -224,7 +235,10 @@ let exp_cshl w a1 a2 n =
        Concat (w, w, exp_atom a1, exp_atom a2),
        Const (w + w, n))
 
-let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
+let bexp_mov v a = 
+  match typ_of_var v with
+  | Tuint _ | Tsint _ -> Eq (size_of_var v, exp_var v, exp_atom a)
+  | Tdouble | Tsingle -> FpEquiv (prec_of_var v, fpexp_var v, fpexp_atom a)
 let bexp_shl v a p =
   let w = size_of_var v in
   Eq (w, exp_var v, Shl (w, exp_atom a, exp_atom p))
@@ -306,8 +320,13 @@ let bexp_cmov v c a1 a2 =
   let cond = Eq (1, exp_atom c, exp_const 1 Z.one) in
   Eq (w, exp_var v, Ite (w, cond, exp_atom a1, exp_atom a2))
 let bexp_add v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_add ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->  
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_add ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpAdd (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_adds c v a1 a2 =
   let w = size_of_var v in
   Conj
@@ -322,8 +341,13 @@ let bexp_adcs c v a1 a2 y =
     (Eq (1, exp_var c, High (w, 1, exp_adc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_adc ~extend:true w a1 a2 y)))
 let bexp_sub v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpSub (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_subc c v a1 a2 =
   let w = size_of_var v in
   Conj
@@ -351,8 +375,13 @@ let bexp_sbbs c v a1 a2 y =
     (Eq (1, exp_var c, High (w, 1, exp_sbb ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbb ~extend:true w a1 a2 y)))
 let bexp_mul v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpMul (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_muls c v a1 a2 =
   match v.vtyp with
   | Tuint w ->
@@ -402,6 +431,9 @@ let bexp_mulj v a1 a2 =
          exp_var v,
          exp_smul ~extend:true (w / 2) a1 a2)
   | Tsingle | Tdouble -> raise (UnsupportedException "An mulj instruction expects a non-floatingpoint destination.")
+let bexp_div v a1 a2 =
+  let p = prec_of_var v in
+  FpEquiv (p, fpexp_var v, FpDiv (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_split vh vl a p =
   let p = Z.to_int p in
   match vh.vtyp with
@@ -554,7 +586,7 @@ let bexp_instr i =
   | Imuls (c, v, a1, a2) -> bexp_muls c v a1 a2
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
-  | Idiv (_, _ , _) -> raise (UnsupportedException "QFBV translation does not support floating-point division.") 
+  | Idiv (v, a1, a2) -> bexp_div v a1 a2 
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
   | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
   | Iseteq (v, a1, a2) -> bexp_seteq v a1 a2
@@ -860,7 +892,7 @@ let bexp_instr_safe i =
   | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
-  | Idiv _ -> True (* TODO: Check this *)
+  | Idiv _ -> True
   | Isplit _ -> True
   | Ispl _ -> True
   | Iseteq _ -> True

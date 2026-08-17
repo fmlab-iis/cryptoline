@@ -80,6 +80,7 @@ and bexp =
   | Conj of bexp * bexp
   | Disj of bexp * bexp
   | FpEq of prec * fpexp * fpexp
+  | FpEquiv of prec * fpexp * fpexp
   | FpLt of prec * fpexp * fpexp
   | FpLe of prec * fpexp * fpexp
   | FpGt of prec * fpexp * fpexp
@@ -261,6 +262,7 @@ and string_of_bexp e =
   | Ssubo (_w, e1, e2) -> string_of_exp e1 ^ " -so " ^ string_of_exp e2
   | Smulo (_w, e1, e2) -> string_of_exp e1 ^ " *so " ^ string_of_exp e2
   | FpEq (_p, e1, e2) ->  string_of_fpexp e1 ^ " =f " ^ string_of_fpexp e2
+  | FpEquiv (_p, e1, e2) ->  string_of_fpexp e1 ^ " = " ^ string_of_fpexp e2
   | FpLt (_p, e1, e2) ->  string_of_fpexp e1 ^ " <f " ^ string_of_fpexp e2
   | FpLe (_p, e1, e2) ->  string_of_fpexp e1 ^ " <=f " ^ string_of_fpexp e2
   | FpGt (_p, e1, e2) ->  string_of_fpexp e1 ^ " >f " ^ string_of_fpexp e2
@@ -342,6 +344,7 @@ and vars_bexp e =
   | Ssubo (_, e1, e2)
   | Smulo (_, e1, e2) -> VS.union (vars_exp e1) (vars_exp e2)
   | FpEq (_, e1, e2)
+  | FpEquiv (_, e1, e2) 
   | FpLt (_, e1, e2)
   | FpLe (_, e1, e2)
   | FpGt (_, e1, e2)
@@ -735,6 +738,7 @@ and btor_of_bexp m e =
   | Ssubo (_w, e1, e2) -> m#mkssubo (btor_of_exp m e1) (btor_of_exp m e2)
   | Smulo (_w, e1, e2) -> m#mksmulo (btor_of_exp m e1) (btor_of_exp m e2)
   | FpEq _
+  | FpEquiv _
   | FpLt _
   | FpLe _
   | FpGt _
@@ -1214,6 +1218,7 @@ let bvsmulo w e1 e2 =
   let cond = ite (bveq sign_mul "#b1") ("#b" ^ ones w) ("#b" ^ zeros w) in
   bvneq high_mul cond
 let fpeq e1 e2 = "(fp.eq " ^ e1 ^ " " ^ e2 ^ ")"
+let fpequiv e1 e2 = "(= " ^ e1 ^ " " ^ e2 ^ ")" (* same as bveq *)
 let fplt e1 e2 = "(fp.lt " ^ e1 ^ " " ^ e2 ^ ")"
 let fpleq e1 e2 = "(fp.leq " ^ e1 ^ " " ^ e2 ^ ")"
 let fpgt e1 e2 = "(fp.gt " ^ e1 ^ " " ^ e2 ^ ")"
@@ -1315,6 +1320,7 @@ and smtlib2_of_bexp e =
   | Ssubo (w, e1, e2) -> bvssubo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | Smulo (w, e1, e2) -> bvsmulo w (smtlib2_of_exp e1) (smtlib2_of_exp e2)
   | FpEq (_, e1, e2) -> fpeq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
+  | FpEquiv (_, e1, e2) -> fpequiv (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpLt (_, e1, e2) -> fplt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpLe (_, e1, e2) -> fpleq (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
   | FpGt (_, e1, e2) -> fpgt (smtlib2_of_fpexp e1) (smtlib2_of_fpexp e2)
@@ -1979,6 +1985,7 @@ object(self)
     | Ssubo (_w, _e1, _e2) -> failwith "Not supported: Ssubo"
     | Smulo (_w, _e1, _e2) -> failwith "Not supported: Smulo"
     | FpEq _
+    | FpEquiv _
     | FpLt _
     | FpLe _
     | FpGt _
