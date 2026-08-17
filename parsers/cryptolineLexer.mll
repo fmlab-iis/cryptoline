@@ -250,6 +250,7 @@ token = parse
   | "<"                            { ULTOP }
   | ">"                            { UGTOP }
   | '='                            { EQOP }
+  | "=f"                           { FEQOP }
   | '~'                            { NEGOP }
   | '$'                            { DEREFOP }
   | "/\\"                          { LANDOP }

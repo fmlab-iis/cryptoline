@@ -574,7 +574,7 @@ let resolve_selection ctx lno xs sel =
      let (io, jo, ko) = iokf ctx in
      select_from_range lno xs io jo ko
 
-let parse_typed_const ctx lno ty n_token =
+let parse_const_of_typ ctx lno ty n_token =
   match n_token ctx with
   | Cint n ->
     let size = size_of_typ ty in
@@ -588,45 +588,40 @@ let parse_typed_const ctx lno ty n_token =
     let bits = List.of_seq (String.to_seq (Z.format ("%0" ^ string_of_int size ^ "b") n)) in
     let _ = if List.length bits > size then raise_at_line lno ("The number " ^ Z.to_string n ^ " does not fit into " ^ string_of_typ ty) in
     (* Normalize the number: convert back to integer *)
-    let c =
-      match ty with
-      | Tuint _ -> Cint (num_of_bits bits)
-      | Tsint w ->
-         if w = 0 then Cint Z.zero
-         else
-           begin
-             match bits with
-             | [] -> Cint Z.zero
-             | sign::rest -> let n = num_of_bits rest in
-                             if sign = '1' then Cint (Z.sub n (Z.pow num_two (w - 1)))
-                             else Cint n
-           end
-      | Tsingle | Tdouble ->
-          let rnd = RNE in
-          let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
-          let f = Ast.Cryptoline.FloatConst.of_z n ~rnd in
-          if Ast.Cryptoline.FloatConst.is_representable p f then Cfloat f
-          else if !Options.Std.implicit_const_conversion then Cfloat (Ast.Cryptoline.FloatConst.round_to p ~rnd f)
-          else raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
-                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
-    in
-    Aconst (ty, c)
+    (match ty with
+    | Tuint _ -> Cint (num_of_bits bits)
+    | Tsint w ->
+       if w = 0 then Cint Z.zero
+       else
+         begin
+           match bits with
+           | [] -> Cint Z.zero
+           | sign::rest -> let n = num_of_bits rest in
+                           if sign = '1' then Cint (Z.sub n (Z.pow num_two (w - 1)))
+                           else Cint n
+         end
+    | Tsingle | Tdouble ->
+        let rnd = RNE in
+        let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
+        let f = Ast.Cryptoline.FloatConst.of_z n ~rnd in
+        if Ast.Cryptoline.FloatConst.is_representable p f then Cfloat f
+        else if !Options.Std.implicit_const_conversion then Cfloat (Ast.Cryptoline.FloatConst.round_to p ~rnd f)
+        else raise_at_line lno ("The integer " ^ Z.to_string n ^ " does not fit into its type " ^ string_of_typ ty ^ "."
+                                 ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types."))
   | Cfloat f ->
-    let c =
-      match ty with
-      | Tuint _ | Tsint _ -> 
-          raise_at_line lno "Floating-point constants cannot be converted into integer types."
-      | Tsingle -> 
-          if FloatConst.is_representable Utils.Float.Single f then Cfloat f
-          else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to Utils.Float.Single ~rnd:RNE f)
-          else raise_at_line lno ("The floating-point constant does not fit into type Tsingle."
-                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
-      | Tdouble ->
-          if FloatConst.is_representable Utils.Float.Double f then Cfloat f
-          else raise_at_line lno ("The floating-point constant does not fit into type Tdouble."
-                                   ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types.")
-    in
-    Aconst (ty, c)
+    (match ty with
+    | Tuint _ | Tsint _ -> 
+        raise_at_line lno "Floating-point constants cannot be converted into integer types."
+    | Tsingle | Tdouble ->
+        let rnd = RNE in
+        let p = if ty = Tsingle then Utils.Float.Single else Utils.Float.Double in
+        if FloatConst.is_representable p f then Cfloat f
+        else if !Options.Std.implicit_const_conversion then Cfloat (FloatConst.round_to p ~rnd f)
+        else raise_at_line lno ("The floating-point constant " ^ FloatConst.to_string f ^ " does not fit into type " ^ string_of_typ ty ^ "."
+                                 ^ " Run with -implicit-const-conversion to convert the constants implicitly to fit into their types."))
+
+let parse_typed_const ctx lno ty n_token =
+  Aconst (ty, parse_const_of_typ ctx lno ty n_token)
 
 let parse_named_constant lno cname =
   fun ctx ->
@@ -3248,11 +3243,16 @@ let parse_rexp_defined_var lno v_tok =
   fun ctx ->
   rexp_of_atom (resolve_var_with ctx lno v_tok)
 
-let parse_rexp_const _lno w_tok n_tok =
+let parse_rexp_const lno w_tok n_tok = (* accept integer const only *)
   fun ctx ->
   let w = Z.to_int (w_tok ctx) in
-  let n = n_tok ctx in
-  Rconst (w, n)
+  match n_tok ctx with
+  | Cint _ as n -> Rconst (w, n)
+  | Cfloat _ -> raise_at_line lno "A floating-point constant requires a type annotation such as @double."
+
+let parse_rexp_typed_const lno ty n_tok = (* accept both integer and floating-point const *)
+  fun ctx ->
+  Rconst (size_of_typ ty, parse_const_of_typ ctx lno ty n_tok)
 
 let parse_rexp_vec_elem lno ve_tok zi =
   fun ctx ->

@@ -988,7 +988,10 @@ val parse_rexp_defined_var : lno -> [`AVAR of avar_prim_t] -> rexp contextual
 (** [parse_rexp_defined_var lno v_tok] parses a defined var as a rexp *)
 
 val parse_rexp_const : lno -> Z.t contextual -> const contextual -> rexp contextual
-(** [parse_rexp_const lno w_tok n_tok] parses a constant as a rexp *)
+(** [parse_rexp_const lno w_tok n_tok] parses a constant of size [w_tok ctx] as a rexp *)
+
+val parse_rexp_typed_const : lno -> typ -> const contextual -> rexp contextual
+(** [parse_rexp_typed_const lno ty n_tok] parses a constant of type [ty] as a rexp *)
 
 val parse_rexp_vec_elem : lno -> rexp list contextual -> Z.t -> rexp contextual
 (** [parse_rexp_vec_elem lno ve_tok zi] parses an access to a vector element *)
