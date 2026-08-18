@@ -17,9 +17,10 @@ Prerequisite
 
 To compile and run CryptoLine, the following packages need to be installed.
 
-- [OCaml compiler](https://ocaml.org) (version 5.0 up)
+- [OCaml compiler](https://ocaml.org) (version 5.4.0 up)
 - [GNU Make](https://www.gnu.org/software/make/)
-- OCaml packages: `dune`, `ocamlfind`, `lwt`, `lwt_ppx`, `num`,
+- bc: an arbitrary precision calculator
+- OCaml packages: `dune`, `ocamlfind`, `lwt`, `lwt_ppx`,
   `zarith`, `ppx_optcomp`, `domainslib`
 - [apron](https://antoinemine.github.io/Apron/doc/)
 - One of the following computer algebra systems:
