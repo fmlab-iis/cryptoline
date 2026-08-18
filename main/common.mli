@@ -19,11 +19,11 @@ val parse_and_check_all : string -> ((var list * var list) * Ast.MultiTrack.tagg
 (** Parse and check well-formedness for all procedures in a file. *)
 
 val parse_and_check : ?proc:string -> string -> (var list * var list) * Ast.MultiTrack.tagged_spec
-(** [parse_and_check ~proc:pn file] parses the CryptoLine specification [pn]
-    in the file [file], checks its well-formedness, and returns the input
-    variables of the specification and the internal representation of the
-    specification. If [pn] is not specified, [Options.Std.main_proc_name]
-    is the default specification. *)
+(** [parse_and_check ~proc:pn file] parses the CryptoLine procedure [pn]
+    defined in the file [file], checks its well-formedness, and returns
+    [((ivs, ovs), s)] where [ivs] is the inputs, [ovs] is the outputs,
+    and [s] is the specification of procedure [pn]. If [pn] is not
+    specified, [Options.Std.main_proc_name] is the default specification. *)
 
 val find_output_vars : program -> string list -> var list
 (** [find_output_vars p [n1; ...; nN]] returns a list of variables [v1; ...; vN]

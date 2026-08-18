@@ -114,7 +114,8 @@ let args = [
     ("-disable_safety", Clear verify_program_safety,
      Common.mk_arg_desc([""; "Disable verification of program safety."]));
     ("-f", String (fun s -> veri_proc_name := Some s),
-     Common.mk_arg_desc(["PROC"; "Limit the verification to a specified procedure."]));
+     Common.mk_arg_desc(["PROC"; "Specify the entry procedure of verification or simulation. The";
+                         Printf.sprintf "default entry procedure is \"%s\"." Options.Std.main_proc_name]));
     ("-jobs", Int (fun j -> jobs := j),
      Common.mk_arg_desc(["N    Set number of jobs (default = 4)."]));
     ("-lwt", Unit (fun () -> Options.Std.parallel_model := Options.Std.WithLwt),
@@ -592,13 +593,22 @@ let anon file =
            smtlib::smtlibs) [] ss in
      List.iteri output (List.rev smtlibs_rev)
   | Simulation ->
-     let _ = Random.self_init () in
-     let ((ivs, _), s) = Common.parse_and_check file in
-     let s = tagged_spec_untag s in
-     let vals = parse_initial_values ivs in
-     let m = Simulator.make_map ivs vals in
-     if !interactive_simulation then Simulator.shell m s.sprog
-     else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
+    let _ = Random.self_init () in
+    let ((ivs, _), ts) =
+      let specs = Common.parse_and_check_all file in
+      let proc_name =
+        match !veri_proc_name with
+        | None -> Options.Std.main_proc_name
+        | Some name -> name in
+      try
+        SM.find proc_name specs
+      with Not_found ->
+        failwith (Printf.sprintf "Procedure %s is not found." proc_name) in
+    let s = tagged_spec_untag ts in
+    let vals = parse_initial_values ivs in
+    let m = Simulator.make_map ivs vals in
+    if !interactive_simulation then Simulator.shell m s.sprog
+    else Simulator.simulate ~steps:!simulation_steps ~dumps:(parse_simulation_dump_ranges()) m s.sprog
   | PrintAbsdom ->
      let (_, s) = Common.parse_and_check file in
      let s = tagged_spec_untag s in
