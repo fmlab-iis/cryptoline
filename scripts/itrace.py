@@ -423,11 +423,11 @@ class RISCV(Extractor):
             addr += int(offset, 0)
         if mnemonic.startswith("l"):
             fmt = "1x{}".format(bits_to_fmt[self.wordsize])
-            if mnemonic.starswith("lb"):
+            if mnemonic.startswith("lb"):
                 fmt = "1xb"
-            elif mnemonic.starswith("lh"):
+            elif mnemonic.startswith("lh"):
                 fmt = "1xh"
-            elif mnemonic.starswith("lw"):
+            elif mnemonic.startswith("lw"):
                 fmt = "1xw"
             return {'addr': addr, 'load': fmt}
         elif mnemonic.startswith("vl"):
