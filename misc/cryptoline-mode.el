@@ -8,10 +8,11 @@
              ;; (x-events '("at_rot_target" "at_target" "attach"))
              (x-keywords '("proc" "call" "ulimbs" "slimbs" "limbs"
                            "prove" "with" "all" "cuts" "assumes" "ghosts" "precondition"
+                           "eqfirst" "algebra" "range" "solver"
                            "assert" "assume"
                            "const"
                            "eq" "eqmod"
-                           "vars" "neg" "sq" "ext" "uext" "sext"
+                           "vars" "neg" "sq" "pow" "ext" "uext" "sext"
                            "mod" "umod" "srem" "smod"
                            "xor" "ult" "ule" "ugt" "uge"
                            "slt" "sle" "sgt" "sge"

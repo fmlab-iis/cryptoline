@@ -196,7 +196,7 @@
                     "name": "support.function"
                 },
                 {
-                    "match": "\\b(add|mul|sq)\\b",
+                    "match": "\\b(add|mul|sq|pow)\\b",
                     "name": "support.function",
                     "comment": "functions only for algebraic specs"
                 },
@@ -210,7 +210,7 @@
                     "comment": "Marking bit-widths such as 19@16"
                 },
                 {
-                    "match": "\\b(prove|with|all|cuts|assumes|ghosts|precondition)\\b",
+                    "match": "\\b(prove|with|all|cuts|assumes|ghosts|precondition|algebra|range|solver)\\b",
                     "name": "keyword.other"
                 }
             ]

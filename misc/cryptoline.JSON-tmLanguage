@@ -197,7 +197,7 @@
           "name": "support.function"
         },
         {
-          "match": "\\b(add|mul|sq)\\b",
+          "match": "\\b(add|mul|sq|pow)\\b",
           "name": "support.function",
           "comment": "functions only for algebraic specs"
         },
