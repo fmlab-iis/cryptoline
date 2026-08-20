@@ -26,7 +26,7 @@
 %token SHL SHLS SHR SHRS SAR SARS CSHL CSHLS CSHR CSHRS ROL ROR CONCAT SET CLEAR NONDET CMOV AND OR NOT CAST VPC JOIN ASSERT EASSERT RASSERT ASSUME GHOST
 %token CUT ECUT RCUT NOP SETEQ SETNE
 /* Logical Expressions */
-%token VARS NEG SQ EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
+%token VARS NEG SQ POW EXT UEXT SEXT MOD UMOD SREM SMOD XOR ULT ULE UGT UGE SLT SLE SGT SGE SHR SAR
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
@@ -692,6 +692,7 @@ eexp:
   | SUB eexp_primary eexp_primary                 { fun ctx -> esub ($2 ctx) ($3 ctx) }
   | MUL eexp_primary eexp_primary                 { fun ctx -> emul ($2 ctx) ($3 ctx) }
   | SQ eexp_primary                               { fun ctx -> esq ($2 ctx) }
+  | POW eexp_primary eexp_primary                 { fun ctx -> epow ($2 ctx) ($3 ctx) }
   | ADDS LSQUARE eexps RSQUARE                    { fun ctx -> eadds ($3 ctx) }
   | MULS LSQUARE eexps RSQUARE                    { fun ctx -> emuls ($3 ctx) }
   | SUBOP eexp %prec UMINUS                       { fun ctx -> eneg ($2 ctx) }

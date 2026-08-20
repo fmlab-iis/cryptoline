@@ -109,6 +109,7 @@
               "vars"                       , VARS;
               "neg"                        , NEG;
               "sq"                         , SQ;
+              "pow"                        , POW;
               "ext"                        , UEXT;
               "uext"                       , UEXT;
               "zext"                       , UEXT;

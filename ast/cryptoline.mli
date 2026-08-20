@@ -1293,6 +1293,9 @@ val symbol_of_ebinop : ebinop -> string
 val string_of_rcmpop : rcmpop -> string
 (** the string representation of a range comparison operator *)
 
+val symbol_of_rcmpop : rcmpop -> string
+(** the symbol of a range comparison operator *)
+
 val string_of_runop : runop -> string
 (** the string representation of a range unary operator *)
 
