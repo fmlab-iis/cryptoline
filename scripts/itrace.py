@@ -391,8 +391,8 @@ class RISCV(Extractor):
     def printHeader(self, function):
         frame = gdb.newest_frame()
         print(function + ":")
-        for reg in range(10,18) :
-            reg = "x{0}".format(reg)
+        for reg in range(0,8) :
+            reg = "a{0}".format(reg)
             val = int(frame.read_register(reg)) & self.mask
             self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
