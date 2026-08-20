@@ -1434,8 +1434,8 @@ let bprint_rbinop buf op =
   | Rorb -> Buffer.add_string buf "or"
   | Rxorb -> Buffer.add_string buf "xor"
   | Rshl -> Buffer.add_string buf "shl"
-  | Rlshr -> Buffer.add_string buf "lshr"
-  | Rashr -> Buffer.add_string buf "ashr"
+  | Rlshr -> Buffer.add_string buf "shr"
+  | Rashr -> Buffer.add_string buf "sar"
   | Rrol -> Buffer.add_string buf "rol"
   | Rror -> Buffer.add_string buf "ror"
 
