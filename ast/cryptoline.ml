@@ -2022,8 +2022,8 @@ let string_of_rbinop op =
   | Rorb -> "or"
   | Rxorb -> "xor"
   | Rshl -> "shl"
-  | Rlshr -> "lshr"
-  | Rashr -> "ashr"
+  | Rlshr -> "shr"
+  | Rashr -> "sar"
   | Rrol -> "rol"
   | Rror -> "ror"
 
