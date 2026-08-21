@@ -391,8 +391,8 @@ class RISCV(Extractor):
     def printHeader(self, function):
         frame = gdb.newest_frame()
         print(function + ":")
-        for reg in range(10,18) :
-            reg = "x{0}".format(reg)
+        for reg in range(0,8) :
+            reg = "a{0}".format(reg)
             val = int(frame.read_register(reg)) & self.mask
             self.args[reg] = val
             print("# {0} = 0x{1:x}".format(reg, val))
@@ -423,11 +423,11 @@ class RISCV(Extractor):
             addr += int(offset, 0)
         if mnemonic.startswith("l"):
             fmt = "1x{}".format(bits_to_fmt[self.wordsize])
-            if mnemonic.starswith("lb"):
+            if mnemonic.startswith("lb"):
                 fmt = "1xb"
-            elif mnemonic.starswith("lh"):
+            elif mnemonic.startswith("lh"):
                 fmt = "1xh"
-            elif mnemonic.starswith("lw"):
+            elif mnemonic.startswith("lw"):
                 fmt = "1xw"
             return {'addr': addr, 'load': fmt}
         elif mnemonic.startswith("vl"):
