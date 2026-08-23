@@ -9,7 +9,7 @@ import clparse
 
 cryptoline_path = "cv"
 
-default_ea_pattern = r"L(0x\w+)"
+ea_pattern = r"L(?:([a-z]\w+)_)?(0x\w+)"
 
 dontcare_variable = "_"
 
@@ -270,14 +270,24 @@ def inputs_of_program(instrs):
     return inputs
 
 # Return the address variable.
-def compute_address(addr, offset, ea_pattern=default_ea_pattern):
+def compute_address(addr, offset):
     match = re.search(ea_pattern, addr)
     if match:
         base = match.group(1)
-        l = len(base) - 2
-        base = int(base, 0)
-        addr = base + offset
-        addr = ("L0x%0." + str(l) + "x") % addr
+        disp = match.group(2)
+        l = len(disp) - 2
+        # A CFA-relative label counts downwards from the frame address, so a
+        # higher address has a smaller displacement.
+        if base == "cfa":
+            disp = int(disp, 0) - offset
+            # Going past the CFA leaves the frame the label is relative to, and
+            # no displacement below it names that address.
+            if disp < 0:
+                raise Exception(f"The address {offset:+d} bytes from {addr} is above the CFA")
+        else:
+            disp = int(disp, 0) + offset
+        prefix = "L{}_".format(base) if base else "L"
+        addr = (prefix + "0x%0." + str(l) + "x") % disp
     return addr
 
 # Convert a Singular polynomial to an eexp.
