@@ -816,24 +816,24 @@ let bexp_atom_cast_safe ty a =
   | (Tuint _ | Tsint _), (Tsingle | Tdouble) ->
      let p = prec_of_typ (typ_of_atom a) in
      let fa = fpexp_atom a in
-     let fconst z = FpConst (p, FloatConst.of_z z ~rnd:RNE) in
+     let fpexp_of_z z = FpConst (p, FloatConst.round_to p ~rnd:RTZ (FloatConst.of_z z ~rnd:RTZ)) in (* TODO: verify if RTZ is the correct rounding mode here *)
      let pow2 n = Z.pow (Z.of_int 2) n in
      let emax = (Utils.Float.get_fmt p).emax_norm in
-     let fin = Conj (Lneg (FpIsNaN (p, fa)), Lneg (FpIsInf (p, fa))) in
-     let bounds =
+     let is_finite = Conj (Lneg (FpIsNaN (p, fa)), Lneg (FpIsInf (p, fa))) in
+     let _is_representable =
        match ty with
        | Tuint w ->
-          if w <= emax
-          then Conj (FpGt (p, fa, fconst (Z.of_int (-1))),
-                     FpLt (p, fa, fconst (pow2 w)))
-          else FpGt (p, fa, fconst (Z.of_int (-1)))
+          let lower = FpGe (p, fa, fpexp_of_z Z.zero) in
+          if w - 1 <= emax
+          then Conj (lower, FpLe (p, fa, fpexp_of_z (Z.sub (pow2 w) Z.one))) (* 0 <= f <= 2^w-1 *)
+          else lower                                                         (* 0 <= f < 2^(emax+1) <= 2^(w-1) < 2^w-1 *)
        | Tsint w ->
           if w - 1 <= emax
-          then Conj (FpGe (p, fa, fconst (Z.neg (pow2 (w - 1)))),
-                     FpLt (p, fa, fconst (pow2 (w - 1))))
-          else True
+          then Conj (FpGe (p, fa, fpexp_of_z (Z.neg (pow2 (w - 1)))),        (* -2^(w-1) <= f <= 2^(w-1)-1 *)
+                     FpLt (p, fa, fpexp_of_z (Z.sub (pow2 (w - 1)) Z.one)))
+          else True                                                          (* |f| < 2^(emax+1) <= 2^(w-1) *)
        | _ -> assert false in
-     Conj (fin, bounds)
+     Conj (is_finite, _is_representable)
   | _, _ -> True
 
 let bexp_vpc_safe v a =
