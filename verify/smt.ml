@@ -512,7 +512,20 @@ let bexp_cast od v a =
        if wv = wa then Eq (wv, exp_var v, exp_atom a)
        else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atom a))
        else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atom a))
-    | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination.") in
+    | (Tsingle | Tdouble), (Tuint _) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfUbv (p, RNE, exp_atom a)) (* TODO: RNE is usd here since we're modeling vcvtsi2sdq *)
+    | (Tsingle | Tdouble), (Tsint _) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfSbv (p, RNE, exp_atom a)) (* TODO: RNE is usd here since we're modeling vcvtsi2sdq *)
+    | Tuint wv, (Tsingle | Tdouble) ->
+       Eq (wv, exp_var v, UbvOfFp (wv, RTZ, fpexp_atom a)) (* TODO: RTZ is usd here since we're modeling vcvttsd2si *)
+    | Tsint wv, (Tsingle | Tdouble) ->
+       Eq (wv, exp_var v, SbvOfFp (wv, RTZ, fpexp_atom a)) (* TODO: RTZ is usd here since we're modeling vcvttsd2si *)
+    | (Tsingle | Tdouble), (Tsingle | Tdouble) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfFp (p, RNE, fpexp_atom a))
+  in
   let bextra =
     match od with
     | None -> None
@@ -541,13 +554,19 @@ let bexp_cast od v a =
                                SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atom a)), (* SignExtend is used to avoid overflow *)
                                ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
-        | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination."))
+        | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) ->
+            raise (UnsupportedException "A cast with a discard variable does not support floating-point operands."))
   in
   match bextra with
   | None -> bcast
   | Some e -> Conj (bcast, e)
 
-let bexp_vpc v a = bexp_cast None v a
+let bexp_vpc v a = 
+  match v.vtyp, typ_of_atom a with
+  | (Tsingle | Tdouble), _ | _, (Tsingle | Tdouble) ->
+     raise (UnsupportedException "A vpc instruction does not support floating-point operands.")
+  | _ -> bexp_cast None v a
+
 let bexp_join v ah al =
   let w = size_of_var v in
   Eq (w,
@@ -792,6 +811,31 @@ let bexp_atom_scshr_safe w a1 a2 n =
      Conj (Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, (Z.zero))),
            Eq (1, High (w - 1, 1, exp_atom a1), Const (1, (Z.zero)))))
 
+let bexp_atom_cast_safe ty a =
+  match ty, typ_of_atom a with
+  | (Tuint _ | Tsint _), (Tsingle | Tdouble) ->
+     let p = prec_of_typ (typ_of_atom a) in
+     let fa = fpexp_atom a in
+     let fconst z = FpConst (p, FloatConst.of_z z ~rnd:RNE) in
+     let pow2 n = Z.pow (Z.of_int 2) n in
+     let emax = (Utils.Float.get_fmt p).emax_norm in
+     let fin = Conj (Lneg (FpIsNaN (p, fa)), Lneg (FpIsInf (p, fa))) in
+     let bounds =
+       match ty with
+       | Tuint w ->
+          if w <= emax
+          then Conj (FpGt (p, fa, fconst (Z.of_int (-1))),
+                     FpLt (p, fa, fconst (pow2 w)))
+          else FpGt (p, fa, fconst (Z.of_int (-1)))
+       | Tsint w ->
+          if w - 1 <= emax
+          then Conj (FpGe (p, fa, fconst (Z.neg (pow2 (w - 1)))),
+                     FpLt (p, fa, fconst (pow2 (w - 1))))
+          else True
+       | _ -> assert false in
+     Conj (fin, bounds)
+  | _, _ -> True
+
 let bexp_vpc_safe v a =
   match v.vtyp, typ_of_atom a with
   | Tuint wv, Tuint wa ->
@@ -816,6 +860,7 @@ let bexp_vpc_safe v a =
               exp_atom a)
   | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) ->
      raise (UnsupportedException "Instruction vpc does not support casting to floating-point types.")
+
 let bexp_instr_safe i =
   match i with
   | Imov _ -> True
@@ -902,7 +947,7 @@ let bexp_instr_safe i =
   | Ior _ -> True
   | Ixor _ -> True
   | Inot _ -> True
-  | Icast (_, _v, _a) -> True
+  | Icast (_, v, a) -> bexp_atom_cast_safe v.vtyp a
   | Ivpc (v, a) -> bexp_vpc_safe v a
   | Ijoin (_v, _ah, _al) -> True
   | Iassert _ -> True
