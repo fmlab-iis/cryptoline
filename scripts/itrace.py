@@ -349,15 +349,15 @@ class MIPS(Extractor):
         if b:
             # trace instruction in delay slot, as gdb fails to do so
             mnemonic = insns[1]["asm"]
-            addr = self.getEA(insns[1], frame)
-            if addr:
-                print("\t{0:48s}#! EA = {:s}".format(mnemonic, label(addr)))
+            ea = self.getEA(insns[1], frame)
+            if ea:
+                print("\t{0:48s}#! EA = {1:s}".format(mnemonic, label(self.args, ea["addr"])))
             else:
-                print("\t{0s}".format(mnemonic))
+                print("\t{0:s}".format(mnemonic))
         return b
 
     def isFunctionCall(self, b):
-        return b.group(1).startswith("bl")
+        return b.group(1).startswith("jal")
 
     def isFunctionReturn(self, b):
         return b.group(1) == "jr" and b.group(2) == "ra"
