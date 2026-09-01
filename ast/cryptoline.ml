@@ -461,6 +461,8 @@ let rec simplify_eexp_fast e =
       | Esub, _, Econst n when Z.equal n Z.zero -> e1'
       (* n - m *)
       | Esub, Econst n, Econst m -> Econst (Z.sub n m)
+      (* e - e *)
+      | Esub, _, _ when e1' == e2' -> Econst Z.zero
       (* 0 - (- e) = e *)
       (* 0 - e = - e *)
       | Esub, Econst n, _ when Z.equal n Z.zero ->
@@ -520,6 +522,7 @@ let simplify_eexp_moduli const_moduli e =
             | Eadd, Econst n, Econst m -> Econst (Z.add n m)
             | Esub, e1', Econst n when Z.equal n Z.zero -> e1'
             | Esub, Econst n, Econst m -> Econst (Z.sub n m)
+            | Esub, _, _ when e1' == e2' -> Econst Z.zero
             | Esub, Econst n, e2' when Z.equal n Z.zero ->
               (match e2' with
                | Eunop (Eneg, e2'') -> e2''
