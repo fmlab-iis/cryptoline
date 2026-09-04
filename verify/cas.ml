@@ -669,8 +669,10 @@ let polys_of_espec vgen s =
        let vars = vars_in_order (rcons ideal p) in
        [(post, vars, ideal, p)]
     | Eeqmod (e1, e2, ms) ->
-       let (ideal, p) = do_rewriting (List.rev_append ms generator_ps) (emuls ((esub e1 e2)::pspec.pextra)) ms in
-       let vars = vars_in_order (rcons ideal p) in
+      (* apply a pre-reduction *)
+      let generator_ps' = tmap (simplify_eexp ~moduli:ms) generator_ps in
+      let (ideal, p) = do_rewriting (List.rev_append ms generator_ps') (emuls ((esub e1 e2)::pspec.pextra)) ms in
+      let vars = vars_in_order (rcons ideal p) in
        [(post, vars, ideal, p)]
     | Eand (e1, e2) ->
        (convert generator_ps e1) @@ (convert generator_ps e2)

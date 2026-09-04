@@ -489,14 +489,11 @@ let rec simplify_eexp_fast e =
     end
   | _ -> e
 
-(* Simplify an expression with constant moduli taken into consideration. *)
-let simplify_eexp_moduli const_moduli e =
-  let in_const_moduli e =
-    match e with
-    | Econst _ -> List.exists (eq_eexp e) const_moduli
-    | _ -> false in
+(* Simplify an expression with moduli taken into consideration. *)
+let simplify_eexp_moduli moduli e =
+  let in_moduli e = List.exists (eq_eexp e) moduli in
   let rec aux_mod e =
-    if in_const_moduli e then ezero
+    if in_moduli e then ezero
     else
       let simplified =
         match e with
@@ -541,7 +538,7 @@ let simplify_eexp_moduli const_moduli e =
         | _ -> e
       in
       if simplified == e then simplified
-      else if in_const_moduli simplified then ezero
+      else if in_moduli simplified then ezero
       else simplified
   in
   aux_mod e
