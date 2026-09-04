@@ -27,7 +27,7 @@
 #! sub $1ea, $2v, $3v -> subb carry $3v $2v $1ea
 #! sbb $1v, $2v, $3v -> sbbs carry $3v $2v $1v carry
 #! sbb $1c, $2v, $3v -> sbbs carry $3v $2v $1c@uint64 carry
-#! sbb $1ea, $2v, $3v -> sbbs carry $3v $2v $1ea
+#! sbb $1ea, $2v, $3v -> sbbs carry $3v $2v $1ea carry
 #! imul $1v, $2v, $3v -> mull dontcare $3v $1v $2v
 #! and $1v, $2v, $3v -> and $3v@uint64 $2v $1v
 #! and $1c, $2v, $3v -> and $3v@uint64 $2v $1c@uint64
@@ -76,7 +76,7 @@
 #! sub $1v, $2ea -> subb carry $2ea $2ea $1v
 #! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
 #! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
-#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea
+#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea carry
 #! shlx $1c, $2v, $3v -> split dc $3v $2v (64-$1c);\nshl $3v $3v $1c@uint64
 #! shl $1c, $2v -> split dc $2v $2v (64-$1c);\nshl $2v $2v $1c@uint64
 #! shrx $1c, $2v, $3v -> split $3v dc $2v $1c
