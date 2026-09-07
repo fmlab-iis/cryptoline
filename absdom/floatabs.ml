@@ -341,7 +341,7 @@ let fp_div a b = fp_mul a (fp_recip b)
 let fp_abs = function
   | Bottom -> Bottom
   | Value { neg; zero; pos } ->
-      value ~zero ~pos:(interval_hull [ pos; interval_neg neg ]) ()
+      value ~zero ?pos:(interval_hull [ pos; interval_neg neg ]) ()
 
 let fp_sqrt = function
   | Bottom -> Bottom
