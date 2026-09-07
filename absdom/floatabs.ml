@@ -604,19 +604,27 @@ let initial_state rs =
 
 let verify_rspec rs =
   match initial_state rs with
-  | Error (Unsupported msg) | Error (Invalid msg) -> Unsupported msg
+  | Error ((Unsupported msg : error))
+  | Error ((Invalid msg : error)) ->
+      Unsupported msg
   | Ok st0 ->
       begin
         match assume_rbexp st0 rs.rspre with
-        | Error (Unsupported msg) | Error (Invalid msg) -> Unsupported msg
+        | Error ((Unsupported msg : error))
+        | Error ((Invalid msg : error)) ->
+            Unsupported msg
         | Ok st1 ->
             begin
               match interp_prog st1 rs.rsprog with
-              | Error (Unsupported msg) | Error (Invalid msg) -> Unsupported msg
+              | Error ((Unsupported msg : error))
+              | Error ((Invalid msg : error)) ->
+                  Unsupported msg
               | Ok st2 ->
                   match prove_rbexp st2 (rbexp_prove_with_rands rs.rspost) with
                   | Ok true -> Proved
                   | Ok false -> Not_proved
-                  | Error (Unsupported msg) | Error (Invalid msg) -> Unsupported msg
+                  | Error ((Unsupported msg : error))
+                  | Error ((Invalid msg : error)) ->
+                      Unsupported msg
             end
       end
