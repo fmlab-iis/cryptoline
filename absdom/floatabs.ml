@@ -34,8 +34,11 @@ let result_bind r f =
 
 let ( let* ) = result_bind
 
-let unsupported msg = Error (Unsupported msg)
-let invalid msg = Error (Invalid msg)
+let unsupported msg : ('a, error) result =
+  Error ((Unsupported msg : error))
+
+let invalid msg : ('a, error) result =
+  Error (Invalid msg)
 
 let falcon_prec = Double
 let fp_zero = FloatConst.zero
