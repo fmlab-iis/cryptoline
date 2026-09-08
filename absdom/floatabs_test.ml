@@ -542,11 +542,13 @@ let test_verify_arithmetic_postcondition () =
     }
   in
 
-  expect_true
-    "verify positive propagation"
-    (match FA.verify_rspec rs with
-     | FA.Proved -> true
-     | _ -> false)
+  match FA.verify_rspec rs with
+  | FA.Proved ->
+      ()
+  | FA.Not_proved ->
+      fail "verify positive propagation: got Not_proved"
+  | FA.Unsupported msg ->
+      fail ("verify positive propagation: got Unsupported: " ^ msg)
 
 let test_verify_not_proved_boundary () =
   let x = v "ux" in
