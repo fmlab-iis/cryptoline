@@ -609,7 +609,163 @@ let test_bottom_arithmetic () =
 
 (* ============================================================ *)
 (* Test runner                                                   *)
-(* ============================================================ *)
+(* ------------------------------------------------------------ *)
+(* IEEE-754 / domain limitation tests                           *)
+(* ------------------------------------------------------------ *)
+
+let test_overflow_behavior () =
+  let maxv =
+    get_ok (FA.fp_of_const FA.fp_max)
+  in
+  let r =
+    FA.fp_add maxv maxv
+  in
+
+  expect_true
+    "overflow addition currently becomes Bottom"
+    (match r with
+     | FA.Bottom -> true
+     | _ -> false)
+
+
+let test_subnormal_operand_policy () =
+  let min_positive =
+    get_ok (FA.fp_of_const FA.fp_min)
+  in
+  let two = fp "2.0" in
+
+  expect_true
+    "subnormal multiplication operand is unsupported"
+    (match FA.fp_mul min_positive two with
+     | Error (FA.Unsupported _) -> true
+     | _ -> false)
+
+
+let test_underflow_result_behavior () =
+  (*
+     2.2250738585072014e-308 is the minimum NORMAL binary64
+     value.  Multiplying it by 0.5 produces a subnormal result.
+
+     This is different from test_subnormal_operand_policy:
+     here the INPUT is normal, but the RESULT becomes subnormal.
+  *)
+  let min_normal =
+    fp "2.2250738585072014e-308"
+  in
+  let half = fp "0.5" in
+
+  match FA.fp_mul min_normal half with
+  | Error (FA.Unsupported msg) ->
+      fail
+        ("normal operands producing subnormal result unexpectedly unsupported: "
+         ^ msg)
+
+  | Error (FA.Invalid msg) ->
+      fail
+        ("normal operands producing subnormal result unexpectedly invalid: "
+         ^ msg)
+
+  | Ok FA.Bottom ->
+      fail
+        "normal operands producing subnormal result unexpectedly Bottom"
+
+  | Ok (FA.Value _) ->
+      ()
+
+
+let test_division_by_zero_behavior () =
+  let one = fp "1.0" in
+  let zero = fp "0.0" in
+
+  match FA.fp_div one zero with
+  | Ok FA.Bottom ->
+      ()
+
+  | Ok _ ->
+      fail
+        "division by zero: expected current policy Bottom"
+
+  | Error (FA.Unsupported msg) ->
+      fail
+        ("division by zero unexpectedly Unsupported: " ^ msg)
+
+  | Error (FA.Invalid msg) ->
+      fail
+        ("division by zero unexpectedly Invalid: " ^ msg)
+
+
+let test_zero_divided_by_zero_behavior () =
+  let zero = fp "0.0" in
+
+  match FA.fp_div zero zero with
+  | Ok FA.Bottom ->
+      ()
+
+  | Ok _ ->
+      fail
+        "zero divided by zero: expected current policy Bottom"
+
+  | Error (FA.Unsupported msg) ->
+      fail
+        ("zero divided by zero unexpectedly Unsupported: " ^ msg)
+
+  | Error (FA.Invalid msg) ->
+      fail
+        ("zero divided by zero unexpectedly Invalid: " ^ msg)
+
+
+let test_sqrt_negative_behavior () =
+  let neg_one = fp "-1.0" in
+
+  expect_true
+    "sqrt negative currently becomes Bottom"
+    (match FA.fp_sqrt neg_one with
+     | FA.Bottom -> true
+     | _ -> false)
+
+
+let test_sqrt_zero_behavior () =
+  expect_fp
+    "sqrt zero"
+    (fp "0.0")
+    (FA.fp_sqrt (fp "0.0"))
+
+
+let test_sqrt_positive_behavior () =
+  expect_fp
+    "sqrt four"
+    (fp "2.0")
+    (FA.fp_sqrt (fp "4.0"))
+
+
+let test_division_interval_containing_zero () =
+  let numerator = fp "1.0" in
+
+  let denominator =
+    FA.value
+      ~neg:{ lo = f "-1.0"; hi = f "-0.5" }
+      ~zero:true
+      ~pos:{ lo = f "0.5"; hi = f "1.0" }
+      ()
+  in
+
+  match FA.fp_div numerator denominator with
+  | Ok FA.Bottom ->
+      ()
+
+  | Ok _ ->
+      fail
+        "division by interval containing zero: expected current policy Bottom"
+
+  | Error (FA.Unsupported msg) ->
+      fail
+        ("division by interval containing zero unexpectedly Unsupported: "
+         ^ msg)
+
+  | Error (FA.Invalid msg) ->
+      fail
+        ("division by interval containing zero unexpectedly Invalid: "
+         ^ msg)
 
 let () =
   (* Original tests *)
@@ -669,5 +825,15 @@ let () =
   run_test
     "Bottom arithmetic"
     test_bottom_arithmetic;
+  run_test "overflow behavior" test_overflow_behavior;
+  run_test "subnormal operand policy" test_subnormal_operand_policy;
+  run_test "underflow result behavior" test_underflow_result_behavior;
+  run_test "division by zero behavior" test_division_by_zero_behavior;
+  run_test "zero divided by zero behavior" test_zero_divided_by_zero_behavior;
+  run_test "sqrt negative behavior" test_sqrt_negative_behavior;
+  run_test "sqrt zero behavior" test_sqrt_zero_behavior;
+  run_test "sqrt positive behavior" test_sqrt_positive_behavior;
+  run_test  "division interval containing zero"
+    test_division_interval_containing_zero;
 
   print_endline "all floatabs tests passed"
