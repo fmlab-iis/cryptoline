@@ -18,10 +18,13 @@ let c s = Aconst (Tdouble, Cfloat (f s))
 let rconst s = Rconst (64, Cfloat (f s))
 let v name = mkvar name Tdouble
 
-let get_ok = function
-  | Ok x -> x
-  | Error (FA.Unsupported msg) -> fail ("unexpected unsupported: " ^ msg)
-  | Error (FA.Invalid msg) -> fail ("unexpected invalid: " ^ msg)
+let get_ok (r : ('a, FA.error) result) =
+  match r with
+  | Ok v -> v
+  | Error (FA.Unsupported msg) ->
+      fail ("unexpected unsupported: " ^ msg)
+  | Error (FA.Invalid msg) ->
+      fail ("unexpected invalid: " ^ msg)
 
 let test_value_semantics () =
   let one = get_ok (FA.fp_of_const (f "1.0")) in
