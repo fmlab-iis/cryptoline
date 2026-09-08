@@ -265,36 +265,80 @@ let fp_neg = function
   | Bottom -> Bottom
   | Value { neg; zero; pos } -> value ?neg:(interval_neg pos) ~zero ?pos:(interval_neg neg) ()
 
+let classify_add_interval iv =
+  match iv with
+  | None -> (None, false, None)
+  | Some i ->
+      if FloatConst.cmp i.hi fp_zero < 0 then
+        (Some i, false, None)
+      else if FloatConst.cmp i.lo fp_zero > 0 then
+        (None, false, Some i)
+      else if FloatConst.eq i.lo fp_zero
+           && FloatConst.eq i.hi fp_zero then
+        (None, true, None)
+      else
+        let neg =
+          if FloatConst.cmp i.lo fp_zero < 0 then
+            interval_make i.lo fp_neg_min
+          else
+            None
+        in
+        let pos =
+          if FloatConst.cmp i.hi fp_zero > 0 then
+            interval_make fp_min i.hi
+          else
+            None
+        in
+        (neg, true, pos)
+
 let fp_add a b =
   match a, b with
   | Bottom, _ | _, Bottom -> Bottom
+
   | Value a, Value b ->
-      let neg =
-        interval_hull
-          [
-            interval_add a.neg b.neg;
-            interval_sub a.neg (interval_neg b.pos);
-            interval_sub b.neg (interval_neg a.pos);
-          ]
+      let candidates =
+        [
+          interval_add a.neg b.neg;
+          interval_add a.neg b.pos;
+          interval_add a.pos b.neg;
+          interval_add a.pos b.pos;
+
+          (if a.zero then b.neg else None);
+          (if a.zero then b.pos else None);
+          (if b.zero then a.neg else None);
+          (if b.zero then a.pos else None);
+        ]
       in
-      let pos =
-        interval_hull
-          [
-            interval_add a.pos b.pos;
-            interval_sub a.pos (interval_neg b.neg);
-            interval_sub b.pos (interval_neg a.neg);
-          ]
+
+      let negs, zero, poss =
+        List.fold_left
+          (fun (negs, zero, poss) iv ->
+            let neg, has_zero, pos = classify_add_interval iv in
+
+            let negs =
+              match neg with
+              | None -> negs
+              | Some _ -> neg :: negs
+            in
+
+            let poss =
+              match pos with
+              | None -> poss
+              | Some _ -> pos :: poss
+            in
+
+            (negs, zero || has_zero, poss))
+          ([], a.zero && b.zero, [])
+          candidates
       in
-      let zero =
-        (a.zero && b.zero)
-        || (a.zero && b.neg <> None && b.pos <> None)
-        || (b.zero && a.neg <> None && a.pos <> None)
-        || interval_contains_zero (interval_add a.neg b.pos)
-        || interval_contains_zero (interval_add a.pos b.neg)
-      in
+
+      let neg = interval_hull negs in
+      let pos = interval_hull poss in
+
       normalize_result neg zero pos
 
-let fp_sub a b = fp_add a (fp_neg b)
+let fp_sub a b =
+  fp_add a (fp_neg b)
 
 let fp_mul_raw a b =
   match a, b with
