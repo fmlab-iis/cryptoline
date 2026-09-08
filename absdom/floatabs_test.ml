@@ -216,17 +216,14 @@ let test_overlap_and_unsupported () =
      | _ -> false);
 
   expect_true
-    "subnormal operand case is unsupported"
-    (match
-       FA.fp_mul
-         (fp_of_const_or_fail FA.fp_min)
-         (fp "2.0")
-     with
-     | Error (FA.Unsupported _) -> true
-     | _ -> false)
-
-and fp_of_const_or_fail x =
-  get_ok (FA.fp_of_const x)
+  "subnormal operand case is unsupported"
+  (match
+     FA.fp_mul
+       (get_ok (FA.fp_of_const FA.fp_min))
+       (fp "2.0")
+   with
+   | Error (FA.Unsupported _) -> true
+   | _ -> false)
 
 (* ============================================================ *)
 (* Additional arithmetic edge cases                             *)
