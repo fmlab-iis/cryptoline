@@ -1,4 +1,3 @@
-```ocaml
 open Ast.Cryptoline
 open Utils.Float
 
