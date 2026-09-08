@@ -527,8 +527,13 @@ let test_verify_arithmetic_postcondition () =
   let rs =
     {
       rspre =
-        Rcmp
-          (64, Rfpgt, Rvar x, rconst "0.0");
+        Rand
+          (
+            Rcmp
+              (64, Rfpgt, Rvar x, rconst "0.0"),
+            Rcmp
+              (64, Rfplt, Rvar x, rconst "10.0")
+          );
 
       rsprog =
         [
