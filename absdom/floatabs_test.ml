@@ -508,12 +508,12 @@ let test_transfer_sub_mul_div () =
 
   let div_expr =
     Rbinop
-      (64, Rdiv, Rvar w, rconst "3.0")
+      (64, Rdiv, Rvar w, rconst "2.0")
   in
 
   expect_fp
     "eval_rexp after transfer"
-    (fp "2.0")
+    (fp "3.0")
     (get_ok (FA.eval_rexp st div_expr))
 
 (* ============================================================ *)
