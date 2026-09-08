@@ -3,8 +3,8 @@
 
 open Utils
 
-exception UnknownAlgebraSolver of string
-(** Raised if an unknown algebra solver is specified *)
+exception UnknownSolverException of string
+(** Raised if an unknown solver is specified *)
 
 (** {1 General Options} *)
 
@@ -152,21 +152,6 @@ type algsmt_option =
 val default_algsmt_option : algsmt_option
 (** The default options for SMT solvers in solving algebraic properties *)
 
-type algebra_solver =
-  | Singular                 (** {{:https://www.singular.uni-kl.de}Singular} *)
-  | Sage                     (** {{:https://www.sagemath.org}Sage} *)
-  | Magma                    (** {{:http://magma.maths.usyd.edu.au/magma/}Magma} *)
-  | Mathematica              (** {{:https://www.wolfram.com/mathematica/}Mathematica} *)
-  | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
-  | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
-  | Maxima                   (** {{:https://maxima.sourceforge.io}Maxima} *)
-  | SMTSolver of algsmt_option
-                             (** SMT solvers that support {{:https://smtlib.cs.uiowa.edu}SMTLIB format} *) (* *)
-  | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
-  | SCIP                     (** {{:https://scipopt.org}The SCIP Optimization Suite} *)
-  | ISL                      (** {{:https://libisl.sourceforge.io/}Intger Set Library *)
-(** supported algebra solvers *)
-
 type variable_order =
   | LexOrder
   | AppearingOrder
@@ -183,25 +168,50 @@ type monomial_order =
   | NegativeReverseLexicographical
   | NegativeDegreeLexicographic
   | NegativeDegreeReverseLexicographic
-(* monomial order in computing Groebner basis **)
+(** monomial order in computing Groebner basis *)
+
+type algebra_solver =
+  (* Computer algebra systems *)
+  | Singular                 (** {{:https://www.singular.uni-kl.de}Singular} *)
+  | Sage                     (** {{:https://www.sagemath.org}Sage} *)
+  | Magma                    (** {{:http://magma.maths.usyd.edu.au/magma/}Magma} *)
+  | Mathematica              (** {{:https://www.wolfram.com/mathematica/}Mathematica} *)
+  | Macaulay2                (** {{:http://www2.macaulay2.com/Macaulay2/}Macaulay2} *)
+  | Maple                    (** {{:https://www.maplesoft.com}Maple} *)
+  | Maxima                   (** {{:https://maxima.sourceforge.io}Maxima} *)
+  (* SMT solver *)
+  | SMTSolver of algsmt_option
+                             (** SMT solvers that support {{:https://smtlib.cs.uiowa.edu}SMTLIB format} *) (* *)
+  (* Mixed integer programming solvers *)
+  | PPL                      (** {{:https://www.bugseng.com/content/parma-polyhedra-library/}Parma Polyhedra Library} *)
+  | SCIP                     (** {{:https://scipopt.org}The SCIP Optimization Suite} *)
+  | ISL                      (** {{:https://libisl.sourceforge.io/}Intger Set Library *)
+(** supported algebra solvers *)
+
+type alg_option =
+  { mutable cas_variable_order: variable_order; (** the variable order for CAS *)
+    mutable cas_monomial_order: monomial_order; (** the monomial order for CAS *)
+    mutable cas_eqfirst: bool;                  (** check if p = 0 before checking if p is in an ideal for CAS *)
+    mutable alg_solver: algebra_solver;         (** the algebra solver to be used *)
+    mutable alg_solver_args: string }           (** the extra command-line arguments for the algebra solver *)
+(** options for algebra solvers *)
+
+
+val default_alg_option : alg_option
+(** the default option for algebra solvers *)
+
+val alg_option : alg_option
+(** the global option for algebra solvers *)
 
 val get_monomial_orders : unit -> string list
 (** return the names of all monomial orders *)
-val default_algebra_solver : algebra_solver
-(** the default algebra solver *)
-
-val algebra_solver : algebra_solver ref
-(** the algebra solver to be used *)
-
-val algebra_solver_args : string ref
-(** additional arguments passed to the algebra solver *)
 
 val string_of_algebra_solver : algebra_solver -> string
 (** string representation of an algebra solver *)
 
 val parse_algebra_solver : string -> algebra_solver
-(** Parse a string as an algebra solver. Raise [UnknownSolverException] if the
-    string is not a solver. *)
+(** Parse a string as an algebra solver. Raise [UnknownSolverException]
+    if the string is not a solver. *)
 
 val singular_path : string ref
 (** the path to Singular *)
@@ -253,20 +263,15 @@ val polys_rewrite_replace_eexp : bool ref
 
 val carry_constraint : bool ref
 (** [true] to add constraints for carries in verifying algebraic specifications *)
+
 val minimize_constraint : bool ref
 (** [true] to minimize constraints for verifying algebraic range specifications *)
-
-val variable_ordering : variable_order ref
-(** the variable order to be used in the computation of Groebner basis *)
 
 val string_of_variable_ordering : variable_order -> string
 (** the string representation of variable orders *)
 
 val parse_variable_ordering : string -> variable_order
 (** parse a variable order from its string representation *)
-
-val monomial_order : monomial_order ref
-(** the current monomial order *)
 
 val name_of_monomial_order : monomial_order -> string
 (** return the name of the monomial order *)
@@ -292,9 +297,6 @@ val mip_safety_solver : algebra_solver ref
 val safety_by_mip : bool ref
 (** [true] to use MIP for safety checking *)
 
-val check_eq_first : bool ref
-(** [true] to check if two polynomials are equal first before
-    checking modular equality *)
 
 (** {1 Range-Specific Options} *)
 

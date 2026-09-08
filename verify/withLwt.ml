@@ -140,7 +140,7 @@ let run_singular header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_array =
     let extra_args =
-      String.split_on_char ' ' !Options.Std.algebra_solver_args
+      String.split_on_char ' ' alg_option.alg_solver_args
       |> List.filter (fun s -> s <> "")
     in
     let cmd_list = [!singular_path; "-q"] @ extra_args @ [ifile] in
@@ -162,7 +162,7 @@ let run_singular header ifile ofile =
 let run_sage header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ =
-    Options.WithLwt.unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+    Options.WithLwt.unix (!sage_path ^ " " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -178,7 +178,7 @@ let run_sage header ifile ofile =
 
 let run_magma header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ alg_option.alg_solver_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -194,7 +194,7 @@ let run_magma header ifile ofile =
 
 let run_mathematica header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ alg_option.alg_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -211,7 +211,7 @@ let run_mathematica header ifile ofile =
 let run_macaulay2 header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ =
-    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
+    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ alg_option.alg_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -227,7 +227,7 @@ let run_macaulay2 header ifile ofile =
 
 let run_maple header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -243,7 +243,7 @@ let run_maple header ifile ofile =
 
 let run_maxima header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ !Options.Std.algebra_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ alg_option.alg_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -528,7 +528,7 @@ let read_isl_output = read_one_line
 let is_in_ideal
       ?comments
       ?(expand=(!Options.Std.expand_poly))
-      ?(solver=(!Options.Std.algebra_solver))
+      ?(solver=(alg_option.alg_solver))
       header vars ideal p =
   (* The input file to Sage must have file extension ".sage". *)
   let propose_input_suffix solver =
@@ -593,7 +593,7 @@ let is_in_ideal
   in
   res
 
-let is_constr_feasible ?comments headers ?(solver=(!Options.Std.algebra_solver))
+let is_constr_feasible ?comments headers ?(solver=(alg_option.alg_solver))
       vgen mipvars constr =
   let gen_files_py () =
     let ifile = tmpfile "inputfmip_" ".py" in
@@ -1132,7 +1132,7 @@ let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
   verify_rspec_no_rcut_abs_interp hashopt s |>
   List.rev_map (verify comments) |> List.rev
 
-let verify_entailment ?comments ?(solver=(!Options.Std.algebra_solver)) ?(eqfirst=(!Options.Std.check_eq_first)) headers (post, vars, ideal, p) =
+let verify_entailment ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg_option.cas_eqfirst)) headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in
   let%lwt r =
     if eqfirst then
@@ -1670,22 +1670,24 @@ let run_cli_vespec ?comments header s =
      (if !Options.Std.use_btor then "-btor" else "");
      (if !Options.Std.incremental_safety then "-isafety" else "");
      (if !Options.Std.incremental_safety then "-isafety_timeout " ^ string_of_float !Options.Std.incremental_safety_timeout else "");
-     (match !Options.Std.algebra_solver with
+     (match alg_option.alg_solver with
       | Options.Std.Singular -> "-singular " ^ !Options.Std.singular_path
-      | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
       | Options.Std.Sage -> "-sage " ^ !Options.Std.sage_path
+      | Options.Std.Magma -> "-magma " ^ !Options.Std.magma_path
       | Options.Std.Mathematica -> "-mathematica " ^ !Options.Std.mathematica_path
       | Options.Std.Macaulay2 -> "-macaulay2 " ^ !Options.Std.macaulay2_path
+      | Options.Std.Maple -> "-maple " ^ !Options.Std.maple_path
+      | Options.Std.Maxima -> "-maxima " ^ !Options.Std.maxima_path
       | Options.Std.SMTSolver solver -> "smt:" ^ solver.algsmt_path
       | _ -> "");
-     (if !Options.Std.algebra_solver_args = "" then ""
-      else "-algebra_args \"" ^ !Options.Std.algebra_solver_args ^ "\"");
+     (if alg_option.alg_solver_args = "" then ""
+      else "-algebra_args \"" ^ alg_option.alg_solver_args ^ "\"");
      (if not !Options.Std.apply_rewrite_mov then "-disable_rewriting:mov" else "");
      (if not !Options.Std.apply_rewrite_vpc then "-disable_rewriting:vpc" else "");
      (if not !Options.Std.apply_rewrite_poly then "-disable_rewriting:poly" else "");
      (if !Options.Std.carry_constraint then ""
       else "-no_carry_constraint");
-     "-vo " ^ string_of_variable_ordering !Options.Std.variable_ordering;
+     "-vo " ^ string_of_variable_ordering alg_option.cas_variable_order;
      (if !Options.Std.polys_rewrite_replace_eexp then "-re" else "");
      (if !Options.Std.apply_slicing then "-slicing" else "");
      (if !Options.Std.rename_local then "-rename_local" else "");

@@ -54,7 +54,7 @@ let args_io =
 (* Do not use -c or -instr below. *)
 let args_verifier =
   [
-    ("-algebra_args", String (fun str -> algebra_solver_args := str),
+    ("-algebra_args", String (fun str -> alg_option.alg_solver_args <- str),
      mk_arg_desc([
            "ARGS";
            "Specify additional arguments passed to the algebra solver."
@@ -67,23 +67,21 @@ let args_verifier =
            "(specified by -algebra_solver) for algebraic properties."
     ]));
     ("-algebra_solver",
-     String (fun str -> algebra_solver :=
-                          Options.Std.parse_algebra_solver str),
+     String (fun str -> alg_option.alg_solver <- parse_algebra_solver str),
      mk_arg_desc([
            "";
            "Specify the algebra solver, which can be "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Singular ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Sage ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Magma ^ ",";
-           Options.Std.string_of_algebra_solver Options.Std.Mathematica ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Macaulay2 ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Maple ^ ", "
-           ^ Options.Std.string_of_algebra_solver Options.Std.Maxima ^ ", or "
+           ^ string_of_algebra_solver Singular ^ ", "
+           ^ string_of_algebra_solver Sage ^ ", "
+           ^ string_of_algebra_solver Magma ^ ",";
+           string_of_algebra_solver Mathematica ^ ", "
+           ^ string_of_algebra_solver Macaulay2 ^ ", "
+           ^ string_of_algebra_solver Maple ^ ", "
+           ^ string_of_algebra_solver Maxima ^ ", or "
            ^ "smt:SMT_SOLVER where SMT_SOLVER";
            "is the name of the SMT solver which accepts inputs in SMTLIB";
            "format. The default algebra solver is "
-           ^ Options.Std.string_of_algebra_solver
-               Options.Std.default_algebra_solver
+           ^ string_of_algebra_solver default_alg_option.alg_solver
            ^ "."
     ]));
     ("-br", Set use_binary_repr,
@@ -131,14 +129,14 @@ let args_verifier =
      mk_arg_desc([""; "Verify safety conditions cross cuts."]));
     ("-macaulay2",
      String (fun str -> macaulay2_path := str;
-                        algebra_solver := Macaulay2),
+                        alg_option.alg_solver <- Macaulay2),
      mk_arg_desc(["PATH"; "Use Macaulay2 at the specified path."]));
     ("-macaulay2_path", String (fun str -> macaulay2_path := str),
      mk_arg_desc(["PATH";
                   "Set the path to Macaulay2."]));
     ("-magma",
      String (fun str -> magma_path := str;
-                        algebra_solver := Magma),
+                        alg_option.alg_solver <- Magma),
      mk_arg_desc(["PATH";
                   "Use Magma at the specified path."]));
     ("-magma_path", String (fun str -> magma_path := str),
@@ -146,12 +144,12 @@ let args_verifier =
                   "Set the path to Magma."]));
     ("-maple",
      String (fun str -> maple_path := str;
-                        algebra_solver := Maple),
+                        alg_option.alg_solver <- Maple),
      mk_arg_desc(["PATH";
                   "Use Maple at the specified path."]));
     ("-maxima",
      String (fun str -> maxima_path := str;
-                        algebra_solver := Maxima),
+                        alg_option.alg_solver <- Maxima),
      mk_arg_desc(["PATH";
                   "Use Maxima at the specified path."]));
     ("-maple_path", String (fun str -> maple_path := str),
@@ -162,7 +160,7 @@ let args_verifier =
                   "Set the path to Maxima."]));
     ("-mathematica",
      String (fun str -> mathematica_path := str;
-                        algebra_solver := Mathematica),
+                        alg_option.alg_solver <- Mathematica),
      mk_arg_desc([
            "PATH";
            "Use Mathematica command-line script interpreter at the specified";
@@ -232,14 +230,14 @@ let args_verifier =
            "Specify the engine for safety checking. The argument";
            "`-safety-engine abs_interp` is equivalent to `-abs_interp`."
     ]));
-    ("-sage", String (fun str -> sage_path := str; algebra_solver := Sage),
+    ("-sage", String (fun str -> sage_path := str; alg_option.alg_solver <- Sage),
      mk_arg_desc(["PATH";
                   "Use Sage at the specified path."]));
     ("-sage_path", String (fun str -> sage_path := str),
      mk_arg_desc(["PATH";
                   "Set the path to Sage."]));
     ("-singular",
-     String (fun str -> singular_path := str; algebra_solver := Singular),
+     String (fun str -> singular_path := str; alg_option.alg_solver <- Singular),
      mk_arg_desc(["PATH";
                   "Use Singular at the specified path."]));
     ("-singular_path", String (fun str -> singular_path := str),
@@ -259,13 +257,13 @@ let args_verifier =
      Symbol (["lex"; "appearing"; "rev_lex"; "rev_appearing"],
              (fun str ->
                try
-                 variable_ordering := parse_variable_ordering str
+                 alg_option.cas_variable_order <- parse_variable_ordering str
                with Not_found ->
                  failwith ("Unknown variable ordering: " ^ str))),
      mk_arg_desc([
            "";
            "Set variable ordering in algebra solver (default is "
-           ^ string_of_variable_ordering !variable_ordering ^ ").";
+           ^ string_of_variable_ordering alg_option.cas_variable_order ^ ").";
            "This option decides the order of variables forming a polynomial";
            "ring. Each computer algebra system may still have another option";
            "deciding the monomial order. See -mo for more details."
@@ -275,7 +273,7 @@ let args_verifier =
        (get_monomial_orders(),
         (fun str ->
           try
-            monomial_order := parse_monomial_order str
+            alg_option.cas_monomial_order <- parse_monomial_order str
           with Not_found ->
             failwith("Unknown monomial order: " ^ str)
         )
@@ -286,7 +284,7 @@ let args_verifier =
            "monomial orders are supported by a computer algebra system."
     ]));
     ("-check-eq-first",
-     Set Options.Std.check_eq_first,
+     Bool (fun b -> alg_option.cas_eqfirst <- b),
      mk_arg_desc([
            "";
            "Check polynomial equality first before checking modular equality."

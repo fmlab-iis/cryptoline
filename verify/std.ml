@@ -138,7 +138,7 @@ let write_maxima_input ?comments ifile vars gen p =
 
 let run_singular ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!singular_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!singular_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Singular: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM SINGULAR:";
@@ -147,7 +147,7 @@ let run_singular ifile ofile =
 
 let run_sage ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!sage_path ^ " " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!sage_path ^ " " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Sage: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM SAGE:";
@@ -156,7 +156,7 @@ let run_sage ifile ofile =
 
 let run_magma ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!magma_path ^ " -b " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!magma_path ^ " -b " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Magma: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAGMA:";
@@ -165,7 +165,7 @@ let run_magma ifile ofile =
 
 let run_mathematica ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!mathematica_path ^ " " ^ !Options.Std.algebra_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!mathematica_path ^ " " ^ alg_option.alg_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Mathematica: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MATHEMATICA:";
@@ -174,7 +174,7 @@ let run_mathematica ifile ofile =
 
 let run_macaulay2 ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ !Options.Std.algebra_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ alg_option.alg_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Macaulay2: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MACAULAY2:";
@@ -183,7 +183,7 @@ let run_macaulay2 ifile ofile =
 
 let run_maple ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maple_path ^ " -q " ^ !Options.Std.algebra_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maple_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAPLE:";
@@ -192,7 +192,7 @@ let run_maple ifile ofile =
 
 let run_maxima ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ !Options.Std.algebra_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ alg_option.alg_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Maxima: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAXIMA:";
@@ -416,7 +416,7 @@ let read_isl_output = read_one_line
 
 (** Interfaces of Solvers *)
 
-let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) vars ideal p =
+let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(alg_option.alg_solver)) vars ideal p =
   (* The input file to Sage must have file extension ".sage". *)
   let propose_input_suffix solver =
     match solver with
@@ -470,7 +470,7 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(!algebra_solver)) v
   let _ = cleanup [ifile; ofile] in
   res
 
-let is_constr_feasible ?comments ?(solver=(!Options.Std.algebra_solver))
+let is_constr_feasible ?comments ?(solver=(alg_option.alg_solver))
       vgen mipvars constr =
   let gen_files_py () =
     let ifile = tmpfile "inputfmip_" ".py" in
@@ -1005,7 +1005,7 @@ let verify_rspec options s hashopt =
   let _ = Options.Std.trace "===== Verifying range specifications =====" in
   verify_rspec_with_cuts options ~comments:["Verify: range specifications"] hashopt s
 
-let verify_entailments ?comments ?(solver=(!algebra_solver)) ?(eqfirst=(!Options.Std.check_eq_first)) entailments =
+let verify_entailments ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg_option.cas_eqfirst)) entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (

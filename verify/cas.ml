@@ -633,7 +633,7 @@ let vars_in_lex_order es =
   VS.elements (List.fold_left (fun res e -> VS.union res (vars_eexp e)) VS.empty es)
 
 let vars_in_order es =
-  match !variable_ordering with
+  match alg_option.cas_variable_order with
   | LexOrder -> vars_in_lex_order es
   | AppearingOrder ->
      List.rev (vars_in_appearing_order (fun u v -> v - u) (List.rev es))
@@ -1098,7 +1098,7 @@ let bprint_singular_input ?comments buf vars gen p =
             Buffer.add_string buf c
         ) comments
     else () in
-  let mon_ord = get_mon_ord !monomial_order Singular in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Singular in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0.
@@ -1144,7 +1144,7 @@ let generate_singular_input ?comments vars gen p =
     then Option.value (Option.map (make_line_comments "//") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Singular in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Singular in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0.
@@ -1198,7 +1198,7 @@ let bprint_sage_input ?comments buf vars gen p =
              Buffer.add_string buf c
            ) comments
     else () in
-  let mon_ord = get_mon_ord !monomial_order Sage in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Sage in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. *)
@@ -1256,7 +1256,7 @@ let generate_sage_input ?comments vars gen p =
     then Option.value (Option.map (make_line_comments "#") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Sage in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Sage in
   match gen with
   | [] ->
     Printf.sprintf {|%s
@@ -1301,7 +1301,7 @@ let bprint_magma_input ?comments buf vars gen p =
              Buffer.add_string buf c
            ) comments
     else () in
-  let mon_ord = get_mon_ord !monomial_order Magma in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Magma in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1359,7 +1359,7 @@ let generate_magma_input ?comments vars gen p =
     then Option.value (Option.map (make_line_comments "//") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Magma in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Magma in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1404,7 +1404,7 @@ let bprint_mathematica_input ?comments buf vars gen p =
         (Option.value (Option.map (make_block_comments "(*" "*)") comments)
            ~default:"")
     else () in
-  let mon_ord = get_mon_ord !monomial_order Mathematica in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Mathematica in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1449,7 +1449,7 @@ let generate_mathematica_input ?comments vars gen p =
     then Option.value (Option.map (make_block_comments "(*" "*)") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Mathematica in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Mathematica in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1509,7 +1509,7 @@ let bprint_macaulay2_input ?comments buf vars gen p =
         (Option.value (Option.map (make_line_comments "--") comments)
            ~default:"")
     else () in
-  let mon_ord = get_mon_ord !monomial_order Macaulay2 in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Macaulay2 in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1566,7 +1566,7 @@ let generate_macaulay2_input ?comments vars gen p =
     then Option.value (Option.map (make_line_comments "--") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Macaulay2 in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Macaulay2 in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1606,7 +1606,7 @@ let bprint_maple_input ?comments buf vars gen p =
         (Option.value (Option.map (make_line_comments "--") comments)
            ~default:"")
     else () in
-  let mon_ord = get_mon_ord !monomial_order Maple in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Maple in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1652,7 +1652,7 @@ let generate_maple_input ?comments vars gen p =
     then Option.value (Option.map (make_line_comments "#") comments)
            ~default:""
     else "" in
-  let mon_ord = get_mon_ord !monomial_order Maple in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Maple in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)
@@ -1703,7 +1703,7 @@ let bprint_maxima_input ?comments buf vars gen p =
              Buffer.add_string buf " */"
            ) comments
     else () in
-  let mon_ord = get_mon_ord !monomial_order Maxima in
+  let mon_ord = get_mon_ord alg_option.cas_monomial_order Maxima in
   match gen with
   | [] ->
     (* If gen is empty, we simply check if p equals 0. (not tested) *)

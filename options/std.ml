@@ -1,7 +1,7 @@
 
 open Utils
 
-exception UnknownAlgebraSolver of string
+exception UnknownSolverException of string
 
 
 (** General Options *)
@@ -159,19 +159,6 @@ let default_algsmt_option =
   { algsmt_path = "z3";
     algsmt_logic = NIA }
 
-type algebra_solver =
-  | Singular
-  | Sage
-  | Magma
-  | Mathematica
-  | Macaulay2
-  | Maple
-  | Maxima
-  | SMTSolver of algsmt_option
-  | PPL
-  | SCIP
-  | ISL
-
 type variable_order =
   | LexOrder
   | AppearingOrder
@@ -188,11 +175,70 @@ type monomial_order =
   | NegativeDegreeLexicographic
   | NegativeDegreeReverseLexicographic
 
-let default_algebra_solver = Singular
+type algebra_solver =
+  | Singular
+  | Sage
+  | Magma
+  | Mathematica
+  | Macaulay2
+  | Maple
+  | Maxima
+  | SMTSolver of algsmt_option
+  | PPL
+  | SCIP
+  | ISL
 
-let algebra_solver = ref default_algebra_solver
+type alg_option =
+  { mutable cas_variable_order: variable_order;
+    mutable cas_monomial_order: monomial_order;
+    mutable cas_eqfirst: bool;
+    mutable alg_solver: algebra_solver;
+    mutable alg_solver_args: string }
 
-let algebra_solver_args = ref ""
+let default_alg_option =
+  { cas_variable_order = RevAppearingOrder;
+    cas_monomial_order = Lexicographic;
+    cas_eqfirst = false;
+    alg_solver = Singular;
+    alg_solver_args = "" }
+
+let alg_option =
+  { default_alg_option with cas_eqfirst = default_alg_option.cas_eqfirst }
+
+let string_of_variable_ordering o =
+  match o with
+  | LexOrder -> "lex"
+  | AppearingOrder -> "appearing"
+  | RevLexOrder -> "rev_lex"
+  | RevAppearingOrder -> "rev_appearing"
+
+let parse_variable_ordering str =
+  if str = "lex" then LexOrder
+  else if str = "appearing" then AppearingOrder
+  else if str = "rev_lex" then RevLexOrder
+  else if str = "rev_appearing" then RevAppearingOrder
+  else raise Not_found
+
+let name_of_monomial_order mo =
+  match mo with
+  | Lexicographic -> "lex"
+  | ReverseLexicographic -> "revlex"
+  | DegreeLexicographic -> "glex"
+  | DegreeReverseLexicographic -> "grevlex"
+  | NegativeLexicographic -> "neglex"
+  | NegativeReverseLexicographical -> "negrevlex"
+  | NegativeDegreeLexicographic -> "negdeglex"
+  | NegativeDegreeReverseLexicographic -> "negdegrevlex"
+
+let get_monomial_orders () =
+  [ name_of_monomial_order Lexicographic;
+    name_of_monomial_order ReverseLexicographic;
+    name_of_monomial_order DegreeLexicographic;
+    name_of_monomial_order DegreeReverseLexicographic;
+    name_of_monomial_order NegativeLexicographic;
+    name_of_monomial_order NegativeReverseLexicographical;
+    name_of_monomial_order NegativeDegreeLexicographic;
+    name_of_monomial_order NegativeDegreeReverseLexicographic ]
 
 let string_of_algsmt_logic l =
   match l with
@@ -250,7 +296,7 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver PPL then PPL
   else if str = string_of_algebra_solver SCIP then SCIP
   else if str = string_of_algebra_solver ISL then ISL
-  else raise (UnknownAlgebraSolver ("Unknown algebra solver: " ^ str))
+  else raise (UnknownSolverException ("Unknown algebra solver: " ^ str))
 
 let singular_path = ref "Singular"
 let sage_path = ref "sage"
@@ -285,45 +331,6 @@ let polys_rewrite_replace_eexp = ref false
 let carry_constraint = ref true
 
 let minimize_constraint = ref false
-
-let variable_ordering = ref RevAppearingOrder
-
-let string_of_variable_ordering o =
-  match o with
-  | LexOrder -> "lex"
-  | AppearingOrder -> "appearing"
-  | RevLexOrder -> "rev_lex"
-  | RevAppearingOrder -> "rev_appearing"
-
-let parse_variable_ordering str =
-  if str = "lex" then LexOrder
-  else if str = "appearing" then AppearingOrder
-  else if str = "rev_lex" then RevLexOrder
-  else if str = "rev_appearing" then RevAppearingOrder
-  else raise Not_found
-
-let monomial_order = ref Lexicographic
-
-let name_of_monomial_order mo =
-  match mo with
-  | Lexicographic -> "lex"
-  | ReverseLexicographic -> "revlex"
-  | DegreeLexicographic -> "glex"
-  | DegreeReverseLexicographic -> "grevlex"
-  | NegativeLexicographic -> "neglex"
-  | NegativeReverseLexicographical -> "negrevlex"
-  | NegativeDegreeLexicographic -> "negdeglex"
-  | NegativeDegreeReverseLexicographic -> "negdegrevlex"
-
-let get_monomial_orders () =
-  [ name_of_monomial_order Lexicographic;
-    name_of_monomial_order ReverseLexicographic;
-    name_of_monomial_order DegreeLexicographic;
-    name_of_monomial_order DegreeReverseLexicographic;
-    name_of_monomial_order NegativeLexicographic;
-    name_of_monomial_order NegativeReverseLexicographical;
-    name_of_monomial_order NegativeDegreeLexicographic;
-    name_of_monomial_order NegativeDegreeReverseLexicographic ]
 
 let code_of_monomial_order_for_solver mo so =
   match so with
@@ -415,7 +422,7 @@ let track_split = ref false
 
 let expand_poly = ref false
 
-let check_eq_first = ref false
+
 
 (** Range-Specific Options *)
 

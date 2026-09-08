@@ -1227,7 +1227,7 @@ let rexp_of_atom a =
    no algebra solver is specified, return [!Options.Std.algebra_solver]. *)
 let rec algebra_solver_of_prove_with pwss =
   match pwss with
-  | [] -> !Options.Std.algebra_solver
+  | [] -> Options.Std.alg_option.alg_solver
   | AlgebraSolver s::_ -> s
   | _::tl -> algebra_solver_of_prove_with tl
 
@@ -1240,7 +1240,7 @@ let rec range_solver_of_prove_with pwss =
   | _::tl -> range_solver_of_prove_with tl
 
 let eqfirst_of_prove_with pwss =
-  !Options.Std.check_eq_first || List.mem EqFirst pwss
+  Options.Std.alg_option.cas_eqfirst || List.mem EqFirst pwss
 
 let is_assert i =
   match i with
