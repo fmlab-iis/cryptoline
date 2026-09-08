@@ -311,7 +311,7 @@ let read_maxima_output ofile =
       fun line ->
         (* Older versions of maxima do not support --suppress-input-echo.
            The output may contain "Warning: argument suppress-input-echo not recognized.". *)
-        not (String.starts_with ~prefix:"Warning:" line)
+      not (String.starts_with ~prefix:"Warning:" line || String.starts_with ~prefix:";" line)
     ) ofile with
   | [] -> Lwt.return ""
   | hd::_ -> Lwt.return hd
