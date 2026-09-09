@@ -43,13 +43,16 @@ let invalid msg : ('a, error) result =
 let falcon_prec = Double
 let fp_zero = FloatConst.zero
 let fp_one = FloatConst.one
-let fp_min = FloatConst.min_val falcon_prec
-let fp_minsub = FloatConst.of_string "2.2250738585072014e-308" ~rnd:RNE
-let fp_max = FloatConst.max_val falcon_prec
-let fp_neg_max = FloatConst.neg fp_max ~rnd:RNE
-let fp_neg_min = FloatConst.neg fp_min ~rnd:RNE
-let fp_neg_minsub = FloatConst.neg fp_minsub ~rnd:RNE
+let fp_min_subnormal = FloatConst.min_val falcon_prec
 
+let fp_min_normal =
+  FloatConst.of_string "2.2250738585072014e-308" ~rnd:RNE
+
+let fp_max = FloatConst.max_val falcon_prec
+
+let fp_neg_max = FloatConst.neg fp_max ~rnd:RNE
+let fp_neg_min_subnormal = FloatConst.neg fp_min_subnormal ~rnd:RNE
+let fp_neg_min_normal = FloatConst.neg fp_min_normal ~rnd:RNE
 let value ?neg ?(zero=false) ?pos () = Value { neg; zero; pos }
 
 let interval_make lo hi =
