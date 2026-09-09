@@ -82,9 +82,9 @@ let fp_abs_equal x y =
 
 let top_double =
   value
-    ~neg:{ lo = fp_neg_max; hi = fp_neg_min }
+    ~neg:{ lo = fp_neg_max; hi = fp_neg_min_subnormal }
     ~zero:true
-    ~pos:{ lo = fp_min; hi = fp_max }
+    ~pos:{ lo = fp_min_subnormal; hi = fp_max }
     ()
 
 let empty_state = VM.empty
@@ -251,9 +251,8 @@ let normalize_result neg zero pos =
 let interval_has_subnormal = function
   | None -> false
   | Some i ->
-      (FloatConst.cmp i.hi fp_zero > 0 && FloatConst.cmp i.lo fp_minsub < 0)
-      || (FloatConst.cmp i.hi fp_neg_min < 0 && FloatConst.cmp i.lo fp_zero < 0
-          && FloatConst.cmp i.hi fp_neg_minsub > 0)
+     (FloatConst.cmp i.hi fp_zero > 0  && FloatConst.cmp i.lo fp_min_normal < 0)
+     || (FloatConst.cmp i.hi fp_neg_min_subnormal < 0 && FloatConst.cmp i.lo fp_zero < 0 && FloatConst.cmp i.hi fp_neg_min_normal > 0)
 
 let has_subnormal_component = function
   | Bottom -> false
