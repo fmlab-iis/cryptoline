@@ -298,40 +298,6 @@ let parse_algebra_solver str =
   else if str = string_of_algebra_solver ISL then ISL
   else raise (UnknownSolverException ("Unknown algebra solver: " ^ str))
 
-let singular_path = ref "Singular"
-let sage_path = ref "sage"
-let magma_path = ref "magma"
-let mathematica_path = ref "wolframscript"
-let macaulay2_path = ref "M2"
-let maple_path = ref "maple"
-let maxima_path = ref "maxima"
-let python_path = ref "python"
-
-let apply_rewrite_mov = ref true
-let apply_rewrite_vpc = ref true
-let apply_rewrite_poly = ref true
-let apply_rewrite_eqmod = ref false
-
-let disable_rewriting () =
-  apply_rewrite_mov := false;
-  apply_rewrite_vpc := false;
-  apply_rewrite_poly := false;
-  apply_rewrite_eqmod := false
-
-let enable_rewriting () =
-  apply_rewrite_mov := true;
-  apply_rewrite_vpc := true;
-  apply_rewrite_poly := true;
-  apply_rewrite_eqmod := false
-
-let two_phase_rewriting = ref false
-
-let polys_rewrite_replace_eexp = ref false
-
-let carry_constraint = ref true
-
-let minimize_constraint = ref false
-
 let code_of_monomial_order_for_solver mo so =
   match so with
   | Singular ->
@@ -417,6 +383,49 @@ let parse_monomial_order str =
   | "negdeglex" -> NegativeDegreeLexicographic
   | "negdegrevlex" -> NegativeDegreeReverseLexicographic
   | _ -> raise Not_found
+
+let string_of_alg_option o =
+  Printf.sprintf
+    "Variable Order: %s\nMonomial Order: %s\nEqual First: %b\nAlgebra Solver: %s\nAlgebra Solver Args: %s"
+    (string_of_variable_ordering o.cas_variable_order)
+    (name_of_monomial_order o.cas_monomial_order)
+    o.cas_eqfirst
+    (string_of_algebra_solver o.alg_solver)
+    o.alg_solver_args
+
+let singular_path = ref "Singular"
+let sage_path = ref "sage"
+let magma_path = ref "magma"
+let mathematica_path = ref "wolframscript"
+let macaulay2_path = ref "M2"
+let maple_path = ref "maple"
+let maxima_path = ref "maxima"
+let python_path = ref "python"
+
+let apply_rewrite_mov = ref true
+let apply_rewrite_vpc = ref true
+let apply_rewrite_poly = ref true
+let apply_rewrite_eqmod = ref false
+
+let disable_rewriting () =
+  apply_rewrite_mov := false;
+  apply_rewrite_vpc := false;
+  apply_rewrite_poly := false;
+  apply_rewrite_eqmod := false
+
+let enable_rewriting () =
+  apply_rewrite_mov := true;
+  apply_rewrite_vpc := true;
+  apply_rewrite_poly := true;
+  apply_rewrite_eqmod := false
+
+let two_phase_rewriting = ref false
+
+let polys_rewrite_replace_eexp = ref false
+
+let carry_constraint = ref true
+
+let minimize_constraint = ref false
 
 let track_split = ref false
 

@@ -24,9 +24,10 @@ val bv2z_espec : var_gen -> Ast.Cryptoline.espec ->
                  var_gen * Cas.poly_spec
 (** a specification composed of polynomial equations *)
 
-val polys_of_espec : var_gen -> Ast.Cryptoline.espec ->
-                     var_gen * (Ast.Cryptoline.ebexp * Ast.Cryptoline.var list *
-                                Ast.Cryptoline.eexp list * Ast.Cryptoline.eexp) list
+val polys_of_espec :
+  ?ord:Options.Std.variable_order -> var_gen -> Ast.Cryptoline.espec ->
+  var_gen * (Ast.Cryptoline.ebexp * Ast.Cryptoline.var list *
+             Ast.Cryptoline.eexp list * Ast.Cryptoline.eexp) list
 (**
    Convert an algebraic specification to polynomials for ideal membership query.
    All prove-with clauses are ignored.
@@ -38,7 +39,7 @@ val polys_of_espec : var_gen -> Ast.Cryptoline.espec ->
  *)
 
 val polys_of_espec_two_phase :
-  ?sliced:bool ->
+  ?ord:Options.Std.variable_order -> ?sliced:bool ->
   var_gen -> Ast.Cryptoline.espec ->
   var_gen *
     (Ast.Cryptoline.ebexp * Ast.Cryptoline.VS.elt list * Ast.Cryptoline.eexp list *

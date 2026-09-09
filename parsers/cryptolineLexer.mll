@@ -162,7 +162,22 @@
               "smt"                        , SMT;
               "nia"                        , NIA;
               "lia"                        , LIA;
-              "eqfirst"                    , EQFIRST
+              "eqfirst"                    , EQFIRST;
+              "args"                       , ARGS;
+              "variable"                   , VARIABLE;
+              "monomial"                   , MONOMIAL;
+              "order"                      , ORDER;
+              "lex"                        , LEX;
+              "appearing"                  , APPEARING;
+              "rev_lex"                    , REV_LEX;
+              "rev_appearing"              , REV_APPEARING;
+              "revlex"                     , REV_LEX;
+              "glex"                       , DEG_LEX;
+              "grevlex"                    , DEG_REV_LEX;
+              "neglex"                     , NEG_LEX;
+              "negrevlex"                  , NEG_REV_LEX;
+              "negdeglex"                  , NEG_DEG_LEX;
+              "negdegrevlex"               , NEG_DEG_REV_LEX
             ]
 }
 
@@ -172,7 +187,10 @@ let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
 let identity_vec = '%' identity
-let path = '/'? ((['a'-'z' 'A'-'Z' '_'] ['0'-'9' 'a'-'z' 'A'-'Z' '_' '/']*))+ | (['"'][^ '"']+['"'])
+let path_char = ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '.' '@'] | "\\ "
+let unix_path = '/' path_char* ('/' path_char*)*
+let relative_path = path_char+ ('/' path_char+)+
+let path = unix_path | relative_path
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
 rule c_block_comment = parse
@@ -197,14 +215,33 @@ line_comment = parse
 
 and
 
+read_string buf = parse
+  | '"'                            { () }
+  | '\\' '"'                       { Buffer.add_char buf '"'; read_string buf lexbuf }
+  | '\\' '\\'                      { Buffer.add_char buf '\\'; read_string buf lexbuf }
+  | [^ '"' '\\']+                  {
+                                     Buffer.add_string buf (Lexing.lexeme lexbuf);
+                                     read_string buf lexbuf
+                                   }
+  | eof                            { raise (Failure "Unterminated string at EOF") }
+
+and
+
 token = parse
+  (* Spaces *)
     [' ' '\t']                     { token lexbuf }
   | ("\r\n"|'\n'|'\r')             { Lexing.new_line lexbuf; token lexbuf }
-  (* Others *)
+  (* Comments *)
   | "//"                           { line_comment lexbuf }
   | "#"                            { line_comment lexbuf }
   | "/*"                           { c_block_comment lexbuf }
   | "(*"                           { ml_block_comment lexbuf }
+  (* Strings *)
+  | '"'                            {
+                                     let buf = Buffer.create 16 in
+                                     read_string buf lexbuf;
+                                     STRING (Buffer.contents buf)
+                                   }
   (* Symbols *)
   | '@'                            { AT }
   | '{'                            { LBRAC }

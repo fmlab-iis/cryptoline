@@ -64,8 +64,8 @@ let write_header_to_log header =
    Lwt_list.iter_s (fun h -> let%lwt _ = Options.WithLwt.trace h in
                              Lwt.return_unit) header
 
-let write_singular_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_singular_input ?comments vars gen p in
+let write_singular_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_singular_input ?ord ?comments vars gen p in
   let%lwt ifd =
     Lwt_unix.openfile ifile
       [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
@@ -75,8 +75,8 @@ let write_singular_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_sage_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_sage_input ?comments vars gen p in
+let write_sage_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_sage_input ?ord ?comments vars gen p in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -85,8 +85,8 @@ let write_sage_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_magma_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_magma_input ?comments vars gen p in
+let write_magma_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_magma_input ?ord ?comments vars gen p in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -95,8 +95,8 @@ let write_magma_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_mathematica_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_mathematica_input ?comments vars gen p in
+let write_mathematica_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_mathematica_input ?ord ?comments vars gen p in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -105,8 +105,8 @@ let write_mathematica_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_macaulay2_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_macaulay2_input ?comments vars gen p in
+let write_macaulay2_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_macaulay2_input ?ord ?comments vars gen p in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -115,8 +115,8 @@ let write_macaulay2_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_maple_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_maple_input ?comments vars gen p in
+let write_maple_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_maple_input ?ord ?comments vars gen p in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -125,9 +125,9 @@ let write_maple_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let write_maxima_input ?comments ifile vars gen p =
+let write_maxima_input ?ord ?comments ifile vars gen p =
   let%lwt buf = Lwt.return (Buffer.create 1024) in
-  let%lwt _ = Cas.bprint_maxima_input ?comments buf vars gen p; Lwt.return_unit in
+  let%lwt _ = Cas.bprint_maxima_input ?ord ?comments buf vars gen p; Lwt.return_unit in
   let%lwt ifd = Lwt_unix.openfile ifile
                   [Lwt_unix.O_WRONLY; Lwt_unix.O_CREAT; Lwt_unix.O_TRUNC]
                   0o600 in
@@ -136,11 +136,11 @@ let write_maxima_input ?comments ifile vars gen p =
   let%lwt _ = Lwt_io.close ch in
   Lwt.return_unit
 
-let run_singular header ifile ofile =
+let run_singular ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let cmd_array =
     let extra_args =
-      String.split_on_char ' ' alg_option.alg_solver_args
+      String.split_on_char ' ' args
       |> List.filter (fun s -> s <> "")
     in
     let cmd_list = [!singular_path; "-q"] @ extra_args @ [ifile] in
@@ -159,10 +159,10 @@ let run_singular header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_sage header ifile ofile =
+let run_sage ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ =
-    Options.WithLwt.unix (!sage_path ^ " " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+    Options.WithLwt.unix (!sage_path ^ " " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -176,9 +176,9 @@ let run_sage header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_magma header ifile ofile =
+let run_magma ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ alg_option.alg_solver_args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!magma_path ^ " " ^ args ^ " -b \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -192,9 +192,9 @@ let run_magma header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_mathematica header ifile ofile =
+let run_mathematica ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ alg_option.alg_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!mathematica_path ^ " " ^ args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -208,10 +208,10 @@ let run_mathematica header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_macaulay2 header ifile ofile =
+let run_macaulay2 ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
   let%lwt _ =
-    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ alg_option.alg_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
+    Options.WithLwt.unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" " ^ args ^ " 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -225,9 +225,9 @@ let run_macaulay2 header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_maple header ifile ofile =
+let run_maple ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!maple_path ^ " -q " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -241,9 +241,9 @@ let run_maple header ifile ofile =
   let%lwt _ = Options.WithLwt.log_unlock () in
   Lwt.return_unit
 
-let run_maxima header ifile ofile =
+let run_maxima ?(args=alg_option.alg_solver_args) header ifile ofile =
   let t1 = Unix.gettimeofday() in
-  let%lwt _ = Options.WithLwt.unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ alg_option.alg_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
+  let%lwt _ = Options.WithLwt.unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1") in
   let t2 = Unix.gettimeofday() in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = write_header_to_log header in
@@ -526,9 +526,9 @@ let read_isl_output = read_one_line
    @param p a polynomial
 *)
 let is_in_ideal
+      ?(o=alg_option)
       ?comments
       ?(expand=(!Options.Std.expand_poly))
-      ?(solver=(alg_option.alg_solver))
       header vars ideal p =
   (* The input file to Sage must have file extension ".sage". *)
   let propose_input_suffix solver =
@@ -537,7 +537,7 @@ let is_in_ideal
     | _ -> "" in
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
-  let ifile = tmpfile "inputfgb_" (propose_input_suffix solver) in
+  let ifile = tmpfile "inputfgb_" (propose_input_suffix o.alg_solver) in
   let ofile = tmpfile "outputfgb_" "" in
   let comments =
     if !debug then
@@ -545,46 +545,46 @@ let is_in_ideal
     else
       [] in
   let res =
-    match solver with
+    match o.alg_solver with
     | Singular ->
-       let%lwt _ = write_singular_input ~comments ifile vars ideal p in
-       let%lwt _ = run_singular header ifile ofile in
+       let%lwt _ = write_singular_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_singular ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_singular_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Sage ->
-       let%lwt _ = write_sage_input ~comments ifile vars ideal p in
-       let%lwt _ = run_sage header ifile ofile in
+       let%lwt _ = write_sage_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_sage ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_sage_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "True")
     | Magma ->
-       let%lwt _ = write_magma_input ~comments ifile vars ideal p in
-       let%lwt _ = run_magma header ifile ofile in
+       let%lwt _ = write_magma_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_magma ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_magma_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Mathematica ->
-       let%lwt _ = write_mathematica_input ~comments ifile vars ideal p in
-       let%lwt _ = run_mathematica header ifile ofile in
+       let%lwt _ = write_mathematica_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_mathematica ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_mathematica_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Macaulay2 ->
-       let%lwt _ = write_macaulay2_input ~comments ifile vars ideal p in
-       let%lwt _ = run_macaulay2 header ifile ofile in
+       let%lwt _ = write_macaulay2_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_macaulay2 ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_macaulay2_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
     | Maple ->
-       let%lwt _ = write_maple_input ~comments ifile vars ideal p in
-       let%lwt _ = run_maple header ifile ofile in
+       let%lwt _ = write_maple_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_maple ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_maple_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "true")
     | Maxima ->
-       let%lwt _ = write_maxima_input ~comments ifile vars ideal p in
-       let%lwt _ = run_maxima header ifile ofile in
+       let%lwt _ = write_maxima_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let%lwt _ = run_maxima ~args:o.alg_solver_args header ifile ofile in
        let%lwt res = read_maxima_output ofile in
        let%lwt _ = cleanup_lwt [ifile; ofile] in
        Lwt.return (res = "0")
@@ -1132,11 +1132,12 @@ let verify_rspec_no_rcut ?comments header s hashopt : bool task list =
   verify_rspec_no_rcut_abs_interp hashopt s |>
   List.rev_map (verify comments) |> List.rev
 
-let verify_entailment ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg_option.cas_eqfirst)) headers (post, vars, ideal, p) =
+let verify_entailment ?(o=alg_option)?comments headers (post, vars, ideal, p) =
   let poststr = string_of_ebexp post in
   let%lwt r =
-    if eqfirst then
+    if o.cas_eqfirst then
       is_in_ideal
+        ~o
         ~comments:(
           if !debug then
             append_comments_option comments [ "Algebraic condition: " ^ poststr;
@@ -1144,12 +1145,13 @@ let verify_entailment ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg
           else
             []
         )
-        ~solver:solver headers vars [] p
+        headers vars [] p
     else
       Lwt.return_false in
   if r then Lwt.return_true
   else let%lwt r =
          is_in_ideal
+           ~o
            ~comments:(
              if !debug then
                append_comments_option comments [ "Algebraic condition: " ^ poststr;
@@ -1157,16 +1159,15 @@ let verify_entailment ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg
              else
                []
            )
-           ~solver:solver headers vars ideal p in
+           headers vars ideal p in
     Lwt.return r
 
 (* Verify an algebraic specification using a computer algebra system. *)
 let verify_espec_single_conjunct_ideal ?comments headers vgen s =
-  let (_, entailments) = polys_of_espec vgen s in
   let pwss = ebexp_prove_with_specs s.espost in
-  let solver = algebra_solver_of_prove_with pwss in
-  let eqfirst = eqfirst_of_prove_with pwss in
-  Lwt_list.for_all_p (fun entailment -> verify_entailment ?comments ~solver ~eqfirst headers entailment) entailments
+  let o = alg_option_of_prove_with pwss in
+  let (_, entailments) = polys_of_espec ~ord:o.cas_variable_order vgen s in
+  Lwt_list.for_all_p (fun entailment -> verify_entailment ~o ?comments headers entailment) entailments
 
 (* Verify an algebraic specification using a specified SMT solver. *)
 let verify_espec_single_conjunct_smt solver ?comments cut_headers vgen s =
@@ -1253,9 +1254,8 @@ let verify_espec_single_conjunct ?comments cut_headers vgen s hashopt =
 let verify_espec_no_ecut ?comments headers vgen s hashopt =
   if !Options.Std.two_phase_rewriting then
     let pwss = ebexp_prove_with_specs s.espost in
-    let solver = algebra_solver_of_prove_with pwss in
-    let eqfirst = eqfirst_of_prove_with pwss in
-    let mk_task entailment = fun () -> verify_entailment ?comments ~solver ~eqfirst headers entailment in
+    let o = alg_option_of_prove_with pwss in
+    let mk_task entailment = fun () -> verify_entailment ~o ?comments headers entailment in
     let s = remove_trivial_epost s in
     (* We don't need the full is_espec_trivial test. espre_implies_espost and espost_in_assumes are considered in remove_trivial_epost. *)
     match s.espost with
@@ -1268,7 +1268,7 @@ let verify_espec_no_ecut ?comments headers vgen s hashopt =
             (* If the postcondition is an atomic predicate, apply slicing at the beginning. *)
             (slice_espec_ssa s None, true) in
        (* Convert to ideal membership problems, rewriting and slicing (if the postcondition is a conjunction) are done in polys_of_espec_two_phase. *)
-       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
+       let (_, entailments) = polys_of_espec_two_phase ~ord:o.cas_variable_order ~sliced:sliced vgen s in
        let tasks = tmap mk_task entailments in
        tasks
     | _ -> assert false

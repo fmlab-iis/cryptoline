@@ -14,7 +14,7 @@ module SM = Map.Make(StringElem)
 
 module IS = Set.Make(Int)
 
-let union_iss iss = List.fold_left IS.union IS.empty iss
+let _union_iss iss = List.fold_left IS.union IS.empty iss
 
 (** Auxiliary Functions *)
 
@@ -1006,6 +1006,9 @@ type prove_with_spec =
   | AllAssumes
   | AllGhosts
   | AlgebraSolver of Options.Std.algebra_solver
+  | AlgebraArgs of string
+  | VariableOrder of Options.Std.variable_order
+  | MonomialOrder of Options.Std.monomial_order
   | RangeSolver of string
   | EqFirst
 
@@ -1024,35 +1027,88 @@ let bexp_of_bexp_prove_with bpwss = (ebexp_of_ebexp_prove_with (fst bpwss), rbex
 
 (* Simplify prove-with clauses. *)
 let simplify_prove_with_specs pwss =
-  let cut_ids_of_pws pws =
+  let helper
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt) pws =
     match pws with
-    | Cuts ids -> ids
-    | _ -> [] in
-  let cut_idxs = tmap cut_ids_of_pws pwss |> tmap IS.of_list |> union_iss |> IS.elements in
-  let has_all_cuts = List.mem AllCuts pwss in
-  let has_precondition = List.mem Precondition pwss in
-  let has_all_assumes = List.mem AllAssumes pwss in
-  let has_all_ghosts = List.mem AllGhosts pwss in
-  let first_algebra_solver =
-    try [List.find (fun pws -> match pws with AlgebraSolver _ -> true | _ -> false) pwss]
-    with Not_found -> [] in
-  let first_range_solver =
-    try [List.find (fun pws -> match pws with RangeSolver _ -> true | _ -> false) pwss]
-    with Not_found -> [] in
-  let has_eqfirst = List.mem EqFirst pwss in
-  (* Precondition *)
-  (if has_precondition then [Precondition] else [])
-  (* Cuts *)
-  @(if has_all_cuts then [AllCuts]
-    else if List.length cut_idxs = 0 then []
-    else [Cuts cut_idxs])
-  (* Assumes *)
-  @(if has_all_assumes then [AllAssumes] else [])
-  (* Ghosts *)
-  @(if has_all_ghosts then [AllGhosts] else [])
-  @first_algebra_solver
-  @first_range_solver
-  @(if has_eqfirst then [EqFirst] else [])
+      Precondition ->
+      (cutids, true, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | Cuts ids ->
+      (IS.union (IS.of_list ids) cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | AllCuts ->
+      (cutids, has_precondition, true, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | AllAssumes ->
+      (cutids, has_precondition, has_all_cuts, true, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | AllGhosts ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, true,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | AlgebraSolver solver ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       Some solver, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | AlgebraArgs args ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, Some args, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | VariableOrder ord ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, Some ord, monomial_order_opt, has_eqfirst,
+       rng_solver_opt)
+    | MonomialOrder ord ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, Some ord, has_eqfirst,
+       rng_solver_opt)
+    | EqFirst ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, true,
+       rng_solver_opt)
+    | RangeSolver solver ->
+      (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       Some solver) in
+  let (cutids, has_precondition, has_all_cuts, has_all_assumes, has_all_ghosts,
+       alg_solver_opt, alg_args_opt, variable_order_opt, monomial_order_opt, has_eqfirst,
+       rng_solver_opt) = List.fold_left helper (IS.empty, false, false, false, false, None, None, None, None, false, None) pwss in
+  tflatten
+    (
+      (if has_all_cuts then [AllCuts]
+       else if IS.is_empty cutids then []
+       else [Cuts (IS.elements cutids)])
+      ::(if has_precondition then [Precondition]
+         else [])
+      ::(if has_all_assumes then [AllAssumes]
+         else [])
+      ::(if has_all_ghosts then [AllGhosts]
+         else [])
+      ::(match alg_solver_opt with
+          | None -> []
+          | Some solver -> [AlgebraSolver solver])
+      ::(match alg_args_opt with
+          | None -> []
+          | Some args -> [AlgebraArgs args])
+      ::(match variable_order_opt with
+          | None -> []
+          | Some ord -> [VariableOrder ord])
+      ::(match monomial_order_opt with
+          | None -> []
+          | Some ord -> [MonomialOrder ord])
+      ::(if has_eqfirst then [EqFirst]
+         else [])
+      ::(match rng_solver_opt with
+          | None -> []
+          | Some solver -> [RangeSolver solver])
+      ::[]
+    )
 
 let ebexp_prove_with_eands es = List.split es |> fst |> eands
 
@@ -1651,6 +1707,18 @@ let bprint_prove_with_spec buf ps =
       Buffer.add_string buf "algebra solver ";
       Buffer.add_string buf (Options.Std.string_of_algebra_solver s)
     )
+  | AlgebraArgs s -> (
+      Buffer.add_string buf "algebra args ";
+      Buffer.add_string buf s
+    )
+  | VariableOrder o -> (
+      Buffer.add_string buf "variable order ";
+      Buffer.add_string buf (Options.Std.string_of_variable_ordering o)
+    )
+  | MonomialOrder o -> (
+      Buffer.add_string buf "monomial order ";
+      Buffer.add_string buf (Options.Std.name_of_monomial_order o)
+    )
   | RangeSolver s -> (
       Buffer.add_string buf "qfbv solver ";
       Buffer.add_string buf s
@@ -2102,6 +2170,9 @@ let string_of_prove_with_spec ps =
   | AllAssumes -> "all assumes"
   | AllGhosts -> "all ghosts"
   | AlgebraSolver s -> "algebra solver " ^ Options.Std.string_of_algebra_solver s
+  | AlgebraArgs s -> Printf.sprintf "algebra args %s" s
+  | VariableOrder o -> Printf.sprintf "variable order %s" (Options.Std.string_of_variable_ordering o)
+  | MonomialOrder o -> Printf.sprintf "monomial order %s" (Options.Std.name_of_monomial_order o)
   | RangeSolver s -> "qfbv solver " ^ s
   | EqFirst -> "eqfirst"
 
@@ -2113,6 +2184,19 @@ let string_of_epwss ?typ:(typ=false) (e, pwss) =
 
 let string_of_rpwss ?typ:(typ=false) (r, pwss) =
   string_of_rbexp ~typ:typ r ^ (if pwss = [] then "" else (" prove with [" ^ string_of_prove_with_specs pwss ^ "]"))
+
+let alg_option_of_prove_with pwss =
+  let o = { Options.Std.alg_option with cas_eqfirst = Options.Std.alg_option.cas_eqfirst } in
+  let _ = List.iter (fun pws ->
+      match pws with
+      | AlgebraSolver s -> o.alg_solver <- s
+      | AlgebraArgs args -> o.alg_solver_args <- args
+      | VariableOrder ord -> o.cas_variable_order <- ord
+      | MonomialOrder ord -> o.cas_monomial_order <- ord
+      | EqFirst -> o.cas_eqfirst <- true
+      | _ -> ()
+    ) pwss in
+  o
 
 let string_of_ebexp_prove_with ?typ:(typ=false) es =
   match es with
@@ -3618,8 +3702,11 @@ let eprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
-    | AlgebraSolver _ -> (fun _ -> false)
-    | RangeSolver _ -> (fun _ -> false)
+    | AlgebraSolver _
+    | AlgebraArgs _
+    | VariableOrder _
+    | MonomialOrder _
+    | RangeSolver _
     | EqFirst -> (fun _ -> false) in
   let filter =
     let filters = tmap filter_of_pws pwss in
@@ -3665,8 +3752,11 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
     | AllCuts -> (fun i -> match i with Icut _ -> true | _ -> false)
     | AllAssumes -> (fun i -> match i with Iassume _ -> true | _ -> false)
     | AllGhosts -> (fun i -> match i with Ighost _ -> true | _ -> false)
-    | AlgebraSolver _ -> (fun _ -> false)
-    | RangeSolver _ -> (fun _ -> false)
+    | AlgebraSolver _
+    | AlgebraArgs _
+    | VariableOrder _
+    | MonomialOrder _
+    | RangeSolver _
     | EqFirst -> (fun _ -> false) in
   let filter =
     let filters = tmap filter_of_pws pwss in
@@ -3704,12 +3794,13 @@ let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
   let prove_with = tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
-    else let is_algebra_solver pws =
+    else let is_for_algebra_solver pws =
            match pws with
-           | AlgebraSolver _ -> true
-           | EqFirst -> true
-           | _ -> false in
-         List.filter is_algebra_solver pwss in
+           | Precondition | Cuts _ | AllCuts
+           | AllAssumes | AllGhosts | RangeSolver _ -> false
+           | AlgebraSolver _ | AlgebraArgs _
+           | VariableOrder _ | MonomialOrder _ | EqFirst -> true in
+         List.filter is_for_algebra_solver pwss in
   { espre = pre; esprog = tappend prove_with visited; espost = [(e, pwss')] }
 
 (*
@@ -3730,11 +3821,14 @@ let rspec_of_rbexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
   let prove_with = tmap (fun r -> Iassume (Etrue, r)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
-    else let is_range_solver pws =
+    else let is_for_range_solver pws =
            match pws with
-           | RangeSolver _ -> true
-           | _ -> false in
-         List.filter is_range_solver pwss in
+           | Precondition | Cuts _ | AllCuts
+           | AllAssumes | AllGhosts | AlgebraSolver _
+           | VariableOrder _ | MonomialOrder _
+           | AlgebraArgs _ | EqFirst -> false
+           | RangeSolver _ -> true in
+         List.filter is_for_range_solver pwss in
   { rspre = pre; rsprog = tappend prove_with visited; rspost = [(r, pwss')] }
 
 (* [numbering sss] associates every specification in [sss] with a unique ID. *)

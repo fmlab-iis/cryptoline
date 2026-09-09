@@ -595,6 +595,9 @@ type prove_with_spec =
   | AllAssumes                                                (** all assumes *)
   | AllGhosts                                                 (** all ghosts *)
   | AlgebraSolver of Options.Std.algebra_solver               (** algebra solver *)
+  | AlgebraArgs of string                                     (** arguments to algebra solver *)
+  | VariableOrder of Options.Std.variable_order               (** variable order for computer algebra systems *)
+  | MonomialOrder of Options.Std.monomial_order               (** monomial order for computer algebra system *)
   | RangeSolver of string                                     (** range solver *)
   | EqFirst                                                   (** check equality first *) (**)
 (** prove-with clauses *)
@@ -662,6 +665,10 @@ val merge_bexp_prove_with : bexp_prove_with -> (ebexp * prove_with_spec list) * 
 
 val remove_prove_with_cuts : ('a * prove_with_spec list) list -> ('a * prove_with_spec list) list
 (** Remove prove with cuts in predicates *)
+
+val alg_option_of_prove_with : prove_with_spec list -> Options.Std.alg_option
+(** Return a new [Options.Std.alg_opion] adjusted by the specified
+    prove-with clauses. *)
 
 
 (** {1 Instructions} *)

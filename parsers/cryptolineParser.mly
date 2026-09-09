@@ -12,6 +12,7 @@
 %}
 
 %token <string> COMMENT
+%token <string> STRING
 %token <Z.t> NUM
 %token <string> ID VEC_ID PATH
 %token <int> UINT SINT
@@ -33,6 +34,9 @@
 %token ADDOP SUBOP MULOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
 %token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA EQFIRST
+%token ARGS
+%token VARIABLE MONOMIAL ORDER LEX APPEARING REV_LEX REV_APPEARING REV_LEX
+%token DEG_LEX DEG_REV_LEX NEG_LEX NEG_REV_LEX NEG_DEG_LEX NEG_DEG_REV_LEX
 %token EOF DOLPHIN
 %token BOGUS
 
@@ -547,14 +551,38 @@ prove_with_spec:
   | ALL GHOSTS                                    { fun _ -> AllGhosts }
   | ALGEBRA SOLVER ID                             { fun _ -> AlgebraSolver (Options.Std.parse_algebra_solver $3) }
   | ALGEBRA SOLVER SMT COLON path smt_logic_opt   { fun _ -> AlgebraSolver (Options.Std.SMTSolver { algsmt_path = $5; algsmt_logic = $6 }) }
+  | ALGEBRA ARGS STRING                           { fun _ -> AlgebraArgs $3 }
+  | VARIABLE ORDER variable_order                 { fun _ -> VariableOrder $3 }
+  | MONOMIAL ORDER monomial_order                 { fun _ -> MonomialOrder $3 }
   | RANGE SOLVER path                             { fun _ -> RangeSolver $3 }
   | QFBV SOLVER path                              { fun _ -> RangeSolver $3 }
   | EQFIRST                                       { fun _ -> EqFirst }
 ;
 
+variable_order:
+    LEX                                           { Options.Std.LexOrder }
+  | APPEARING                                     { Options.Std.AppearingOrder }
+  | REV_LEX                                       { Options.Std.RevLexOrder }
+  | REV_APPEARING                                 { Options.Std.RevAppearingOrder }
+  | error                                         { raise_at_line (get_line_start()) ("Unknown variable order") }
+;
+
+monomial_order:
+    LEX                                           { Options.Std.Lexicographic }
+  | REV_LEX                                       { Options.Std.ReverseLexicographic }
+  | DEG_LEX                                       { Options.Std.DegreeLexicographic }
+  | DEG_REV_LEX                                   { Options.Std.DegreeReverseLexicographic }
+  | NEG_LEX                                       { Options.Std.NegativeLexicographic }
+  | NEG_REV_LEX                                   { Options.Std.NegativeReverseLexicographical }
+  | NEG_DEG_LEX                                   { Options.Std.NegativeDegreeLexicographic }
+  | NEG_DEG_REV_LEX                               { Options.Std.NegativeDegreeReverseLexicographic }
+  | error                                         { raise_at_line (get_line_start()) ("Unknown monomial order") }
+;
+
 path:
     ID                                            { $1 }
   | PATH                                          { $1 }
+  | STRING                                        { $1 }
 ;
 
 smt_logic_opt:

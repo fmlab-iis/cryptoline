@@ -46,8 +46,9 @@ val bv2z_espec : var_gen -> Ast.Cryptoline.espec ->
  * new auxiliary variables may appear in the equations.
  *)
 
-val polys_of_ebexp : var_gen -> Ast.Cryptoline.ebexp ->
-                     var_gen * Ast.Cryptoline.var list * Ast.Cryptoline.eexp list
+val polys_of_ebexp :
+  var_gen -> Ast.Cryptoline.ebexp ->
+  var_gen * Ast.Cryptoline.var list * Ast.Cryptoline.eexp list
 (**
    Convert an algebraic predicate to polynomials.
    @return [(g, vs, es)] where [g] is the updated variable name generator, [vs]
@@ -55,9 +56,10 @@ val polys_of_ebexp : var_gen -> Ast.Cryptoline.ebexp ->
            input predicate is true if for all [e] in [es], [e = 0] is true
  *)
 
-val polys_of_espec : var_gen -> Ast.Cryptoline.espec ->
-                     var_gen * (Ast.Cryptoline.ebexp * Ast.Cryptoline.var list *
-                                Ast.Cryptoline.eexp list * Ast.Cryptoline.eexp) list
+val polys_of_espec :
+  ?ord:Options.Std.variable_order -> var_gen -> Ast.Cryptoline.espec ->
+  var_gen * (Ast.Cryptoline.ebexp * Ast.Cryptoline.var list *
+             Ast.Cryptoline.eexp list * Ast.Cryptoline.eexp) list
 (**
    Convert an algebraic specification to polynomials for ideal membership query.
    All prove-with clauses are ignored.
@@ -79,7 +81,7 @@ val polys_of_espec : var_gen -> Ast.Cryptoline.espec ->
  *)
 
 val polys_of_espec_two_phase :
-  ?sliced:bool ->
+  ?ord:Options.Std.variable_order -> ?sliced:bool ->
   var_gen -> Ast.Cryptoline.espec ->
   var_gen *
     (Ast.Cryptoline.ebexp * Ast.Cryptoline.VS.elt list * Ast.Cryptoline.eexp list *
@@ -111,36 +113,43 @@ val bprint_eexp_macaulay2 : Buffer.t -> Ast.Cryptoline.eexp -> unit
 (** Print an algebraic expression in Macaulay2 format to a buffer. *)
 
 val bprint_singular_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Singular for ideal membership query. *)
 
 val bprint_sage_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Sage for ideal membership query. *)
 
 val bprint_magma_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Magma for ideal membership query. *)
 
 val bprint_mathematica_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Mathematica for ideal membership query. *)
 
 val bprint_macaulay2_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Macaulay2 for ideal membership query. *)
 
 val bprint_maple_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Maple for ideal membership query. *)
 
 val bprint_maxima_input :
+  ?ord:Options.Std.monomial_order ->
   ?comments:(string list) -> Buffer.t -> Ast.Cryptoline.var list ->
   Ast.Cryptoline.eexp list -> Ast.Cryptoline.eexp -> unit
 (** Print input to Maxima for ideal membership query. *)
@@ -174,7 +183,8 @@ val maple_of_eexp : Ast.Cryptoline.eexp -> string
 (** Convert an algebraic expression to an expression in Maple. *)
 
 val generate_singular_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp
@@ -182,7 +192,8 @@ val generate_singular_input :
 (** generate input to Singular for ideal membership query *)
 
 val generate_sage_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp
@@ -190,7 +201,8 @@ val generate_sage_input :
 (** generate input to Sage for ideal membership query *)
 
 val generate_magma_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp
@@ -198,7 +210,8 @@ val generate_magma_input :
 (** generate input to magma for ideal membership query *)
 
 val generate_mathematica_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp
@@ -206,7 +219,8 @@ val generate_mathematica_input :
 (** generate input to mathematica for ideal membership query *)
 
 val generate_macaulay2_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp
@@ -214,7 +228,8 @@ val generate_macaulay2_input :
 (** generate input to macaulay2 for ideal membership query *)
 
 val generate_maple_input :
-  ?comments:(string list)
+  ?ord:Options.Std.monomial_order
+  -> ?comments:(string list)
   -> Ast.Cryptoline.var list
   -> Ast.Cryptoline.eexp list
   -> Ast.Cryptoline.eexp

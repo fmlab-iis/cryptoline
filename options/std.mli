@@ -213,6 +213,9 @@ val parse_algebra_solver : string -> algebra_solver
 (** Parse a string as an algebra solver. Raise [UnknownSolverException]
     if the string is not a solver. *)
 
+val string_of_alg_option : alg_option -> string
+(** string representation of an [alg_option] *)
+
 val singular_path : string ref
 (** the path to Singular *)
 

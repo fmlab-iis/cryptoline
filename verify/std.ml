@@ -42,9 +42,9 @@ let apply_to_cuts ids f res ss =
  * groebner: https://www.singular.uni-kl.de/Manual/4-3-2/sing_261.htm#SEC301
  * reduce: https://www.singular.uni-kl.de/Manual/4-3-2/sing_337.htm#SEC377
  *)
-let write_singular_input ?comments ifile vars gen p =
+let write_singular_input ?ord ?comments ifile vars gen p =
   let buf = Buffer.create 1024 in
-  let _ = Cas.bprint_singular_input ?comments buf vars gen p in
+  let _ = Cas.bprint_singular_input ?ord ?comments buf vars gen p in
   let _ =
     Out_channel.with_open_bin ifile (
       fun ch ->
@@ -57,8 +57,8 @@ let write_singular_input ?comments ifile vars gen p =
 (*
  * ideals: https://doc.sagemath.org/html/en/reference/rings/sage/rings/ideal.html
  *)
-let write_sage_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_sage_input ?comments vars gen p in
+let write_sage_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_sage_input ?ord ?comments vars gen p in
   let ch = open_out ifile in
   let _ =
     try
@@ -73,8 +73,8 @@ let write_sage_input ?comments ifile vars gen p =
 (*
  * ideals: https://magma.maths.usyd.edu.au/magma/handbook/text/413
  *)
-let write_magma_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_magma_input ?comments vars gen p in
+let write_magma_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_magma_input ?ord ?comments vars gen p in
   let ch = open_out ifile in
   let _ =
     try
@@ -86,8 +86,8 @@ let write_magma_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let write_mathematica_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_mathematica_input ?comments vars gen p in
+let write_mathematica_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_mathematica_input ?ord ?comments vars gen p in
   let ch = open_out ifile in
   let _ =
     try
@@ -99,8 +99,8 @@ let write_mathematica_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let write_macaulay2_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_macaulay2_input ?comments vars gen p in
+let write_macaulay2_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_macaulay2_input ?ord ?comments vars gen p in
   let ch = open_out ifile in
   let _ =
     try
@@ -112,8 +112,8 @@ let write_macaulay2_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let write_maple_input ?comments ifile vars gen p =
-  let input_text = Cas.generate_maple_input ?comments vars gen p in
+let write_maple_input ?ord ?comments ifile vars gen p =
+  let input_text = Cas.generate_maple_input ?ord ?comments vars gen p in
   let ch = open_out ifile in
   let _ =
     try
@@ -125,9 +125,9 @@ let write_maple_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let write_maxima_input ?comments ifile vars gen p =
+let write_maxima_input ?ord ?comments ifile vars gen p =
   let buf = Buffer.create 1024 in
-  let _ = Cas.bprint_maxima_input ?comments buf vars gen p in
+  let _ = Cas.bprint_maxima_input ?ord ?comments buf vars gen p in
   Out_channel.with_open_bin ifile (
     fun ch ->
       Buffer.output_buffer ch buf
@@ -136,63 +136,63 @@ let write_maxima_input ?comments ifile vars gen p =
   Options.Std.trace_file ifile;
   Options.Std.trace ""
 
-let run_singular ifile ofile =
+let run_singular ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!singular_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!singular_path ^ " -q " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Singular: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM SINGULAR:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_sage ifile ofile =
+let run_sage ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!sage_path ^ " " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!sage_path ^ " " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Sage: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM SAGE:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_magma ifile ofile =
+let run_magma ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!magma_path ^ " -b " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!magma_path ^ " -b " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Magma: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAGMA:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_mathematica ifile ofile =
+let run_mathematica ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!mathematica_path ^ " " ^ alg_option.alg_solver_args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!mathematica_path ^ " " ^ args ^ " -file \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Mathematica: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MATHEMATICA:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_macaulay2 ifile ofile =
+let run_macaulay2 ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ alg_option.alg_solver_args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!macaulay2_path ^ " --script \"" ^ ifile ^ "\" --silent " ^ args ^ " 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Macaulay2: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MACAULAY2:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_maple ifile ofile =
+let run_maple ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maple_path ^ " -q " ^ alg_option.alg_solver_args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maple_path ^ " -q " ^ args ^ " \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Maple: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAPLE:";
   Options.Std.trace_file ofile;
   Options.Std.trace ""
 
-let run_maxima ifile ofile =
+let run_maxima ?(args=alg_option.alg_solver_args) ifile ofile =
   let t1 = Unix.gettimeofday() in
-  unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ alg_option.alg_solver_args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
+  unix (!maxima_path ^ " --very-quiet --suppress-input-echo " ^ args ^ " < \"" ^ ifile ^ "\" 1> \"" ^ ofile ^ "\" 2>&1");
   let t2 = Unix.gettimeofday() in
   Options.Std.trace ("Execution time of Maxima: " ^ Options.Std.string_of_running_time t1 t2);
   Options.Std.trace "OUTPUT FROM MAXIMA:";
@@ -416,7 +416,7 @@ let read_isl_output = read_one_line
 
 (** Interfaces of Solvers *)
 
-let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(alg_option.alg_solver)) vars ideal p =
+let is_in_ideal ?(o=alg_option) ?comments ?(expand=(!expand_poly)) vars ideal p =
   (* The input file to Sage must have file extension ".sage". *)
   let propose_input_suffix solver =
     match solver with
@@ -424,44 +424,44 @@ let is_in_ideal ?comments ?(expand=(!expand_poly)) ?(solver=(alg_option.alg_solv
     | _ -> "" in
   let ideal = if expand then tmap expand_eexp ideal else ideal in
   let p = if expand then expand_eexp p else p in
-  let ifile = tmpfile "inputfgb_" (propose_input_suffix solver) in
+  let ifile = tmpfile "inputfgb_" (propose_input_suffix o.alg_solver) in
   let ofile = tmpfile "outputfgb_" "" in
   let comments = rcons_comments_option comments ("Output file: " ^ ofile) in
   let res =
-    match solver with
+    match o.alg_solver with
     | Singular ->
-       let _ = write_singular_input ~comments ifile vars ideal p in
-       let _ = run_singular ifile ofile in
+       let _ = write_singular_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_singular ~args:o.alg_solver_args ifile ofile in
        let res = read_singular_output ofile in
        res = "0"
     | Sage ->
-       let _ = write_sage_input ~comments ifile vars ideal p in
-       let _ = run_sage ifile ofile in
+       let _ = write_sage_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_sage ~args:o.alg_solver_args ifile ofile in
        let res = read_sage_output ofile in
        res = "True"
     | Magma ->
-       let _ = write_magma_input ~comments ifile vars ideal p in
-       let _ = run_magma ifile ofile in
+       let _ = write_magma_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_magma ~args:o.alg_solver_args ifile ofile in
        let res = read_magma_output ofile in
        res = "0"
     | Mathematica ->
-       let _ = write_mathematica_input ~comments ifile vars ideal p in
-       let _ = run_mathematica ifile ofile in
+       let _ = write_mathematica_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_mathematica ~args:o.alg_solver_args ifile ofile in
        let res = read_mathematica_output ofile in
        res = "0"
     | Macaulay2 ->
-       let _ = write_macaulay2_input ~comments ifile vars ideal p in
-       let _ = run_macaulay2 ifile ofile in
+       let _ = write_macaulay2_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_macaulay2 ~args:o.alg_solver_args ifile ofile in
        let res = read_macaulay2_output ofile in
        res = "0"
     | Maple ->
-       let _ = write_maple_input ~comments ifile vars ideal p in
-       let _ = run_maple ifile ofile in
+       let _ = write_maple_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_maple ~args:o.alg_solver_args ifile ofile in
        let res = read_maple_output ofile in
        res = "true"
     | Maxima ->
-       let _ = write_maxima_input ~comments ifile vars ideal p in
-       let _ = run_maxima ifile ofile in
+       let _ = write_maxima_input ~ord:o.cas_monomial_order ~comments ifile vars ideal p in
+       let _ = run_maxima ~args:o.alg_solver_args ifile ofile in
        let res = read_maxima_output ofile in
        res = "0"
     | SMTSolver _ -> failwith ("Ideal membership queries are not supported by SMT solver.")
@@ -1005,29 +1005,30 @@ let verify_rspec options s hashopt =
   let _ = Options.Std.trace "===== Verifying range specifications =====" in
   verify_rspec_with_cuts options ~comments:["Verify: range specifications"] hashopt s
 
-let verify_entailments ?comments ?(solver=(alg_option.alg_solver)) ?(eqfirst=(alg_option.cas_eqfirst)) entailments =
+let verify_entailments ?(o=alg_option) ?comments entailments =
   List.fold_left
     (fun res (post, vars, ideal, p) ->
       if res then (
-        if eqfirst && is_in_ideal
+        if o.cas_eqfirst && is_in_ideal
+             ~o
              ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
                                                           "Try: #0 (pure equality)" ])
-             ~solver:solver vars [] p then true
+             vars [] p then true
         else is_in_ideal
+               ~o
                ~comments:(append_comments_option comments [ "Algebraic condition: " ^ string_of_ebexp post;
                                                             "Try: #1 (modular equality)" ])
-               ~solver:solver vars ideal p
+               vars ideal p
       )
       else res) true entailments
 
 (* Verify an algebraic specification using a computer algebra system.
    Applied in this function: converting to ideal membership problems, polynomial rewriting, solving *)
 let verify_espec_single_conjunct_ideal ?comments vgen s =
-  let (_, entailments) = polys_of_espec vgen s in
   let pwss = ebexp_prove_with_specs s.espost in
-  let solver = algebra_solver_of_prove_with pwss in
-  let eqfirst = eqfirst_of_prove_with pwss in
-  verify_entailments ?comments ~solver ~eqfirst entailments
+  let o = alg_option_of_prove_with pwss in
+  let (_, entailments) = polys_of_espec ~ord:o.cas_variable_order vgen s in
+  verify_entailments ~o ?comments entailments
 
 (* Verify an algebraic specification using a specified SMT solver.
    Applied in this function: solving *)
@@ -1104,10 +1105,9 @@ let verify_espec_without_cuts ?comments hashopt vgen s =
          | Eand _ -> (s, false)
          | _ -> (slice_espec_ssa s None, true) in
        (* Convert to ideal membership problems, rewriting is done in polys_of_espec_two_phase *)
-       let (_, entailments) = polys_of_espec_two_phase ~sliced:sliced vgen s in
-       let solver = algebra_solver_of_prove_with pwss in
-       let eqfirst = eqfirst_of_prove_with pwss in
-       verify_entailments ?comments ~solver ~eqfirst entailments
+       let o = alg_option_of_prove_with pwss in
+       let (_, entailments) = polys_of_espec_two_phase ~ord:o.cas_variable_order ~sliced:sliced vgen s in
+       verify_entailments ~o ?comments entailments
     | _ -> assert false
   else
     let verify res s =
