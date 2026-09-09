@@ -219,7 +219,7 @@ let test_overlap_and_unsupported () =
   "subnormal operand case is unsupported"
   (match
      FA.fp_mul
-       (get_ok (FA.fp_of_const FA.fp_min))
+       (get_ok (FA.fp_of_const FA.fp_min_subnormal))
        (fp "2.0")
    with
    | Error (FA.Unsupported _) -> true
@@ -630,7 +630,7 @@ let test_overflow_behavior () =
 
 let test_subnormal_operand_policy () =
   let min_positive =
-    get_ok (FA.fp_of_const FA.fp_min)
+    get_ok (FA.fp_of_const FA.fp_min_subnormal)
   in
   let two = fp "2.0" in
 

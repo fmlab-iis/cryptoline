@@ -281,13 +281,13 @@ let classify_add_interval iv =
       else
         let neg =
           if FloatConst.cmp i.lo fp_zero < 0 then
-            interval_make i.lo fp_neg_min
+            interval_make i.lo fp_neg_min_subnormal
           else
             None
         in
         let pos =
           if FloatConst.cmp i.hi fp_zero > 0 then
-            interval_make fp_min i.hi
+            interval_make fp_min_subnormal i.hi
           else
             None
         in
