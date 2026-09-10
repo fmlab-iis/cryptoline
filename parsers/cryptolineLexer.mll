@@ -187,9 +187,9 @@ let bin = ['0' '1']
 let hex = ['0'-'9' 'a'-'f' 'A'-'F']
 let identity = letter (letter | number)*
 let identity_vec = '%' identity
-let path_char = ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '.' '@'] | "\\ "
-let unix_path = '/' path_char* ('/' path_char*)*
-let relative_path = path_char+ ('/' path_char+)+
+let path_no_esc_char = ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '.' '@']
+let unix_path = '/' path_no_esc_char+ ('/' path_no_esc_char*)*
+let relative_path = path_no_esc_char+ ('/' path_no_esc_char+)+
 let path = unix_path | relative_path
 let comment_line = ("//"([^ '\n' ]+))|('#'([^ '\n' ]+))
 
