@@ -641,13 +641,75 @@ let test_subnormal_operand_policy () =
      | _ -> false)
 
 
-let test_underflow_result_behavior () =
-  (*
-     2.2250738585072014e-308 is the minimum NORMAL binary64
-     value.  Multiplying it by 0.5 produces a subnormal result.
+let test_subnormal_boundaries () =
+  let two = fp "2.0" in
 
-     This is different from test_subnormal_operand_policy:
-     here the INPUT is normal, but the RESULT becomes subnormal.
+  let expect_subnormal msg x =
+    match FA.fp_mul x two with
+    | Error (FA.Unsupported _) ->
+        ()
+    | Error (FA.Invalid reason) ->
+        fail (msg ^ ": unexpectedly Invalid: " ^ reason)
+    | Ok _ ->
+        fail (msg ^ ": expected subnormal operand to be Unsupported")
+  in
+
+  let expect_normal msg x =
+    match FA.fp_mul x two with
+    | Ok _ ->
+        ()
+    | Error (FA.Unsupported reason) ->
+        fail (msg ^ ": minimum normal incorrectly classified as subnormal: " ^ reason)
+    | Error (FA.Invalid reason) ->
+        fail (msg ^ ": unexpectedly Invalid: " ^ reason)
+  in
+
+  let pos_min_subnormal =
+    get_ok (FA.fp_of_const FA.fp_min_subnormal)
+  in
+
+  let neg_min_subnormal =
+    get_ok
+      (FA.fp_of_const
+         (FloatConst.neg FA.fp_min_subnormal ~rnd:RNE))
+  in
+
+  let pos_min_normal =
+    get_ok (FA.fp_of_const FA.fp_min_normal)
+  in
+
+  let neg_min_normal =
+    get_ok
+      (FA.fp_of_const
+         (FloatConst.neg FA.fp_min_normal ~rnd:RNE))
+  in
+
+  expect_subnormal
+    "+minimum subnormal"
+    pos_min_subnormal;
+
+  expect_subnormal
+    "-minimum subnormal"
+    neg_min_subnormal;
+
+  expect_normal
+    "+minimum normal"
+    pos_min_normal;
+
+  expect_normal
+    "-minimum normal"
+    neg_min_normal
+
+
+let test_subnormal_result_behavior () =
+  (*
+     2.2250738585072014e-308 is the minimum normal binary64
+     value. Multiplying it by 0.5 produces 2^-1023, which is
+     a subnormal result but is still above the minimum positive
+     binary64 value 2^-1074.
+
+     According to the FloatAbs multiplication rule, a subnormal
+     multiplication result is abstracted to zero.
   *)
   let min_normal =
     fp "2.2250738585072014e-308"
@@ -667,10 +729,47 @@ let test_underflow_result_behavior () =
 
   | Ok FA.Bottom ->
       fail
-        "normal operands producing subnormal result unexpectedly Bottom"
+        "subnormal multiplication result unexpectedly Bottom"
+
+  | Ok v ->
+      expect_fp
+        "subnormal multiplication result abstracts to zero"
+        (fp "0.0")
+        v
+
+
+let test_true_underflow_result_behavior () =
+  let min_normal =
+    fp "2.2250738585072014e-308"
+  in
+
+  match FA.fp_mul min_normal min_normal with
+  | Ok FA.Bottom ->
+      ()
 
   | Ok (FA.Value _) ->
-      ()
+      fail
+        "true multiplication underflow unexpectedly produced a Value"
+
+  | Error (FA.Unsupported msg) ->
+      fail
+        ("true multiplication underflow unexpectedly Unsupported: " ^ msg)
+
+  | Error (FA.Invalid msg) ->
+      fail
+        ("true multiplication underflow unexpectedly Invalid: " ^ msg)
+
+
+let test_reciprocal_overflow_behavior () =
+  let min_positive =
+    get_ok (FA.fp_of_const FA.fp_min_subnormal)
+  in
+
+  expect_true
+    "reciprocal overflow becomes Bottom"
+    (match FA.fp_recip min_positive with
+     | FA.Bottom -> true
+     | FA.Value _ -> false)
 
 
 let test_division_by_zero_behavior () =
@@ -827,7 +926,10 @@ let () =
     test_bottom_arithmetic;
   run_test "overflow behavior" test_overflow_behavior;
   run_test "subnormal operand policy" test_subnormal_operand_policy;
-  run_test "underflow result behavior" test_underflow_result_behavior;
+  run_test "subnormal boundaries" test_subnormal_boundaries;
+  run_test "subnormal result behavior" test_subnormal_result_behavior;
+  run_test "true underflow result behavior" test_true_underflow_result_behavior;
+  run_test "reciprocal overflow behavior" test_reciprocal_overflow_behavior;
   run_test "division by zero behavior" test_division_by_zero_behavior;
   run_test "zero divided by zero behavior" test_zero_divided_by_zero_behavior;
   run_test "sqrt negative behavior" test_sqrt_negative_behavior;

@@ -248,11 +248,66 @@ let normalize_result neg zero pos =
   in
   if bad neg || bad pos then Bottom else value ?neg ~zero ?pos ()
 
+let arithmetic_underflows neg pos =
+  let positive_underflows =
+    match pos with
+    | None -> false
+    | Some i ->
+        FloatConst.cmp i.lo fp_min_subnormal < 0
+  in
+  let negative_underflows =
+    match neg with
+    | None -> false
+    | Some i ->
+        FloatConst.cmp i.hi fp_neg_min_subnormal > 0
+  in
+  positive_underflows || negative_underflows
+
+let normalize_arithmetic_result neg zero pos =
+  if arithmetic_underflows neg pos then
+    Bottom
+  else
+    normalize_result neg zero pos
+
+let multiplication_result_is_subnormal neg pos =
+  let positive_subnormal =
+    match pos with
+    | None -> false
+    | Some i ->
+        FloatConst.cmp i.lo fp_min_normal < 0
+  in
+  let negative_subnormal =
+    match neg with
+    | None -> false
+    | Some i ->
+        FloatConst.cmp i.hi fp_neg_min_normal > 0
+  in
+  positive_subnormal || negative_subnormal
+
+let normalize_multiplication_result neg zero pos =
+  let normalized =
+    normalize_arithmetic_result neg zero pos
+  in
+  match normalized with
+  | Bottom ->
+      Bottom
+  | Value _ when multiplication_result_is_subnormal neg pos ->
+      value ~zero:true ()
+  | Value _ ->
+      normalized
+
 let interval_has_subnormal = function
   | None -> false
   | Some i ->
-     (FloatConst.cmp i.hi fp_zero > 0  && FloatConst.cmp i.lo fp_min_normal < 0)
-     || (FloatConst.cmp i.hi fp_neg_min_subnormal < 0 && FloatConst.cmp i.lo fp_zero < 0 && FloatConst.cmp i.hi fp_neg_min_normal > 0)
+      let has_positive_subnormal =
+        FloatConst.cmp i.hi fp_min_subnormal >= 0
+        && FloatConst.cmp i.lo fp_min_normal < 0
+      in
+      let has_negative_subnormal =
+        FloatConst.cmp i.hi fp_neg_min_normal > 0
+        && FloatConst.cmp i.lo fp_neg_min_subnormal <= 0
+      in
+      has_positive_subnormal || has_negative_subnormal
 
 let has_subnormal_component = function
   | Bottom -> false
@@ -337,37 +392,74 @@ let fp_add a b =
       let neg = interval_hull negs in
       let pos = interval_hull poss in
 
-      normalize_result neg zero pos
+      normalize_arithmetic_result neg zero pos
 
 let fp_sub a b =
   fp_add a (fp_neg b)
+
+let interval_mul_has_underflow i1 i2 =
+  match i1, i2 with
+  | Some a, Some b ->
+      let abs x =
+        if FloatConst.cmp x fp_zero < 0 then
+          FloatConst.neg x ~rnd:RNE
+        else
+          x
+      in
+      let a_lo = abs a.lo in
+      let a_hi = abs a.hi in
+      let b_lo = abs b.lo in
+      let b_hi = abs b.hi in
+      let a_min =
+        if FloatConst.cmp a_lo a_hi <= 0 then a_lo else a_hi
+      in
+      let b_min =
+        if FloatConst.cmp b_lo b_hi <= 0 then b_lo else b_hi
+      in
+      if FloatConst.eq a_min fp_zero
+         || FloatConst.eq b_min fp_zero
+         || FloatConst.cmp a_min fp_one >= 0
+         || FloatConst.cmp b_min fp_one >= 0
+      then
+        false
+      else
+        let threshold =
+          FloatConst.div fp_min_subnormal b_min ~rnd:RTP
+        in
+        FloatConst.cmp a_min threshold < 0
+  | _ ->
+      false
+
 
 let fp_mul_raw a b =
   match a, b with
   | Bottom, _ | _, Bottom -> Bottom
   | Value a, Value b ->
-      let neg =
-        interval_hull
-          [
-            interval_mul a.neg b.pos;
-            interval_mul a.pos b.neg;
-          ]
-      in
-      let pos =
-        interval_hull
-          [
-            interval_mul a.neg b.neg;
-            interval_mul a.pos b.pos;
-          ]
-      in
-      let zero =
-        a.zero || b.zero
-        || interval_contains_zero (interval_mul a.neg b.pos)
-        || interval_contains_zero (interval_mul a.pos b.neg)
-        || interval_contains_zero (interval_mul a.neg b.neg)
-        || interval_contains_zero (interval_mul a.pos b.pos)
-      in
-      normalize_result neg zero pos
+      if interval_mul_has_underflow a.neg b.pos
+         || interval_mul_has_underflow a.pos b.neg
+         || interval_mul_has_underflow a.neg b.neg
+         || interval_mul_has_underflow a.pos b.pos
+      then
+        Bottom
+      else
+        let neg_pos = interval_mul a.neg b.pos in
+        let pos_neg = interval_mul a.pos b.neg in
+        let neg_neg = interval_mul a.neg b.neg in
+        let pos_pos = interval_mul a.pos b.pos in
+        let neg =
+          interval_hull [ neg_pos; pos_neg ]
+        in
+        let pos =
+          interval_hull [ neg_neg; pos_pos ]
+        in
+        let zero =
+          a.zero || b.zero
+          || interval_contains_zero neg_pos
+          || interval_contains_zero pos_neg
+          || interval_contains_zero neg_neg
+          || interval_contains_zero pos_pos
+        in
+        normalize_multiplication_result neg zero pos
 
 let check_subnormal_operands lhs rhs =
   if has_subnormal_component lhs || has_subnormal_component rhs then
@@ -383,7 +475,10 @@ let fp_recip = function
   | Bottom -> Bottom
   | Value { zero = true; _ } -> Bottom
   | Value { neg; zero = false; pos } ->
-      normalize_result (interval_recip neg) false (interval_recip pos)
+      normalize_arithmetic_result
+        (interval_recip neg)
+        false
+        (interval_recip pos)
 
 let fp_div a b = fp_mul a (fp_recip b)
 
