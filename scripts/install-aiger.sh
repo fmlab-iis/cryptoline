@@ -17,7 +17,15 @@ PICOSAT_FILE=${PICOSAT_NAME}-${PICOSAT_VERSION}.tar.gz
 PICOSAT_DIR=${PICOSAT_NAME}
 PICOSAT_URL=http://fmv.jku.at/picosat/picosat-965.tar.gz
 
-sudo apt install -y curl build-essential binutils
+if [ "$(uname)" == "Darwin" ]; then
+    brew install curl
+    export PATH="/usr/local/opt/curl/bin:$PATH"
+elif [ "$(uname)" == "Linux" ]; then
+    sudo apt install -y curl build-essential binutils
+else
+    exit
+fi
+
 mkdir -p ${TOOLS_DIR}
 pushd ${TOOLS_DIR}
 curl -L ${AIGER_URL} -o ${AIGER_FILE}
@@ -40,6 +48,9 @@ make
 popd
 
 pushd ${AIGER_DIR}
+if [ "$(uname)" == "Darwin" ]; then
+    sed -i "29i#include <unistd.h>" aigunconstraint.c
+fi
 ./configure.sh
 make
 sudo mkdir -p /usr/local/bin

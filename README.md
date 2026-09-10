@@ -46,6 +46,18 @@ package `pyparsing` is required.
 Installation
 ============
 
+On macOS
+--------
+
+```
+$ brew install opam curl cmake boolector singular
+$ opam install dune ocamlfind lwt lwt_ppx num zarith
+$ opam init
+$ eval $(opam env)
+$ dune build
+$ dune install
+```
+
 On Linux
 --------
 
