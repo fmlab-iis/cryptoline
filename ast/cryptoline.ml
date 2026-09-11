@@ -39,6 +39,8 @@ let fplt_symbol = "<f"
 let fple_symbol = "<=f"
 let fpgt_symbol = ">f"
 let fpge_symbol = ">=f"
+let fpeq_symbol = "=f"
+let fpne_symbol = "!=f"
 let typ_delim = "@"
 
 type associativity = LeftAssoc | RightAssoc
@@ -489,6 +491,8 @@ type rcmpop =
   | Rfple
   | Rfpgt
   | Rfpge
+  | Rfpeq
+  | Rfpne
 
 
 (** Algebraic Expressions *)
@@ -617,7 +621,9 @@ let rec cmp_eexp e1 e2 =
   | Evar v1, Evar v2 -> cmp_var v1 v2
   | Evar _, _ -> -1
   | Econst _, Evar _ -> 1
-  | Econst c1, Econst c2 -> cmp_const c1 c2
+  | Econst (Cint n1), Econst (Cint n2) -> Z.compare n1 n2
+  | Econst (Cfloat _), _ | _, Econst (Cfloat _) ->
+     raise (UnsupportedException "Floating-point constants are not supported in algebraic expressions.")
   | Econst _, _ -> -1
   | Eunop _, Evar _
     | Eunop _, Econst _ -> 1
@@ -1348,6 +1354,8 @@ let cmp_atom a1 a2 =
   | Avar v1, Avar v2 -> cmp_var v1 v2
   | Avar _, Aconst _ -> -1
   | Aconst _, Avar _ -> 1
+  | Aconst (_, Cfloat _), _ | _, Aconst (_, Cfloat _) ->
+    raise (UnsupportedException "Floating-point atoms have no total order.")
   | Aconst (ty1, c1), Aconst (ty2, c2) ->
     let c = cmp_typ ty1 ty2 in
     if c = 0 then cmp_const c1 c2 
@@ -1539,6 +1547,8 @@ let string_of_rcmpop op =
   | Rfple -> "fple"
   | Rfpgt -> "fpgt"
   | Rfpge -> "fpge"
+  | Rfpeq -> "fpeq"
+  | Rfpne -> "fpne"
 
 let symbol_of_rcmpop op =
   match op with
@@ -1554,6 +1564,8 @@ let symbol_of_rcmpop op =
   | Rfple -> fple_symbol
   | Rfpgt -> fpgt_symbol
   | Rfpge -> fpge_symbol
+  | Rfpeq -> fpeq_symbol
+  | Rfpne -> fpne_symbol
 
 let string_of_runop op =
   match op with
@@ -4896,25 +4908,6 @@ let rec is_rexp_over_const e =
     | Rsext (_, e, _) -> is_rexp_over_const e
   | Rconcat (_, _, e1, e2) -> (is_rexp_over_const e1) && (is_rexp_over_const e2)
 
-type eval_result =
-  | BV of bits
-  | FP of FloatConst.t
-
-let rec is_float_rexp e =
-  match e with
-  | Rvar _ -> false
-  | Rconst (_, c) ->
-      (match c with
-       | Cfloat _ -> true
-       | Cint _ -> false)
-  | Runop (_, _, e1) -> is_float_rexp e1
-  | Rbinop (_, _, e1, e2) ->
-      is_float_rexp e1 || is_float_rexp e2
-  | Ruext (_, e, _) -> is_float_rexp e
-  | Rsext (_, e, _) -> is_float_rexp e
-  | Rconcat (_, _, e1, e2) ->
-      is_float_rexp e1 || is_float_rexp e2
-    
 let rec eval_rexp_const e =
   match e with
   | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
@@ -4953,37 +4946,6 @@ let rec eval_rexp_const e =
   | Rconcat (_, _, e1, e2) -> let v1 = eval_rexp_const e1 in
                               let v2 = eval_rexp_const e2 in
                               tappend v2 v1
-let rec eval_rexp_float e =
-  match e with
-  | Rvar v -> raise (EvaluationException ("Variable " ^ string_of_var v ^ " is not a constant."))
-  | Rconst (_, c) ->
-      (match c with
-       | Cint _ -> raise (EvaluationException ("Shall not mix integer and floating-point"))
-       | Cfloat f -> f)
-  | Runop (_, op, e) ->
-      let v = eval_rexp_float e in
-      (match op with
-       | Rnegb -> FloatConst.neg v ~rnd:RNE
-       | _ ->
-           raise (EvaluationException "Floating-point does not support this operation"))
-  | Rbinop (_, op, e1, e2) ->
-      let v1 = eval_rexp_float e1 in
-      let v2 = eval_rexp_float e2 in
-      (match op with
-       | Radd -> FloatConst.add v1 v2 ~rnd:RNE
-       | Rsub -> FloatConst.sub v1 v2 ~rnd:RNE
-       | Rmul -> FloatConst.mul v1 v2 ~rnd:RNE
-       | Rdiv -> FloatConst.div v1 v2 ~rnd:RNE
-       | _ ->
-           raise (EvaluationException "Floating-point does not support this operation"))
-  | Ruext _ | Rsext _ | Rconcat _ ->
-      raise (EvaluationException "Floating-point does not support this operation")
-
-let eval_rexp e =
-  if is_float_rexp e then
-    FP (eval_rexp_float e)
-  else
-    BV (eval_rexp_const e)
 
 let bvcryptoline_of_var v = string_of_var v
 let bvcryptoline_of_eunop op =
@@ -5060,6 +5022,8 @@ let bvcryptoline_of_rcmpop op =
   | Rfple -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
   | Rfpgt -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
   | Rfpge -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfpeq -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
+  | Rfpne -> raise (UnsupportedException "Floating-point comparison is not supported by BvCryptoLine.")
 let rec bvcryptoline_of_rexp e =
   match e with
   | Rvar v -> Printf.sprintf "(bvrvar %s)" (bvcryptoline_of_var v)

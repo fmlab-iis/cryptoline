@@ -22,12 +22,22 @@ let force_const_to_int c =
 
 let exp_var v = Var v
 
+let fpexp_var v = FpVar v
+
 let exp_const w n = Const (w, n)
+
+let fpexp_const prec f = FpConst (prec, f)
 
 let exp_atom a =
   match a with
   | Avar v -> exp_var v
   | Aconst (ty, Cint n) -> exp_const (size_of_typ ty) n
+  | Aconst (_, _) -> assert false
+
+let fpexp_atom a =
+  match a with
+  | Avar v -> fpexp_var v
+  | Aconst (ty, Cfloat f) -> fpexp_const (prec_of_typ ty) f
   | Aconst (_, _) -> assert false
 
 let exp_carry n c =
@@ -100,7 +110,7 @@ let rec bexp_rbexp e =
   | Req (w, e1, e2) ->
       (match sort_of_rexp e1 with
       | BvSort _ -> Eq (w, exp_rexp e1, exp_rexp e2)
-      | FpSort p -> FpEq (p, fpexp_rexp e1, fpexp_rexp e2))
+      | FpSort _ -> FpEquiv (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2))
   | Rcmp (w, op, e1, e2) ->
      (match op with
       | Rult -> Ult (w, exp_rexp e1, exp_rexp e2)
@@ -115,6 +125,8 @@ let rec bexp_rbexp e =
       | Rfple -> FpLe (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpgt -> FpGt (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
       | Rfpge -> FpGe (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
+      | Rfpeq -> FpEq (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2)
+      | Rfpne -> Lneg (FpEq (prec_of_size w, fpexp_rexp e1, fpexp_rexp e2))
      )
   | Rneg e -> Lneg (bexp_rbexp e)
   | Rand (e1, e2) -> Conj (bexp_rbexp e1, bexp_rbexp e2)
@@ -224,7 +236,10 @@ let exp_cshl w a1 a2 n =
        Concat (w, w, exp_atom a1, exp_atom a2),
        Const (w + w, n))
 
-let bexp_mov v a = Eq (size_of_var v, exp_var v, exp_atom a)
+let bexp_mov v a = 
+  match typ_of_var v with
+  | Tuint _ | Tsint _ -> Eq (size_of_var v, exp_var v, exp_atom a)
+  | Tdouble | Tsingle -> FpEquiv (prec_of_var v, fpexp_var v, fpexp_atom a)
 let bexp_shl v a p =
   let w = size_of_var v in
   Eq (w, exp_var v, Shl (w, exp_atom a, exp_atom p))
@@ -306,8 +321,13 @@ let bexp_cmov v c a1 a2 =
   let cond = Eq (1, exp_atom c, exp_const 1 Z.one) in
   Eq (w, exp_var v, Ite (w, cond, exp_atom a1, exp_atom a2))
 let bexp_add v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_add ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->  
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_add ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpAdd (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_adds c v a1 a2 =
   let w = size_of_var v in
   Conj
@@ -322,8 +342,13 @@ let bexp_adcs c v a1 a2 y =
     (Eq (1, exp_var c, High (w, 1, exp_adc ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_adc ~extend:true w a1 a2 y)))
 let bexp_sub v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_subb ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpSub (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_subc c v a1 a2 =
   let w = size_of_var v in
   Conj
@@ -351,8 +376,13 @@ let bexp_sbbs c v a1 a2 y =
     (Eq (1, exp_var c, High (w, 1, exp_sbb ~extend:true w a1 a2 y)),
      Eq (w, exp_var v, Low (w, 1, exp_sbb ~extend:true w a1 a2 y)))
 let bexp_mul v a1 a2 =
-  let w = size_of_var v in
-  Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
+  match typ_of_var v with
+  | Tuint _ | Tsint _ ->
+    let w = size_of_var v in
+    Eq (w, exp_var v, exp_umul ~extend:false w a1 a2)
+  | Tdouble | Tsingle ->
+    let p = prec_of_var v in
+    FpEquiv (p, fpexp_var v, FpMul (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_muls c v a1 a2 =
   match v.vtyp with
   | Tuint w ->
@@ -402,6 +432,9 @@ let bexp_mulj v a1 a2 =
          exp_var v,
          exp_smul ~extend:true (w / 2) a1 a2)
   | Tsingle | Tdouble -> raise (UnsupportedException "An mulj instruction expects a non-floatingpoint destination.")
+let bexp_div v a1 a2 =
+  let p = prec_of_var v in
+  FpEquiv (p, fpexp_var v, FpDiv (p, RNE, fpexp_atom a1, fpexp_atom a2))
 let bexp_split vh vl a p =
   let p = Z.to_int p in
   match vh.vtyp with
@@ -479,7 +512,20 @@ let bexp_cast od v a =
        if wv = wa then Eq (wv, exp_var v, exp_atom a)
        else if wv < wa then Eq (wv, exp_var v, Low (wv, wa - wv, exp_atom a))
        else Eq (wv, exp_var v, SignExtend (wa, wv - wa, exp_atom a))
-    | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination.") in
+    | (Tsingle | Tdouble), (Tuint _) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfUbv (p, RNE, exp_atom a)) (* TODO: RNE is usd here since we're modeling vcvtsi2sdq *)
+    | (Tsingle | Tdouble), (Tsint _) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfSbv (p, RNE, exp_atom a)) (* TODO: RNE is usd here since we're modeling vcvtsi2sdq *)
+    | Tuint wv, (Tsingle | Tdouble) ->
+       Eq (wv, exp_var v, UbvOfFp (wv, RTZ, fpexp_atom a)) (* TODO: RTZ is usd here since we're modeling vcvttsd2si *)
+    | Tsint wv, (Tsingle | Tdouble) ->
+       Eq (wv, exp_var v, SbvOfFp (wv, RTZ, fpexp_atom a)) (* TODO: RTZ is usd here since we're modeling vcvttsd2si *)
+    | (Tsingle | Tdouble), (Tsingle | Tdouble) ->
+       let p = prec_of_typ v.vtyp in
+       FpEquiv (p, fpexp_var v, FpOfFp (p, RNE, fpexp_atom a))
+  in
   let bextra =
     match od with
     | None -> None
@@ -508,13 +554,19 @@ let bexp_cast od v a =
                                SignExtend (wa - wv, 1, High (wv, wa - wv, exp_atom a)), (* SignExtend is used to avoid overflow *)
                                ZeroExtend (1, wa - wv, High (wv - 1, 1, Low (wv, wa - wv, exp_atom a))) (* the sign bit of v *)
                   )))
-        | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) -> raise (UnsupportedException "An cast instruction expects non-floatingpoint source and destination."))
+        | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) ->
+            raise (UnsupportedException "A cast with a discard variable does not support floating-point operands."))
   in
   match bextra with
   | None -> bcast
   | Some e -> Conj (bcast, e)
 
-let bexp_vpc v a = bexp_cast None v a
+let bexp_vpc v a = 
+  match v.vtyp, typ_of_atom a with
+  | (Tsingle | Tdouble), _ | _, (Tsingle | Tdouble) ->
+     raise (UnsupportedException "A vpc instruction does not support floating-point operands.")
+  | _ -> bexp_cast None v a
+
 let bexp_join v ah al =
   let w = size_of_var v in
   Eq (w,
@@ -554,7 +606,7 @@ let bexp_instr i =
   | Imuls (c, v, a1, a2) -> bexp_muls c v a1 a2
   | Imull (vh, vl, a1, a2) -> bexp_mull vh vl a1 a2
   | Imulj (v, a1, a2) -> bexp_mulj v a1 a2
-  | Idiv (_, _ , _) -> raise (UnsupportedException "QFBV translation does not support floating-point division.") 
+  | Idiv (v, a1, a2) -> bexp_div v a1 a2 
   | Isplit (vh, vl, a, p) -> bexp_split vh vl a p
   | Ispl (vh, vl, a, p) -> bexp_spl vh vl a p
   | Iseteq (v, a1, a2) -> bexp_seteq v a1 a2
@@ -759,6 +811,31 @@ let bexp_atom_scshr_safe w a1 a2 n =
      Conj (Eq (ni, Low (ni, w - ni, exp_atom a2), Const (ni, (Z.zero))),
            Eq (1, High (w - 1, 1, exp_atom a1), Const (1, (Z.zero)))))
 
+let bexp_atom_cast_safe ty a =
+  match ty, typ_of_atom a with
+  | (Tuint _ | Tsint _), (Tsingle | Tdouble) ->
+     let p = prec_of_typ (typ_of_atom a) in
+     let fa = fpexp_atom a in
+     let fpexp_of_z z = FpConst (p, FloatConst.round_to p ~rnd:RTZ (FloatConst.of_z z ~rnd:RTZ)) in (* TODO: verify if RTZ is the correct rounding mode here *)
+     let pow2 n = Z.pow (Z.of_int 2) n in
+     let emax = (Utils.Float.get_fmt p).emax_norm in
+     let is_finite = Conj (Lneg (FpIsNaN (p, fa)), Lneg (FpIsInf (p, fa))) in
+     let _is_representable =
+       match ty with
+       | Tuint w ->
+          let lower = FpGe (p, fa, fpexp_of_z Z.zero) in
+          if w - 1 <= emax
+          then Conj (lower, FpLe (p, fa, fpexp_of_z (Z.sub (pow2 w) Z.one))) (* 0 <= f <= 2^w-1 *)
+          else lower                                                         (* 0 <= f < 2^(emax+1) <= 2^(w-1) < 2^w-1 *)
+       | Tsint w ->
+          if w - 1 <= emax
+          then Conj (FpGe (p, fa, fpexp_of_z (Z.neg (pow2 (w - 1)))),        (* -2^(w-1) <= f <= 2^(w-1)-1 *)
+                     FpLt (p, fa, fpexp_of_z (Z.sub (pow2 (w - 1)) Z.one)))
+          else True                                                          (* |f| < 2^(emax+1) <= 2^(w-1) *)
+       | _ -> assert false in
+     Conj (is_finite, _is_representable)
+  | _, _ -> True
+
 let bexp_vpc_safe v a =
   match v.vtyp, typ_of_atom a with
   | Tuint wv, Tuint wa ->
@@ -783,6 +860,7 @@ let bexp_vpc_safe v a =
               exp_atom a)
   | (Tsingle|Tdouble), _ | _, (Tsingle|Tdouble) ->
      raise (UnsupportedException "Instruction vpc does not support casting to floating-point types.")
+
 let bexp_instr_safe i =
   match i with
   | Imov _ -> True
@@ -860,7 +938,7 @@ let bexp_instr_safe i =
   | Imuls _ -> True
   | Imull _
     | Imulj _ -> True
-  | Idiv _ -> True (* TODO: Check this *)
+  | Idiv _ -> True
   | Isplit _ -> True
   | Ispl _ -> True
   | Iseteq _ -> True
@@ -869,7 +947,7 @@ let bexp_instr_safe i =
   | Ior _ -> True
   | Ixor _ -> True
   | Inot _ -> True
-  | Icast (_, _v, _a) -> True
+  | Icast (_, v, a) -> bexp_atom_cast_safe v.vtyp a
   | Ivpc (v, a) -> bexp_vpc_safe v a
   | Ijoin (_v, _ah, _al) -> True
   | Iassert _ -> True

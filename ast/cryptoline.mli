@@ -541,7 +541,9 @@ type rcmpop =
   | Rfplt    (** floating-point less than *)
   | Rfple    (** floating-point less than or equal to *)
   | Rfpgt    (** floating-point greater than *)
-  | Rfpge    (** floating-point greater than or equal to *) (* *)
+  | Rfpge    (** floating-point greater than or equal to *) 
+  | Rfpeq    (** floating-point equal to (IEEE 754-2008 equality as opposed to SMT-LIB =) *)
+  | Rfpne    (** floating-point not equal to (IEEE 754-2008 inequality as opposed to SMT-LIB not =) *) (* *)
 (** range comparison operators *)
 
 type rbexp =
@@ -2132,20 +2134,8 @@ val eval_eexp_const : eexp -> const
 (** [eval_eexp_const e] evaluates [e] if [is_eexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
 
-type eval_result =
-  | BV of bits
-  | FP of FloatConst.t
-
-val eval_rexp : rexp -> eval_result
-(** [eval_rexp e] evaluates [e] if [is_rexp_over_const e] is [true], and
-    raises {!Utils.Std.EvaluationException} otherwise. *)
-
 val eval_rexp_const : rexp -> bits
 (** [eval_rexp_const e] evaluates [e] if [is_rexp_over_const e] is [true], and
-    raises {!Utils.Std.EvaluationException} otherwise. *)
-
-val eval_rexp_float : rexp -> FloatConst.t 
-(** [eval_rexp_float e] evaluates [e] if [is_rexp_over_const e] is [true], and
     raises {!Utils.Std.EvaluationException} otherwise. *)
 
 val remove_cut_spec : spec -> spec

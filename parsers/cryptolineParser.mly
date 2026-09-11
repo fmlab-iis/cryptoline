@@ -31,7 +31,7 @@
 /* Predicates */
 %token TRUE EQ EQMOD EQUMOD EQSMOD EQSREM
 /* Operators */
-%token ADDOP SUBOP MULOP DIVOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP FLEOP FLTOP FGEOP FGTOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
+%token ADDOP SUBOP MULOP DIVOP POWOP ULEOP ULTOP UGEOP UGTOP SLEOP SLTOP SGEOP SGTOP FLEOP FLTOP FGEOP FGTOP FEQOP EQOP NEGOP MODOP LANDOP LOROP NOTOP ANDOP OROP XOROP SHLOP SHROP SAROP ADDADDOP
 /* Others */
 %token AT PROC INLINE INLINESPEC CALL ULIMBS SLIMBS POLY PROVE WITH ALL CUTS ASSUMES GHOSTS PRECONDITION DEREFOP ALGEBRA RANGE QFBV SOLVER SMT LIA NIA
 %token EOF DOLPHIN
@@ -39,7 +39,7 @@
 
 %left LOROP
 %left LANDOP
-%nonassoc EQOP ULTOP ULEOP UGTOP UGEOP SLTOP SLEOP SGTOP SGEOP FLEOP FLTOP FGEOP FGTOP
+%nonassoc EQOP ULTOP ULEOP UGTOP UGEOP SLTOP SLEOP SGTOP SGEOP FLEOP FLTOP FGEOP FGTOP FEQOP
 %left OROP
 %left XOROP
 %left ANDOP
@@ -677,11 +677,12 @@ cmpop_infix:
   | FLEOP                                         { Rfple }
   | FGTOP                                         { Rfpgt }
   | FGEOP                                         { Rfpge }
+  | FEQOP                                         { Rfpeq }
 ;
 
 eexp_primary:
     defined_var                                   { parse_eexp_defined_var (get_line_start()) $1 }
-  | const                                         { fun ctx -> Econst ($1 ctx) }
+  | const                                         { fun ctx -> Econst (Cint (const_to_z (get_line_start()) ($1 ctx))) }
   | LPAR eexp RPAR                                { fun ctx -> $2 ctx }
 ;
 
@@ -832,9 +833,9 @@ cmpop_prefix:
 rexp_primary:
     defined_var                                   { parse_rexp_defined_var (get_line_start()) $1 }
   | CONST const_exp_primary const_exp_primary     { parse_rexp_const (get_line_start()) (int_of_const_ctx (get_line_start()) $2) $3 }
-  | CONST typ const_exp_primary                   { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $2)) $3 }
+  | CONST typ const_exp_primary                   { parse_rexp_typed_const (get_line_start()) $2 $3 }
   | const_exp_primary AT const_exp_primary        { parse_rexp_const (get_line_start()) (int_of_const_ctx (get_line_start()) $3) $1 }
-  | const_exp_primary AT typ                      { parse_rexp_const (get_line_start()) (fun _ -> Z.of_int (size_of_typ $3)) $1 }
+  | const_exp_primary AT typ                      { parse_rexp_typed_const (get_line_start()) $3 $1 }
   | LPAR rexp RPAR                                { fun ctx -> $2 ctx }
 ;
 
