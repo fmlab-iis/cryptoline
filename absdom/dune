@@ -1,6 +1,6 @@
 (library
   (name        absdom)
-  (modules     (:standard \ floatabs_test))
+  (modules     (:standard \ floatabs_test common_test))
   (preprocess  (pps lwt_ppx))
   (libraries   camlidl bigarray gmp apron apron.boxD apron.boxMPQ
                apron.octD apron.octMPQ apron.polkaMPQ
@@ -11,4 +11,9 @@
 (executable
   (name floatabs_test)
   (modules floatabs_test)
+  (libraries absdom ast utils))
+
+(executable
+  (name common_test)
+  (modules common_test)
   (libraries absdom ast utils))

@@ -1546,26 +1546,39 @@ let parse_not_at ctx lno dest src =
 let parse_cast_at ctx lno optlv dest src =
   let a = resolve_atom_with ctx lno src in
   let v = resolve_lv_or_lcarry_with ctx lno dest in
-  (* determine the type of the discarded part *)
-  let od_typ =
-	match typ_of_var v, typ_of_atom a with
-	| Tuint wv, Tuint wa -> Some (Tuint (abs (wa - wv)))
-	| Tuint wv, Tsint wa -> if wv >= wa then Some (Tuint 1)
-                            else Some (Tsint (wa - wv))
-	| Tsint wv, Tuint wa -> if wv > wa then Some (Tsint (wv - wa))
-                            else if wv = wa then Some bit_t
-                            else Some (Tuint (wa - wv))
-	| Tsint wv, Tsint wa -> if wv >= wa then Some (Tsint (wv - wa))
-                            else Some (Tsint (wa - wv + 1))
-	| (Tsingle | Tdouble), _ -> raise (UnsupportedException "Floating-point is not bitvector.")
-	| _, (Tsingle | Tdouble) -> raise (UnsupportedException "Floating-point is not bitvector.") 
-		in
+  (*
+   * The discarded part is meaningful only when it is explicitly
+   * requested.  In particular, ordinary casts between integer and
+   * floating-point types must not be rejected merely because the
+   * bitvector type of a nonexistent discarded part cannot be formed.
+   *)
   let od =
-	match optlv with
-	| None -> None
-	| Some (`LVPLAIN od) ->
-	   let d = resolve_lv_with ctx lno od od_typ in
-	   Some d in
+    match optlv with
+    | None -> None
+    | Some (`LVPLAIN od) ->
+       let od_typ =
+         match typ_of_var v, typ_of_atom a with
+         | Tuint wv, Tuint wa ->
+            Some (Tuint (abs (wa - wv)))
+         | Tuint wv, Tsint wa ->
+            if wv >= wa then Some (Tuint 1)
+            else Some (Tsint (wa - wv))
+         | Tsint wv, Tuint wa ->
+            if wv > wa then Some (Tsint (wv - wa))
+            else if wv = wa then Some bit_t
+            else Some (Tuint (wa - wv))
+         | Tsint wv, Tsint wa ->
+            if wv >= wa then Some (Tsint (wv - wa))
+            else Some (Tsint (wa - wv + 1))
+         | (Tsingle | Tdouble), _
+         | _, (Tsingle | Tdouble) ->
+            raise
+              (UnsupportedException
+                 "A cast instruction with a discarded part does not support floating-point operands.")
+       in
+       let d = resolve_lv_with ctx lno od od_typ in
+       Some d
+  in
   (* the discarded part must be a ghost variable *)
   let _ = apply_to_some (ctx_define_ghost ctx) od in
   [lno, TIcast (od, v, a)]

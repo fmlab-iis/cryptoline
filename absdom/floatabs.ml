@@ -107,6 +107,32 @@ let find st v =
 
 let set st v abs = VM.add v abs st
 
+let string_of_interval i =
+  "[" ^ FloatConst.to_string i.lo ^ ", " ^ FloatConst.to_string i.hi ^ "]"
+
+let string_of_optional_interval = function
+  | None -> "none"
+  | Some i -> string_of_interval i
+
+let string_of_fp_abs = function
+  | Bottom ->
+      "Bottom"
+  | Value { neg; zero; pos } ->
+      "{ neg = "
+      ^ string_of_optional_interval neg
+      ^ "; zero = "
+      ^ string_of_bool zero
+      ^ "; pos = "
+      ^ string_of_optional_interval pos
+      ^ " }"
+
+let string_of_state st =
+  VM.bindings st
+  |> List.map
+       (fun (v, a) ->
+         string_of_var v ^ " -> " ^ string_of_fp_abs a)
+  |> String.concat "\n"
+
 let float_neg x = FloatConst.neg x ~rnd:RNE
 let float_abs x = FloatConst.abs x ~rnd:RNE
 
@@ -544,29 +570,29 @@ let refine_upper iv upper strict =
   match iv with
   | None -> None
   | Some i ->
-      if FloatConst.cmp i.lo upper > 0 then None
+      let bound =
+        if strict then FloatConst.next_down upper else upper
+      in
+      if FloatConst.cmp i.lo bound > 0 then None
       else
         let hi =
-          if strict && FloatConst.eq i.lo upper && FloatConst.eq i.hi upper then
-            None
-          else if FloatConst.cmp i.hi upper > 0 then Some upper
-          else Some i.hi
+          if FloatConst.cmp i.hi bound > 0 then bound else i.hi
         in
-        Option.bind hi (fun hi' -> interval_make i.lo hi')
+        interval_make i.lo hi
 
 let refine_lower iv lower strict =
   match iv with
   | None -> None
   | Some i ->
-      if FloatConst.cmp i.hi lower < 0 then None
+      let bound =
+        if strict then FloatConst.next_up lower else lower
+      in
+      if FloatConst.cmp i.hi bound < 0 then None
       else
         let lo =
-          if strict && FloatConst.eq i.lo lower && FloatConst.eq i.hi lower then
-            None
-          else if FloatConst.cmp i.lo lower < 0 then Some lower
-          else Some i.lo
+          if FloatConst.cmp i.lo bound < 0 then bound else i.lo
         in
-        Option.bind lo (fun lo' -> interval_make lo' i.hi)
+        interval_make lo i.hi
 
 let assume_var_cmp_const st v op c =
   let* cur = find st v in

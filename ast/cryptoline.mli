@@ -32,7 +32,11 @@ module SM : Map.S with type key = string
 
 (** {1 Constants} *)
 
-module FloatConst: Float.S
+module FloatConst: sig
+  include Float.S
+  val next_up : t -> t
+  val next_down : t -> t
+end
 
 type const =
   | Cint of Z.t

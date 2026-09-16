@@ -71,7 +71,15 @@ let map_snd f pairs =
 
 
 (** Constants *)
-module FloatConst = Make(Fnumber) (* see utils/float.ml *)
+module FloatConst = struct
+  include Make(Fnumber) (* see utils/float.ml *)
+
+  let next_up x =
+    of_float (Stdlib.Float.succ (Mpfrf.to_float x)) ~rnd:RNE
+
+  let next_down x =
+    of_float (Stdlib.Float.pred (Mpfrf.to_float x)) ~rnd:RNE
+end
 
 type const =
   | Cint   of Z.t
