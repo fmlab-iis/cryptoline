@@ -36,10 +36,9 @@ let run_test name test =
 let fp s =
   get_ok (FA.fp_of_const (f s))
 
-(* ============================================================ *)
-(* Original tests                                                *)
-(* ============================================================ *)
+(* Original tests *)
 
+(* Abstraction of some values, ex: one = {pos = [1.0, 1.0], neg = none, zero = none} *)
 let test_value_semantics () =
   let one = fp "1.0" in
   let two = fp "2.0" in
@@ -48,17 +47,17 @@ let test_value_semantics () =
   let neg_one = fp "-1.0" in
   let neg_three = fp "-3.0" in
   let zero = fp "0.0" in
-
+(* Tests for single values *)
   expect_fp
     "const zero"
     (FA.value ~zero:true ())
     zero;
-
+(* Negation test *)
   expect_fp
     "neg"
     neg_three
     (FA.fp_neg three);
-
+(* Add test *)
   expect_fp
     "add"
     three
@@ -100,7 +99,7 @@ let test_eval_and_transfer () =
   let z = v "z" in
 
   let st0 = FA.empty_state in
-
+(* Test Imov and Iadd *)
   let prog =
     [
       Imov (x, c "1.5");
@@ -108,7 +107,7 @@ let test_eval_and_transfer () =
       Iadd (z, Avar x, Avar y);
     ]
   in
-
+(* Test z = 1.5 + 2.0 = 3.5 *)
   let st = get_ok (FA.interp_prog st0 prog) in
   let zv = get_ok (FA.find st z) in
 
@@ -116,7 +115,7 @@ let test_eval_and_transfer () =
     "interp_prog add"
     (fp "3.5")
     zv;
-
+(* Test z / 2 *)
   let expr =
     Rbinop (64, Rdiv, Rvar z, rconst "2.0")
   in
@@ -173,7 +172,7 @@ let test_predicates () =
     (match FA.verify_rspec rs_unknown with
      | FA.Not_proved -> true
      | _ -> false)
-
+(* Test overlapping intervals and unsupported floating-point cases *)
 let test_overlap_and_unsupported () =
   let x = v "ox" in
   let y = v "oy" in
@@ -225,9 +224,7 @@ let test_overlap_and_unsupported () =
    | Error (FA.Unsupported _) -> true
    | _ -> false)
 
-(* ============================================================ *)
-(* Additional arithmetic edge cases                             *)
-(* ============================================================ *)
+(* Test arithmetic between positive and negative values *)
 
 let test_cross_sign_arithmetic () =
   let three = fp "3.0" in
@@ -264,7 +261,7 @@ let test_cross_sign_arithmetic () =
     "negative plus negative"
     (fp "-8.0")
     (FA.fp_add neg_three neg_five)
-
+(* Test arithmetic operations involving zero *)
 let test_zero_arithmetic () =
   let zero = fp "0.0" in
   let three = fp "3.0" in
@@ -309,7 +306,7 @@ let test_zero_arithmetic () =
     "zero divided by positive"
     zero
     (get_ok (FA.fp_div zero three))
-
+(* Test the signs of multiplication and division results *)
 let test_mul_div_signs () =
   let two = fp "2.0" in
   let three = fp "3.0" in
@@ -346,10 +343,8 @@ let test_mul_div_signs () =
     (fp "1.5")
     (get_ok (FA.fp_div neg_three neg_two))
 
-(* ============================================================ *)
 (* Interval tests                                                *)
-(* ============================================================ *)
-
+(* Test addition of two positive intervals *)
 let test_interval_addition () =
   let x =
     FA.value
@@ -373,7 +368,7 @@ let test_interval_addition () =
     "interval positive addition"
     expected
     (FA.fp_add x y)
-
+(* Test addition of intervals whose result may be negative, zero, or positive *)
 let test_interval_cross_zero_addition () =
   let x =
     FA.value
@@ -471,11 +466,7 @@ let test_comparison_boundaries () =
           st
           (Rcmp
              (64, Rfpgt, Rvar x, rconst "1.0"))))
-
-(* ============================================================ *)
-(* Expression / interpreter edge cases                           *)
-(* ============================================================ *)
-
+(* Test propagation through subtraction, multiplication, and division *)
 let test_transfer_sub_mul_div () =
   let x = v "tx" in
   let y = v "ty" in
@@ -516,9 +507,7 @@ let test_transfer_sub_mul_div () =
     (fp "3.0")
     (get_ok (FA.eval_rexp st div_expr))
 
-(* ============================================================ *)
-(* Verification tests                                            *)
-(* ============================================================ *)
+(* Verification tests *)
 
 let test_verify_arithmetic_postcondition () =
   let x = v "vx" in
@@ -554,7 +543,7 @@ let test_verify_arithmetic_postcondition () =
       fail "verify positive propagation: got Not_proved"
   | FA.Unsupported msg ->
       fail ("verify positive propagation: got Unsupported: " ^ msg)
-
+(* Test that a false postcondition is not proved *)
 let test_verify_not_proved_boundary () =
   let x = v "ux" in
 
