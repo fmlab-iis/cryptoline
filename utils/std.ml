@@ -119,3 +119,14 @@ let append_comments_option cso cs =
   match cso with
   | None -> cs
   | Some cs0 -> tappend cs0 cs
+
+let find_substring ~(sub : string) (s : string) : int =
+  let re = Str.regexp_string sub in
+  Str.search_forward re s 0
+
+let has_substring ~(sub : string) (s : string) : bool =
+  try
+    let _ = find_substring ~sub s in
+    true
+  with Not_found ->
+    false

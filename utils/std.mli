@@ -30,6 +30,14 @@ val to_positive_same_size : Z.t -> int -> Z.t
 val split_on_char_nonempty : char -> string -> string list
 (** Same as {{:https://v2.ocaml.org/api/String.html?#VALsplit_on_char}String.split_on_char} but only nonempty strings are returned. *)
 
+val find_substring : sub:string -> string -> int
+(** [find_substring ~sub s] returns the index of string [sub] in string [s].
+    Raises [Not_found] if [sub] is not found in [s]. *)
+
+val has_substring : sub:string -> string -> bool
+(** [has_substring ~sub s] returns [true] if string [sub] appears in string
+    [s], and [false] otherwise. *)
+
 
 (** {1 Ranges} *)
 

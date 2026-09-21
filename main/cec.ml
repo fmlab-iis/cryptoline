@@ -139,6 +139,33 @@ let prepare_aig s1 s2 vs1 vs2 outs1 outs2 =
   let _ = equalize_aig_inputs aig1 aig2 in
   (aig1, aig2)
 
+let rec has_error lines =
+  match lines with
+  | [] -> false
+  | hd::tl ->
+    (Utils.Std.has_substring ~sub:"Miter computation has failed" hd)
+    || has_error tl
+
+let rec found_equivalent lines =
+  match lines with
+  | [] -> false
+  | hd::tl ->
+    (Utils.Std.has_substring ~sub:"Networks are equivalent" hd)
+    || found_equivalent tl
+
+let rec found_unsat lines =
+  match lines with
+  | [] -> false
+  | hd::tl ->
+    (Utils.Std.has_substring ~sub:"UNSATISFIABLE" hd)
+    || found_unsat tl
+
+let read_lines file =
+  In_channel.with_open_text file (
+    fun ch ->
+      In_channel.input_lines ch
+  )
+
 let run_abc_cec aig1 aig2 output =
   let _ = unix (Printf.sprintf "%s -q \"cec %s %s %s\" 2>&1 1>%s"
                   !abc_path
@@ -148,10 +175,12 @@ let run_abc_cec aig1 aig2 output =
                   aig1 aig2 output) in
   let _ = trace ("= Outputs from ABC =") in
   let _ = trace_file output in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = cleanup [aig1; aig2; output] in
   res
 
@@ -176,10 +205,12 @@ let run_abc9_cec aig1 aig2 output =
                   output) in
   let _ = trace ("= Outputs from ABC =") in
   let _ = trace_file output in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = cleanup [aig1; aig2; output] in
   res
 
@@ -193,10 +224,12 @@ let run_abc9_cec_two aig1 aig2 output =
                   output) in
   let _ = trace ("= Outputs from ABC =") in
   let _ = trace_file output in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = cleanup [aig1; aig2; output] in
   res
 
@@ -213,12 +246,23 @@ let run_abc_miter_prover prover aig1 aig2 output =
                    | Some cmds -> cmds ^ ";") prover output) in
   let _ = trace ("= Outputs from ABC =") in
   let _ = trace_file output in
-  let res =
-    match Unix.system ("grep \"UNSATISFIABLE\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_unsat lines in
   let _ = cleanup [aig1; aig2; output] in
   res
+
+let is_not_empty_file (path : string) : bool =
+  if not (Sys.file_exists path) then
+    false
+  else
+    try
+      let stats = Unix.stat path in
+      stats.st_kind = Unix.S_REG && stats.st_size > 0
+    with Unix.Unix_error _ -> false
 
 let run_abc_miter_cnf aig1 aig2 cnf output =
   let _ = unix (Printf.sprintf "%s -q \"miter %s %s %s; %s %s write_cnf %s\" 2>&1 1>/dev/null"
@@ -231,13 +275,18 @@ let run_abc_miter_cnf aig1 aig2 cnf output =
                   (match !abc_cmds with
                    | None -> ""
                    | Some cmds -> cmds ^ ";") cnf) in
+  let _ =
+    if not (is_not_empty_file cnf) then
+      failwith "Failed to generate the CNF file." in
   let _ = unix (Printf.sprintf "%s -q \"%s\" 2>&1 1>%s" !kissat_path cnf output) in
   let _ = trace ("= Outputs from KISSAT =") in
   let _ = trace_file output in
-  let res =
-    match Unix.system ("grep \"s UNSATISFIABLE\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_unsat lines in
   let _ = cleanup [aig1; aig2; cnf; output] in
   res
 
@@ -252,10 +301,12 @@ let run_abc_cec_lwt aig1 aig2 output =
   let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
   let%lwt _ = Options.WithLwt.trace_file output in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
   Lwt.return res
 
@@ -275,10 +326,12 @@ let run_abc9_cec_lwt aig1 aig2 output =
   let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
   let%lwt _ = Options.WithLwt.trace_file output in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
   Lwt.return res
 
@@ -294,10 +347,12 @@ let run_abc9_cec_two_lwt aig1 aig2 output =
   let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
   let%lwt _ = Options.WithLwt.trace_file output in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  let res =
-    match Unix.system ("grep \"Networks are equivalent\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_equivalent lines in
   let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
   Lwt.return res
 
@@ -311,10 +366,12 @@ let run_abc_miter_prover_lwt prover aig1 aig2 output =
   let%lwt _ = Options.WithLwt.trace ("= Outputs from ABC =") in
   let%lwt _ = Options.WithLwt.trace_file output in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  let res =
-    match Unix.system ("grep \"UNSATISFIABLE\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_unsat lines in
   let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; output] in
   Lwt.return res
 
@@ -324,15 +381,20 @@ let run_abc_miter_cnf_lwt aig1 aig2 cnf output =
                                       (match !abc_cmds with
                                        | None -> ""
                                        | Some cmds -> cmds ^ ";") cnf) in
+  let _ =
+    if not (is_not_empty_file cnf) then
+      failwith "Failed to generate the CNF file." in
   let%lwt _ = Options.WithLwt.unix (Printf.sprintf "%s -q \"%s\" 2>&1 1>%s" !kissat_path cnf output) in
   let%lwt _ = Options.WithLwt.log_lock () in
   let%lwt _ = Options.WithLwt.trace ("= Outputs from KISSAT =") in
   let%lwt _ = Options.WithLwt.trace_file output in
   let%lwt _ = Options.WithLwt.log_unlock () in
-  let res =
-    match Unix.system ("grep \"s UNSATISFIABLE\" " ^ output ^ " 2>&1 1>/dev/null") with
-    | Unix.WEXITED 0 -> true
-    | _ -> false in
+  let lines = read_lines output in
+  let _ =
+    if has_error lines then
+      let _ = Printf.printf "\nError message from ABC:\n%s\n" (String.concat "\n" lines) in
+      failwith "Error: failed to build miter." in
+  let res = found_unsat lines in
   let _ = Options.WithLwt.cleanup_lwt [aig1; aig2; cnf; output] in
   Lwt.return res
 
