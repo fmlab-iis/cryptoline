@@ -545,3 +545,5 @@ let cleanup files =
 let abc_path = ref "abc"
 
 let boolector_path = ref "boolector"
+
+let yosys_path = ref "yosys"

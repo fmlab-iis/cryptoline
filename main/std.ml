@@ -11,7 +11,7 @@ open Sim
 
 type action = Verify | Parse | Simulation | TestAbsdom
               | SaveCoqCryptoline | SaveBvCryptoline | SaveREP | SaveCuts | SaveMix
-              | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintProfile | PrintAbsdom
+              | PrintSSA | PrintESpec | PrintRSpec | PrintDataFlow | PrintBtor | PrintVerilog | PrintProfile | PrintAbsdom
 
 let action = ref Verify
 
@@ -143,6 +143,10 @@ let args = [
      String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
                         action := PrintBtor),
      Common.mk_arg_desc(["VARS"; "Print the output variables (VARS, comma separated) in BTOR format."; "Input variables are renamed uniformly."]));
+    ("-pverilog",
+     String (fun str -> output_vars := Str.split (Str.regexp ",") str |> tmap String.trim;
+                        action := PrintVerilog),
+     Common.mk_arg_desc(["VARS"; "Print the output variables (VARS, comma separated) in Verilog format."; "Input variables are renamed uniformly."]));
     ("-pdflow", Unit (fun () -> action := PrintDataFlow), Common.mk_arg_desc(["   Print data flow in SSA as a DOT graph."]));
     ("-pprof", Unit (fun () -> action := PrintProfile), Common.mk_arg_desc(["    Print the profile of a specification."]));
     ("-interactive", Set interactive_simulation,
@@ -422,6 +426,12 @@ let anon file =
      let m = new Qfbv.Common.btor_manager in
      let outs = Common.find_output_vars s.sprog !output_vars in
      let str = Qfbv.Common.btor_program ~rename:true m s.sprog ivs outs in
+     print_endline str
+  | PrintVerilog ->
+     let ((ivs, _), s) = Common.parse_and_check file in
+     let s = tagged_spec_untag s in
+     let outs = Common.find_output_vars s.sprog !output_vars in
+     let str = Qfbv.Verilog.verilog_program ~rename:true s.sprog ivs outs in
      print_endline str
   | PrintProfile ->
      let (_, s) = Common.parse_and_check file in

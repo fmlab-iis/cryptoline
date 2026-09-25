@@ -11,9 +11,24 @@ open Utils.Tasks
 
 let include_precondition = ref false
 
-type cec_engine = CEC | SAT | IPROVE | KISSAT | ABC9_CEC | ABC9_CEC_TWO
+type cec_engine =
+    CEC          (** Use cec *)
+  | SAT          (** Use miter, sat *)
+  | IPROVE       (** Use miter, prove *)
+  | KISSAT       (** write_cnf in abc and then invoke kissat *)
+  | ABC9_CEC     (** Use miter, &get, &cec -m *)
+  | ABC9_CEC_TWO (** Use &cec *)
 
 let cec_engine = ref CEC
+
+type aig_generator = Boolector | Yosys
+
+let aig_generator = ref Boolector
+
+let aig_generator_of_string str =
+  if str = "boolector" then Boolector
+  else if str = "yosys" then Yosys
+  else failwith (Printf.sprintf "Unknown AIG generator %s" str)
 
 let cec_engine_of_string str =
   if str = "cec" then CEC
@@ -51,7 +66,11 @@ let args_spec =
       ("-ea", String (fun str -> abc_args := Some str), Common.mk_arg_desc(["ARGS"; "Append extra arguments to the cec command or the miter command"; "depending on the engine."]));
       ("-ec", String (fun str -> abc_cmds := Some str), Common.mk_arg_desc(["CMDS"; "Apply extra commands (semicolon separated) to the miter if the"; "engine is not \"cec\"."]));
       ("-pp", Set abc_preprocess, Common.mk_arg_desc([""; "Apply preprocessing (rwsat defined in abc.rc) to the miter if the"; "engine is not \"cec\"."]));
-      ("-boolector", String (fun str -> boolector_path := str), Common.mk_arg_desc(["PATH"; "Set the path to Boolector."]));
+      ("-boolector", String (fun str -> boolector_path := str; aig_generator := Boolector), Common.mk_arg_desc(["PATH"; "Set the path to Boolector and use Boolector to generate AIG."]));
+      ("-yosys", String (fun str -> yosys_path := str; aig_generator := Yosys), Common.mk_arg_desc(["PATH"; "Set the path to Yosys and use Yosys to generate AIG."]));
+      ("-gen", Symbol (["yosys"; "boolector"],
+                       fun str -> aig_generator := aig_generator_of_string str),
+       Common.mk_arg_desc([""; "Set the tool to generate AIG (default: boolector)."]));
       ("-e", Symbol (["cec"; "sat"; "iprove"; "kissat"; "&cec"],
                      fun str -> cec_engine := cec_engine_of_string str), Common.mk_arg_desc(["";
                                                                                              "Use the selected prover for equivalence checking. For sat, iprove,";
@@ -85,10 +104,10 @@ let usage_msg =
   "Usage: cv_cec OPTIONS FILE1 FILE2\n\
    \n\
    Check the equivalence between two CryptoLine programs. The two programs are\n\
-   converted to And-Inverter Graphs (AIGs) by Boolector (>= 2.1.1). The equivalence\n\
-   between the two AIGs are checked by ABC. If the output variable names of the two\n\
-   programs are the same, use -ov to specify the output variables. Otherwise, use\n\
-   -ov1 and -ov2 to specify the output variables (in the same order) separately.\n"
+   converted to And-Inverter Graphs (AIGs) by Boolector or Yosys.\n\
+   The equivalence between the two AIGs are checked by ABC. If the output variable\n\
+   names of the two programs are the same, use -ov to specify the output variables.\n\
+   Otherwise, use -ov1 and -ov2 to specify the output variables (in the same order) separately.\n"
 
 let anon_fun file = input_files_rev := file::!input_files_rev
 
@@ -96,7 +115,7 @@ let anon_fun file = input_files_rev := file::!input_files_rev
 (** Equivalence checking *)
 
 (* Convert a program to AIG by Boolector. *)
-let convert_program_to_aig fopt p ins outs =
+let convert_program_to_aig_boolector fopt p ins outs =
   let btor_file = tmpfile "" ".btor" in
   let aag_file = tmpfile "" ".aag" in
   (* to BTOR *)
@@ -114,6 +133,31 @@ let convert_program_to_aig fopt p ins outs =
             aig
   | Some error -> let _ = cleanup [btor_file; aag_file] in
                   failwith (error)
+
+(* Convert a program to AIG by Yosys. *)
+let convert_program_to_aig_yosys fopt p ins outs =
+  let v_file = tmpfile "" ".v" in
+  let aag_file = tmpfile "" ".aag" in
+  (* to Verilog *)
+  let v = Qfbv.Verilog.verilog_program ~rename:true ~pre:fopt p ins outs in
+  let outch = open_out v_file in
+  let _ = output_string outch v in
+  let _ = close_out outch in
+  let _ = trace ("= Verilog file ="); trace_file v_file in
+  (* to AIG *)
+  let _ = Qfbv.Verilog.verilog_file_to_aiger_file ~yosys:!yosys_path ~ascii:true v_file aag_file in
+  let _ = trace ("= AAG file ="); trace_file aag_file in
+  let aig = Aig.init () in
+  match Aig.open_and_read_from_file aig aag_file with
+  | None -> let _ = cleanup [v_file; aag_file] in
+            aig
+  | Some error -> let _ = cleanup [v_file; aag_file] in
+                  failwith (error)
+
+let convert_program_to_aig fopt p ins outs =
+  match !aig_generator with
+  | Boolector -> convert_program_to_aig_boolector fopt p ins outs
+  | Yosys -> convert_program_to_aig_yosys fopt p ins outs
 
 (* Make two AIGs have the same number of inputs. *)
 let equalize_aig_inputs aig1 aig2 =

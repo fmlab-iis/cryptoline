@@ -389,3 +389,6 @@ val abc_path : string ref
 
 val boolector_path : string ref
 (** The path to Boolector *)
+
+val yosys_path : string ref
+(** The path to Yosys *)
