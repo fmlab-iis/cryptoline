@@ -966,6 +966,80 @@ let btor_program ?(rename=false) ?(pre=None) m p ins outs =
   ^ String.concat "\n" (tmap (btor_string_of_roots m) outputs)
   ^ "\n"
 
+let btor_miter ?(rename=false) ?(pre=None) m (p1, ins1, outs1) (p2, ins2, outs2) =
+  let equalize_inputs (p1, ins1, outs1) (p2, ins2, outs2) =
+    let (am1, am2, ins_rev) =
+      try
+        List.fold_left2 (
+          fun (vm1, vm2, ins_rev) i1 i2 ->
+            if i1.vtyp = i2.vtyp then
+              let nv = mkvar (Printf.sprintf "p1_%s_p2_%s" i1.vname i2.vname) i1.vtyp in
+              let na = Avar nv in
+              (VM.add i1 na vm1, VM.add i2 na vm2, nv::ins_rev)
+            else
+              raise (Failure (
+                  Printf.sprintf
+                    "Incompatible types of two inputs: %s of type %s in the first program, %s of type %s in the second program"
+                    i1.vname (string_of_typ i1.vtyp)
+                    i2.vname (string_of_typ i2.vtyp)
+                ))
+        ) (VM.empty, VM.empty, []) ins1 ins2
+      with Invalid_argument _ ->
+        raise (Failure "The number of inputs of the two programs must be the same") in
+    let (em1, em2) = (emap_of_amap am1, emap_of_amap am2) in
+    let (rm1, rm2) = (rmap_of_amap am1, rmap_of_amap am2) in
+    let ins = List.rev ins_rev in
+    (
+      (
+        subst_program am1 em1 rm1 p1 |> fst,
+        ins,
+        tmap (fun v -> subst_lval am1 v |> fst) outs1
+      ),
+      (
+        subst_program am2 em2 rm2 p2 |> fst,
+        ins,
+        tmap (fun v -> subst_lval am2 v |> fst) outs2
+      )
+    )
+  in
+  let btor_program ith p ins outs =
+    (* inputs *)
+    let _ = m#mkcomment "variables" in
+    let _ =
+      if rename then
+        let vnames = List.mapi (fun i _ -> Printf.sprintf "pi%d_%d" ith i) ins in
+        btor_declare_vars m ~vnames:vnames ins
+      else
+        btor_declare_vars m ins in
+    (* program *)
+    let _ = m#mkcomment "program" in
+    let _ = List.iter (btor_instr m) p in
+    (* precondition *)
+    let btor_outs : int list =
+      match pre with
+      | None -> tmap m#mkvar outs
+      | Some f ->
+        let bf = btor_of_bexp m f in
+        tmap (fun o ->
+            let bd = m#mkvar (mkvar (Printf.sprintf "__dummy_output_%s__" (string_of_typ o.vtyp)) o.vtyp) in
+            m#mkcond (size_of_typ o.vtyp) bf (m#mkvar o) bd) outs in
+    btor_outs in
+  let ((p1, ins1, outs1), (p2, ins2, outs2)) = equalize_inputs (p1, ins1, outs1) (p2, ins2, outs2) in
+  let btor_outs1 = btor_program 1 p1 ins1 outs1 in
+  let btor_outs2 = btor_program 2 p2 ins2 outs2 in
+  let _ = m#mkcomment "miter" in
+  let roots : int list =
+    try
+      List.rev_map2 (fun o1 o2 -> m#mkne o1 o2) btor_outs1 btor_outs2
+      |> List.rev
+    with Invalid_argument _ ->
+      failwith ("Mismatch of the number of outputs.") in
+  (* outputs *)
+  (String.concat "\n" m#getstmts)
+  ^ "\n"
+  ^ btor_string_of_roots m roots
+  ^ "\n"
+
 
 (** SMTLIB *)
 

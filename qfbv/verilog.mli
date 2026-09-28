@@ -36,3 +36,27 @@ val verilog_file_to_aiger_file :
   unit
 (** [verilog_file_to_aiger_file ?yosys ?top ?ascii v_file aag_file] translates the Verilog
     circuit in [v_file] to the AIGER circuit in [aag_file] via Yosys. *)
+
+val verilog_to_miter :
+  ?yosys:string ->
+  ?top:string ->
+  ?ascii:bool ->
+  string ->
+  string ->
+  string
+(** [verilog_to_aiger ?yosys ?top ?ascii verilog_src1 verilog_src2] uses Yosys
+    to translate the circuits in Verilog format to a miter in AIGER format.
+    If [ascii] is true, outputs ASCII AIGER (.aag); otherwise outputs standard
+    binary AIGER (.aig) compatible with ABC. *)
+
+val verilog_files_to_miter_file :
+  ?yosys:string ->
+  ?top:string ->
+  ?ascii:bool ->
+  string ->
+  string ->
+  string ->
+  unit
+(** [verilog_file_to_aiger_file ?yosys ?top ?ascii v_file1 v_file2 aag_file]
+    translates the Verilog circuits in [v_file1] and [v_file2] to a miter
+    in [aag_file] via Yosys. *)

@@ -262,6 +262,17 @@ let string_of_vmodule m =
   Buffer.contents buf
 
 
+(** {1 Shorthands} *)
+
+let _vbit0 = VConst (1, Z.zero)
+(* Zero-extend e by i bits *)
+let vzext i e =
+  VConcat [VConst (i, Z.zero); e]
+(* Sign-extend e of width w by i bits *)
+let vsext i e w =
+  VConcat [VReplicate (i, VSlice (e, w - 1, w - 1)); e]
+
+
 (** {1 Functional Translation Engine} *)
 
 type state = {
@@ -415,11 +426,11 @@ let rec trans_exp st e =
   | Common.ZeroExtend (_w, i, e) ->
     let (ve, st') = trans_exp st e in
     if i = 0 then (ve, st')
-    else (VConcat [VReplicate (i, VConst (1, Z.zero)); ve], st')
+    else (vzext i ve, st')
   | Common.SignExtend (w, i, e) ->
     let (ve, st') = trans_exp st e in
     if i = 0 then (ve, st')
-    else (VConcat [VReplicate (i, VSlice (ve, w - 1, w - 1)); ve], st')
+    else (vsext i ve w, st')
   | Common.Ite (_w, c, e1, e2) ->
     let (vc, st1) = trans_bexp st c in
     let (ve1, st2) = trans_exp st1 e1 in
@@ -478,18 +489,18 @@ and trans_bexp st b =
   | Common.Uaddo (w, e1, e2) ->
     let (ve1, st1) = trans_exp st e1 in
     let (ve2, st2) = trans_exp st1 e2 in
-    let sum = VAdd (VConcat [VConst (1, Z.zero); ve1], VConcat [VConst (1, Z.zero); ve2]) in
+    let sum = VAdd (vzext 1 ve1, vzext 1 ve2) in
     (VSlice (sum, w, w), st2)
   | Common.Usubo (w, e1, e2) ->
     let (ve1, st1) = trans_exp st e1 in
     let (ve2, st2) = trans_exp st1 e2 in
-    let sub = VSub (VConcat [VConst (1, Z.zero); ve1], VConcat [VConst (1, Z.zero); ve2]) in
+    let sub = VSub (vzext 1 ve1, vzext 1 ve2) in
     (VSlice (sub, w, w), st2)
   | Common.Umulo (w, e1, e2) ->
     let (ve1, st1) = trans_exp st e1 in
     let (ve2, st2) = trans_exp st1 e2 in
-    let z1 = VConcat [VReplicate (w, VConst (1, Z.zero)); ve1] in
-    let z2 = VConcat [VReplicate (w, VConst (1, Z.zero)); ve2] in
+    let z1 = vzext w ve1 in
+    let z2 = vzext w ve2 in
     let mul = VMul (z1, z2) in
     (VNe (VSlice (mul, 2 * w - 1, w), VConst (w, Z.zero)), st2)
   | Common.Saddo (w, e1, e2) ->
@@ -513,10 +524,8 @@ and trans_bexp st b =
   | Common.Smulo (w, e1, e2) ->
     let (ve1, st1) = trans_exp st e1 in
     let (ve2, st2) = trans_exp st1 e2 in
-    let s1 = VSlice (ve1, w - 1, w - 1) in
-    let s2 = VSlice (ve2, w - 1, w - 1) in
-    let ext1 = VConcat [VReplicate (w, s1); ve1] in
-    let ext2 = VConcat [VReplicate (w, s2); ve2] in
+    let ext1 = vsext w ve1 w in
+    let ext2 = vsext w ve2 w in
     let mul = VMul (VSigned ext1, VSigned ext2) in
     let high_mul = VSlice (mul, 2 * w - 1, w) in
     let sign_mul = VSlice (mul, w - 1, w - 1) in
@@ -533,12 +542,12 @@ let trans_cast st od v a =
     | Tsint _, Tuint _ ->
       if wv = wa then va
       else if wv < wa then VSlice (va, wv - 1, 0)
-      else VConcat [VReplicate (wv - wa, VConst (1, Z.zero)); va]
+      else vzext (wv - wa) va
     | Tuint _, Tsint _
     | Tsint _, Tsint _ ->
       if wv = wa then va
       else if wv < wa then VSlice (va, wv - 1, 0)
-      else VConcat [VReplicate (wv - wa, VSlice (va, wa - 1, wa - 1)); va]
+      else vsext (wv - wa) va wa
   in
   let (_wname_v, v_var, st2) = new_wire st1 v.vname wv in
   let st3 = { st2 with stmts_rev = VAssign (v_var, v_rhs) :: st2.stmts_rev; env = VM.add v v_var st2.env } in
@@ -559,8 +568,8 @@ let trans_cast st od v a =
         else if wv = wa then VSlice (va, wa - 1, wa - 1)
         else
           VAdd (
-            VConcat [VConst (1, Z.zero); VSlice (va, wa - 1, wv)],
-            VConcat [VReplicate (wa - wv, VConst (1, Z.zero)); VSlice (va, wv - 1, wv - 1)]
+            vzext 1 (VSlice (va, wa - 1, wv)),
+            vzext (wa - wv) (VSlice (va, wv - 1, wv - 1))
           )
       | Tsint _, Tsint _ ->
         if wv >= wa then VConst (wd, Z.zero)
@@ -568,7 +577,7 @@ let trans_cast st od v a =
           let hi = VSlice (va, wa - 1, wv) in
           VAdd (
             VConcat [VSlice (va, wa - 1, wa - 1); hi],
-            VConcat [VReplicate (wa - wv, VConst (1, Z.zero)); VSlice (va, wv - 1, wv - 1)]
+            vzext (wa - wv) (VSlice (va, wv - 1, wv - 1))
           )
     in
     let (_wname_d, d_var, st4) = new_wire st3 d.vname wd in
@@ -580,13 +589,17 @@ let trans_instr st instr =
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
     let (_wn, vvar, st2) = new_wire st1 v.vname wv in
-    { st2 with stmts_rev = VAssign (vvar, va) :: st2.stmts_rev; env = VM.add v vvar st2.env }
+    { st2 with
+      stmts_rev = VAssign (vvar, va) :: st2.stmts_rev;
+      env = VM.add v vvar st2.env }
   | Ishl (v, a, n) ->
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
     let (vn, st2) = trans_atom st1 n in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, VShl (va, vn)) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, VShl (va, vn)) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Ishls (l, v, a, n) ->
     let wv = size_of_var v in
     let ni = Z.to_int n in
@@ -597,14 +610,15 @@ let trans_instr st instr =
     let asgn_v = VAssign (vv, VShl (va, VConst (wv, n))) in
     { st3 with
       stmts_rev = asgn_v :: asgn_l :: st3.stmts_rev;
-      env = VM.add l vl (VM.add v vv st3.env)
-    }
+      env = VM.add l vl (VM.add v vv st3.env) }
   | Ishr (v, a, n) ->
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
     let (vn, st2) = trans_atom st1 n in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, VLshr (va, vn)) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, VLshr (va, vn)) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Ishrs (v, l, a, n) ->
     let wv = size_of_var v in
     let ni = Z.to_int n in
@@ -615,14 +629,15 @@ let trans_instr st instr =
     let asgn_l = VAssign (vl, VSlice (va, ni - 1, 0)) in
     { st3 with
       stmts_rev = asgn_l :: asgn_v :: st3.stmts_rev;
-      env = VM.add v vv (VM.add l vl st3.env)
-    }
+      env = VM.add v vv (VM.add l vl st3.env) }
   | Isar (v, a, n) ->
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
     let (vn, st2) = trans_atom st1 n in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, VAshr (VSigned va, vn)) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, VAshr (VSigned va, vn)) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Isars (v, l, a, n) ->
     let wv = size_of_var v in
     let ni = Z.to_int n in
@@ -633,8 +648,7 @@ let trans_instr st instr =
     let asgn_l = VAssign (vl, VSlice (va, ni - 1, 0)) in
     { st3 with
       stmts_rev = asgn_l :: asgn_v :: st3.stmts_rev;
-      env = VM.add v vv (VM.add l vl st3.env)
-    }
+      env = VM.add v vv (VM.add l vl st3.env) }
   | Icshl (vh, vl, a1, a2, n) ->
     let w1 = size_of_var vh in
     let w2 = size_of_var vl in
@@ -648,8 +662,7 @@ let trans_instr st instr =
     let asgn_vl = VAssign (vvl, VLshr (VSlice (vsh, w2 - 1, 0), VConst (w2, n))) in
     { st5 with
       stmts_rev = asgn_vl :: asgn_vh :: asgn_sh :: st5.stmts_rev;
-      env = VM.add vh vvh (VM.add vl vvl st5.env)
-    }
+      env = VM.add vh vvh (VM.add vl vvl st5.env) }
   | Icshls (l, vh, vl, a1, a2, n) ->
     let w1 = size_of_var vh in
     let w2 = size_of_var vl in
@@ -666,8 +679,7 @@ let trans_instr st instr =
     let asgn_l = VAssign (vl_var, VSlice (va1, w1 - 1, w1 - ni)) in
     { st6 with
       stmts_rev = asgn_l :: asgn_vl :: asgn_vh :: asgn_sh :: st6.stmts_rev;
-      env = VM.add l vl_var (VM.add vh vvh (VM.add vl vvl st6.env))
-    }
+      env = VM.add l vl_var (VM.add vh vvh (VM.add vl vvl st6.env)) }
   | Icshr (vh, vl, a1, a2, n) ->
     let w1 = size_of_var vh in
     let w2 = size_of_var vl in
@@ -681,8 +693,7 @@ let trans_instr st instr =
     let asgn_vl = VAssign (vvl, VSlice (vsh, w2 - 1, 0)) in
     { st5 with
       stmts_rev = asgn_vl :: asgn_vh :: asgn_sh :: st5.stmts_rev;
-      env = VM.add vh vvh (VM.add vl vvl st5.env)
-    }
+      env = VM.add vh vvh (VM.add vl vvl st5.env) }
   | Icshrs (vh, vl, l, a1, a2, n) ->
     let w1 = size_of_var vh in
     let w2 = size_of_var vl in
@@ -699,8 +710,7 @@ let trans_instr st instr =
     let asgn_l = VAssign (vl_var, VSlice (va2, ni - 1, 0)) in
     { st6 with
       stmts_rev = asgn_l :: asgn_vl :: asgn_vh :: asgn_sh :: st6.stmts_rev;
-      env = VM.add vh vvh (VM.add vl vvl (VM.add l vl_var st6.env))
-    }
+      env = VM.add vh vvh (VM.add vl vvl (VM.add l vl_var st6.env)) }
   | Irol (v, a, n) ->
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
@@ -710,13 +720,19 @@ let trans_instr st instr =
       | Aconst (_, z) ->
         let ni = (Z.to_int z) mod wv in
         if ni = 0 then va
-        else VOr (VShl (va, VConst (wv, Z.of_int ni)), VLshr (va, VConst (wv, Z.of_int (wv - ni))))
+        else VOr (VShl (va, VConst (wv, Z.of_int ni)),
+                  VLshr (va, VConst (wv, Z.of_int (wv - ni))))
       | Avar _ ->
         let sh = VMod (vn, VConst (wv, Z.of_int wv)) in
-        VCond (VEq (sh, VConst (wv, Z.zero)), va, VOr (VShl (va, sh), VLshr (va, VSub (VConst (wv, Z.of_int wv), sh))))
+        VCond (VEq (sh, VConst (wv, Z.zero)),
+               va,
+               VOr (VShl (va, sh),
+                    VLshr (va, VSub (VConst (wv, Z.of_int wv), sh))))
     in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, rhs) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, rhs) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Iror (v, a, n) ->
     let wv = size_of_var v in
     let (va, st1) = trans_atom st a in
@@ -726,13 +742,19 @@ let trans_instr st instr =
       | Aconst (_, z) ->
         let ni = (Z.to_int z) mod wv in
         if ni = 0 then va
-        else VOr (VLshr (va, VConst (wv, Z.of_int ni)), VShl (va, VConst (wv, Z.of_int (wv - ni))))
+        else VOr (VLshr (va, VConst (wv, Z.of_int ni)),
+                  VShl (va, VConst (wv, Z.of_int (wv - ni))))
       | Avar _ ->
         let sh = VMod (vn, VConst (wv, Z.of_int wv)) in
-        VCond (VEq (sh, VConst (wv, Z.zero)), va, VOr (VLshr (va, sh), VShl (va, VSub (VConst (wv, Z.of_int wv), sh))))
+        VCond (VEq (sh, VConst (wv, Z.zero)),
+               va,
+               VOr (VLshr (va, sh),
+                    VShl (va, VSub (VConst (wv, Z.of_int wv), sh))))
     in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, rhs) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, rhs) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Inondet v ->
     let wv = size_of_var v in
     let iname = Printf.sprintf "_nondet_%s_%d" v.vname st.wid in
@@ -740,22 +762,25 @@ let trans_instr st instr =
     { st with
       wid = st.wid + 1;
       extra_inputs = (iname, wv) :: st.extra_inputs;
-      env = VM.add v vvar st.env
-    }
+      env = VM.add v vvar st.env }
   | Icmov (v, c, a1, a2) ->
     let wv = size_of_var v in
     let (vc, st1) = trans_atom st c in
     let (va1, st2) = trans_atom st1 a1 in
     let (va2, st3) = trans_atom st2 a2 in
     let (_wn, vvar, st4) = new_wire st3 v.vname wv in
-    { st4 with stmts_rev = VAssign (vvar, VCond (vc, va1, va2)) :: st4.stmts_rev; env = VM.add v vvar st4.env }
+    { st4 with
+      stmts_rev = VAssign (vvar, VCond (vc, va1, va2)) :: st4.stmts_rev;
+      env = VM.add v vvar st4.env }
   | Inop -> st
   | Iadd (v, a1, a2) ->
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (_wn, vvar, st3) = new_wire st2 v.vname wv in
-    { st3 with stmts_rev = VAssign (vvar, VAdd (va1, va2)) :: st3.stmts_rev; env = VM.add v vvar st3.env }
+    { st3 with
+      stmts_rev = VAssign (vvar, VAdd (va1, va2)) :: st3.stmts_rev;
+      env = VM.add v vvar st3.env }
   | Iadds (c, v, a1, a2) ->
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
@@ -763,39 +788,38 @@ let trans_instr st instr =
     let (_wext, vext, st3) = new_wire st2 "adds_tmp" (wv + 1) in
     let (_wc, vc, st4) = new_wire st3 c.vname 1 in
     let (_wv, vv, st5) = new_wire st4 v.vname wv in
-    let asgn_ext = VAssign (vext, VAdd (VConcat [VConst (1, Z.zero); va1], VConcat [VConst (1, Z.zero); va2])) in
+    let asgn_ext = VAssign (vext, VAdd (vzext 1 va1, vzext 1 va2)) in
     let asgn_c = VAssign (vc, VSlice (vext, wv, wv)) in
     let asgn_v = VAssign (vv, VSlice (vext, wv - 1, 0)) in
     { st5 with
       stmts_rev = asgn_v :: asgn_c :: asgn_ext :: st5.stmts_rev;
-      env = VM.add c vc (VM.add v vv st5.env)
-    }
+      env = VM.add c vc (VM.add v vv st5.env) }
   | Iadc (v, a1, a2, y) ->
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_y = if wv = 1 then vy else VConcat [VReplicate (wv - 1, VConst (1, Z.zero)); vy] in
+    let ext_y = if wv = 1 then vy else vzext (wv - 1) vy in
     let (_wn, vvar, st4) = new_wire st3 v.vname wv in
-    { st4 with stmts_rev = VAssign (vvar, VAdd (VAdd (va1, va2), ext_y)) :: st4.stmts_rev; env = VM.add v vvar st4.env }
+    { st4 with
+      stmts_rev = VAssign (vvar, VAdd (VAdd (va1, va2), ext_y)) :: st4.stmts_rev;
+      env = VM.add v vvar st4.env }
   | Iadcs (c, v, a1, a2, y) ->
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_a1 = VConcat [VConst (1, Z.zero); va1] in
-    let ext_a2 = VConcat [VConst (1, Z.zero); va2] in
-    let ext_y = VConcat [VReplicate (wv, VConst (1, Z.zero)); vy] in
     let (_wext, vext, st4) = new_wire st3 "adcs_tmp" (wv + 1) in
     let (_wc, vc, st5) = new_wire st4 c.vname 1 in
     let (_wv, vv, st6) = new_wire st5 v.vname wv in
-    let asgn_ext = VAssign (vext, VAdd (VAdd (ext_a1, ext_a2), ext_y)) in
+    let asgn_ext = VAssign (vext,
+                            VAdd (VAdd (vzext 1 va1, vzext 1 va2),
+                                  vzext wv vy)) in
     let asgn_c = VAssign (vc, VSlice (vext, wv, wv)) in
     let asgn_v = VAssign (vv, VSlice (vext, wv - 1, 0)) in
     { st6 with
       stmts_rev = asgn_v :: asgn_c :: asgn_ext :: st6.stmts_rev;
-      env = VM.add c vc (VM.add v vv st6.env)
-    }
+      env = VM.add c vc (VM.add v vv st6.env) }
   | Isub (v, a1, a2) ->
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
@@ -806,8 +830,8 @@ let trans_instr st instr =
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
-    let ext_a1 = VConcat [VConst (1, Z.zero); va1] in
-    let ext_not_a2 = VConcat [VConst (1, Z.zero); VNot va2] in
+    let ext_a1 = vzext 1 va1 in
+    let ext_not_a2 = vzext 1 (VNot va2) in
     let one = VConst (wv + 1, Z.one) in
     let (_wext, vext, st3) = new_wire st2 "subc_tmp" (wv + 1) in
     let (_wc, vc, st4) = new_wire st3 c.vname 1 in
@@ -823,8 +847,8 @@ let trans_instr st instr =
     let wv = size_of_var v in
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
-    let ext_a1 = VConcat [VConst (1, Z.zero); va1] in
-    let ext_a2 = VConcat [VConst (1, Z.zero); va2] in
+    let ext_a1 = vzext 1 va1 in
+    let ext_a2 = vzext 1 va2 in
     let (_wext, vext, st3) = new_wire st2 "subb_tmp" (wv + 1) in
     let (_wc, vc, st4) = new_wire st3 c.vname 1 in
     let (_wv, vv, st5) = new_wire st4 v.vname wv in
@@ -840,7 +864,7 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_y = if wv = 1 then vy else VConcat [VReplicate (wv - 1, VConst (1, Z.zero)); vy] in
+    let ext_y = if wv = 1 then vy else vzext (wv - 1) vy in
     let (_wn, vvar, st4) = new_wire st3 v.vname wv in
     { st4 with stmts_rev = VAssign (vvar, VAdd (VAdd (va1, VNot va2), ext_y)) :: st4.stmts_rev; env = VM.add v vvar st4.env }
   | Isbcs (c, v, a1, a2, y) ->
@@ -848,9 +872,9 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_a1 = VConcat [VConst (1, Z.zero); va1] in
-    let ext_not_a2 = VConcat [VConst (1, Z.zero); VNot va2] in
-    let ext_y = VConcat [VReplicate (wv, VConst (1, Z.zero)); vy] in
+    let ext_a1 = vzext 1 va1 in
+    let ext_not_a2 = vzext 1 (VNot va2) in
+    let ext_y = vzext wv vy in
     let (_wext, vext, st4) = new_wire st3 "sbcs_tmp" (wv + 1) in
     let (_wc, vc, st5) = new_wire st4 c.vname 1 in
     let (_wv, vv, st6) = new_wire st5 v.vname wv in
@@ -866,7 +890,7 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_y = if wv = 1 then vy else VConcat [VReplicate (wv - 1, VConst (1, Z.zero)); vy] in
+    let ext_y = if wv = 1 then vy else vzext (wv - 1) vy in
     let (_wn, vvar, st4) = new_wire st3 v.vname wv in
     { st4 with stmts_rev = VAssign (vvar, VSub (va1, VAdd (va2, ext_y))) :: st4.stmts_rev; env = VM.add v vvar st4.env }
   | Isbbs (c, v, a1, a2, y) ->
@@ -874,9 +898,9 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let (vy, st3) = trans_atom st2 y in
-    let ext_a1 = VConcat [VConst (1, Z.zero); va1] in
-    let ext_a2 = VConcat [VConst (1, Z.zero); va2] in
-    let ext_y = VConcat [VReplicate (wv, VConst (1, Z.zero)); vy] in
+    let ext_a1 = vzext 1 va1 in
+    let ext_a2 = vzext 1 va2 in
+    let ext_y = vzext wv vy in
     let (_wext, vext, st4) = new_wire st3 "sbbs_tmp" (wv + 1) in
     let (_wc, vc, st5) = new_wire st4 c.vname 1 in
     let (_wv, vv, st6) = new_wire st5 v.vname wv in
@@ -899,8 +923,8 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let ext a =
-      if is_signed then VConcat [VReplicate (wv, VSlice (a, wv - 1, wv - 1)); a]
-      else VConcat [VReplicate (wv, VConst (1, Z.zero)); a]
+      if is_signed then vsext wv a wv
+      else vzext wv a
     in
     let ext_a1 = ext va1 in
     let ext_a2 = ext va2 in
@@ -921,8 +945,8 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let ext a =
-      if is_signed then VConcat [VReplicate (wv, VSlice (a, wv - 1, wv - 1)); a]
-      else VConcat [VReplicate (wv, VConst (1, Z.zero)); a]
+      if is_signed then vsext wv a wv
+      else vzext wv a
     in
     let ext_a1 = ext va1 in
     let ext_a2 = ext va2 in
@@ -943,8 +967,8 @@ let trans_instr st instr =
     let (va1, st1) = trans_atom st a1 in
     let (va2, st2) = trans_atom st1 a2 in
     let ext a =
-      if is_signed then VConcat [VReplicate (w, VSlice (a, w - 1, w - 1)); a]
-      else VConcat [VReplicate (w, VConst (1, Z.zero)); a]
+      if is_signed then vsext w a w
+      else vzext w a
     in
     let ext_a1 = ext va1 in
     let ext_a2 = ext va2 in
@@ -958,10 +982,10 @@ let trans_instr st instr =
     let hi_slice = VSlice (va, w - 1, ni) in
     let lo_slice = VSlice (va, ni - 1, 0) in
     let ext_hi =
-      if var_is_signed vh then VConcat [VReplicate (ni, VSlice (va, w - 1, w - 1)); hi_slice]
-      else VConcat [VReplicate (ni, VConst (1, Z.zero)); hi_slice]
+      if var_is_signed vh then vsext ni hi_slice (w - ni)
+      else vzext ni hi_slice
     in
-    let ext_lo = VConcat [VReplicate (w - ni, VConst (1, Z.zero)); lo_slice] in
+    let ext_lo = vzext (w - ni) lo_slice in
     let (_wvh, vvh, st2) = new_wire st1 vh.vname w in
     let (_wvl, vvl, st3) = new_wire st2 vl.vname w in
     let asgn_vh = VAssign (vvh, ext_hi) in
@@ -1135,6 +1159,28 @@ let verilog_file_to_aiger_file ?(yosys= !Options.Std.yosys_path) ?(top="top") ?(
   end else
     cleanup [ys_file; log_file]
 
+let verilog_files_to_miter_file ?(yosys= !Options.Std.yosys_path) ?(top="top") ?(ascii=false) v_file1 v_file2 aag_file =
+  let ys_file = tmpfile "yosys_" ".ys" in
+  let log_file = tmpfile "yosys_" ".log" in
+  let ascii_flag = if ascii then "-ascii " else "" in
+  let script =
+    Printf.sprintf "read_verilog %s\nrename %s gold\nread_verilog %s\nrename %s gate\nmiter -equiv -flatten gold gate miter\nhierarchy -top miter\nprep\ntechmap\naigmap\nwrite_aiger %s-symbols %s\n"
+      v_file1 top v_file2 top ascii_flag aag_file
+  in
+  let ch = open_out ys_file in
+  output_string ch script;
+  close_out ch;
+  let cmd = Printf.sprintf "%s -q -s %s > %s 2>&1" yosys (Filename.quote ys_file) (Filename.quote log_file) in
+  let ret = Sys.command cmd in
+  if ret <> 0 then begin
+    let log_content =
+      try In_channel.with_open_text log_file In_channel.input_all with _ -> "Unknown error"
+    in
+    cleanup [ys_file; log_file];
+    failwith (Printf.sprintf "Yosys failed with exit code %d:\n%s" ret log_content)
+  end else
+    cleanup [ys_file; log_file]
+
 let verilog_to_aiger ?(yosys= !Options.Std.yosys_path) ?(top="top") ?(ascii=false) v_src =
   let v_file = tmpfile "verilog_" ".v" in
   let aag_file = tmpfile "yosys_" (if ascii then ".aag" else ".aig") in
@@ -1151,4 +1197,28 @@ let verilog_to_aiger ?(yosys= !Options.Std.yosys_path) ?(top="top") ?(ascii=fals
     aiger_content
   with e ->
     cleanup [v_file; aag_file];
+    raise e
+
+let verilog_to_miter ?(yosys= !Options.Std.yosys_path) ?(top="top") ?(ascii=false) v_src1 v_src2 =
+  let v_file1 = tmpfile "verilog_" ".v" in
+  let v_file2 = tmpfile "verilog_" ".v" in
+  let aag_file = tmpfile "yosys_" (if ascii then ".aag" else ".aig") in
+  let _ =
+    let outch = open_out v_file1 in
+    output_string outch v_src1;
+    close_out outch in
+  let _ =
+    let outch = open_out v_file2 in
+    output_string outch v_src2;
+    close_out outch in
+  try
+    verilog_files_to_miter_file ~yosys ~top ~ascii v_file1 v_file2 aag_file;
+    let in_ch = open_in_bin aag_file in
+    let len = in_channel_length in_ch in
+    let aiger_content = really_input_string in_ch len in
+    close_in in_ch;
+    cleanup [v_file1; v_file2; aag_file];
+    aiger_content
+  with e ->
+    cleanup [v_file1; v_file2; aag_file];
     raise e

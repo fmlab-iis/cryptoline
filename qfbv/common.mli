@@ -91,8 +91,8 @@ class btor_manager :
     method mkconstd : size -> Z.t -> int
     method mkconstd_for_shift : size -> Z.t -> int
     method mkconstd_for_rotate : size -> Z.t -> int
-    method mkeq : size -> int -> int
-    method mkne : size -> int -> int
+    method mkeq : int -> int -> int
+    method mkne : int -> int -> int
     method mkextract : size -> int -> int -> int -> int
     method mkhigh : size -> int -> int -> int
     method mklow : size -> int -> int -> int
@@ -184,3 +184,10 @@ val btor_program : ?rename:bool -> ?pre:(bexp option) -> btor_manager -> program
     are ignored. Input variables are renamed in the output BTOR if [b] is
     [true]. If [fopt] is [Some f], then [f], the precondition, is taken into
     consideration. *)
+
+val btor_miter :
+  ?rename:bool -> ?pre:(bexp option) -> btor_manager ->
+  (program * var list * var list) -> (program * var list * var list) ->
+  string
+(** [btor_miter ~rename:b ~pre:fopt m (p1, ins1, outs1) (p2, ins2, outs2)]
+    converts two programs to a miter in BTOR format. *)
