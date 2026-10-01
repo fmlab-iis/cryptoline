@@ -89,7 +89,7 @@ def label(args, address):
         return "L{:s}_0x{:03x}".format(base, min)
     else:   # look above Canonical Frame Address
         offset = args["cfa"] - address
-        if offset < 4096:
+        if offset >= 0 and offset < min:
             return "Lcfa_0x{:03x}".format(offset)
 
     return "L" + hex(address)
