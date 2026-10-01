@@ -147,6 +147,16 @@ class btor_manager :
   end
 (** a manager used to generate BTOR files *)
 
+val btor_declare_vars : btor_manager -> ?vnames:string list -> var list -> unit
+(** Declare variables possibly renamed in the output btor. *)
+
+val btor_of_exp : btor_manager -> exp -> int
+(** [btor_of_exp m e] encodes [e] in btor format and returns the btor
+    ID of [e]. *)
+
+val btor_of_bexp : btor_manager -> bexp -> int
+(** [btor_of_bexp m e] encodes [e] in btor format and returns the btor
+    ID of [e]. *)
 
 val smtlib2_of_exp : exp -> string
 (** Convert an exp to an SMTLIB string. *)
@@ -175,19 +185,3 @@ val cnf_imp_check_sat : out_channel -> bexp list -> unit
 (** [cnf_imp_check_sat ch [e1; e2; ...; en]] writes a query in DIMACS format
     to [ch]. If the result is unsat, e{_ n} is implied by the conjunction of
     e{_ 1}, ..., and e{_ n-1}. *)
-
-val btor_program : ?rename:bool -> ?pre:(bexp option) -> btor_manager -> program -> var list -> var list -> string
-(** [btor_program ~rename:b ~pre:fopt m p ins outs] is a bit-vector program
-    in BTOR format with input variables [ins] and output variables [outs] as
-    the roots. The output variables [outs] are sliced into bits in order
-    (from LSB to MSB). Specification-related instructions such as [Iassert]
-    are ignored. Input variables are renamed in the output BTOR if [b] is
-    [true]. If [fopt] is [Some f], then [f], the precondition, is taken into
-    consideration. *)
-
-val btor_miter :
-  ?rename:bool -> ?pre:(bexp option) -> btor_manager ->
-  (program * var list * var list) -> (program * var list * var list) ->
-  string
-(** [btor_miter ~rename:b ~pre:fopt m (p1, ins1, outs1) (p2, ins2, outs2)]
-    converts two programs to a miter in BTOR format. *)

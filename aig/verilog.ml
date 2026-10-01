@@ -1,4 +1,5 @@
 
+open Qfbv
 open Ast.Cryptoline
 open Options.Std
 
@@ -756,13 +757,7 @@ let trans_instr st instr =
       stmts_rev = VAssign (vvar, rhs) :: st3.stmts_rev;
       env = VM.add v vvar st3.env }
   | Inondet v ->
-    let wv = size_of_var v in
-    let iname = Printf.sprintf "_nondet_%s_%d" v.vname st.wid in
-    let vvar = VVar iname in
-    { st with
-      wid = st.wid + 1;
-      extra_inputs = (iname, wv) :: st.extra_inputs;
-      env = VM.add v vvar st.env }
+    lookup_var st v |> snd
   | Icmov (v, c, a1, a2) ->
     let wv = size_of_var v in
     let (vc, st1) = trans_atom st c in
@@ -1100,24 +1095,21 @@ let verilog_program ?(rename=false) ?(pre=None) ?(top="top") p ins outs =
            (port_name, size_of_var v, vexpr)
          ) outs)
     | Some f ->
-      let (vcond, st1) = trans_bexp st f in
+      let (vcond, st1) = trans_bexp st (Verify.Common.bexp_rbexp f) in
       let (_wcond, cond_var, st2) = new_wire st1 "precond" 1 in
       let st3 = { st2 with stmts_rev = VAssign (cond_var, vcond) :: st2.stmts_rev } in
       List.fold_left (fun (st_acc, outs_acc) (i, v) ->
           let wv = size_of_var v in
           let (v_out, st_cur) = lookup_var st_acc v in
-          let dummy_in_name = Printf.sprintf "_dummy_in_%d" st_cur.wid in
-          let st_cur = {
-            st_cur with
-            wid = st_cur.wid + 1;
-            extra_inputs = (dummy_in_name, wv) :: st_cur.extra_inputs
-          } in
+          let (dummy_var, st_cur) =
+            lookup_var st_cur
+              (mkvar (Printf.sprintf "__dummy_output_%s__" (string_of_typ v.vtyp)) v.vtyp) in
           let port_name =
             if rename then Printf.sprintf "po%d" i
             else if SS.mem v.vname input_names then v.vname ^ "_out"
             else v.vname
           in
-          let mux_expr = VCond (cond_var, v_out, VVar dummy_in_name) in
+          let mux_expr = VCond (cond_var, v_out, dummy_var) in
           (st_cur, (port_name, wv, mux_expr) :: outs_acc)
         ) (st3, []) (List.mapi (fun i v -> (i, v)) outs)
       |> fun (st_final, outs_rev) -> (st_final, List.rev outs_rev)

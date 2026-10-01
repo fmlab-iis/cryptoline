@@ -1873,6 +1873,10 @@ val subst_lined_program : atom VM.t -> eexp VM.t -> rexp VM.t -> lined_program -
 (** [subst_lined_program am em rm p] replaces variables in [p] based on [am],
     [em], and [rm]. The returned boolean indicates if any replacements were made. *)
 
+val subst_spec : atom VM.t -> eexp VM.t -> rexp VM.t -> spec -> spec * bool
+(** [subst_spec am em rm s] replaces variables in [s] based on [am], [em],
+    and [rm]. The returned boolean indicates if any replacements were made. *)
+
 val replace_eexp : (eexp * eexp) list -> eexp -> eexp * bool
 (** [replace_eexp [(p1, r1); ...; (pn, rn)] e] replaces [p1], ..., and [pn] in
     [e] respectively with [r1], ..., and [rn]. The returned boolean indicates

@@ -4763,6 +4763,12 @@ let subst_lined_program am em rm p =
     ((lno, i'), ci) in
   map_subst subst_lined_instr p
 
+let subst_spec am em rm s =
+  let (pre, b1) = subst_bexp em rm s.spre in
+  let (prog, b2) = subst_program am em rm s.sprog in
+  let (post, b3) = subst_bexp_prove_with em rm s.spost in
+  ( { spre = pre; sprog = prog; spost = post }, b1 || b2 || b3)
+
 let rec replace_eexp pats e =
   try
     (snd (List.find (fun (pat, _repl) -> eq_eexp pat e) pats), true)

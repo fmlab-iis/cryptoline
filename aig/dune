@@ -1,6 +1,8 @@
 (library
  (name          aig)
  (foreign_stubs (language c) (names aiger compatibility aig_stubs))
+ (libraries   options ast qfbv utils verify)
+ (public_name cryptoline.aig)
 ;; (preprocess
 ;;  (action (run %{bin:cppo} -V OCAML:%{ocaml_version} %{input-file})))
 )

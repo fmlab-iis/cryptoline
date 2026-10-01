@@ -109,9 +109,9 @@ let args_spec =
             "Use the selected prover for equivalence checking. For sat, iprove,";
             "kissat, and &cec, a miter is constructed first, preprocessing may";
             "be applied, extra commands may be executed, and finally the";
-            Printf.sprintf "selected prover is invoked. For %s and %s, the miter is always"
+            Printf.sprintf "selected prover is invoked. For %s and %s, the miter is"
               (string_of_cec_engine CEC) (string_of_cec_engine ABC9_CEC_TWO);
-            Printf.sprintf "constructed in ABC. (default prover: %s)"
+            Printf.sprintf "always constructed in ABC. (default prover: %s)"
               (string_of_cec_engine !cec_engine)
           ])
       );
@@ -157,7 +157,7 @@ let convert_program_to_aig_boolector fopt p ins outs =
   let btor_file = tmpfile "" ".btor" in
   let aag_file = tmpfile "" ".aag" in
   (* to BTOR *)
-  let btor = Qfbv.Common.btor_program ~rename:true ~pre:fopt (new Qfbv.Common.btor_manager) p ins outs in
+  let btor = Aig.Btor.btor_program ~rename:true ~pre:fopt (new Qfbv.Common.btor_manager) p ins outs in
   let outch = open_out btor_file in
   let _ = output_string outch btor in
   let _ = close_out outch in
@@ -165,8 +165,8 @@ let convert_program_to_aig_boolector fopt p ins outs =
   (* to AIG *)
   let _ = unix (Printf.sprintf "%s -daa -rwl 0 %s > %s" !boolector_path btor_file aag_file) in
   let _ = trace ("= AAG file ="); trace_file aag_file in
-  let aig = Aig.init () in
-  match Aig.open_and_read_from_file aig aag_file with
+  let aig = Aig.Std.init () in
+  match Aig.Std.open_and_read_from_file aig aag_file with
   | None -> let _ = cleanup [btor_file; aag_file] in
             aig
   | Some error -> let _ = cleanup [btor_file; aag_file] in
@@ -178,7 +178,7 @@ let convert_programs_to_miter_boolector fopt (p1, ins1, outs1) (p2, ins2, outs2)
   let aag_file = tmpfile "" ".aag" in
   (* to BTOR *)
   let btor =
-    Qfbv.Common.btor_miter ~rename:true ~pre:fopt
+    Aig.Btor.btor_miter ~rename:true ~pre:fopt
       (new Qfbv.Common.btor_manager)
       (p1, ins1, outs1) (p2, ins2, outs2) in
   let outch = open_out btor_file in
@@ -188,8 +188,8 @@ let convert_programs_to_miter_boolector fopt (p1, ins1, outs1) (p2, ins2, outs2)
   (* to AIG *)
   let _ = unix (Printf.sprintf "%s -daa -rwl 0 %s > %s" !boolector_path btor_file aag_file) in
   let _ = trace ("= AAG file ="); trace_file aag_file in
-  let aig = Aig.init () in
-  match Aig.open_and_read_from_file aig aag_file with
+  let aig = Aig.Std.init () in
+  match Aig.Std.open_and_read_from_file aig aag_file with
   | None -> let _ = cleanup [btor_file; aag_file] in
             aig
   | Some error -> let _ = cleanup [btor_file; aag_file] in
@@ -200,16 +200,16 @@ let convert_program_to_aig_yosys fopt p ins outs =
   let v_file = tmpfile "" ".v" in
   let aag_file = tmpfile "" ".aag" in
   (* to Verilog *)
-  let v = Qfbv.Verilog.verilog_program ~rename:true ~pre:fopt p ins outs in
+  let v = Aig.Verilog.verilog_program ~rename:true ~pre:fopt p ins outs in
   let outch = open_out v_file in
   let _ = output_string outch v in
   let _ = close_out outch in
   let _ = trace ("= Verilog file ="); trace_file v_file in
   (* to AIG *)
-  let _ = Qfbv.Verilog.verilog_file_to_aiger_file ~yosys:!yosys_path ~ascii:true v_file aag_file in
+  let _ = Aig.Verilog.verilog_file_to_aiger_file ~yosys:!yosys_path ~ascii:true v_file aag_file in
   let _ = trace ("= AAG file ="); trace_file aag_file in
-  let aig = Aig.init () in
-  match Aig.open_and_read_from_file aig aag_file with
+  let aig = Aig.Std.init () in
+  match Aig.Std.open_and_read_from_file aig aag_file with
   | None -> let _ = cleanup [v_file; aag_file] in
             aig
   | Some error -> let _ = cleanup [v_file; aag_file] in
@@ -221,7 +221,7 @@ let convert_programs_to_miter_yosys fopt (p1, ins1, outs1) (p2, ins2, outs2) =
   let write_to_verilog_file p ins outs =
     let v_file = tmpfile "" ".v" in
     let v =
-      Qfbv.Verilog.verilog_program ~rename:true ~pre:fopt
+      Aig.Verilog.verilog_program ~rename:false ~pre:fopt
         p ins outs in
     let outch = open_out v_file in
     let _ = output_string outch v in
@@ -232,10 +232,10 @@ let convert_programs_to_miter_yosys fopt (p1, ins1, outs1) (p2, ins2, outs2) =
   let v_file2 = write_to_verilog_file p2 ins2 outs2 in
   let aag_file = tmpfile "" ".aag" in
   (* to AIG *)
-  let _ = Qfbv.Verilog.verilog_files_to_miter_file ~yosys:!yosys_path ~ascii:true v_file1 v_file2 aag_file in
+  let _ = Aig.Verilog.verilog_files_to_miter_file ~yosys:!yosys_path ~ascii:true v_file1 v_file2 aag_file in
   let _ = trace ("= AAG file ="); trace_file aag_file in
-  let aig = Aig.init () in
-  match Aig.open_and_read_from_file aig aag_file with
+  let aig = Aig.Std.init () in
+  match Aig.Std.open_and_read_from_file aig aag_file with
   | None -> let _ = cleanup [v_file1; v_file2; aag_file] in
             aig
   | Some error -> let _ = cleanup [v_file1; v_file2; aag_file] in
@@ -253,14 +253,14 @@ let convert_programs_to_miter fopt (p1, ins1, outs1) (p2, ins2, outs2) =
 
 (* Make two AIGs have the same number of inputs. *)
 let equalize_aig_inputs aig1 aig2 =
-  let ins1 = Hashset.of_list (Aig.aig_inputs aig1) in
-  let ins2 = Hashset.of_list (Aig.aig_inputs aig2) in
-  let maxvar1 = ref (Aig.aig_maxvar aig1) in
-  let maxvar2 = ref (Aig.aig_maxvar aig2) in
+  let ins1 = Hashset.of_list (Aig.Std.aig_inputs aig1) in
+  let ins2 = Hashset.of_list (Aig.Std.aig_inputs aig2) in
+  let maxvar1 = ref (Aig.Std.aig_maxvar aig1) in
+  let maxvar2 = ref (Aig.Std.aig_maxvar aig2) in
   let add_to aig vs maxvar v =
     if not (Hashset.mem vs v) then
       let _ = maxvar := !maxvar + 1 in
-      Aig.add_input aig (Aig.var2lit !maxvar) v in
+      Aig.Std.add_input aig (Aig.Std.var2lit !maxvar) v in
   let _ = Hashset.iter (add_to aig2 ins2 maxvar2) ins1 in
   let _ = Hashset.iter (add_to aig1 ins1 maxvar1) ins2 in
   ()
@@ -270,13 +270,13 @@ let prepare_aig s1 s2 vs1 vs2 outs1 outs2 =
   let _ = trace ("=== Converting first program to AIG ===") in
   let aig1 = convert_program_to_aig (
       if !include_precondition then
-        Some (Verify.Common.bexp_rbexp (rng_bexp s1.spre))
+        Some (rng_bexp s1.spre)
       else None
     ) s1.sprog vs1 outs1 in
   let _ = trace ("=== Converting second program to AIG ===") in
   let aig2 = convert_program_to_aig (
       if !include_precondition then
-        Some (Verify.Common.bexp_rbexp (rng_bexp s2.spre))
+        Some (rng_bexp s2.spre)
       else None
     ) s2.sprog vs2 outs2 in
   let _ = trace ("=== Equalize input variables ===") in
@@ -287,7 +287,7 @@ let prepare_miter s1 s2 vs1 vs2 outs1 outs2 =
   let _ = trace ("=== Converting programs to a miter in AIG ===") in
   let miter =
     convert_programs_to_miter
-      (if !include_precondition then Some (Verify.Common.bexp_rbexp (rng_bexp s1.spre)) else None)
+      (if !include_precondition then Some (rng_bexp s1.spre) else None)
       (s1.sprog, vs1, outs1) (s2.sprog, vs2, outs2) in
   miter
 
@@ -590,8 +590,8 @@ let apply_cec_aigs aig1 aig2 =
   let aig_file2 = tmpfile "" ".aig" in
   let cnf_file = tmpfile "" ".cnf" in
   let output_file = tmpfile "" ".log" in
-  let ret1 = Aig.write_to_file aig1 Aig.Binary aig_file1 in
-  let ret2 = Aig.write_to_file aig2 Aig.Binary aig_file2 in
+  let ret1 = Aig.Std.write_to_file aig1 Aig.Std.Binary aig_file1 in
+  let ret2 = Aig.Std.write_to_file aig2 Aig.Std.Binary aig_file2 in
   try
     let res =
       match ret1, ret2 with
@@ -623,7 +623,7 @@ let apply_cec_miter miter =
   let aig_file = tmpfile "" ".aig" in
   let cnf_file = tmpfile "" ".cnf" in
   let output_file = tmpfile "" ".log" in
-  let ret = Aig.write_to_file miter Aig.Binary aig_file in
+  let ret = Aig.Std.write_to_file miter Aig.Std.Binary aig_file in
   try
     let res =
       match ret with
@@ -659,8 +659,8 @@ let apply_cec_aigs_lwt aig1 aig2 =
   let handler = function
     | AigError err | AbcError err -> failwith err
     | _ -> failwith "" in
-  let ret1 = Aig.write_to_file aig1 Aig.Binary aig_file1 in
-  let ret2 = Aig.write_to_file aig2 Aig.Binary aig_file2 in
+  let ret1 = Aig.Std.write_to_file aig1 Aig.Std.Binary aig_file1 in
+  let ret2 = Aig.Std.write_to_file aig2 Aig.Std.Binary aig_file2 in
   let run () =
     match ret1, ret2 with
     | None, None ->
@@ -689,7 +689,7 @@ let apply_cec_miter_lwt miter =
   let handler = function
     | AigError err | AbcError err -> failwith err
     | _ -> failwith "" in
-  let ret = Aig.write_to_file miter Aig.Binary aig_file in
+  let ret = Aig.Std.write_to_file miter Aig.Std.Binary aig_file in
   let run () =
     match ret with
     | None ->
@@ -801,25 +801,92 @@ let check_equivalence_lwt s1 s2 vs1 vs2 groups1 groups2 =
   if res then finish_pending delivered_band res pending
   else res
 
+let prepare_specs (s1, ins1, outs1) (s2, ins2, outs2) =
+  let subst_var am v = subst_lval am v |> fst in
+  let find_nondet_vars p =
+    List.fold_left (
+      fun vs i ->
+        match i with
+        | Inondet v -> VS.add v vs
+        | _ -> vs
+    ) VS.empty p in
+  (* Convert to SSA; otherwise, the same btor variable may be used for
+     variables of the same name but of different types, for example
+     nondet v@t1; nondet v@t2 where t1 != t2. *)
+  let ssa_s1 = ssa_spec s1 in
+  let ssa_s2 = ssa_spec s2 in
+  let ssa_ins1 = tmap (ssa_var VM.empty) ins1 in
+  let ssa_ins2 = tmap (ssa_var VM.empty) ins2 in
+  (* Find output variables by names *)
+  let ssa_outs1 = tmap (Common.find_output_vars ssa_s1.sprog) outs1 in
+  let ssa_outs2 = tmap (Common.find_output_vars ssa_s2.sprog) outs2 in
+  (* Nondeterministic variables are treated as inputs. *)
+  let nondets1 = find_nondet_vars ssa_s1.sprog |> VS.elements in
+  let nondets2 = find_nondet_vars ssa_s2.sprog |> VS.elements in
+  (* Make input names consistent *)
+  let (am1_0, am2_0, ins_rev) =
+    try
+      List.fold_left2 (
+        fun (am1, am2, ins_rev) i1 i2 ->
+          if i1.vtyp = i2.vtyp then
+            let nv = { i1 with vname = Printf.sprintf "p1_%s_p2_%s" (string_of_var i1) (string_of_var i2) } in
+            let na = Avar nv in
+            (VM.add i1 na am1, VM.add i2 na am2, nv::ins_rev)
+          else
+            raise (Failure (
+                Printf.sprintf
+                  "Incompatible types of two inputs: %s of type %s in the first program, %s of type %s in the second program"
+                  i1.vname (string_of_typ i1.vtyp)
+                  i2.vname (string_of_typ i2.vtyp)
+              ))
+      ) (VM.empty, VM.empty, []) ssa_ins1 ssa_ins2
+    with Invalid_argument _ ->
+      raise (Failure "The number of inputs of the two programs must be the same") in
+  let am1 =
+    List.fold_left (
+      fun am v ->
+        VM.add v (Avar {v with vname = Printf.sprintf "_p1_%s_p2_None" (string_of_var v)}) am
+    ) am1_0 nondets1 in
+  let am2 =
+    List.fold_left (
+      fun am v ->
+        VM.add v (Avar {v with vname = Printf.sprintf "_p1_None_p2_%s" (string_of_var v)}) am
+    ) am2_0 nondets2 in
+  let (em1, rm1) = (emap_of_amap am1, rmap_of_amap am1) in
+  let (em2, rm2) = (emap_of_amap am2, rmap_of_amap am2) in
+  let ssa_s1' = subst_spec am1 em1 rm1 ssa_s1 |> fst in
+  let ssa_s2' = subst_spec am2 em2 rm2 ssa_s2 |> fst in
+  let ssa_outs1' = tmap (fun vs -> tmap (subst_var am1) vs) ssa_outs1 in
+  let ssa_outs2' = tmap (fun vs -> tmap (subst_var am2) vs) ssa_outs2 in
+  let nondets1' = tmap (subst_var am1) nondets1 in
+  let nondets2' = tmap (subst_var am2) nondets2 in
+  let unified_ins = tflatten [ins_rev; nondets1'; nondets2'] in
+  ((ssa_s1', unified_ins, ssa_outs1'),
+   (ssa_s2', unified_ins, ssa_outs2'))
+
 (* Check equivalence between two CryptoLine programs. *)
 let check_equivalence_file file1 file2 =
   let _ =
     if List.length !outputs1 = 0 then failwith("No output specified for the first program")
     else if List.length !outputs2 = 0 then failwith("No output specified for the second program")
     else if List.length !outputs1 <> List.length !outputs2 then failwith("Number of output groups mismatch")
-    else List.iter2 (fun outs1 outs2 -> if List.length outs1 <> List.length outs2 then failwith("Number of outputs mismatch")) !outputs1 !outputs2 in
-  let ((ivs1, _), s1) = Common.parse_and_check file1 in
-  let ((ivs2, _), s2) = Common.parse_and_check file2 in
+    else List.iter2 (
+        fun outs1 outs2 ->
+          if List.length outs1 <> List.length outs2 then
+            failwith("Number of outputs mismatch")
+      ) !outputs1 !outputs2 in
+  let ((ins1, _), s1) = Common.parse_and_check file1 in
+  let ((ins2, _), s2) = Common.parse_and_check file2 in
   let (s1, s2) = (Ast.MultiTrack.tagged_spec_untag s1, Ast.MultiTrack.tagged_spec_untag s2) in
-  let groups1 = tmap (Common.find_output_vars s1.sprog) !outputs1 in
-  let groups2 = tmap (Common.find_output_vars s2.sprog) !outputs2 in
+  let ((s1, ins1, outs1),
+       (s2, ins2, outs2)) = prepare_specs (s1, ins1, !outputs1) (s2, ins2, !outputs2) in
   (* Convert programs to AIG *)
   let t1 = Unix.gettimeofday() in
   let res =
     if !jobs > 1 then
-      check_equivalence_lwt s1 s2 ivs1 ivs2 groups1 groups2
+      check_equivalence_lwt s1 s2 ins1 ins2 outs1 outs2
     else
-      check_equivalence_seq s1 s2 ivs1 ivs2 groups1 groups2 in
+      check_equivalence_seq s1 s2 ins1 ins2 outs1 outs2 in
   let t2 = Unix.gettimeofday() in
   Printf.printf "Final result:\t\t\t\t\t%s%s\n"
     (if res then "[OK]\t\t" else "[FAILED]\t")
