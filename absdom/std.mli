@@ -59,6 +59,8 @@ val instr_safe : 'a manager_t -> 'a abs_t -> instr -> bool
     abstract value [abs]. *)
 
 val string_of_abs : 'a abs_t -> string
+val string_of_abs_grouped :
+  inputs:VS.t -> outputs:VS.t -> 'a abs_t -> string
 (** return the string representation of an abstract value *)
 
 val zinterval_of_var : 'a manager_t -> 'a abs_t -> Ast.Cryptoline.var -> Z.t * Z.t

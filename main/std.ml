@@ -600,6 +600,10 @@ let anon file =
      let s = tagged_spec_untag s in
      let rs = rspec_of_spec (ssa_spec (remove_cut_spec s)) in
      let vars = vars_rspec rs in
+     let lvs = lvs_program rs.rsprog in
+     let rvs = rvs_program rs.rsprog in
+     let inputs = VS.diff vars lvs in
+     let outputs = VS.diff lvs rvs in
      let mgr = Absdom.Std.create_manager vars in
      let vars_dom = Absdom.Std.abs_of_vars mgr (VS.diff vars (lvs_program rs.rsprog)) in
      begin
@@ -607,7 +611,7 @@ let anon file =
        | Some dom ->
           let start_dom = Absdom.Std.meet mgr dom vars_dom in
           let dom' = Absdom.Std.interp_prog ~safe:!absdom_assume_safe mgr start_dom rs.rsprog in
-          let _ = print_endline (Absdom.Std.string_of_abs dom') in
+          let _ = print_endline (Absdom.Std.string_of_abs_grouped ~inputs ~outputs dom') in
           ()
        | None ->
           print_endline ("None")

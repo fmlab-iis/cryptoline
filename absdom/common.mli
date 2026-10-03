@@ -50,6 +50,8 @@ val create_manager : ?domain:domain -> VS.t -> 'a manager_t
     argument is not provided, {!val-domain} is used as the abstract domain. *)
 
 val string_of_abs : 'a abs_t -> string
+val string_of_abs_grouped :
+  inputs:VS.t -> outputs:VS.t -> 'a abs_t -> string
 (** return the string representation of an abstract value *)
 
 val top : 'a manager_t -> 'a abs_t

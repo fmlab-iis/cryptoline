@@ -147,6 +147,45 @@ let string_of_state st =
          string_of_var v ^ " -> " ^ string_of_fp_abs a)
   |> String.concat "\n"
 
+let sorted_bindings st =
+  VM.bindings st
+  |> List.sort
+       (fun (v1, _) (v2, _) ->
+         String.compare (string_of_var v1) (string_of_var v2))
+
+let string_of_bindings bindings =
+  bindings
+  |> List.map
+       (fun (v, a) ->
+         string_of_var v ^ " -> " ^ string_of_fp_abs a)
+  |> String.concat "\n"
+
+let string_of_state_grouped ~inputs ~outputs st =
+  let bindings = sorted_bindings st in
+  let input_bindings =
+    List.filter (fun (v, _) -> VS.mem v inputs) bindings
+  in
+  let output_bindings =
+    List.filter (fun (v, _) -> VS.mem v outputs) bindings
+  in
+  let temporary_bindings =
+    List.filter
+      (fun (v, _) ->
+        not (VS.mem v inputs) && not (VS.mem v outputs))
+      bindings
+  in
+  let section title bindings =
+    title ^ "\n"
+    ^ if bindings = [] then "<empty>"
+      else string_of_bindings bindings
+  in
+  String.concat "\n\n"
+    [
+      section "=== Inputs ===" input_bindings;
+      section "=== Outputs ===" output_bindings;
+      section "=== Temporaries ===" temporary_bindings;
+    ]
+
 let float_neg x = FloatConst.neg x ~rnd:RNE
 let float_abs x = FloatConst.abs x ~rnd:RNE
 

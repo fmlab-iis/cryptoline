@@ -30,6 +30,7 @@ let sat_rbexp = Common.sat_rbexp
 let instr_safe = Common.instr_safe
 
 let string_of_abs = Common.string_of_abs
+let string_of_abs_grouped = Common.string_of_abs_grouped
 
 let zinterval_of_var = Common.zinterval_of_var
 

@@ -676,6 +676,19 @@ let string_of_abs dom =
   ^ "\n[FloatAbs]\n"
   ^ (if String.length fp_s = 0 then "<empty>" else fp_s)
 
+let string_of_abs_grouped ~inputs ~outputs dom =
+  let int_s = Intabs.string_of_abs dom.int_abs in
+  let fp_s =
+    Floatabs.string_of_state_grouped
+      ~inputs
+      ~outputs
+      dom.fp_abs
+  in
+  "[IntAbs]\n"
+  ^ int_s
+  ^ "\n[FloatAbs]\n"
+  ^ fp_s
+
 let zinterval_of_var mgr dom v =
   Intabs.zinterval_of_var mgr.int_mgr dom.int_abs v
 
