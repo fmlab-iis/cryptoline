@@ -21,11 +21,15 @@ type state = fp_abs VM.t
 type error =
   | Unsupported of string
   | Invalid of string
+  | Overflow
+  | DivisionByZero
 
 type verify_result =
   | Proved
   | Not_proved
   | Unsupported of string
+  | Overflow_detected
+  | Division_by_zero_detected
 
 let result_bind r f =
   match r with
@@ -40,6 +44,17 @@ let unsupported msg : ('a, error) result =
 let invalid msg : ('a, error) result =
   Error (Invalid msg)
 
+let verify_result_of_error (e : error) =
+  match e with
+  | Unsupported msg ->
+      Unsupported msg
+  | Invalid msg ->
+      Unsupported msg
+  | Overflow ->
+      Overflow_detected
+  | DivisionByZero ->
+      Division_by_zero_detected
+
 let falcon_prec = Double
 let fp_zero = FloatConst.zero
 let fp_one = FloatConst.one
@@ -52,7 +67,6 @@ let fp_max = FloatConst.max_val falcon_prec
 
 let fp_neg_max = FloatConst.neg fp_max ~rnd:RNE
 let fp_neg_min_subnormal = FloatConst.neg fp_min_subnormal ~rnd:RNE
-let fp_neg_min_normal = FloatConst.neg fp_min_normal ~rnd:RNE
 let value ?neg ?(zero=false) ?pos () = Value { neg; zero; pos }
 
 let interval_make lo hi =
@@ -272,7 +286,10 @@ let normalize_result neg zero pos =
     | Some i ->
         FloatConst.cmp i.lo fp_neg_max < 0 || FloatConst.cmp i.hi fp_max > 0
   in
-  if bad neg || bad pos then Bottom else value ?neg ~zero ?pos ()
+  if bad neg || bad pos then
+    Error Overflow
+  else
+    Ok (value ?neg ~zero ?pos ())
 
 let arithmetic_underflows neg pos =
   let positive_underflows =
@@ -291,53 +308,12 @@ let arithmetic_underflows neg pos =
 
 let normalize_arithmetic_result neg zero pos =
   if arithmetic_underflows neg pos then
-    Bottom
+    Ok Bottom
   else
     normalize_result neg zero pos
 
-let multiplication_result_is_subnormal neg pos =
-  let positive_subnormal =
-    match pos with
-    | None -> false
-    | Some i ->
-        FloatConst.cmp i.lo fp_min_normal < 0
-  in
-  let negative_subnormal =
-    match neg with
-    | None -> false
-    | Some i ->
-        FloatConst.cmp i.hi fp_neg_min_normal > 0
-  in
-  positive_subnormal || negative_subnormal
-
 let normalize_multiplication_result neg zero pos =
-  let normalized =
-    normalize_arithmetic_result neg zero pos
-  in
-  match normalized with
-  | Bottom ->
-      Bottom
-  | Value _ when multiplication_result_is_subnormal neg pos ->
-      value ~zero:true ()
-  | Value _ ->
-      normalized
-
-let interval_has_subnormal = function
-  | None -> false
-  | Some i ->
-      let has_positive_subnormal =
-        FloatConst.cmp i.hi fp_min_subnormal >= 0
-        && FloatConst.cmp i.lo fp_min_normal < 0
-      in
-      let has_negative_subnormal =
-        FloatConst.cmp i.hi fp_neg_min_normal > 0
-        && FloatConst.cmp i.lo fp_neg_min_subnormal <= 0
-      in
-      has_positive_subnormal || has_negative_subnormal
-
-let has_subnormal_component = function
-  | Bottom -> false
-  | Value { neg; pos; _ } -> interval_has_subnormal neg || interval_has_subnormal pos
+  normalize_arithmetic_result neg zero pos
 
 let fp_of_const c =
   if FloatConst.eq c fp_zero then Ok (value ~zero:true ())
@@ -376,7 +352,7 @@ let classify_add_interval iv =
 
 let fp_add a b =
   match a, b with
-  | Bottom, _ | _, Bottom -> Bottom
+  | Bottom, _ | _, Bottom -> Ok Bottom
 
   | Value a, Value b ->
       let candidates =
@@ -456,17 +432,16 @@ let interval_mul_has_underflow i1 i2 =
   | _ ->
       false
 
-
 let fp_mul_raw a b =
   match a, b with
-  | Bottom, _ | _, Bottom -> Bottom
+  | Bottom, _ | _, Bottom -> Ok Bottom
   | Value a, Value b ->
       if interval_mul_has_underflow a.neg b.pos
          || interval_mul_has_underflow a.pos b.neg
          || interval_mul_has_underflow a.neg b.neg
          || interval_mul_has_underflow a.pos b.pos
       then
-        Bottom
+        Ok Bottom
       else
         let neg_pos = interval_mul a.neg b.pos in
         let pos_neg = interval_mul a.pos b.neg in
@@ -487,26 +462,23 @@ let fp_mul_raw a b =
         in
         normalize_multiplication_result neg zero pos
 
-let check_subnormal_operands lhs rhs =
-  if has_subnormal_component lhs || has_subnormal_component rhs then
-    unsupported "FloatAbs does not model the PDF's unresolved subnormal-operand multiplication case."
-  else
-    Ok ()
-
 let fp_mul a b =
-  let* () = check_subnormal_operands a b in
-  Ok (fp_mul_raw a b)
+  fp_mul_raw a b
 
 let fp_recip = function
-  | Bottom -> Bottom
-  | Value { zero = true; _ } -> Bottom
+  | Bottom ->
+      Ok Bottom
+  | Value { zero = true; _ } ->
+      Error DivisionByZero
   | Value { neg; zero = false; pos } ->
       normalize_arithmetic_result
         (interval_recip neg)
         false
         (interval_recip pos)
 
-let fp_div a b = fp_mul a (fp_recip b)
+let fp_div a b =
+  let* rb = fp_recip b in
+  fp_mul a rb
 
 let fp_abs = function
   | Bottom -> Bottom
@@ -557,8 +529,8 @@ let rec eval_rexp st = function
       let* v2 = eval_rexp st e2 in
       begin
         match op with
-        | Radd -> Ok (fp_add v1 v2)
-        | Rsub -> Ok (fp_sub v1 v2)
+        | Radd -> fp_add v1 v2
+        | Rsub -> fp_sub v1 v2
         | Rmul -> fp_mul v1 v2
         | Rdiv -> fp_div v1 v2
         | _ -> unsupported "FloatAbs does not support this binary floating expression."
@@ -611,7 +583,8 @@ let assume_var_cmp_const st v op c =
             (refine_lower neg c false, zero && FloatConst.cmp fp_zero c >= 0, refine_lower pos c false)
         | _ -> (neg, zero, pos)
       in
-      Ok (set st v (normalize_result neg' zero' pos'))
+      let* abs = normalize_result neg' zero' pos' in
+      Ok (set st v abs)
 
 let assume_var_eq_const st v c =
   let* () = require_double_var v in
@@ -718,12 +691,14 @@ let interp_instr st = function
       let* () = require_double_var dst in
       let* v1 = eval_atom st a1 in
       let* v2 = eval_atom st a2 in
-      Ok (set st dst (fp_add v1 v2))
+      let* v = fp_add v1 v2 in
+      Ok (set st dst v)
   | Isub (dst, a1, a2) when var_is_float dst ->
       let* () = require_double_var dst in
       let* v1 = eval_atom st a1 in
       let* v2 = eval_atom st a2 in
-      Ok (set st dst (fp_sub v1 v2))
+      let* v = fp_sub v1 v2 in
+      Ok (set st dst v)
   | Imul (dst, a1, a2) when var_is_float dst ->
       let* () = require_double_var dst in
       let* v1 = eval_atom st a1 in
@@ -774,27 +749,27 @@ let initial_state rs =
 
 let verify_rspec rs =
   match initial_state rs with
-  | Error ((Unsupported msg : error))
-  | Error ((Invalid msg : error)) ->
-      Unsupported msg
+  | Error e ->
+      verify_result_of_error e
   | Ok st0 ->
       begin
         match assume_rbexp st0 rs.rspre with
-        | Error ((Unsupported msg : error))
-        | Error ((Invalid msg : error)) ->
-            Unsupported msg
+        | Error e ->
+            verify_result_of_error e
         | Ok st1 ->
             begin
               match interp_prog st1 rs.rsprog with
-              | Error ((Unsupported msg : error))
-              | Error ((Invalid msg : error)) ->
-                  Unsupported msg
+              | Error e ->
+                  verify_result_of_error e
               | Ok st2 ->
-                  match prove_rbexp st2 (rbexp_prove_with_rands rs.rspost) with
-                  | Ok true -> Proved
-                  | Ok false -> Not_proved
-                  | Error ((Unsupported msg : error))
-                  | Error ((Invalid msg : error)) ->
-                      Unsupported msg
+                  begin
+                    match prove_rbexp st2 (rbexp_prove_with_rands rs.rspost) with
+                    | Ok true ->
+                        Proved
+                    | Ok false ->
+                        Not_proved
+                    | Error e ->
+                        verify_result_of_error e
+                  end
             end
       end

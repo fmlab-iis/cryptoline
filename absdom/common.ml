@@ -94,6 +94,10 @@ let fp_top_or_empty mgr =
       raise (Utils.Std.UnsupportedException msg)
   | Error (Floatabs.Invalid msg) ->
       raise (Utils.Std.UnsupportedException msg)
+  | Error Floatabs.Overflow ->
+      raise Utils.Std.FloatingPointOverflow
+  | Error Floatabs.DivisionByZero ->
+      raise Utils.Std.FloatingPointDivisionByZero
 
 let top mgr =
   {
@@ -243,6 +247,10 @@ let floatabs_error_to_exception (e : Floatabs.error) =
       raise (Utils.Std.UnsupportedException msg)
   | Floatabs.Invalid msg ->
       raise (Utils.Std.UnsupportedException msg)
+  | Floatabs.Overflow ->
+      raise Utils.Std.FloatingPointOverflow
+  | Floatabs.DivisionByZero ->
+      raise Utils.Std.FloatingPointDivisionByZero
 
 let fp_abs_of_zinterval lo hi =
   if Z.gt lo hi then

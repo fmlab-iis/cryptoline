@@ -5,6 +5,8 @@
 exception IndexOutOfBound of int
 exception UnsupportedException of string
 exception EvaluationException of string
+exception FloatingPointOverflow
+exception FloatingPointDivisionByZero
 
 
 (** Numbers *)

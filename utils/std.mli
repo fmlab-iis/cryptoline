@@ -10,6 +10,12 @@ exception UnsupportedException of string
 exception EvaluationException of string
 (** Raised when there is an error in evaluation *)
 
+exception FloatingPointOverflow
+(** Raised when floating-point overflow may occur *)
+
+exception FloatingPointDivisionByZero
+(** Raised when floating-point division by zero may occur *)
+
 (** {1 Numbers} *)
 
 val logi : int -> int

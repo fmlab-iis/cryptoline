@@ -28,6 +28,10 @@ let get_ok (r : ('a, FA.error) result) =
       fail ("unexpected unsupported: " ^ msg)
   | Error (FA.Invalid msg) ->
       fail ("unexpected invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "unexpected floating-point overflow"
+  | Error FA.DivisionByZero ->
+      fail "unexpected floating-point division by zero"
 
 let run_test name test =
   test ();
@@ -61,12 +65,12 @@ let test_value_semantics () =
   expect_fp
     "add"
     three
-    (FA.fp_add one two);
+    (get_ok (FA.fp_add one two));
 
   expect_fp
     "sub"
     neg_one
-    (FA.fp_sub one two);
+    (get_ok (FA.fp_sub one two));
 
   expect_fp
     "mul"
@@ -215,14 +219,14 @@ let test_overlap_and_unsupported () =
      | _ -> false);
 
   expect_true
-  "subnormal operand case is unsupported"
-  (match
-     FA.fp_mul
-       (get_ok (FA.fp_of_const FA.fp_min_subnormal))
-       (fp "2.0")
-   with
-   | Error (FA.Unsupported _) -> true
-   | _ -> false)
+    "representable subnormal operand is supported"
+    (match
+       FA.fp_mul
+         (get_ok (FA.fp_of_const FA.fp_min_subnormal))
+         (fp "2.0")
+     with
+     | Ok (FA.Value _) -> true
+     | _ -> false)
 
 (* Test arithmetic between positive and negative values *)
 
@@ -235,32 +239,32 @@ let test_cross_sign_arithmetic () =
   expect_fp
     "cross sign add negative"
     (fp "-2.0")
-    (FA.fp_add three neg_five);
+    (get_ok (FA.fp_add three neg_five));
 
   expect_fp
     "cross sign add positive"
     (fp "2.0")
-    (FA.fp_add five neg_three);
+    (get_ok (FA.fp_add five neg_three));
 
   expect_fp
     "cross sign cancellation"
     (fp "0.0")
-    (FA.fp_add three neg_three);
+    (get_ok (FA.fp_add three neg_three));
 
   expect_fp
     "positive minus larger positive"
     (fp "-2.0")
-    (FA.fp_sub three five);
+    (get_ok (FA.fp_sub three five));
 
   expect_fp
     "negative minus negative"
     (fp "2.0")
-    (FA.fp_sub neg_three neg_five);
+    (get_ok (FA.fp_sub neg_three neg_five));
 
   expect_fp
     "negative plus negative"
     (fp "-8.0")
-    (FA.fp_add neg_three neg_five)
+    (get_ok (FA.fp_add neg_three neg_five))
 (* Test arithmetic operations involving zero *)
 let test_zero_arithmetic () =
   let zero = fp "0.0" in
@@ -270,27 +274,27 @@ let test_zero_arithmetic () =
   expect_fp
     "zero plus positive"
     three
-    (FA.fp_add zero three);
+    (get_ok (FA.fp_add zero three));
 
   expect_fp
     "positive plus zero"
     three
-    (FA.fp_add three zero);
+    (get_ok (FA.fp_add three zero));
 
   expect_fp
     "zero plus negative"
     neg_three
-    (FA.fp_add zero neg_three);
+    (get_ok (FA.fp_add zero neg_three));
 
   expect_fp
     "positive minus zero"
     three
-    (FA.fp_sub three zero);
+    (get_ok (FA.fp_sub three zero));
 
   expect_fp
     "zero minus positive"
     neg_three
-    (FA.fp_sub zero three);
+    (get_ok (FA.fp_sub zero three));
 
   expect_fp
     "zero times positive"
@@ -367,7 +371,7 @@ let test_interval_addition () =
   expect_fp
     "interval positive addition"
     expected
-    (FA.fp_add x y)
+    (get_ok (FA.fp_add x y))
 (* Test addition of intervals whose result may be negative, zero, or positive *)
 let test_interval_cross_zero_addition () =
   let x =
@@ -384,7 +388,7 @@ let test_interval_cross_zero_addition () =
       ()
   in
 
-  let r = FA.fp_add x y in
+  let r = get_ok (FA.fp_add x y) in
 
   match r with
   | FA.Bottom ->
@@ -543,6 +547,10 @@ let test_verify_arithmetic_postcondition () =
       fail "verify positive propagation: got Not_proved"
   | FA.Unsupported msg ->
       fail ("verify positive propagation: got Unsupported: " ^ msg)
+  | FA.Overflow_detected ->
+      fail "verify positive propagation: unexpected floating-point overflow"
+  | FA.Division_by_zero_detected ->
+      fail "verify positive propagation: unexpected floating-point division by zero"
 (* Test that a false postcondition is not proved *)
 let test_verify_not_proved_boundary () =
   let x = v "ux" in
@@ -579,17 +587,17 @@ let test_bottom_arithmetic () =
   expect_fp
     "Bottom + x = Bottom"
     FA.Bottom
-    (FA.fp_add FA.Bottom one);
+    (get_ok (FA.fp_add FA.Bottom one));
 
   expect_fp
     "x + Bottom = Bottom"
     FA.Bottom
-    (FA.fp_add one FA.Bottom);
+    (get_ok (FA.fp_add one FA.Bottom));
 
   expect_fp
     "Bottom - x = Bottom"
     FA.Bottom
-    (FA.fp_sub FA.Bottom one);
+    (get_ok (FA.fp_sub FA.Bottom one));
 
   expect_fp
     "neg Bottom = Bottom"
@@ -611,9 +619,9 @@ let test_overflow_behavior () =
   in
 
   expect_true
-    "overflow addition currently becomes Bottom"
+    "overflow addition raises Overflow"
     (match r with
-     | FA.Bottom -> true
+     | Error FA.Overflow -> true
      | _ -> false)
 
 
@@ -623,34 +631,38 @@ let test_subnormal_operand_policy () =
   in
   let two = fp "2.0" in
 
-  expect_true
-    "subnormal multiplication operand is unsupported"
-    (match FA.fp_mul min_positive two with
-     | Error (FA.Unsupported _) -> true
-     | _ -> false)
+  match FA.fp_mul min_positive two with
+  | Ok FA.Bottom ->
+      fail "representable subnormal operand unexpectedly produced Bottom"
+  | Ok (FA.Value _) ->
+      ()
+  | Error (FA.Unsupported msg) ->
+      fail ("representable subnormal operand unexpectedly Unsupported: " ^ msg)
+  | Error (FA.Invalid msg) ->
+      fail ("representable subnormal operand unexpectedly Invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "representable subnormal operand unexpectedly overflowed"
+  | Error FA.DivisionByZero ->
+      fail "representable subnormal operand unexpectedly raised division by zero"
 
 
 let test_subnormal_boundaries () =
   let two = fp "2.0" in
 
-  let expect_subnormal msg x =
+  let expect_supported msg x =
     match FA.fp_mul x two with
-    | Error (FA.Unsupported _) ->
-        ()
-    | Error (FA.Invalid reason) ->
-        fail (msg ^ ": unexpectedly Invalid: " ^ reason)
-    | Ok _ ->
-        fail (msg ^ ": expected subnormal operand to be Unsupported")
-  in
-
-  let expect_normal msg x =
-    match FA.fp_mul x two with
-    | Ok _ ->
+    | Ok FA.Bottom ->
+        fail (msg ^ ": unexpectedly produced Bottom")
+    | Ok (FA.Value _) ->
         ()
     | Error (FA.Unsupported reason) ->
-        fail (msg ^ ": minimum normal incorrectly classified as subnormal: " ^ reason)
+        fail (msg ^ ": unexpectedly Unsupported: " ^ reason)
     | Error (FA.Invalid reason) ->
         fail (msg ^ ": unexpectedly Invalid: " ^ reason)
+    | Error FA.Overflow ->
+        fail (msg ^ ": unexpectedly overflowed")
+    | Error FA.DivisionByZero ->
+        fail (msg ^ ": unexpectedly raised division by zero")
   in
 
   let pos_min_subnormal =
@@ -673,58 +685,53 @@ let test_subnormal_boundaries () =
          (FloatConst.neg FA.fp_min_normal ~rnd:RNE))
   in
 
-  expect_subnormal
+  expect_supported
     "+minimum subnormal"
     pos_min_subnormal;
 
-  expect_subnormal
+  expect_supported
     "-minimum subnormal"
     neg_min_subnormal;
 
-  expect_normal
+  expect_supported
     "+minimum normal"
     pos_min_normal;
 
-  expect_normal
+  expect_supported
     "-minimum normal"
     neg_min_normal
 
 
 let test_subnormal_result_behavior () =
   (*
-     2.2250738585072014e-308 is the minimum normal binary64
-     value. Multiplying it by 0.5 produces 2^-1023, which is
-     a subnormal result but is still above the minimum positive
-     binary64 value 2^-1074.
-
-     According to the FloatAbs multiplication rule, a subnormal
-     multiplication result is abstracted to zero.
+     The minimum normal binary64 value is 2^-1022.
+     Multiplying it by 0.5 produces 2^-1023, which is a
+     representable subnormal binary64 value.
   *)
   let min_normal =
     fp "2.2250738585072014e-308"
   in
   let half = fp "0.5" in
+  let expected =
+    fp "1.1125369292536007e-308"
+  in
 
   match FA.fp_mul min_normal half with
-  | Error (FA.Unsupported msg) ->
-      fail
-        ("normal operands producing subnormal result unexpectedly unsupported: "
-         ^ msg)
-
-  | Error (FA.Invalid msg) ->
-      fail
-        ("normal operands producing subnormal result unexpectedly invalid: "
-         ^ msg)
-
   | Ok FA.Bottom ->
-      fail
-        "subnormal multiplication result unexpectedly Bottom"
-
+      fail "representable subnormal multiplication result unexpectedly Bottom"
   | Ok v ->
       expect_fp
-        "subnormal multiplication result abstracts to zero"
-        (fp "0.0")
+        "representable subnormal multiplication result"
+        expected
         v
+  | Error (FA.Unsupported msg) ->
+      fail ("representable subnormal result unexpectedly Unsupported: " ^ msg)
+  | Error (FA.Invalid msg) ->
+      fail ("representable subnormal result unexpectedly Invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "representable subnormal result unexpectedly overflowed"
+  | Error FA.DivisionByZero ->
+      fail "representable subnormal result unexpectedly raised division by zero"
 
 
 let test_true_underflow_result_behavior () =
@@ -735,18 +742,16 @@ let test_true_underflow_result_behavior () =
   match FA.fp_mul min_normal min_normal with
   | Ok FA.Bottom ->
       ()
-
   | Ok (FA.Value _) ->
-      fail
-        "true multiplication underflow unexpectedly produced a Value"
-
+      fail "true multiplication underflow unexpectedly produced a Value"
   | Error (FA.Unsupported msg) ->
-      fail
-        ("true multiplication underflow unexpectedly Unsupported: " ^ msg)
-
+      fail ("true multiplication underflow unexpectedly Unsupported: " ^ msg)
   | Error (FA.Invalid msg) ->
-      fail
-        ("true multiplication underflow unexpectedly Invalid: " ^ msg)
+      fail ("true multiplication underflow unexpectedly Invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "true multiplication underflow unexpectedly reported overflow"
+  | Error FA.DivisionByZero ->
+      fail "true multiplication underflow unexpectedly raised division by zero"
 
 
 let test_reciprocal_overflow_behavior () =
@@ -755,10 +760,10 @@ let test_reciprocal_overflow_behavior () =
   in
 
   expect_true
-    "reciprocal overflow becomes Bottom"
+    "reciprocal overflow raises Overflow"
     (match FA.fp_recip min_positive with
-     | FA.Bottom -> true
-     | FA.Value _ -> false)
+     | Error FA.Overflow -> true
+     | _ -> false)
 
 
 let test_division_by_zero_behavior () =
@@ -766,40 +771,32 @@ let test_division_by_zero_behavior () =
   let zero = fp "0.0" in
 
   match FA.fp_div one zero with
-  | Ok FA.Bottom ->
+  | Error FA.DivisionByZero ->
       ()
-
   | Ok _ ->
-      fail
-        "division by zero: expected current policy Bottom"
-
+      fail "division by zero unexpectedly produced an abstract value"
   | Error (FA.Unsupported msg) ->
-      fail
-        ("division by zero unexpectedly Unsupported: " ^ msg)
-
+      fail ("division by zero unexpectedly Unsupported: " ^ msg)
   | Error (FA.Invalid msg) ->
-      fail
-        ("division by zero unexpectedly Invalid: " ^ msg)
+      fail ("division by zero unexpectedly Invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "division by zero unexpectedly reported overflow"
 
 
 let test_zero_divided_by_zero_behavior () =
   let zero = fp "0.0" in
 
   match FA.fp_div zero zero with
-  | Ok FA.Bottom ->
+  | Error FA.DivisionByZero ->
       ()
-
   | Ok _ ->
-      fail
-        "zero divided by zero: expected current policy Bottom"
-
+      fail "zero divided by zero unexpectedly produced an abstract value"
   | Error (FA.Unsupported msg) ->
-      fail
-        ("zero divided by zero unexpectedly Unsupported: " ^ msg)
-
+      fail ("zero divided by zero unexpectedly Unsupported: " ^ msg)
   | Error (FA.Invalid msg) ->
-      fail
-        ("zero divided by zero unexpectedly Invalid: " ^ msg)
+      fail ("zero divided by zero unexpectedly Invalid: " ^ msg)
+  | Error FA.Overflow ->
+      fail "zero divided by zero unexpectedly reported overflow"
 
 
 let test_sqrt_negative_behavior () =
@@ -838,22 +835,20 @@ let test_division_interval_containing_zero () =
   in
 
   match FA.fp_div numerator denominator with
-  | Ok FA.Bottom ->
+  | Error FA.DivisionByZero ->
       ()
-
   | Ok _ ->
-      fail
-        "division by interval containing zero: expected current policy Bottom"
-
+      fail "division by interval containing zero unexpectedly produced an abstract value"
   | Error (FA.Unsupported msg) ->
       fail
         ("division by interval containing zero unexpectedly Unsupported: "
          ^ msg)
-
   | Error (FA.Invalid msg) ->
       fail
         ("division by interval containing zero unexpectedly Invalid: "
          ^ msg)
+  | Error FA.Overflow ->
+      fail "division by interval containing zero unexpectedly reported overflow"
 
 let () =
   (* Original tests *)
