@@ -213,21 +213,35 @@ def merge_tspec(tspec1, tspec2):
 # Variable substitution rules: sort by length (longer rules have higher priorities)
 # Instruction translation rules: apply by appearance order
 def parse_tspec(fn, line_parser, line_filter):
+  lines = []
+  line = ""
+  with open(fn) as fd:
+    for l in fd:
+      l = l.strip()
+      if l.endswith('\\'):
+        line += l[:-1]
+      else:
+        line += l
+        if line_filter(line):
+          lines.append(line_parser(line))
+        line = ""
+    if line and line_filter(line):
+      lines.append(line_parser(line))
+
   substs = []
   rules = []
-  with open(fn) as f:
-    lines = map(line_parser, [item for item in f.readlines() if line_filter(item)])
-    substs_set = set()
-    rules_set = set()
-    for line_substs, line_rules in lines:
-      for k, v in line_substs:
-        if not (k in substs_set):
-          substs_set.add(k)
-          substs.append((k, v))
-      for k, v in line_rules:
-        if not (k in rules_set):
-          rules_set.add(k)
-          rules.append((k, v))
+  substs_set = set()
+  rules_set = set()
+  for line_substs, line_rules in lines:
+    for k, v in line_substs:
+      if not (k in substs_set):
+        substs_set.add(k)
+        substs.append((k, v))
+    for k, v in line_rules:
+      if not (k in rules_set):
+        rules_set.add(k)
+        rules.append((k, v))
+
   return sort_tspec(mk_tspec(substs, rules))
 
 # Parse translation specification in an external file
