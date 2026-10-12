@@ -582,33 +582,37 @@ let anon file =
      let bvspecs = spec_to_bvcryptoline s in
      List.iteri output bvspecs
   | SaveMix ->
-     let nth_name id = !save_mix_filename ^ "_" ^ string_of_int id in
-     let suggest_name sid =
+    let nth_name cid typ sid =
+      Printf.sprintf
+        "%s_cut%d_%s_%d"
+        !save_mix_filename cid typ sid in
+     let suggest_name cid typ sid =
        let rec helper i =
-         let fn = nth_name sid ^ "_" ^ string_of_int i ^ smtlib_filename_extension in
+         let fn = nth_name cid typ sid ^ "_" ^ string_of_int i ^ smtlib_filename_extension in
          if Sys.file_exists fn then helper (i + 1)
          else fn in
-       let fn = nth_name sid ^ smtlib_filename_extension in
+       let fn = nth_name cid typ sid ^ smtlib_filename_extension in
        if Sys.file_exists fn then helper 0
        else fn in
-     let output sid s =
-       let ch = open_out (suggest_name sid) in
-       let _ = output_string ch s in
-       let _ = close_out ch in
-       () in
+     let output cid typ sid s =
+       Out_channel.with_open_bin (suggest_name cid typ sid) (
+         fun ch ->
+           Out_channel.output_string ch s
+       ) in
      let (_, s) = Common.parse_and_check file in
      let _ = if SS.cardinal (tagged_spec_tags s) > 1 then failwith ("Multi-track cuts are not supported.") in
-     let ss = Ast.Cryptoline.cut_spec (
-         tagged_spec_untag s |> ssa_spec |> normalize_spec
-         |> (if !apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
-       ) in
-     let smtlibs_rev =
-       List.fold_left
-         (fun smtlibs s ->
-           let vgen = Verify.Common.vgen_of_spec s in
-           let (_, smtlib) = Verify.Mix.smtlib_spec ~expn:false ~rpost:!verify_rpost ~epost:!verify_epost vgen s in
-           smtlib::smtlibs) [] ss in
-     List.iteri output (List.rev smtlibs_rev)
+    let options = (st_options_of_tag default_track Options.Std.mt_options) in
+     let (smtlib_cuts, smtlib_asserts) =
+       Verify.Mix.smtlib_spec_ssa ~expn:false options
+         (tagged_spec_untag s |> ssa_spec |> normalize_spec) in
+    (
+      List.iter (fun (cid, smtlib) ->
+          output cid "spec" 0 smtlib) smtlib_cuts;
+      List.iter (fun (cid, numbered_smtlibs) ->
+          List.iter (fun (sid, smtlib) ->
+              output cid "assert" sid smtlib) numbered_smtlibs
+        ) smtlib_asserts
+    )
   | Simulation ->
     let _ = Random.self_init () in
     let ((ivs, _), ts) =

@@ -1995,6 +1995,14 @@ val cut_spec : spec -> spec list
    Note that cutting only algebra or range side is not supported by this function.
  *)
 
+val cut_assert : spec -> ((int * spec) list) list
+(**
+   [cut_eassert s] cuts the specification [s] in SSA form into
+   [[ss1; ss2; ...; ssN]] where [ssK] is a list of specifications of which the
+   postconditions are the algebraic assertions in the [K]-th algebraic cut.
+   The integer associated to a returned specification is its ID.
+ *)
+
 
 (** {1 Rewriting} *)
 

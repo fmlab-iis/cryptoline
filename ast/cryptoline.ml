@@ -3775,6 +3775,61 @@ let rprove_with_filter pwss (pre, cuts_rev, instrs) =
   then pre::(List.rev_append cuts_rbexps rbexps)
   else List.rev_append cuts_rbexps rbexps
 
+
+let is_prove_with_for_algebra_solver pws =
+  match pws with
+  | Precondition | Cuts _ | AllCuts
+  | AllAssumes | AllGhosts | RangeSolver _ -> false
+  | AlgebraSolver _ | AlgebraArgs _
+  | VariableOrder _ | MonomialOrder _ | EqFirst -> true
+
+let is_prove_with_for_range_solver pws =
+  match pws with
+  | Precondition | Cuts _ | AllCuts
+  | AllAssumes | AllGhosts | AlgebraSolver _
+  | VariableOrder _ | MonomialOrder _
+  | AlgebraArgs _ | EqFirst -> false
+  | RangeSolver _ -> true
+
+
+(*
+ * Make a specification for the verification of a predicate with prove-with
+ * clauses taken into consideration.
+ *
+ * @param precond the precondition of the specification containing the predicate
+ * @param before the instructions that are before the predicate and are possibly
+ *               related to prove-with clauses
+ * @param cuts_rev the cuts (in reverse order) before the predicate
+ * @param pre the condition of the previous cut
+ * @param visited the program snippet before the predicate (after the previous cut)
+ * @parap e the algebraic predicate
+ * @param epwss the prove-with clauses for [e]
+ * @parap r the range predicate
+ * @param rpwss the prove-with clauses for [r]
+ *)
+let spec_of_bexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (pre, visited) (e, epwss) (r, rpwss) =
+  let eprove_with =
+    tmap
+      (fun e -> Iassume (e, Rtrue))
+      (eprove_with_filter epwss ((fst precond), cuts_rev, before)) in
+  let rprove_with =
+    tmap
+      (fun r -> Iassume (Etrue, r))
+      (rprove_with_filter rpwss ((snd precond), cuts_rev, before)) in
+  let epwss' =
+    if clear_pwss then
+      []
+    else
+      List.filter is_prove_with_for_algebra_solver epwss in
+  let rpwss' =
+    if clear_pwss then
+      []
+    else
+      List.filter is_prove_with_for_range_solver rpwss in
+  { spre = pre;
+    sprog = tappend eprove_with (tappend rprove_with visited);
+    spost = ([(e, epwss')], [(r, rpwss')]) }
+
 (*
  * Make a specification for the verification of a predicate with prove-with
  * clauses taken into consideration. The postcondition of the returned
@@ -3794,13 +3849,7 @@ let espec_of_ebexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
   let prove_with = tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
-    else let is_for_algebra_solver pws =
-           match pws with
-           | Precondition | Cuts _ | AllCuts
-           | AllAssumes | AllGhosts | RangeSolver _ -> false
-           | AlgebraSolver _ | AlgebraArgs _
-           | VariableOrder _ | MonomialOrder _ | EqFirst -> true in
-         List.filter is_for_algebra_solver pwss in
+    else List.filter is_prove_with_for_algebra_solver pwss in
   { espre = pre; esprog = tappend prove_with visited; espost = [(e, pwss')] }
 
 (*
@@ -3821,14 +3870,7 @@ let rspec_of_rbexp_prove_with ?(clear_pwss=false) (precond, before, cuts_rev) (p
   let prove_with = tmap (fun r -> Iassume (Etrue, r)) (rprove_with_filter pwss (precond, cuts_rev, before)) in
   let pwss' =
     if clear_pwss then []
-    else let is_for_range_solver pws =
-           match pws with
-           | Precondition | Cuts _ | AllCuts
-           | AllAssumes | AllGhosts | AlgebraSolver _
-           | VariableOrder _ | MonomialOrder _
-           | AlgebraArgs _ | EqFirst -> false
-           | RangeSolver _ -> true in
-         List.filter is_for_range_solver pwss in
+    else List.filter is_prove_with_for_range_solver pwss in
   { rspre = pre; rsprog = tappend prove_with visited; rspost = [(r, pwss')] }
 
 (* [numbering sss] associates every specification in [sss] with a unique ID. *)
@@ -6082,65 +6124,72 @@ let merge_spec_post s =
  * Note that cutting only algebra or range side is not supported by this function.
  *)
 let cut_spec s =
+  let helper (precond, before_rev, cuts_rev) (pre, visited_rev, g) =
+    let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with g in
+    let visited = List.rev visited_rev in
+    let before = List.rev before_rev in
+    spec_of_bexp_prove_with (precond, before, cuts_rev) (pre, visited)
+      (e, epwss) (r, rpwss) in
   visit_with_pwss
     []
     (fun res (precond, before_rev, cuts_rev) (pre, visited_rev, g) ->
-       let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with g in
-       let (eprove_with, rprove_with) =
-         let before = List.rev before_rev in
-         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
-       let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
+       let spec = helper (precond, before_rev, cuts_rev) (pre, visited_rev, g) in
        spec::res
     )
     (fun i res (precond, before_rev, cuts_rev) (pre, visited_rev, _) ->
       match i with
       | Icut cuts ->
-         let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with cuts in
-         let (eprove_with, rprove_with) =
-           let before = List.rev before_rev in
-           (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-            tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
-         let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
-         spec::res
+       let spec = helper (precond, before_rev, cuts_rev) (pre, visited_rev, cuts) in
+       spec::res
       | _ -> res
     )
     s.spre s.sprog s.spost
-(*
-  let rec helper res (precond, before_rev, after_rev, cuts_rev) (pre, visited_rev, prog) =
-    match prog with
-    | [] ->
-       let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with s.spost in
-       let (eprove_with, rprove_with) =
-         let before = List.rev before_rev in
-         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter epwss (eqn_bexp precond, cuts_rev, before)),
-          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter rpwss (rng_bexp precond, cuts_rev, before))) in
-       let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = ([(e, [])], [(r, [])]) } in
-       spec::res
-    | (Icut ([], _))::_
-      | (Icut (_, []))::_ -> failwith("The function cut_spec cannot cut single algebra or range side")
-    | (Icut (ecuts, rcuts) as hd)::tl ->
-       let (eposts, epwsss) = List.split ecuts in
-       let (rposts, rpwsss) = List.split rcuts in
-       let cut_post = (tmap (fun e -> (e, [])) eposts, tmap (fun e -> (e, [])) rposts) in
-       let (eprove_with, rprove_with) =
-         let before = List.rev before_rev in
-         (tmap (fun e -> Iassume (e, Rtrue)) (eprove_with_filter (tflatten epwsss) (eqn_bexp precond, cuts_rev, before)),
-          tmap (fun e -> Iassume (Etrue, e)) (rprove_with_filter (tflatten rpwsss) (rng_bexp precond, cuts_rev, before))) in
-       let spec = { spre = pre; sprog = tappend eprove_with (tappend rprove_with (List.rev visited_rev)); spost = cut_post } in
-       helper (spec::res) (precond, tappend after_rev before_rev, [hd], hd::cuts_rev) ((eands eposts, rands rposts), [], tl)
-    | (Iassume _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
-    | (Ighost _ as hd)::tl -> helper res (precond, before_rev, hd::after_rev, cuts_rev) (pre, hd::visited_rev, tl)
-    | hd::tl -> helper res (precond, before_rev, after_rev, cuts_rev) (pre, hd::visited_rev, tl) in
-  List.rev (helper [] (s.spre, [], [], []) (s.spre, [], s.sprog))
- *)
 
 (*
  * Returns specifications for verifying assertions in a specification.
  * All prove-with clauses in an assertion are merged.
  * Note that cutting only algebra or range side is not supported by this function.
  *)
-let assertion_specs s =
+let cut_assert s =
+  let first_ecut_pwss p =
+    try let i = List.find is_ecut p in
+        match i with
+        | Icut (es, _) -> ebexp_prove_with_specs es
+        | _ -> []
+    with Not_found -> ebexp_prove_with_specs (fst s.spost) in
+  let first_rcut_pwss p =
+    try let i = List.find is_rcut p in
+        match i with
+        | Icut (_, rs) -> rbexp_prove_with_specs rs
+        | _ -> []
+    with Not_found -> rbexp_prove_with_specs (snd s.spost) in
+  let assert_specs =
+    visit_with_pwss
+      ([], [])
+      (fun (res_rev, asserts_rev) _ _ ->
+         (List.rev asserts_rev)::res_rev
+      )
+      (fun i (res_rev, asserts_rev) (precond, before_rev, cuts_rev) (pre, visited_rev, prog) ->
+         match i with
+         | Iassert (es, rs) ->
+           let visited = List.rev visited_rev in
+           let before = List.rev before_rev in
+           (* add the prove-with clauses from the next cut *)
+           let ((e, epwss), (r, rpwss)) = merge_bexp_prove_with (es, rs) in
+           let es_extended_pwss = insert_pwss_exclude_solver [(e, epwss)] (first_ecut_pwss prog) in
+           let rs_extended_pwss = insert_pwss_exclude_solver [(r, rpwss)] (first_rcut_pwss prog) in
+           let assert_as_specs =
+             tmap2
+               (spec_of_bexp_prove_with (precond, before, cuts_rev) (pre, visited))
+               es_extended_pwss rs_extended_pwss in
+           (res_rev, List.rev_append assert_as_specs asserts_rev)
+         | Icut _ -> ((List.rev asserts_rev)::res_rev, [])
+         | _ -> (res_rev, asserts_rev)
+      )
+      s.spre s.sprog s.spost in
+  numbering assert_specs
+
+(*
   visit_with_pwss
     []
     (fun res _ _ ->
@@ -6159,6 +6208,8 @@ let assertion_specs s =
       | _ -> res
     )
     s.spre s.sprog s.spost
+*)
+
 
 (*
  * Make an algebraic assertion a single specification and remove assertions.
@@ -6594,7 +6645,7 @@ let spec_to_bvcryptoline s =
   (ssa_spec s)
   |> (if !Options.Std.apply_rewrite_mov then rewrite_mov_ssa_spec else Fun.id)
   |> ghost_to_assume
-  |> (fun s -> List.rev_append (rev (assertion_specs s)) (cut_spec s))
+  |> (fun s -> tappend (cut_assert s |> tflatten |> List.split |> snd) (cut_spec s))
   |> List.rev_map remove_assert_spec
   |> List.rev_map merge_spec_post
   |> List.rev_map helper

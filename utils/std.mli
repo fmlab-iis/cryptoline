@@ -76,6 +76,9 @@ val tappend : 'a list -> 'a list -> 'a list
 val tmap : ('a -> 'b) -> 'a list -> 'b list
 (** A tail-recursive version of [List.map] *)
 
+val tmap2 : ('a -> 'b -> 'c) -> 'a list -> 'b list  -> 'c list
+(** A tail-recursive version of [List.map2] *)
+
 val tfilter : ('a -> bool) -> 'a list -> 'a list
 (** A tail-recursive version of [List.filter] *)
 

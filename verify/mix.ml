@@ -1,6 +1,7 @@
 
 open Ast.Cryptoline
 open Utils.Std
+open Options.Std
 
 let smtlib_true = "true"
 
@@ -155,7 +156,7 @@ let smtlib_var_ranges_mix vs =
 (* Convert a specification to SMTLIB. The output will use integer theory and
    bit-vector theory. Cuts and assertions are not allowed in the input
    specification. *)
-let smtlib_spec ?(expn=true) ?(rpost=true) ?(epost=true) vgen s =
+let smtlib_spec_no_cut ?(expn=true) ?(epost=true) ?(rpost=true) vgen s =
   let rs = rspec_of_spec s in
   let es = espec_of_spec s in
   (* === range === *)
@@ -163,7 +164,7 @@ let smtlib_spec ?(expn=true) ?(rpost=true) ?(epost=true) vgen s =
   let rng_p =  Smt.bexp_program rs.rsprog |> tmap Qfbv.Common.smtlib2_of_bexp in
   let rng_g =
     if not rpost then smtlib_true
-    else 
+    else
       let rng_g = Smt.bexp_rbexp (rbexp_prove_with_rands rs.rspost) in
       if is_rspec_trivial rs
       then smtlib_true
@@ -177,15 +178,15 @@ let smtlib_spec ?(expn=true) ?(rpost=true) ?(epost=true) vgen s =
   let alg_f = smtlib_ebexp_mix ~expn:expn is_pvar zs.ppre in
   let alg_p = tmap (smtlib_ebexp_mix ~expn:expn is_pvar) zs.pprog in
   let alg_g =
-    if not epost then smtlib_true 
-    else 
+    if not epost then smtlib_true
+    else
       let alg_g = smtlib_ebexp_mix ~expn:expn is_pvar zs.ppost in
       if is_espec_trivial es
       then smtlib_true
       else alg_g in
-  let alg_post_disj = 
+  let alg_post_disj =
     if not epost then []
-    else 
+    else
     List.rev_map (smtlib_eexp_mix ~expn:expn is_pvar) zs.pextra
                       |> List.rev_map (fun e -> Smt.smtlib_eq e "0") in
   (* All variables *)
@@ -266,3 +267,63 @@ let smtlib_spec ?(expn=true) ?(rpost=true) ?(epost=true) vgen s =
        "(check-sat)"
   ])
 *)
+
+
+(* Convert an SSA specification to SMTLIB. The output SMTLIB uses both
+   integer theory and bit-vector theory. *)
+let smtlib_spec_ssa ?(expn=true) options s =
+  let vgen = Common.vgen_of_spec s in
+  let rewritten_spec =
+    if !Options.Std.apply_rewrite_mov then
+      rewrite_mov_ssa_spec s
+    else
+      s in
+  let (numbered_smtlib_cuts_rev, _) =
+    List.fold_left (
+      fun (smtlibs_rev, cid) s ->
+        let vecut =
+          !Options.Std.verify_epost &&
+          Options.Std.mem_hashset_opt options.st_verify_ecuts cid in
+        let vrcut =
+          !Options.Std.verify_rpost &&
+          Options.Std.mem_hashset_opt options.st_verify_rcuts cid in
+        if vecut || vrcut then
+          let smtlib =
+            smtlib_spec_no_cut ~expn
+              ~epost:vecut ~rpost:vrcut vgen s
+            |> snd in
+          ((cid, smtlib)::smtlibs_rev, cid + 1)
+        else
+          (smtlibs_rev, cid + 1)
+    ) ([], 0) (cut_spec rewritten_spec) in
+  let (smtlib_asserts, _) =
+    List.fold_left
+      (fun (smtlibs_rev, cid) numbered_specs ->
+         let veacut =
+           !Options.Std.verify_eassertion &&
+           Options.Std.mem_hashset_opt options.st_verify_eacuts cid in
+         let vracut =
+           !Options.Std.verify_rassertion &&
+           Options.Std.mem_hashset_opt options.st_verify_racuts cid in
+         if veacut || vracut then
+           let smtlibs =
+             List.fold_left
+               (fun res (id, s) ->
+                  let vea = Options.Std.mem_hashset_opt options.st_verify_eassert_ids id in
+                  let vra = Options.Std.mem_hashset_opt options.st_verify_rassert_ids id in
+                  if vea || vra then
+                    let r =
+                      (
+                        id,
+                        smtlib_spec_no_cut ~expn ~epost:vea ~rpost:vra vgen s
+                        |> snd
+                      ) in
+                    (r::res)
+                  else
+                    res
+               ) [] numbered_specs in
+           ((cid, smtlibs)::smtlibs_rev, cid + 1)
+         else
+           (smtlibs_rev, cid + 1)
+      ) ([], 0) (cut_assert rewritten_spec) in
+  (List.rev numbered_smtlib_cuts_rev, smtlib_asserts)
