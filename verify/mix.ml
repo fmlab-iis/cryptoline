@@ -18,8 +18,8 @@ let smtlib2_declare_vars_mix pvs avs =
   let decls = VS.fold (fun v res -> (printer v (VS.mem v pvs))::res) (VS.union pvs avs) [] in
   String.concat "\n" decls
 
-let smtlib_bv2int v = Printf.sprintf "(bv2int %s)" (string_of_var v)
-let smtlib_bv2nat v = Printf.sprintf "(bv2nat %s)" (string_of_var v)
+let smtlib_bv2int v = Printf.sprintf "(sbv_to_int %s)" (string_of_var v)
+let smtlib_bv2nat v = Printf.sprintf "(ubv_to_int %s)" (string_of_var v)
 let smtlib_bv2i v =
   if var_is_signed v
   then smtlib_bv2int v
