@@ -1,36 +1,15 @@
 # address patterns
-
-#! $1c(%r$2c) = %%EA
-#! (%r$1c) = %%EA
-#! $1c(%rbp) = %%EA
-#! (%rbp) = %%EA
-#! $1c(%rbx) = %%EA
-#! (%rbx) = %%EA
-#! $1c(%rcx) = %%EA
-#! (%rcx) = %%EA
-#! $1c(%rdx) = %%EA
-#! (%rdx) = %%EA
-#! $1c(%rdi) = %%EA
-#! (%rdi) = %%EA
-#! $1c(%rsi) = %%EA
-#! (%rsi) = %%EA
-#! -$1c(%rip) = %%EA
-#! $1c(%rip) = %%EA
-#! $1c(%rsp) = %%EA
-#! (%rsp) = %%EA
+#! re:(?:-?\w+)?\(%r[\w,%]+\)(.+#!.+) = %%EA\1
 
 # registers
+#! re:%(r\w+) = %%\1
+#! re:%([xyz]mm\d+) = %%\1
 
-#! %r$1c = %%r$1c
-#! %rax = %%rax
-#! %rbx = %%rbx
-#! %rdi = %%rdi
-#! %rcx = %%rcx
-#! %rdx = %%rdx
-#! %rbp = %%rbp
-#! %rsi = %%rsi
-#! %xmm$1c = %%xmm$1c
-#! %ymm$1c = %%ymm$1c
+# labels
+#! re:\w+: = nop
+
+#! re:push\s+(%r\w+) = mov \1, %%EA
+#! re:pop\s+(%r\w+) = mov %%EA, \1
 
 # scalar instructions
 
@@ -48,7 +27,7 @@
 #! sub $1ea, $2v, $3v -> subb carry $3v $2v $1ea
 #! sbb $1v, $2v, $3v -> sbbs carry $3v $2v $1v carry
 #! sbb $1c, $2v, $3v -> sbbs carry $3v $2v $1c@uint64 carry
-#! sbb $1ea, $2v, $3v -> sbbs carry $3v $2v $1ea
+#! sbb $1ea, $2v, $3v -> sbbs carry $3v $2v $1ea carry
 #! imul $1v, $2v, $3v -> mull dontcare $3v $1v $2v
 #! and $1v, $2v, $3v -> and $3v@uint64 $2v $1v
 #! and $1c, $2v, $3v -> and $3v@uint64 $2v $1c@uint64
@@ -78,8 +57,8 @@
 #! cmove $1v, $2v -> cmov $2v zero $1v $2v
 #! cmovne $1v, $2v -> cmov $2v zero $2v $1v
 #! dec $1v -> subb overflow $1v $1v 1@uint64
+#! endbr64 -> nop
 #! imul $1v, $2v -> mull dontcare $2v $1v $2v
-#! lea $1ea, $2v -> mov $2v, $1ea
 #! mov $1c, $2v -> mov $2v $1c@uint64
 #! mov $1c, $2ea -> mov $2ea $1c@uint64
 #! mov $1v, $2v -> mov $2v $1v
@@ -97,7 +76,7 @@
 #! sub $1v, $2ea -> subb carry $2ea $2ea $1v
 #! sbb $1v, $2v -> sbbs carry $2v $2v $1v carry
 #! sbb $1c, $2v -> sbbs carry $2v $2v $1c@uint64 carry
-#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea
+#! sbb $1ea, $2v -> sbbs carry $2v $2v $1ea carry
 #! shlx $1c, $2v, $3v -> split dc $3v $2v (64-$1c);\nshl $3v $3v $1c@uint64
 #! shl $1c, $2v -> split dc $2v $2v (64-$1c);\nshl $2v $2v $1c@uint64
 #! shrx $1c, $2v, $3v -> split $3v dc $2v $1c
@@ -105,6 +84,17 @@
 #! test $1v, $1v -> subb zero dontcare $1v 1@uint64
 #! test $1c, $2v -> and tmp@uint64 $1c@uint64 $2v;\nsubb zero dontcare tmp 0x1@uint64
 #! xor $1v, $1v -> mov $1v 0@uint64;\nclear carry;\nclear overflow
+
+#! lea $1c\(%%rip\), $2v -> nop
+#! lea \($1v\), $2v -> mov $2v $1v
+#! lea -$1c\($2v\), $3v -> subs null $3v $2v $1c@uint64
+#! lea $1c\($2v\), $3v -> adds null $3v $2v $1c@uint64
+#! lea \($1v, $2v, 1\), $3v -> adds null $3v $1v $2v
+#! lea -$1c\($2v, $3v, 1\), $4v -> adds null $4v $2v $3v;\nsubs null $4v $4v $1c@uint64
+#! lea $1c\($2v, $3v, 1\), $4v -> adds null $4v $2v $3v;\nadds null $4v $4v $1c@uint64
+#! lea \($1v, $2v, $3c\), $4v -> mull null $4v_t $2v $3c@uint64;\nadds null $4v $4v_t $1v
+#! lea -$1c\($2v, $3v, $4c\), $5v -> mull null $5v_t $3v $4c@uint64;\nadds null $5v $5v_t $2v;\nsubs null $5v $5v $1c@uint64
+#! lea $1c\($2v, $3v, $4c\), $5v -> mull null $5v_t $3v $4c@uint64;\nadds null $5v $5v_t $2v;\nadds null $5v $5v $1c@uint64
 
 # vector instructions
 # w = 16 bits, d = 32 bits, q = 64 bits
